@@ -1,0 +1,33 @@
+{
+  "name": "bbx-emulator",
+  "version": "0.0.1",
+  "description": "A BBX Emulator",
+  "repository": "git://github.com/blackberry-webworks/BBX-Emulator.git",
+  "author": {
+    "name": "Research In Motion",
+    "url": "http://github.com/blackberry-webworks/BBX-Emulator"
+  },
+  "licenses": [{
+    "type": "Apache 2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0"
+  }],
+  "main": "index",
+  "dependencies": {
+    "connect": "1.7.x",
+    "express": "2.5.0",
+    "argsparser": "0.0.x",
+    "jasmine-node": "1.0.7",
+    "jWorkflow": "*"
+  },
+  "bundledDependencies": [
+    "connect",
+    "argsparser"
+  ],
+  "files": [
+    "node_modules",
+    "README.md",
+    "LICENSE",
+    "lib",
+    "bin"
+  ]
+}
