@@ -18,9 +18,7 @@ module.exports = function (done, custom) {
         verbose = false,
         colored = false,
         specs = __dirname + "/../" + (custom ? custom : "test"),
-        key;
-
-    require.paths.push(__dirname + "/../lib/");
+        key;    
 
     //HACK: this should be  taken out if our pull request in jasmine is accepted.
     jasmine.Matchers.prototype.toThrow = function (expected) {
