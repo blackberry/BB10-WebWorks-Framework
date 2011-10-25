@@ -1,5 +1,5 @@
 describe("webview", function () {
-    var webview = require('webview'),
+    var webview = require('framework'),
         RIPPLE_LOCATION = '/Applications/Research In Motion/Ripple 0.9.0.11/Ripple.app/Contents/MacOS/Ripple',
         childProcess = require('child_process'),
         ripple;
