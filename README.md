@@ -13,7 +13,12 @@ For Mac:
 
 5. cd BBX-Framework\dependencies\BBX-Emulator
 
-6. Start emulator server on port 8475 with:
+6. Start emulator server on port 8472 with:
     jake 
 7. Send a command to start Ripple with: 
-    curl http://localhost:8475/webview/create
+    curl http://localhost:8472/webview/create
+8. Check that Ripple starts up.
+
+9. cd back to BBX-Framework\
+
+10. Run 'jake test' and check that jake runs and completes
