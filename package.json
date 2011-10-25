@@ -1,11 +1,11 @@
 {
-  "name": "bbx-emulator",
+  "name": "bbx-framework",
   "version": "0.0.1",
-  "description": "A BBX Emulator",
-  "repository": "git://github.com/blackberry-webworks/BBX-Emulator.git",
+  "description": "The BBX Framework",
+  "repository": "git://github.com/blackberry-webworks/BBX-Framework.git",
   "author": {
     "name": "Research In Motion",
-    "url": "http://github.com/blackberry-webworks/BBX-Emulator"
+    "url": "http://github.com/blackberry-webworks/BBX-Framework"
   },
   "licenses": [{
     "type": "Apache 2.0",
