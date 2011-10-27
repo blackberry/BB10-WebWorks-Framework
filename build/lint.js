@@ -27,7 +27,7 @@ function _spawn(proc, args, done) {
 }
 
 function _exec(cmdExpr, done) {
-    var cmd = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
+    childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         util.print(stdout);
         util.print(stderr);
         if (error !== null) {
