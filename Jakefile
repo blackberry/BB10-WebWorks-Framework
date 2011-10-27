@@ -16,7 +16,7 @@
 
 desc("run all tests in node - jake test [path,path2]");
 task('default', [], function () {
-    require('./build/test')(null, process.argv.length >= 4 ? process.argv[3] : null);
+    require('./lib/server').start(process.argv);
 });
 
 desc("run all tests in node - jake test [path,path2]");
