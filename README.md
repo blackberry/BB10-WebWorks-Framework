@@ -33,16 +33,21 @@ For Windows:
 2. Follow npm install instructions:
     http://npmjs.org/doc/README.html#Installing-on-Windows-Experimental
 
-3. git clone https://github.com/blackberry-webworks/BBX-Framework.git
+3. Install the latest node.exe for Windows (Currently 0.5.10):
+    http://nodejs.org/#download    
+    
+4. git clone https://github.com/blackberry-webworks/BBX-Framework.git
 
-4. cd BBX-Framework
+5. cd BBX-Framework
 
-5. git checkout next
+6. git checkout next
 
-6. Run configure.bat
+7. Run configure.bat 
+    (If you have trouble with npm install express, get it from here: 
+        git clone http://git.rim.net/rcruz/BBX-Framework.git )
 
-7. Open git shell, navigate to BBX-Framework and run:
+8. Open git shell, navigate to BBX-Framework and run:
     git submodule update --init
 
-8. Run the unit tests:
+9. Run the unit tests:
     jake test
