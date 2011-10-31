@@ -30,9 +30,6 @@ function _exec(cmdExpr, done) {
     childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         util.print(stdout);
         util.print(stderr);
-        if (error !== null) {
-            util.print(error);
-        }
         if (done) {
             done();
         }
