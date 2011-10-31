@@ -17,15 +17,6 @@ var childProcess = require('child_process'),
     util = require('util'),
     fs = require('fs');
 
-function _spawn(proc, args, done) {
-    var cmd = childProcess.spawn(proc, args);
-    cmd.stdout.on('data', util.print);
-    cmd.stderr.on('data', util.print);
-    if (done) {
-        cmd.on('exit', done);
-    }
-}
-
 function _exec(cmdExpr, done) {
     childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         util.print(stdout);
