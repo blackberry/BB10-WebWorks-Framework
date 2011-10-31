@@ -3,7 +3,6 @@ var srcPath = __dirname + '/../../lib/';
 describe("framework", function () {
     var framework = require(srcPath + 'framework'),
         webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
-        RIPPLE_LOCATION = '/Applications/Research In Motion/Ripple 0.9.0.11/Ripple.app/Contents/MacOS/Ripple',
         emulator_webview;
 
     beforeEach(function () {
