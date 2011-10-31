@@ -1,47 +1,40 @@
 var srcPath = __dirname + '/../../lib/';
 
-describe("webview", function () {
-    var webview = require(srcPath + 'framework'),
+describe("framework", function () {
+    var framework = require(srcPath + 'framework'),
+        webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
         RIPPLE_LOCATION = '/Applications/Research In Motion/Ripple 0.9.0.11/Ripple.app/Contents/MacOS/Ripple',
-        childProcess = require('child_process'),
-        ripple;
+        emulator_webview;
 
     beforeEach(function () {
-        ripple = {
-            stdout: {
-                on: jasmine.createSpy()
-            },
-            stderr: {
-                on: jasmine.createSpy()
-            },
-            on: jasmine.createSpy(),
-            kill: jasmine.createSpy()
+        emulator_webview = {
+            create: jasmine.createSpy(),
+            destroy: jasmine.createSpy()
         };
-        spyOn(childProcess, "spawn").andReturn(ripple);
+   
+        spyOn(webview, "create").andReturn(emulator_webview.create);
+        spyOn(webview, "destroy").andReturn(emulator_webview.destroy);
         spyOn(console, "log");
     });
 
     afterEach(function () {
-        webview.destroy();
+        framework.stopWebview();
     });
 
-    it("can create a webview", function () {
-        webview.create();
-        expect(childProcess.spawn).toHaveBeenCalled();
-        expect(childProcess.spawn.argsForCall[0][0]).toEqual(RIPPLE_LOCATION);
-        expect(ripple.on).toHaveBeenCalled();
-        expect(ripple.on.argsForCall[0][0]).toEqual("exit");
+    it("can start a webview instance", function () {
+        framework.startWebview();
+        expect(webview.create).toHaveBeenCalled();
     });
 
-    it("can destroy a webview", function () {
-        webview.create();
-        webview.destroy();
-        expect(ripple.kill).toHaveBeenCalled();
+    it("can start a webview instance with a url", function () {
+        var url = 'http://www.google.com';
+        framework.startWebview(url);
+        expect(webview.create).toHaveBeenCalledWith(url);
     });
 
-    it("only spawns one webview at a time", function () {
-        webview.create();
-        webview.create();
-        expect(childProcess.spawn.callCount).toEqual(1);
+    it("can stop a webview instance", function () {
+        framework.startWebview();
+        framework.stopWebview();
+        expect(webview.destroy).toHaveBeenCalled();
     });
 });  
