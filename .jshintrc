@@ -1,6 +1,7 @@
 {
     "predef": [ 
         "DOMDocument",
+        "XMLHttpRequest",
         "$", "it", "describe",
         "xit", "xdescribe",
         "itBrowser", "describeBrowser",
@@ -20,7 +21,6 @@
         "unescape",
         "document",
         "setTimeout",
-        "jWorkflow",
         "escape",
         "location",
         "arguments",
@@ -31,7 +31,7 @@
  
     "node" : true,
     "es5" : true,
-    "browser" : false,
+    "browser" : true,
  
     "boss" : false,
     "curly": false,
