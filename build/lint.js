@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 var childProcess = require('child_process'),
-    sys = require('sys'),
+    util = require('util'),
     fs = require('fs');
 
-function _spawn(proc, args, done) {
-    var cmd = childProcess.spawn(proc, args);
-    cmd.stdout.on('data', sys.print);
-    cmd.stderr.on('data', sys.print);
-    if (done) {
-        cmd.on('exit', done);
-    }
+function _exec(cmdExpr, done) {
+    childProcess.exec(cmdExpr, function (error, stdout, stderr) {
+        util.print(stdout);
+        util.print(stderr);
+        if (done) {
+            done();
+        }
+    });
 }
 
-function _lintJS(files, done) {
-    var options = ["--reporter", "build/lint/reporter.js", "--show-non-errors"];
-    _spawn('jshint', files.concat(options), done);
+function _lintJS(files, done) {    
+    var options = ["--reporter", "build/lint/reporter.js", "--show-non-errors"];        
+    _exec('jshint ' + files.concat(options).join(' '), done);
 }
 
 function _lintCSS(files, done) {
     var rules = JSON.parse(fs.readFileSync(__dirname + "/../.csslintrc", "utf-8")),
         options = ["--rules=" + rules, "--format=compact"];
-    _spawn('csslint', files.concat(options), done);
+    _exec('csslint ' + files.concat(options).join(' '), done);
 }
 
 module.exports = function (done, files) {

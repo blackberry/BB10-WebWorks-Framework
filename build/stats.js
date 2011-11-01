@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 module.exports = function () {
-    var sys = require('sys'),
+    var util = require('util'),
         libs = [],
         tests = [],
         total_lines = 0,
@@ -52,7 +52,7 @@ module.exports = function () {
                         .replace(/^.*lib\/ripple\/?/, '')
                         .replace(/^.*test\//, '');
 
-            sys.puts("| " + file + spaces(59 - file.length) + "| " +
+            util.puts("| " + file + spaces(59 - file.length) + "| " +
                     lines + spaces(7 - String(lines).length) + "| " +
                     loc + spaces(7 - String(loc).length) + "|");
 
@@ -77,9 +77,9 @@ module.exports = function () {
     libs.sort();
     tests.sort();
 
-    sys.puts("+------------------------------------------------------------+--------+--------+");
-    sys.puts("| Lib                                                        | Lines  | LOC    |");
-    sys.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Lib                                                        | Lines  | LOC    |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
 
     libs.forEach(function (lib) {
         parseFile(lib, function (lines, loc) {
@@ -88,15 +88,15 @@ module.exports = function () {
         });
     });
 
-    sys.puts("+------------------------------------------------------------+--------+--------+");
-    sys.print("| Total                                                      |");
-    sys.print(" " + lib_lines + spaces(7 - String(lib_lines).length) + "|");
-    sys.puts(" " + lib_loc + spaces(7 - String(lib_loc).length) + "|");
-    sys.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.print("| Total                                                      |");
+    util.print(" " + lib_lines + spaces(7 - String(lib_lines).length) + "|");
+    util.puts(" " + lib_loc + spaces(7 - String(lib_loc).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
 
-    sys.puts("+------------------------------------------------------------+--------+--------+");
-    sys.puts("| Tests                                                      | Lines  | LOC    |");
-    sys.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Tests                                                      | Lines  | LOC    |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
 
     tests.forEach(function (test) {
         parseFile(test, function (lines, loc) {
@@ -105,23 +105,23 @@ module.exports = function () {
         });
     });
 
-    sys.puts("+------------------------------------------------------------+--------+--------+");
-    sys.print("| Total                                                      |");
-    sys.print(" " + test_lines + spaces(7 - String(test_lines).length) + "|");
-    sys.puts(" " + test_loc + spaces(7 - String(test_loc).length) + "|");
-    sys.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.print("| Total                                                      |");
+    util.print(" " + test_lines + spaces(7 - String(test_lines).length) + "|");
+    util.puts(" " + test_loc + spaces(7 - String(test_loc).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
 
     total_lines = lib_lines + test_lines;
     total_loc = lib_loc + test_loc;
     testsOverLib = (lib_loc / test_loc).toFixed(2);
     emptySpace = total_lines - total_loc;
 
-    sys.puts("+------------------------------------------------------------+--------+--------+");
-    sys.puts("| Stats                                                                        |");
-    sys.puts("+------------------------------------------------------------+--------+--------+");
-    sys.puts("| lines: " + total_lines + spaces(70 - String(total_lines).length) + "|");
-    sys.puts("| loc: " + total_loc + spaces(72 - String(total_loc).length) + "|");
-    sys.puts("| lib/test (loc): " + testsOverLib + spaces(61 - String(testsOverLib).length) + "|");
-    sys.puts("| comments & empty space: " + emptySpace + spaces(53 - String(emptySpace).length) + "|");
-    sys.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Stats                                                                        |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| lines: " + total_lines + spaces(70 - String(total_lines).length) + "|");
+    util.puts("| loc: " + total_loc + spaces(72 - String(total_loc).length) + "|");
+    util.puts("| lib/test (loc): " + testsOverLib + spaces(61 - String(testsOverLib).length) + "|");
+    util.puts("| comments & empty space: " + emptySpace + spaces(53 - String(emptySpace).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
 };
