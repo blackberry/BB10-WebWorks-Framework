@@ -7,18 +7,47 @@ For Mac:
 
 2. git clone https://github.com/blackberry-webworks/BBX-Framework.git
 
-3. git checkout next
+3. cd BBX-Framework
 
-4. ./configure (sudo ./configure if you get permission errors)
+4. git checkout next
 
-5. cd BBX-Framework\dependencies\BBX-Emulator
+5. ./configure (sudo ./configure if you get permission errors)
 
-6. Start emulator server on port 8472 with:
+6. cd BBX-Framework\dependencies\BBX-Emulator
+
+7. Start emulator server on port 8472 with:
     jake 
-7. Send a command to start Ripple with: 
+8. Send a command to start Ripple with: 
     curl http://localhost:8472/webview/create
-8. Check that Ripple starts up.
+9. Check that Ripple starts up.
 
-9. cd back to BBX-Framework\
+10. cd back to BBX-Framework\
 
-10. Run 'jake test' and check that jake runs and completes
+11. Run 'jake test' and check that jake runs and completes
+
+
+For Windows:
+
+1. Install Ripple
+
+2. Follow npm install instructions:
+    http://npmjs.org/doc/README.html#Installing-on-Windows-Experimental
+
+3. Install the latest node.exe for Windows (Currently 0.5.10):
+    http://nodejs.org/#download    
+    
+4. git clone https://github.com/blackberry-webworks/BBX-Framework.git
+
+5. cd BBX-Framework
+
+6. git checkout next
+
+7. Run configure.bat 
+    (If you have trouble with npm install express, get it from here: 
+        git clone http://git.rim.net/rcruz/BBX-Framework.git )
+
+8. Open git shell, navigate to BBX-Framework and run:
+    git submodule update --init
+
+9. Run the unit tests:
+    jake test
