@@ -15,7 +15,18 @@ describe("whitelist", function () {
         expect(whitelist.isAccessAllowed('http://www.cnn.com')).toEqual(true);
         expect(whitelist.isAccessAllowed('http://www.rim.com')).toEqual(true);
     });
-    
+
+    it("can allow access to google.com without *", function () {
+        var accessList = [{
+            uri : "http://google.com",
+            allowSubDomain : true,
+            features : null
+        }];
+
+        whitelist.initialize(accessList, false);
+        expect(whitelist.isAccessAllowed("http://www.google.com")).toEqual(true);
+        expect(whitelist.isAccessAllowed("http://www.cnn.com")).toEqual(false);
+    });
 });
     
     
