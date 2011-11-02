@@ -1,14 +1,14 @@
 var srcPath = __dirname + '/../../lib/';
 
 describe("Config", function () {
-	var config = require(srcPath + 'config/config.js');
+    var config = require(srcPath + 'config.js');
 
-	it("verify user value is correctly mixed", function () {
-		expect(config.copyright).toEqual("@Rebecca");
-	});
+    it("verify user value is correctly mixed", function () {
+        expect(config.copyright).toEqual("@Rebecca");
+    });
 
-	it("verify default value is correctly mixed", function () {
-		expect(config.widgetExtensions).toEqual(null);
-	});
+    it("verify default value is correctly mixed", function () {
+        expect(config.widgetExtensions).toEqual(null);
+    });
 
 });
