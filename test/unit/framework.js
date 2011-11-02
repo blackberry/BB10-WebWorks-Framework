@@ -8,11 +8,13 @@ describe("framework", function () {
     beforeEach(function () {
         emulator_webview = {
             create: jasmine.createSpy(),
-            destroy: jasmine.createSpy()
+            destroy: jasmine.createSpy(),
+            setURL: jasmine.createSpy()
         };
    
         spyOn(webview, "create").andReturn(emulator_webview.create);
         spyOn(webview, "destroy").andReturn(emulator_webview.destroy);
+        spyOn(webview, "setURL").andReturn(emulator_webview.location);
         spyOn(console, "log");
     });
 
@@ -27,8 +29,9 @@ describe("framework", function () {
 
     it("can start a webview instance with a url", function () {
         var url = 'http://www.google.com';
-        framework.startWebview(url);
-        expect(webview.create).toHaveBeenCalledWith(url);
+        framework.startWebview();
+        framework.setURL(url);
+        expect(webview.setURL).toHaveBeenCalledWith(url);
     });
 
     it("can stop a webview instance", function () {
