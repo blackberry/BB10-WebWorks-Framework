@@ -48,7 +48,7 @@ describe("whitelist", function () {
         expect(whitelist.isFeatureAllowed("http://www.google.com", "blackberry.io.file")).toEqual(false);
     });
 
-    it("can allow access to local URLs", function() {
+    it("can allow access to local URLs", function () {
         var hasGlobalAccess = false,
             accessList = [{
                 uri : "WIDGET_LOCAL",
