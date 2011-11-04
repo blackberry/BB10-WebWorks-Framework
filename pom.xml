@@ -23,7 +23,10 @@
 		            <goal>exec</goal>
 		        </goals>
 			<configuration>
-			    <executable>configure</executable>
+			    <executable>sudo</executable>
+			    <arguments>
+                                <argument>./configure</argument>
+		            </arguments>
 			</configuration>
 	            </execution>
                     <execution>
@@ -37,6 +40,23 @@
 			    <workingDirectory></workingDirectory>            
 			    <arguments>
 		                <argument>test</argument>
+		            </arguments>
+		            <successCodes>
+		                <successCode>0</successCode>
+		            </successCodes>
+			</configuration>
+                    </execution>
+                    <execution>
+			<id>jake-lint</id>
+		        <phase>package</phase>
+		        <goals>
+		            <goal>exec</goal>
+		        </goals>
+			<configuration>
+			    <executable>jake</executable>
+			    <workingDirectory></workingDirectory>            
+			    <arguments>
+		                <argument>lint</argument>
 		            </arguments>
 		            <successCodes>
 		                <successCode>0</successCode>
