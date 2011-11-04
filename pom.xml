@@ -23,7 +23,10 @@
 		            <goal>exec</goal>
 		        </goals>
 			<configuration>
-			    <executable>configure</executable>
+			    <executable>sudo</executable>
+			    <arguments>
+		                <argument>configure</argument>
+		            </arguments>
 			</configuration>
 	            </execution>
                     <execution>
