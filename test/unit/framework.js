@@ -10,14 +10,12 @@ describe("framework", function () {
         };
 
     beforeEach(function () {
-        spyOn(webview, "create").andReturn(emulator_webview);
+        spyOn(webview, "create").andCallFake(function (done) {
+            done();
+        });
         spyOn(webview, "destroy").andReturn(emulator_webview);
         spyOn(webview, "setURL").andReturn(emulator_webview);
         spyOn(console, "log");
-    });
-
-    afterEach(function () {
-        framework.stopWebview();
     });
 
     it("can start a webview instance", function () {
@@ -27,9 +25,8 @@ describe("framework", function () {
 
     it("can start a webview instance with a url", function () {
         var url = 'http://www.google.com';
-        framework.startWebview(url, function () {
-            expect(webview.setURL).toHaveBeenCalledWith(url);
-        });
+        framework.startWebview(url);
+        expect(webview.setURL).toHaveBeenCalledWith(url);
     });
 
     it("can stop a webview instance", function () {
