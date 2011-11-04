@@ -1,10 +1,10 @@
 <project>
-	<groupId>net.rim.BBXwebworks</groupId>
+    <groupId>net.rim.BBXwebworks</groupId>
     <artifactId>framework</artifactId>
-	<version>1.0.0.0</version>
-	<name>${project.artifactId}-${project.version}</name>
-	<packaging>pom</packaging>
-	<modelVersion>4.0.0</modelVersion>
+    <version>1.0.0.0</version>
+    <name>${project.artifactId}-${project.version}</name>
+    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
 
     <build>
         <directory>target</directory>
@@ -16,44 +16,55 @@
 		<artifactId>exec-maven-plugin</artifactId>
 		<version>1.1.1</version>
 		<executions>
-                    <execution>
+		    <execution>
+			<id>configure</id>
 		        <phase>package</phase>
 		        <goals>
 		            <goal>exec</goal>
 		        </goals>
+			<configuration>
+			    <executable>configure</executable>
+			</configuration>
+	            </execution>
+                    <execution>
+			<id>jake-test</id>
+		        <phase>package</phase>
+		        <goals>
+		            <goal>exec</goal>
+		        </goals>
+			<configuration>
+			    <executable>jake</executable>
+			    <workingDirectory></workingDirectory>            
+			    <arguments>
+		                <argument>test</argument>
+		            </arguments>
+		            <successCodes>
+		                <successCode>0</successCode>
+		            </successCodes>
+			</configuration>
 	            </execution>
 		</executions>
-		<configuration>
-		    <executable>jake</executable>
-		    <workingDirectory></workingDirectory>            
-		    <arguments>
-                        <argument>test</argument>						<!--<argument>${project.build.directory}/${project.build.finalName}.jar</argument>-->
-                    </arguments>
-                    <successCodes>
-                        <successCode>0</successCode>
-                    </successCodes>
-		</configuration>
 	    </plugin>
 
             <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2</version>
-				<executions>
-					<execution>
-						<id>assembly</id>
-						<phase>package</phase>
-						<goals>
-						  <goal>single</goal>
-						</goals>
-						<configuration>          
-							<descriptors>
-								<descriptor>dist.xml</descriptor>
-							</descriptors>
-							<appendAssemblyId>false</appendAssemblyId> 
-						</configuration>
-					</execution>
-				</executions>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-assembly-plugin</artifactId>
+		<version>2.2</version>
+		<executions>
+			<execution>
+				<id>assembly</id>
+				<phase>package</phase>
+				<goals>
+				    <goal>single</goal>
+				</goals>
+				<configuration>          
+					<descriptors>
+						<descriptor>dist.xml</descriptor>
+					</descriptors>
+					<appendAssemblyId>false</appendAssemblyId> 
+				</configuration>
+			</execution>
+		</executions>
             </plugin>   
         </plugins>
     </build>
