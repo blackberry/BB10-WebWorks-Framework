@@ -3,21 +3,19 @@ var srcPath = __dirname + '/../../lib/';
 describe("framework", function () {
     var framework = require(srcPath + 'framework'),
         webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
-        emulator_webview;
-
-    beforeEach(function () {
         emulator_webview = {
             create: jasmine.createSpy(),
-            destroy: jasmine.createSpy()
+            destroy: jasmine.createSpy(),
+            setURL: jasmine.createSpy()
         };
-   
-        spyOn(webview, "create").andReturn(emulator_webview.create);
-        spyOn(webview, "destroy").andReturn(emulator_webview.destroy);
-        spyOn(console, "log");
-    });
 
-    afterEach(function () {
-        framework.stopWebview();
+    beforeEach(function () {
+        spyOn(webview, "create").andCallFake(function (done) {
+            done();
+        });
+        spyOn(webview, "destroy").andReturn(emulator_webview);
+        spyOn(webview, "setURL").andReturn(emulator_webview);
+        spyOn(console, "log");
     });
 
     it("can start a webview instance", function () {
@@ -28,7 +26,7 @@ describe("framework", function () {
     it("can start a webview instance with a url", function () {
         var url = 'http://www.google.com';
         framework.startWebview(url);
-        expect(webview.create).toHaveBeenCalledWith(url);
+        expect(webview.setURL).toHaveBeenCalledWith(url);
     });
 
     it("can stop a webview instance", function () {
@@ -36,4 +34,4 @@ describe("framework", function () {
         framework.stopWebview();
         expect(webview.destroy).toHaveBeenCalled();
     });
-});  
+});
