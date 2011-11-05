@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 require("./../lib/server").start(process.argv);
 
+var config = require("./../lib/config");
+require("./../lib/framework").startWebview(config.content);
+
 //var webview = require("./lib/webView");
 
 //webview.setURL("http://foo.com");
