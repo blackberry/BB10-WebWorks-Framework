@@ -21,9 +21,7 @@ function _exec(cmdExpr, done) {
     childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         util.print(stdout);
         util.print(stderr);
-        if (done) {
-            done();
-        }
+        (stdout.match("/[0-9] error/i") ? process.exit : done)(1);
     });
 }
 
