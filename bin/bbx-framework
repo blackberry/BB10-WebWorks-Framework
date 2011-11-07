@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+require("./../lib/server").start(process.argv);
+
+var config = require("./../lib/config");
+require("./../lib/framework").startWebview(config.content);
+
+//var webview = require("./lib/webView");
+
+//webview.setURL("http://foo.com");
+//webview.onRequest = function (request) {
+    //request.allow();
+    //request.deny();
+    //request.respond(200, "this is the response");
+//}

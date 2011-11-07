@@ -1,0 +1,13 @@
+.idea/*
+node_modules/
+build/.idea/*
+solution/.idea/*
+.project
+.settings
+*.DS_Store
+tags
+*.*~
+*.swp
+www/*
+build_output/
+pkg
