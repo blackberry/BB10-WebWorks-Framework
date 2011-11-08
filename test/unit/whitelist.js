@@ -39,7 +39,7 @@ describe("whitelist", function () {
         expect(whitelist.isAccessAllowed("http://www.cnn.com")).toEqual(false);
     });    
     
-     it("can allow access to whitelisted HTTPS URL without *", function () {
+    it("can allow access to whitelisted HTTPS URL without *", function () {
         var hasGlobalAccess = false,
             accessList = [{
                 uri : "https://google.com",
