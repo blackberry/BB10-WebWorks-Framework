@@ -187,7 +187,19 @@ describe("whitelist", function () {
         expect(whitelist.isFeatureAllowed("http://www.google.com"), "blackberry.app").toEqual(false);
     });
     
-    it("can deny access to parents of whitelisted uris", function () {
+    it("can allow folder level access of whitelisted uris", function () {
+        var hasGlobalAccess = false,
+            accessList = [{
+                uri : "http://www.awesome.com/parent/child",
+                allowSubDomain : false,
+                features : null
+            }];
+
+        whitelist.initialize(accessList, hasGlobalAccess);
+        expect(whitelist.isAccessAllowed("http://www.awesome.com/parent/child")).toEqual(true);
+    });
+
+    it("can deny access to parent folders of whitelisted uris", function () {
         var hasGlobalAccess = false,
             accessList = [{
                 uri : "http://www.awesome.com/parent/child",
