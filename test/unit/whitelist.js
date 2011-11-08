@@ -38,6 +38,31 @@ describe("whitelist", function () {
         whitelist.initialize(accessList, hasGlobalAccess);
         expect(whitelist.isAccessAllowed("http://www.cnn.com")).toEqual(false);
     });    
+    
+     it("can allow access to whitelisted HTTPS URL without *", function () {
+        var hasGlobalAccess = false,
+            accessList = [{
+                uri : "https://google.com",
+                allowSubDomain : true,
+                features : null
+            }];
+
+        whitelist.initialize(accessList, hasGlobalAccess);
+        expect(whitelist.isAccessAllowed("https://www.google.com")).toEqual(true);
+        expect(whitelist.isAccessAllowed("https://www.cnn.com")).toEqual(false);
+    });
+    
+    it("can deny access to non-whitelisted HTTPS URL", function () {
+        var hasGlobalAccess = false,
+            accessList = [{
+                uri : "https://google.com",
+                allowSubDomain : true,
+                features : null
+            }];
+
+        whitelist.initialize(accessList, hasGlobalAccess);
+        expect(whitelist.isAccessAllowed("https://www.cnn.com")).toEqual(false);
+    });
 
     it("can allow access to whitelisted feature for whitelisted HTTP URLs", function () {
         var hasGlobalAccess = false,
@@ -371,7 +396,15 @@ describe("whitelist", function () {
         expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(false);        
     });
     
-    it("can allow access to child folder of a whitelisted file URL", function () {
+    it("can allows file URL access when global access is allowed", function () {
+        var hasGlobalAccess = true,
+            accessList = null;
+
+        whitelist.initialize(accessList, hasGlobalAccess);
+        expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);        
+    });
+    
+    it("can allow access to a subfolder of a whitelisted file URL", function () {
         var hasGlobalAccess = false,
             accessList = [{
                 uri : "file://store/home/user/",
@@ -382,4 +415,17 @@ describe("whitelist", function () {
         whitelist.initialize(accessList, hasGlobalAccess);
         expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);        
     });
+    
+    it("can allow access to RTSP protocol urls", function () {
+        var hasGlobalAccess = false,
+            accessList = [{
+                uri : "rtsp://media.com",
+                allowSubDomain : false,
+                features : null
+            }];
+
+        whitelist.initialize(accessList, hasGlobalAccess);
+        expect(whitelist.isAccessAllowed("rtsp://media.com/video.avi")).toEqual(true);        
+    });
+    
 });
