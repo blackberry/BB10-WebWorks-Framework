@@ -17,8 +17,11 @@ var path = require("path");
 
 module.exports = {
     ROOT: path.normalize(__dirname + "/../../"),
-    BUILD: path.normalize(__dirname + "/../"),
-    DEPLOY: path.normalize(__dirname + "/../../target/"),
-    ARCHIVE: "BBXwebworks.zip",
-    DIRS: "bin lib"
+    DEPLOY: path.normalize(__dirname + "/../../target/zip/"),
+    TARGET: path.normalize(__dirname + "/../../target/"),
+    BUILD: path.normalize(__dirname + "/.."),
+    LIB: path.normalize(__dirname + "/../../lib"),
+    BIN: path.normalize(__dirname + "/../../bin"),
+    DEPENDENCIES : path.normalize(__dirname + "/../../dependencies"),
+    NODE_MOD: path.normalize(__dirname + "/../../node_modules"),
 };

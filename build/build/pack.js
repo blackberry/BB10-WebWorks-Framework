@@ -15,16 +15,39 @@
 */
 var childProcess = require("child_process"),
     utils = require("./utils"),
-    _c = require("./conf");
+    util = require("util"),
+    _c = require("./conf"),
+    fs = require("fs");
 
-function _getCmd() {
-    return "zip -r " + _c.DEPLOY + _c.ARCHIVE + " " + _c.DIRS;
-}    
-    
+function _copyCmd(source, destination) { 
+    if (utils.isWindows()) {
+        if (destination === '') {
+            return 'xcopy /y ' + source + ' ' + _c.DEPLOY + destination;
+        } else {
+            return 'cmd /c if not exist ' + _c.DEPLOY + destination + 
+                   ' md ' + _c.DEPLOY + destination + ' && ' + 
+                   'xcopy /y/e ' + source + ' ' + _c.DEPLOY + destination;
+        }
+    } else {
+        return 'cp -r ' + source + ' ' + _c.DEPLOY + destination;
+    }
+}
+ 
+function _copyFiles() {
+    var cmdSep = " && ";
+    return  _copyCmd(_c.LIB, 'lib') + cmdSep +
+            _copyCmd(_c.BIN, 'bin') + cmdSep +
+            _copyCmd(_c.NODE_MOD, 'node_modules') + cmdSep +
+            _copyCmd(_c.DEPENDENCIES, 'dependencies') + cmdSep +
+            _copyCmd(_c.ROOT + 'README.md', '') + cmdSep +
+            _copyCmd(_c.ROOT + 'LICENSE', '');
+            
+}
+ 
 module.exports = function (src, baton) {
     baton.take();
 
-    childProcess.exec(_getCmd(), function (error, stdout, stderr) {
+    childProcess.exec(_copyFiles(), function (error, stdout, stderr) {
         if (error) {
             console.log(stdout);
             console.log(stderr);

@@ -25,7 +25,7 @@ For Mac:
 
 11. Run 'jake test' and check that jake runs and completes
 
-12. Run 'jake' or 'jake build' and check that a zip file named "BBXwebworks.zip" is created under the "target" subfolder
+12. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
 
 
 For Windows:
@@ -38,24 +38,20 @@ For Windows:
 3. Install the latest node.exe for Windows (Currently 0.5.10):
     http://nodejs.org/#download
     
-4. Download Info-ZIP's zip.exe from ftp://ftp.info-zip.org/pub/infozip/win32/zip300xn.zip
+4. git clone https://github.com/blackberry-webworks/BBX-Framework.git
 
-5. Add the folder that contains zip.exe to the PATH environment variable. Type "zip" in command prompt to verify the setting.
-    
-6. git clone https://github.com/blackberry-webworks/BBX-Framework.git
+5. cd BBX-Framework
 
-7. cd BBX-Framework
+6. git checkout next
 
-8. git checkout next
-
-9. Run configure.bat 
+7. Run configure.bat 
     (If you have trouble with npm install express, get it from here: 
         git clone http://git.rim.net/rcruz/BBX-Framework.git )
 
-10. Open git shell, navigate to BBX-Framework and run:
+8. Open git shell, navigate to BBX-Framework and run:
     git submodule update --init
 
-11. Run the unit tests:
+9. Run the unit tests:
     jake test
 
-12. Run 'jake' or 'jake build' and check that a zip file named "BBXwebworks.zip" is created under the "target" subfolder
+10. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
