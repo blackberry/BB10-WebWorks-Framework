@@ -18,10 +18,13 @@ var childProcess = require('child_process'),
     fs = require('fs');
 
 function _exec(cmdExpr, done) {
-    childProcess.exec(cmdExpr, function (error, stdout, stderr) {
+    var proc = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         util.print(stdout);
         util.print(stderr);
-        (stdout.match("/[0-9] error/i") ? process.exit : done)(1);
+    });
+
+    proc.on("exit", function (code) {
+        process.exit(code);
     });
 }
 
