@@ -51,8 +51,8 @@ describe("whitelist", function () {
             });
 
             expect(whitelist.isFeatureAllowed("http://www.google.com"), "blackberry.app").toEqual(false);
-        });    
-    
+        });
+
         it("can allow access to whitelisted HTTP URL", function () {
             var whitelist = new Whitelist({
                 hasMultiAccess : false,
@@ -111,7 +111,7 @@ describe("whitelist", function () {
                 }]
             });
 
-            expect(whitelist.isFeatureAllowed("http://www.google.com", "blackberry.io.file")).toEqual(false);    
+            expect(whitelist.isFeatureAllowed("http://www.google.com", "blackberry.io.file")).toEqual(false);
         });
 
         it("can allow access for query strings using a query string wildcard", function () {
