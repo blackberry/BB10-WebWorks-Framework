@@ -29,24 +29,29 @@ function _copyCmd(source, destination) {
                    'xcopy /y/e ' + source + ' ' + _c.DEPLOY + destination;
         }
     } else {
-        return 'cp -r ' + source + ' ' + _c.DEPLOY + destination;
+        if (destination == '') {
+            return 'cp -r ' + source + ' ' + _c.DEPLOY + destination;
+        } else {
+            return 'mkdir -p ' + _c.DEPLOY + destination + ' && ' +
+                   'cp -r ' + source + ' ' + _c.DEPLOY + destination;
+        } 
     }
 }
  
 function _copyFiles() {
     var cmdSep = " && ";
-    return  _copyCmd(_c.LIB, 'lib') + cmdSep +
-            _copyCmd(_c.BIN, 'bin') + cmdSep +
-            _copyCmd(_c.NODE_MOD, 'node_modules') + cmdSep +
-            _copyCmd(_c.DEPENDENCIES, 'dependencies') + cmdSep +
+    return  _copyCmd(_c.LIB, '') + cmdSep +
+            _copyCmd(_c.BIN, '') + cmdSep +
+            _copyCmd(_c.NODE_MOD, '') + cmdSep +
+            _copyCmd(_c.DEPENDENCIES + '/BBX-Emulator/lib', 'dependencies/BBX-Emulator') + cmdSep +
             _copyCmd(_c.ROOT + 'README.md', '') + cmdSep +
             _copyCmd(_c.ROOT + 'LICENSE', '');
             
 }
- 
+
 module.exports = function (src, baton) {
     baton.take();
-
+    
     childProcess.exec(_copyFiles(), function (error, stdout, stderr) {
         if (error) {
             console.log(stdout);
