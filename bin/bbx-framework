@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 require("./../lib/server").start(process.argv);
-require("./../lib/main").start();
+require("./../lib/framework").start();
