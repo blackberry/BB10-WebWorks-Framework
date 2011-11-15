@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <library>
-    <extension id="box">
-        <entryClass>blackberry.application.Application</entryClass>
+    <extension id="blackberry.box">
+        <entryClass>blackberry.box.Box</entryClass>
     </extension>
     <platforms>
         <platform value="BBX">
@@ -16,7 +16,7 @@
         </configuration>
     </configurations>
     <features>
-        <feature id="box" version="1.0.0" />
+        <feature id="blackberry.box" version="1.0.0" />
     </features>
 </library>
 

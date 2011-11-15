@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <library>
-    <extension id="marker">
-        <entryClass>blackberry.application.Application</entryClass>
+    <extension id="blackberry.marker">
+        <entryClass>blackberry.marker.Marker</entryClass>
     </extension>
     <platforms>
         <platform value="BBX">
@@ -16,7 +16,7 @@
         </configuration>
     </configurations>
     <features>
-        <feature id="marker" version="1.0.0" />
+        <feature id="blackberry.marker" version="1.0.0" />
     </features>
 </library>
 
