@@ -23,5 +23,6 @@ module.exports = {
     LIB: path.normalize(__dirname + "/../../lib"),
     BIN: path.normalize(__dirname + "/../../bin"),
     DEPENDENCIES : path.normalize(__dirname + "/../../dependencies"),
-    NODE_MOD: path.normalize(__dirname + "/../../node_modules"),
+    DEPENDENCIES_EMU_LIB: path.normalize(__dirname + "/../../dependencies/BBX-Emulator/lib"),
+    NODE_MOD: path.normalize(__dirname + "/../../node_modules")
 };

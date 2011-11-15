@@ -17,33 +17,36 @@ var childProcess = require("child_process"),
     utils = require("./utils"),
     util = require("util"),
     _c = require("./conf"),
-    fs = require("fs");
+    fs = require("fs"),
+    path = require("path");
 
 function _copyCmd(source, destination) { 
+    var unix_path = (_c.DEPLOY + destination).replace(/([^\/]*)$/, '');
+
     if (utils.isWindows()) {
         if (destination === '') {
-            return 'xcopy /y ' + source + ' ' + _c.DEPLOY + destination;
+            return 'xcopy /y ' + source + ' ' + path.normalize(_c.DEPLOY + destination); 
         } else {
-            return 'cmd /c if not exist ' + _c.DEPLOY + destination + 
-                   ' md ' + _c.DEPLOY + destination + ' && ' + 
-                   'xcopy /y/e ' + source + ' ' + _c.DEPLOY + destination;
+            return 'cmd /c if not exist ' + path.normalize(_c.DEPLOY + destination) + 
+                   ' md ' + path.normalize(_c.DEPLOY + destination) + ' && ' + 
+                   'xcopy /y/e ' + source + ' ' + path.normalize(_c.DEPLOY + destination);
         }
     } else {
-        if (destination == '') {
-            return 'cp -r ' + source + ' ' + _c.DEPLOY + destination;
+        if (_c.DEPLOY === unix_path) {
+            return 'cp -r ' + source + ' ' + unix_path;
         } else {
-            return 'mkdir -p ' + _c.DEPLOY + destination + ' && ' +
-                   'cp -r ' + source + ' ' + _c.DEPLOY + destination;
+            return 'mkdir -p ' + unix_path + ' && ' +
+                   'cp -r ' + source + ' ' + unix_path;
         } 
     }
 }
  
 function _copyFiles() {
     var cmdSep = " && ";
-    return  _copyCmd(_c.LIB, '') + cmdSep +
-            _copyCmd(_c.BIN, '') + cmdSep +
-            _copyCmd(_c.NODE_MOD, '') + cmdSep +
-            _copyCmd(_c.DEPENDENCIES + '/BBX-Emulator/lib', 'dependencies/BBX-Emulator') + cmdSep +
+    return  _copyCmd(_c.LIB, 'lib') + cmdSep +
+            _copyCmd(_c.BIN, 'bin') + cmdSep +
+            _copyCmd(_c.NODE_MOD, 'node_modules') + cmdSep +
+            _copyCmd(_c.DEPENDENCIES_EMU_LIB, 'dependencies/BBX-Emulator/lib') + cmdSep +
             _copyCmd(_c.ROOT + 'README.md', '') + cmdSep +
             _copyCmd(_c.ROOT + 'LICENSE', '');
             
