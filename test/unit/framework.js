@@ -2,15 +2,22 @@ var srcPath = __dirname + '/../../lib/';
 
 describe("framework", function () {
     var framework = require(srcPath + 'framework'),
-        webview = require('../../dependencies/BBX-Emulator/lib/webview.js');
-
-    beforeEach(function () {
+        webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
+        mock_request = {
+            url: "http://www.dummy.com",
+            allow: jasmine.createSpy(),
+            deny: jasmine.createSpy()
+        };
+        
+    beforeEach(function () {        
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
         spyOn(webview, "destroy");
         spyOn(webview, "setURL");
-        spyOn(webview, "onRequest");
+        spyOn(webview, "onRequest").andCallFake(function (handler) {            
+            handler(mock_request);
+        });        
         spyOn(console, "log");
     });
 
@@ -35,5 +42,11 @@ describe("framework", function () {
         var url = "http://www.google.com";
         framework.startWebview(url);
         expect(webview.onRequest).toHaveBeenCalledWith(jasmine.any(Function));
+    });
+    
+    it("can apply whitelist rules to allow requests", function () {
+        var url = "http://www.google.com";
+        framework.startWebview(url);
+        expect(mock_request.allow).toHaveBeenCalled();
     });
 });
