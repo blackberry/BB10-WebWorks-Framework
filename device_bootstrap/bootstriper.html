@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>WebWorks For BBX Bootstrap</title>
+    <script src="./require.js"></script>
+    <script>require.load(["lib/config/default.js",
+                          "lib/config/user.js",
+                          "lib/utils.js",
+                          "lib/config.js",
+                          "lib/webviewShim.js",
+                          "lib/framework.js"
+                        ]);</script>
+    <script>
+        function start() {
+            require('lib/framework').start();
+        }
+    </script>
+  </head>
+  <body onload="start();">
+  Hello Bootstripter!
+  </body>
+</html>
