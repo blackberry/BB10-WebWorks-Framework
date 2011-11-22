@@ -3,18 +3,23 @@ var srcPath = __dirname + '/../../lib/';
 describe("framework", function () {
     var framework = require(srcPath + 'framework'),
         webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
-        emulator_webview = {
-            create: jasmine.createSpy(),
-            destroy: jasmine.createSpy(),
-            setURL: jasmine.createSpy()
+        Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
+        mock_request = {
+            url: "http://www.dummy.com",
+            allow: jasmine.createSpy(),
+            deny: jasmine.createSpy()
         };
-
-    beforeEach(function () {
+        
+    beforeEach(function () {        
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
-        spyOn(webview, "destroy").andReturn(emulator_webview);
-        spyOn(webview, "setURL").andReturn(emulator_webview);
+        spyOn(webview, "destroy");
+        spyOn(webview, "setURL");
+        spyOn(webview, "onRequest").andCallFake(function (handler) {            
+            handler(mock_request);
+        });
+                
         spyOn(console, "log");
     });
 
@@ -24,7 +29,7 @@ describe("framework", function () {
     });
 
     it("can start a webview instance with a url", function () {
-        var url = 'http://www.google.com';
+        var url = "http://www.google.com";
         framework.startWebview(url);
         expect(webview.setURL).toHaveBeenCalledWith(url);
     });
@@ -33,5 +38,32 @@ describe("framework", function () {
         framework.startWebview();
         framework.stopWebview();
         expect(webview.destroy).toHaveBeenCalled();
+    });
+
+    it("can set the onRequest handler of the webview", function () {
+        var url = "http://www.google.com";
+        framework.startWebview(url);
+        expect(webview.onRequest).toHaveBeenCalledWith(jasmine.any(Function));
+    });
+    
+    it("can access the whitelist", function () {    
+        spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(true);
+        var url = "http://www.google.com";
+        framework.startWebview(url);
+        expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();        
+    });
+    
+    it("can apply whitelist rules and allow valid urls", function () {    
+        spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(true);
+        var url = "http://www.google.com";
+        framework.startWebview(url);
+        expect(mock_request.allow).toHaveBeenCalled();        
+    });
+    
+    it("can apply whitelist rules and deny blocked urls", function () {    
+        spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        var url = "http://www.google.com";
+        framework.startWebview(url);
+        expect(mock_request.deny).toHaveBeenCalled();        
     });
 });
