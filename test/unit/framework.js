@@ -1,15 +1,14 @@
 var srcPath = __dirname + '/../../lib/';
+var framework = require(srcPath + 'framework'),
+    webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
+    Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
+    mock_request = {
+        url: "http://www.dummy.com",
+        allow: jasmine.createSpy(),
+        deny: jasmine.createSpy()
+    };
 
 describe("framework", function () {
-    var framework = require(srcPath + 'framework'),
-        webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
-        Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
-        mock_request = {
-            url: "http://www.dummy.com",
-            allow: jasmine.createSpy(),
-            deny: jasmine.createSpy()
-        };
-        
     beforeEach(function () {        
         spyOn(webview, "create").andCallFake(function (done) {
             done();
