@@ -50,7 +50,7 @@ describe("whitelist", function () {
             });
 
             expect(whitelist.isFeatureAllowed("http://www.google.com"), "blackberry.app").toEqual(false);
-            expect(whitelist.getFeaturesForUrl("http://www.google.com")).toBeNull();
+            expect(whitelist.getFeaturesForUrl("http://www.google.com")).toEqual([]);
         });
 
         it("can allow access to whitelisted HTTP URL", function () {
@@ -115,30 +115,31 @@ describe("whitelist", function () {
         });
 
         it("can get all whitelisted features for url", function () {
-            var testFeatures = [{
-                    id : "blackberry.app",
-                    required : true,
-                    version : "1.0.0"
-                }, {
-                    id : "blackberry.media.camera",
-                    required : true,
-                    version : "1.0.0"
-                }, {
-                    id : "blackberry.io.dir",
-                    required : true,
-                    version : "1.0.0"
-                }],
-                whitelist = new Whitelist({
+            var whitelist = new Whitelist({
                     hasMultiAccess : false,
                     accessList : [{
                         uri : "http://google.com",
                         allowSubDomain : false,
-                        features : testFeatures
+                        features : [{
+                            id : "blackberry.app",
+                            required : true,
+                            version : "1.0.0"
+                        }, {
+                            id : "blackberry.media.camera",
+                            required : true,
+                            version : "1.0.0"
+                        }, {
+                            id : "blackberry.io.dir",
+                            required : true,
+                            version : "1.0.0"
+                        }]
                     }]
                 });
 
-            expect(whitelist.getFeaturesForUrl("http://google.com")).toEqual(testFeatures);
-            expect(whitelist.getFeaturesForUrl("http://www.wikipedia.org")).toBeNull();
+            expect(whitelist.getFeaturesForUrl("http://google.com")).toContain("blackberry.app");
+            expect(whitelist.getFeaturesForUrl("http://google.com")).toContain("blackberry.media.camera");
+            expect(whitelist.getFeaturesForUrl("http://google.com")).toContain("blackberry.io.dir");
+            expect(whitelist.getFeaturesForUrl("http://www.wikipedia.org")).toEqual([]);
         });
 
         it("can allow access for query strings using a query string wildcard", function () {
@@ -232,8 +233,8 @@ describe("whitelist", function () {
                     }]
                 });
 
-            expect(whitelist.getFeaturesForUrl("http://google.com/ninjas")).toEqual(list1);
-            expect(whitelist.getFeaturesForUrl("http://google.com/pirates")).toEqual(list2);
+            expect(whitelist.getFeaturesForUrl("http://google.com/ninjas")).toEqual(["blackberry.app"]);
+            expect(whitelist.getFeaturesForUrl("http://google.com/pirates")).toEqual(["blackberry.media.camera"]);
         });
 
         it("can allow API permissions at a folder level", function () {
@@ -316,27 +317,28 @@ describe("whitelist", function () {
 
         describe("when access uris have subdomains", function () {
             it("can get whitelisted features for subdomains", function () {
-                var list = [{
-                        id : "blackberry.system",
-                        required : true,
-                        version : "1.0.0.0"
-                    }, {
-                        id : "blackberry.media.microphone",
-                        required : true,
-                        version : "1.0.0.0"
-                    }],
-                    whitelist = new Whitelist({
+                var whitelist = new Whitelist({
                         hasMultiAccess : false,
                         accessList : [{
                             uri : "http://google.com",
                             allowSubDomain : true,
-                            features : list
+                            features : [{
+                                id : "blackberry.system",
+                                required : true,
+                                version : "1.0.0.0"
+                            }, {
+                                id : "blackberry.media.microphone",
+                                required : true,
+                                version : "1.0.0.0"
+                            }]
                         }]
                     });
 
-                expect(whitelist.getFeaturesForUrl("http://code.google.com")).toEqual(list);
-                expect(whitelist.getFeaturesForUrl("http://translate.google.com/lang=en")).toEqual(list);
-                expect(whitelist.getFeaturesForUrl("http://blah.goooooogle.com")).toBeNull();
+                expect(whitelist.getFeaturesForUrl("http://code.google.com")).toContain("blackberry.media.microphone");
+                expect(whitelist.getFeaturesForUrl("http://code.google.com")).toContain("blackberry.system");
+                expect(whitelist.getFeaturesForUrl("http://translate.google.com/lang=en")).toContain("blackberry.media.microphone");
+                expect(whitelist.getFeaturesForUrl("http://translate.google.com/lang=en")).toContain("blackberry.system");
+                expect(whitelist.getFeaturesForUrl("http://blah.goooooogle.com")).toEqual([]);
             });
 
             it("can allow access to whitelisted features for the subdomains", function () {
@@ -427,32 +429,31 @@ describe("whitelist", function () {
             });
 
             it("can get whitelisted features for a more specific subdomain", function () {
-                var list1 = [{
-                        id : "blackberry.app",
-                        required : true,
-                        version : "1.0.0"
-                    }],
-                    list2 = [{
-                        id : "blackberry.media.camera",
-                        required : true,
-                        version : "1.0.0"
-                    }],
-                    whitelist = new Whitelist({
+                var whitelist = new Whitelist({
                         hasMultiAccess : false,
                         accessList : [{
                             uri : "http://google.com",
                             allowSubDomain : false,
-                            features : list1
+                            features : [{
+                                id : "blackberry.app",
+                                required : true,
+                                version : "1.0.0"
+                            }]
                         }, {
                             uri : "http://sub.google.com",
                             allowSubDomain : false,
-                            features : list2
+                            features : [{
+                                id : "blackberry.media.camera",
+                                required : true,
+                                version : "1.0.0"
+                            }]
                         }]
                     });
 
-                expect(whitelist.getFeaturesForUrl("http://google.com")).toEqual(list1);
-                expect(whitelist.getFeaturesForUrl("http://sub.google.com")).toEqual(list2);
-                expect(whitelist.getFeaturesForUrl("http://code.google.com")).toBeNull();
+                expect(whitelist.getFeaturesForUrl("http://google.com")).toContain("blackberry.app");
+                expect(whitelist.getFeaturesForUrl("http://sub.google.com")).toContain("blackberry.media.camera");
+                expect(whitelist.getFeaturesForUrl("http://sub.google.com")).not.toContain("blckberry.app");
+                expect(whitelist.getFeaturesForUrl("http://code.google.com")).toEqual([]);
             });
 
             it("can allow specific subdomain rules to override more general domain rules when subdomains are disallowed", function () {
