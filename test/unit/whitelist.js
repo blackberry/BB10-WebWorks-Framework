@@ -50,6 +50,14 @@ describe("whitelist", function () {
             });
 
             expect(whitelist.isFeatureAllowed("http://www.google.com"), "blackberry.app").toEqual(false);
+        });
+
+        it("can return empty feature list when nothing is whitelisted", function () {
+            var whitelist = new Whitelist({
+                hasMultiAccess : false,
+                accessList : null
+            });
+
             expect(whitelist.getFeaturesForUrl("http://www.google.com")).toEqual([]);
         });
 
@@ -239,25 +247,25 @@ describe("whitelist", function () {
 
         it("can allow API permissions at a folder level", function () {
             var whitelist = new Whitelist({
-                    hasMultiAccess : false,
-                    accessList : [{
-                        uri : "http://google.com/ninjas",
-                        allowSubDomain : true,
-                        features : [{
-                            id : "blackberry.app",
-                            required : true,
-                            version : "1.0.0"
-                        }]
-                    }, {
-                        uri : "http://google.com/pirates",
-                        allowSubDomain : true,
-                        features : [{
-                            id : "blackberry.media.camera",
-                            required : true,
-                            version : "1.0.0"
-                        }]
+                hasMultiAccess : false,
+                accessList : [{
+                    uri : "http://google.com/ninjas",
+                    allowSubDomain : true,
+                    features : [{
+                        id : "blackberry.app",
+                        required : true,
+                        version : "1.0.0"
                     }]
-                });
+                }, {
+                    uri : "http://google.com/pirates",
+                    allowSubDomain : true,
+                    features : [{
+                        id : "blackberry.media.camera",
+                        required : true,
+                        version : "1.0.0"
+                    }]
+                }]
+            });
 
             expect(whitelist.isFeatureAllowed("http://google.com/ninjas", "blackberry.app")).toEqual(true);
             expect(whitelist.isFeatureAllowed("http://google.com/pirates", "blackberry.media.camera")).toEqual(true);
@@ -318,21 +326,21 @@ describe("whitelist", function () {
         describe("when access uris have subdomains", function () {
             it("can get whitelisted features for subdomains", function () {
                 var whitelist = new Whitelist({
-                        hasMultiAccess : false,
-                        accessList : [{
-                            uri : "http://google.com",
-                            allowSubDomain : true,
-                            features : [{
-                                id : "blackberry.system",
-                                required : true,
-                                version : "1.0.0.0"
-                            }, {
-                                id : "blackberry.media.microphone",
-                                required : true,
-                                version : "1.0.0.0"
-                            }]
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "http://google.com",
+                        allowSubDomain : true,
+                        features : [{
+                            id : "blackberry.system",
+                            required : true,
+                            version : "1.0.0.0"
+                        }, {
+                            id : "blackberry.media.microphone",
+                            required : true,
+                            version : "1.0.0.0"
                         }]
-                    });
+                    }]
+                });
 
                 expect(whitelist.getFeaturesForUrl("http://code.google.com")).toContain("blackberry.media.microphone");
                 expect(whitelist.getFeaturesForUrl("http://code.google.com")).toContain("blackberry.system");
@@ -430,25 +438,25 @@ describe("whitelist", function () {
 
             it("can get whitelisted features for a more specific subdomain", function () {
                 var whitelist = new Whitelist({
-                        hasMultiAccess : false,
-                        accessList : [{
-                            uri : "http://google.com",
-                            allowSubDomain : false,
-                            features : [{
-                                id : "blackberry.app",
-                                required : true,
-                                version : "1.0.0"
-                            }]
-                        }, {
-                            uri : "http://sub.google.com",
-                            allowSubDomain : false,
-                            features : [{
-                                id : "blackberry.media.camera",
-                                required : true,
-                                version : "1.0.0"
-                            }]
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "http://google.com",
+                        allowSubDomain : false,
+                        features : [{
+                            id : "blackberry.app",
+                            required : true,
+                            version : "1.0.0"
                         }]
-                    });
+                    }, {
+                        uri : "http://sub.google.com",
+                        allowSubDomain : false,
+                        features : [{
+                            id : "blackberry.media.camera",
+                            required : true,
+                            version : "1.0.0"
+                        }]
+                    }]
+                });
 
                 expect(whitelist.getFeaturesForUrl("http://google.com")).toContain("blackberry.app");
                 expect(whitelist.getFeaturesForUrl("http://sub.google.com")).toContain("blackberry.media.camera");
