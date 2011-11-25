@@ -1,6 +1,8 @@
 describe("server", function () {
     var express = require('express'),
         server = require('../../lib/server'),
+//        Whitelist = require('../../lib/policy/whitelist').Whitelist,
+//        applicationAPIServer = require("../../ext/blackberry.app/server"),
         app = {
             configure: jasmine.createSpy(),
             post: jasmine.createSpy(),
@@ -113,5 +115,79 @@ describe("server", function () {
                 msg: "omg"
             });
         });
+    });
+    
+    describe("when handling feature requests", function () {
+        var req, res;
+
+        beforeEach(function () {
+            req = {
+                params: {
+                    featureId: "blackberry.app",
+                    action: "author"
+                },
+                headers: {
+                    host: ""
+                },
+                url: "",
+                body: "" 
+            };
+            res = {
+                send: jasmine.createSpy()
+            };
+        });
+/*
+        it("checks if the feature is white listed", function () {
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            server.handleFeature(req, res);
+            expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalled();
+        });
+        
+        it("returns 403 if the feature is not white listed", function () {
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
+            server.handleFeature(req, res);
+            expect(res.send).toHaveBeenCalledWith(403);
+        });
+        
+        it("calls the action method on the feature", function () {
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(applicationAPIServer, "author");
+            server.handleFeature(req, res);            
+            expect(applicationAPIServer.author).toHaveBeenCalled();
+        });
+        
+        it("returns the result and code 1 when success callback called", function () {
+            var expectedResult = {"author": "Yogi bear"};
+            
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
+                success(expectedResult);
+            });
+            
+            server.handleFeature(req, res);
+            
+            expect(res.send).toHaveBeenCalledWith({
+                code: 1,
+                data: expectedResult
+            });
+        });
+        
+        it("returns the result and code -1 when fail callback called", function () {
+            var expectedResult = "omg";
+            
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
+                fail(expectedResult);
+            });
+            
+            server.handleFeature(req, res);
+            
+            expect(res.send).toHaveBeenCalledWith({
+                code: -1,
+                data: null,
+                msg: expectedResult
+            });
+        });
+*/      
     });
 });  
