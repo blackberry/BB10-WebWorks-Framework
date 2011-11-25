@@ -1,8 +1,8 @@
 describe("server", function () {
     var express = require('express'),
         server = require('../../lib/server'),
-        Whitelist = require('../../lib/policy/whitelist').Whitelist,
-        applicationAPIServer = require("../../ext/blackberry.app/server"),
+//        Whitelist = require('../../lib/policy/whitelist').Whitelist,
+//        applicationAPIServer = require("../../ext/blackberry.app/server"),
         app = {
             configure: jasmine.createSpy(),
             post: jasmine.createSpy(),
