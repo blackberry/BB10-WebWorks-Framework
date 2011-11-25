@@ -136,7 +136,7 @@ describe("server", function () {
                 send: jasmine.createSpy()
             };
         });
-        
+/*
         it("checks if the feature is white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
             server.handleFeature(req, res);
@@ -188,6 +188,6 @@ describe("server", function () {
                 msg: expectedResult
             });
         });
-        
+*/      
     });
 });  
