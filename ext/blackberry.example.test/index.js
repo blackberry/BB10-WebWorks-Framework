@@ -3,7 +3,7 @@ module.exports = {
         success("hello world!");
     },
 
-    fail: function (success, fail) {
+    omg: function (success, fail) {
         fail("too bad");
     }
 };
