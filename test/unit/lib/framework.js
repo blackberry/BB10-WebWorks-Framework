@@ -1,6 +1,6 @@
-var srcPath = __dirname + '/../../lib/';
+var srcPath = __dirname + '/../../../lib/';
 var framework = require(srcPath + 'framework'),
-    webview = require('../../dependencies/BBX-Emulator/lib/webview.js'),
+    webview = require('../../../dependencies/BBX-Emulator/lib/webview.js'),
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mock_request = {
         url: "http://www.dummy.com",

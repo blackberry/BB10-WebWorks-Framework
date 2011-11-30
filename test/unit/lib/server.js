@@ -1,17 +1,8 @@
 describe("server", function () {
-    var express = require('express'),
-        server = require('../../lib/server'),
-//        Whitelist = require('../../lib/policy/whitelist').Whitelist,
-//        applicationAPIServer = require("../../ext/blackberry.app/server"),
-        app = {
-            configure: jasmine.createSpy(),
-            post: jasmine.createSpy(),
-            use: jasmine.createSpy(),
-            listen: jasmine.createSpy()
-        };
+    var server = require('../../../lib/server'),
+        plugin = require("../../../lib/plugins/extensions");
 
     beforeEach(function () {
-        spyOn(express, "createServer").andReturn(app);
         spyOn(console, "log");
     });
 
@@ -48,8 +39,6 @@ describe("server", function () {
         });
         
         it("calls the action method on the plugin", function () {
-            var plugin = require("../../lib/plugins/extensions");
-
             spyOn(plugin, "get");
 
             req.params.service = "extensions";
@@ -60,8 +49,6 @@ describe("server", function () {
         });
 
         it("returns the result and code 1 when success callback called", function () {
-            var plugin = require("../../lib/plugins/extensions");
-
             spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
                 succ(["MyFeatureId"]);
             });
@@ -77,8 +64,6 @@ describe("server", function () {
         });
 
         it("returns the result and code -1 when fail callback called", function () {
-            var plugin = require("../../lib/plugins/extensions");
-
             spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
                 fail("ErrorMessage", -1);
             });
