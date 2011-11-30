@@ -17,8 +17,8 @@ describe("bridge", function () {
             res = {
                 send: jasmine.createSpy()
             };
-            succ = function(data){};
-            fail = function(data){};
+            succ = jasmine.createSpy();
+            fail = jasmine.createSpy();
             args = {};
         });
         
@@ -34,15 +34,15 @@ describe("bridge", function () {
             
             req.params.ext = "IDoNotExist";
 
-            bridge.exec(req, res, succ, fail, args);
-            expect(res.send).toHaveBeenCalledWith(404, jasmine.any(String));
+            bridge.exec(req, succ, fail, args);
+            expect(fail).toHaveBeenCalledWith(404, jasmine.any(String));
         });
         
         it("returns 403 if the feature is not white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
 
-            bridge.exec(req, res, succ, fail, args);
-            expect(res.send).toHaveBeenCalledWith(403, jasmine.any(String));
+            bridge.exec(req, succ, fail, args);
+            expect(fail).toHaveBeenCalledWith(403, jasmine.any(String));
         });
         
         it("calls the action method of the feature", function () {
@@ -52,7 +52,7 @@ describe("bridge", function () {
             req.params.ext = "blackberry.example.test";
             req.params.method = "helloworld"
 
-            bridge.exec(req, res, succ, fail, args);
+            bridge.exec(req, succ, fail, args);
             
             expect(testExtension.helloworld).toHaveBeenCalledWith(succ, fail, args);
         });
