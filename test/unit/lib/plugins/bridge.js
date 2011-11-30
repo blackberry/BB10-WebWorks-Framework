@@ -8,7 +8,7 @@ describe("bridge", function () {
     });
 
     describe("when handling requests", function () {
-        var req, res, succ, fail;
+        var req, res, succ, fail, args;
 
         beforeEach(function () {
             req = {
@@ -50,7 +50,7 @@ describe("bridge", function () {
             spyOn(testExtension, "helloworld");
             
             req.params.ext = "blackberry.example.test";
-            req.params.method = "helloworld"
+            req.params.method = "helloworld";
 
             bridge.exec(req, succ, fail, args);
             

@@ -28,7 +28,7 @@ describe("extensions", function () {
             spyOn(Whitelist.prototype, "getFeaturesForUrl").andReturn(["MyFeatureId"]);
             
             req.params.ext = "blackberry.example.test";
-            req.params.method = "helloworld"
+            req.params.method = "helloworld";
 
             extensions.get(req, succ, fail);
             expect(succ).toHaveBeenCalledWith(["MyFeatureId"]);
