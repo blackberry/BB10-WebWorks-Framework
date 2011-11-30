@@ -1,9 +1,7 @@
+var _successReturnString = "hello world!";
+
 module.exports = {
     helloworld: function (success) {
-        success("hello world!");
-    },
-
-    omg: function (success, fail) {
-        fail("too bad");
+        success(_successReturnString);
     }
 };

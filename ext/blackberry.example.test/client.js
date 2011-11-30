@@ -1,21 +1,10 @@
 module.exports = {
     helloworld: function () {
-        var result;
-
-        webworks.exec(function (data) {
-            result = data;
-        }, 
-        null, 
-        "backberry.example.test", 
-        "helloworld", 
-        {
-            sync: true
-        });
-
-        return result;
-    },
-
-    omg: function (success, fail) {
-        webworks.exec(success, fail, "blackberry.example.test", "omg");
+        var success = function (data, response) {
+            console.log('success callback: ' + data);
+        },
+        error = function (data, response) {
+        };
+        return window.webworks.exec(success, error, "blackberry.example.test", "helloworld");
     }
 };
