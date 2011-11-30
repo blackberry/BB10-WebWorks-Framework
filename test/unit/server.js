@@ -62,7 +62,7 @@ describe("server", function () {
         it("returns the result and code 1 when success callback called", function () {
             var plugin = require("../../lib/plugins/extensions");
 
-            spyOn(plugin, "get").andCallFake(function (request, response, succ, fail, body) {
+            spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
                 succ(["MyFeatureId"]);
             });
 
@@ -79,7 +79,7 @@ describe("server", function () {
         it("returns the result and code -1 when fail callback called", function () {
             var plugin = require("../../lib/plugins/extensions");
 
-            spyOn(plugin, "get").andCallFake(function (request, response, succ, fail, body) {
+            spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
                 fail("ErrorMessage", -1);
             });
 
