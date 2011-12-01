@@ -7,6 +7,6 @@ var success = function (data, response) {
 
 module.exports = {
     model: function () {        
-        return window.webworks.exec(success, error, "blackberry.system", "model");
+        webworks.exec(success, error, "blackberry.system", "model");
     }
 };

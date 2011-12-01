@@ -7,9 +7,9 @@ var success = function (data, response) {
 
 module.exports = {
     name: function () {        
-        return window.webworks.exec(success, error, "blackberry.app", "name");
+        webworks.exec(success, error, "blackberry.app", "name");
     },
     version: function () {
-        return window.webworks.exec(success, error, "blackberry.app", "version");
+        webworks.exec(success, error, "blackberry.app", "version");
     }
 };

@@ -7,6 +7,6 @@ var success = function (data, response) {
 
 module.exports = {
     onExit: function () {        
-        return window.webworks.exec(success, error, "blackberry.app.event", "onExit");
+        webworks.exec(success, error, "blackberry.app.event", "onExit");
     }    
 };

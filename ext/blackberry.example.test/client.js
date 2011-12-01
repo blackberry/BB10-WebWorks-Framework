@@ -5,6 +5,6 @@ module.exports = {
         },
         error = function (data, response) {
         };
-        return window.webworks.exec(success, error, "blackberry.example.test", "helloworld");
+        webworks.exec(success, error, "blackberry.example.test", "helloworld");
     }
 };
