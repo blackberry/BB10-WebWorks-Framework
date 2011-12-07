@@ -56,6 +56,8 @@ function _copyFiles() {
 module.exports = function (src, baton) {
     baton.take();
     
+    require('./bundler').bundle();
+    
     childProcess.exec(_copyFiles(), function (error, stdout, stderr) {
         if (error) {
             console.log(stdout);

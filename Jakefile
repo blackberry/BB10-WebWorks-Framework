@@ -20,6 +20,11 @@ task('default', [], require('./build/build'));
 desc("package framework - jake build");
 task('build', [], require('./build/build'));
 
+desc("bundle webworks.js");
+task('bundle', [], function () {
+    require('./build/build/bundler').bundle();
+});
+
 desc("start server");
 task('start', [], function () {
     require('./lib/server').start(process.argv);
