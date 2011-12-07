@@ -1,9 +1,9 @@
 <html>
     <head>
-        <script type="text/javascript" src="require.js"></script>
-        <script type="text/javascript" src="webworks.js"></script>
+        <script type="text/javascript" src="local://require.js"></script>
+        <script type="text/javascript" src="local://webworks.js"></script>
         <script type="text/javascript">
-            var callbackIds = [],
+            var cb,
                 intervalId,
                 success = function (data, response) {
                     console.log("success callback: " + data);
@@ -11,50 +11,29 @@
                 };
 
             function startListen() {
-                var id = blackberry.example.event.startListen(createCallback());
-                console.log("start listen, id=" + id);
-                callbackIds.push(id);
+				cb = function (data) {
+					console.log("Yay! Data=" + data);
+				};
+                bb.events.onBatteryLevelChanged(cb);
             }
 
             function stopListen() {
-                var id;
-                callbackIds.reduce(function (prev, current) {
-                    if (prev === undefined) {
-                        id = current;
-                    }
-
-                    return id;
-                }, id);
-
-                if (id !== undefined) {
-                    delete callbackIds[id];
-                    console.log("stop listen, id=" + id);
-                    blackberry.example.event.stopListen(id);
-                } else {
-                    console.log("No callbacks registered for event");
-                }
+				bb.events.onBatteryLevelChanged(null);
             }
 
             function startEvent() {
-                webworks.exec(success, null, "blackberry.example.event", "startEvent", null, false);
+                webworks.exec(success, null, "bb.fakeevents", "start", null, false);
             }
 
             function stopEvent() {
-                webworks.exec(success, null, "blackberry.example.event", "stopEvent", { "intervalId": intervalId }, false);
-            }
-
-            function createCallback() {
-                var callbackId = callbackIds.length;
-                return function (data) {
-                    console.log("Callback " + callbackId + " invoked! Data=" + data);
-                };
-            }
+                webworks.exec(success, null, "bb.fakeevents", "stop", { "intervalId": intervalId }, false);
+            }		
         </script>
     </head>
     <body>
-        <div>This is a testbed for events!</div>
-        <input type="button" onclick="startEvent()" value="Start Event"><br>
-        <input type="button" onclick="stopEvent()" value="Stop Event"><br>
+        <div>This is a testbed!</div>
+        <input type="button" onclick="startEvent()" value="Start Fake Event"><br>
+        <input type="button" onclick="stopEvent()" value="Stop Fake Event"><br>
         <input type="button" onclick="startListen()" value="Start Listen"><br>
         <input type="button" onclick="stopListen()" value="Stop Listen"><br>
     </body>
