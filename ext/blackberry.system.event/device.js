@@ -24,4 +24,4 @@ module.exports = {
             _events["QNX_BATTERY_CHANGED_STUFF"](eventData);
         }
     }
-}
+};

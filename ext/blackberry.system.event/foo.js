@@ -23,4 +23,4 @@ module.exports = {
             _events["BAR"](eventData);
         }
     }
-}
+};
