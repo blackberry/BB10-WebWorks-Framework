@@ -9,7 +9,7 @@ var _event = require("../../lib/event"),
         }
     };
 
-module.exports = {		
+module.exports = {
     on: function(success, fail, args) {
         // TODO string argument surrounded by %22, to be fixed
         var name = args.eventName.replace(/[^a-zA-Z]+/g, ""),
@@ -17,17 +17,17 @@ module.exports = {
 
         if (action) {
             action.context.addEventListener(action.event, action.trigger || trigger);
-			_event.on(action);
+            _event.on(action);
         }
     },
 
     remove: function(succes, fail, args) {
         var name = args.eventName.replace(/[^a-zA-Z]+/g, ""),
-			action = _actionMap[name];
+            action = _actionMap[name];
 
         if (action) {
             action.context.removeEventListener(action.event, action.trigger || _trigger);
-			_event.remove(action);
+            _event.remove(action);
         }
     }
 };
