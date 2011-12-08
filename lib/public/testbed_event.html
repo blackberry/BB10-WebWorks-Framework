@@ -11,14 +11,14 @@
                 };
 
             function startListen() {
-				cb = function (data) {
-					console.log("Yay! Data=" + data);
-				};
-                bb.events.onBatteryLevelChanged(cb);
+                cb = function (data) {
+                    console.log("Yay! Data=" + data);
+                };
+                blackberry.system.event.onBatteryLevelChanged(cb);
             }
 
             function stopListen() {
-				bb.events.onBatteryLevelChanged(null);
+                blackberry.system.event.onBatteryLevelChanged(null);
             }
 
             function startEvent() {
@@ -27,7 +27,7 @@
 
             function stopEvent() {
                 webworks.exec(success, null, "bb.fakeevents", "stop", { "intervalId": intervalId }, false);
-            }		
+            }
         </script>
     </head>
     <body>
