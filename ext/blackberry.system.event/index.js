@@ -6,6 +6,13 @@ var _event = require("../../lib/event"),
             trigger: function (args) {
                 _event.trigger("batteryLevelChanged", args);
             }
+        },
+        foo : {
+            context: require("./foo"),
+            event: "BAR",
+            trigger: function (args) {
+                _event.trigger("foo", args);
+            }
         }
     };
 
@@ -31,3 +38,4 @@ module.exports = {
         }
     }
 };
+
