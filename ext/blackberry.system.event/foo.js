@@ -7,7 +7,7 @@ module.exports = {
         }
     },
 
-    removeEventListener: function (name, trigger) {
+    removeEventListener: function (name) {
         if (_events.hasOwnProperty(name)) {
             delete _events[name]; // stop listening
         }

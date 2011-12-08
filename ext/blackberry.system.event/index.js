@@ -24,15 +24,21 @@ module.exports = {
 
         if (action) {
             _event.on(action);
+            success && success(name + ": handler added");
+        } else {
+            fail && fail(name + ": no action found");
         }
     },
 
-    remove: function (succes, fail, args) {
+    remove: function (success, fail, args) {
         var name = args.eventName.replace(/[^a-zA-Z]+/g, ""),
             action = _actionMap[name];
 
         if (action) {
             _event.remove(action);
+            success && success(name + ": handler removed");
+        } else {
+            fail && fail(name + ": no action found");
         }
     }
 };
