@@ -1,6 +1,14 @@
+function requireLocal(id) {
+    if (require.resolve) { // node
+        return require(id);
+    } else { // browser
+        return window.require(id.replace(/\.\//, ""));
+    }
+}
+
 var _cb,
     _fooHandlers = [],
-    windowObj = require("./window"),
+    windowObj = requireLocal("./window"),
     ID = "blackberry.system.event";
 
 module.exports = {
