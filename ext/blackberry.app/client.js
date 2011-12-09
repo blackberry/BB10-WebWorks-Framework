@@ -1,15 +1,25 @@
-var success = function (data, response) {
-        console.log('success callback: ' + data);
-    },
-    error = function (data, response) {
-        console.log('failure callback: ' + data);
-    };
+var _self = {};
 
-module.exports = {
-    name: function () {        
-        webworks.exec(success, error, "blackberry.app", "name");
-    },
-    version: function () {
-        webworks.exec(success, error, "blackberry.app", "version");
-    }
-};
+function performExec(featureId, property) {
+    var result;
+    webworks.exec(function (data, response) {
+        result = data;
+    }, function (data, response) {
+        result = data;
+    }, featureId, property, null, true);
+    return result;
+}
+
+_self.__defineGetter__("name", function () {    
+    return performExec("blackberry.app", "name");
+});
+
+_self.__defineGetter__("author", function () {
+    return performExec("blackberry.app", "author");
+});
+
+_self.__defineGetter__("version", function () {
+    return performExec("blackberry.app", "version");
+});
+
+module.exports = _self;

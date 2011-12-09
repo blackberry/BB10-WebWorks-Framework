@@ -26,7 +26,7 @@ module.exports = {
 
         //include modules
         output += include(files, function (file, path) {
-            return "require.define('" + path.replace(/lib\/public/, "").replace(/\.js$/, "") +
+            return "require.define('" + path.replace(/lib\/public\//, "").replace(/\.js$/, "") +
                    "', function (require, module, exports) {\n" + file + "});\n";
         });
 

@@ -1,12 +1,17 @@
-var success = function (data, response) {
-        console.log('success callback: ' + data);
-    },
-    error = function (data, response) {
-        console.log('failure callback: ' + data);
-    };
+var _self = {};
 
-module.exports = {
-    onExit: function () {        
-        webworks.exec(success, error, "blackberry.app.event", "onExit");
-    }    
-};
+function performExec(featureId, property) {
+    var result;
+    webworks.exec(function (data, response) {
+        result = data;
+    }, function (data, response) {
+        result = data;
+    }, featureId, property, null, true);
+    return result;
+}
+
+_self.__defineGetter__("model", function () {    
+    return performExec("blackberry.app.event", "onExit");
+});
+
+module.exports = _self;
