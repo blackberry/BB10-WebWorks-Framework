@@ -1,13 +1,16 @@
 var _cb,
     _fooHandlers = [],
+    windowObj = require("./window"),
     ID = "blackberry.system.event";
 
 module.exports = {
     onBatteryLevelChanged: function (cb) {
+        var window = windowObj.window();
+
         if (cb) {
-            webworks.event.on(ID, "batteryLevelChanged", cb);
+            window.webworks.event.on(ID, "batteryLevelChanged", cb);
         } else {
-            webworks.event.remove(ID, "batteryLevelChanged", _cb);
+            window.webworks.event.remove(ID, "batteryLevelChanged", _cb);
         }
 
         _cb = cb;
@@ -15,12 +18,15 @@ module.exports = {
 
     // take multiple callbacks
     foo: function (cb, remove) {
+        var window = windowObj.window(),
+            found;
+
         if (cb) {
             if (!remove) {
                 _fooHandlers.push(cb);
-                webworks.event.on(ID, "foo", cb);
+                window.webworks.event.on(ID, "foo", cb);
             } else {
-                var found = _fooHandlers.reduce(function (prev, current, index) {
+                found = _fooHandlers.reduce(function (prev, current, index) {
                     if (prev >= 0) {
                         return prev;
                     } else if (current === cb) {
@@ -32,10 +38,9 @@ module.exports = {
 
                 if (found >= 0) {
                     delete _fooHandlers[found];
-                    webworks.event.remove(ID, "foo", cb);
+                    window.webworks.event.remove(ID, "foo", cb);
                 }
             }
         }
     }
 };
-

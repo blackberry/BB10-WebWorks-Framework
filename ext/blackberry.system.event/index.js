@@ -16,6 +16,12 @@ var _event = require("../../lib/event"),
         }
     };
 
+function callIfDefined(func, args) {
+    if (func) {
+        func(args);
+    }
+}
+
 module.exports = {
     on: function (success, fail, args) {
         // TODO string argument surrounded by %22, to be fixed
@@ -24,9 +30,9 @@ module.exports = {
 
         if (action) {
             _event.on(action);
-            success && success(name + ": handler added");
+            callIfDefined(success, name + ": handler added");
         } else {
-            fail && fail(name + ": no action found");
+            callIfDefined(fail, name + ": no action found");
         }
     },
 
@@ -36,10 +42,9 @@ module.exports = {
 
         if (action) {
             _event.remove(action);
-            success && success(name + ": handler removed");
+            callIfDefined(success, name + ": handler removed");
         } else {
-            fail && fail(name + ": no action found");
+            callIfDefined(fail, name + ": no action found");
         }
     }
 };
-
