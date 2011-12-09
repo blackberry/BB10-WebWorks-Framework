@@ -5,7 +5,7 @@ module.exports = {
         var fs = require('fs'),
             files = [
                 "lib/public/builder.js",
-                "lib/public/window.js",
+                "lib/public/window.js"
             ],
             include = function (files, transform) {
                 files = files.map ? files : [files];
