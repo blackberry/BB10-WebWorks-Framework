@@ -1,7 +1,15 @@
 var libRoot = __dirname + '/../../../lib/',
+    windowObj = require(libRoot + 'public/window'),
+    utils = require(libRoot + "utils"),
     builder = require(libRoot + 'public/builder');
 
 describe("builder", function () {
+
+    beforeEach(function () {
+        spyOn(utils, "performExec").andCallFake(function () {
+            return "some dummy text";
+        });
+    });
 
     it("can build an object with a single member", function () {
         var featureIds = ['blackberry.app'],

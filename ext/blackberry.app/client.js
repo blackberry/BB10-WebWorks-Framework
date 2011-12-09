@@ -1,16 +1,7 @@
-var _self = {};
+var _self = {},
+    performExec = require('../../lib/utils').performExec;
 
-function performExec(featureId, property) {
-    var result;
-    webworks.exec(function (data, response) {
-        result = data;
-    }, function (data, response) {
-        result = data;
-    }, featureId, property, null, true);
-    return result;
-}
-
-_self.__defineGetter__("name", function () {    
+_self.__defineGetter__("name", function () {
     return performExec("blackberry.app", "name");
 });
 
