@@ -47,11 +47,19 @@ describe("event", function () {
     });
 
     describe("trigger", function () {
-        it("can invoke the correct callback given a valid id", function () {
+        it("will invoke callback if event has been added", function () {
             var cb = jasmine.createSpy();
             event.on("blackberry.system.event", "b", cb);
             event.trigger("b", {"id": 1});
             expect(cb).toHaveBeenCalledWith({"id": 1});
+        });
+
+        it("will not invoke callback if event has been removed", function () {
+            var cb = jasmine.createSpy();
+            event.on("blackberry.system.event", "c", cb);
+            event.remove("blackberry.system.event", "c", cb);
+            event.trigger("c", {"id": 1});
+            expect(cb).not.toHaveBeenCalled();
         });
     });
 });
