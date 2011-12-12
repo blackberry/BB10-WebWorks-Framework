@@ -9,14 +9,10 @@ module.exports = {
     },
 
     author: function (success, fail, args) {
-        success({
-            "author": config.author,
-        });
+        success(config.author);
     },
 
     name: function (success, fail, args) {
-        success({
-            "name": config.name
-        });
+        success(config.name);
     }
 };
