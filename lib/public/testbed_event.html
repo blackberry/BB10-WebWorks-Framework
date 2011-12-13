@@ -1,19 +1,8 @@
 <html>
     <head>
-        <script type="text/javascript" src="local://require.js"></script>
         <script type="text/javascript" src="local://webworks.js"></script>
         <script type="text/javascript">
             var cb,
-                batteryIntervalId,
-                batterySuccess = function (data, response) {
-                    console.log("Started battery level changed event");
-                    batteryIntervalId = data;
-                },
-                fooIntervalId,
-                fooSuccess = function (data, response) {
-                    console.log("Started foo event");
-                    fooIntervalId = data;
-                },
                 fooCallbacks = [];
 
             function startListenBatteryLevelChangedEvent() {
@@ -25,14 +14,6 @@
 
             function stopListenBatteryLevelChangedEvent() {
                 blackberry.system.event.onBatteryLevelChanged(null);
-            }
-
-            function startBatteryLevelChangedEvent() {
-                webworks.exec(batterySuccess, null, "bb.fakeevents", "start", {"foo":false}, false);
-            }
-
-            function stopBatteryLevelChangedEvent() {
-                webworks.exec(batterySuccess, null, "bb.fakeevents", "stop", { "intervalId": batteryIntervalId }, false);
             }
 
             function startListenFooEvent() {
@@ -59,14 +40,6 @@
                 }
             }
 
-            function startFooEvent() {
-                webworks.exec(fooSuccess, null, "bb.fakeevents", "start", {"foo":true, "interval":5000}, false);
-            }
-
-            function stopFooEvent() {
-                webworks.exec(fooSuccess, null, "bb.fakeevents", "stop", { "intervalId": fooIntervalId }, false);
-            }
-
             function createCallback() {
                 var callbackId = fooCallbacks.length;
                 return function (data) {
@@ -77,12 +50,8 @@
     </head>
     <body>
         <div>This is a testbed!</div>
-        <input type="button" onclick="startBatteryLevelChangedEvent()" value="Start Battery Event"><br>
-        <input type="button" onclick="stopBatteryLevelChangedEvent()" value="Stop Battery Event"><br>
         <input type="button" onclick="startListenBatteryLevelChangedEvent()" value="Start Listen Battery Event"><br>
         <input type="button" onclick="stopListenBatteryLevelChangedEvent()" value="Stop Listen Battery Event"><br><br><br>
-        <input type="button" onclick="startFooEvent()" value="Start Foo Event"><br>
-        <input type="button" onclick="stopFooEvent()" value="Stop Foo Event"><br>
         <input type="button" onclick="startListenFooEvent()" value="Start Listen Foo Event"><br>
         <input type="button" onclick="stopListenFooEvent()" value="Stop Listen Foo Event"><br>
     </body>

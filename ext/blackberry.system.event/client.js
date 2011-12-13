@@ -12,6 +12,7 @@ var _cb,
     ID = "blackberry.system.event";
 
 module.exports = {
+    // take single callback
     onBatteryLevelChanged: function (cb) {
         var window = windowObj.window();
 
