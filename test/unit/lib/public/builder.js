@@ -1,7 +1,7 @@
-var libRoot = __dirname + '/../../../lib/',
-    windowObj = require(libRoot + 'public/window'),
+var libRoot = __dirname + "/../../../../lib/",
+    windowObj = require(libRoot + "public/window"),
     utils = require(libRoot + "utils"),
-    builder = require(libRoot + 'public/builder');
+    builder = require(libRoot + "public/builder");
 
 describe("builder", function () {
 
