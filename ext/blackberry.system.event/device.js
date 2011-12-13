@@ -23,6 +23,7 @@ module.exports = {
             // HACK start event for demo
             if (!_batteryEventStarted) {
                 setInterval(this.batteryLevelChanged, 10000);
+                _batteryEventStarted = true;
             }
         }
     },

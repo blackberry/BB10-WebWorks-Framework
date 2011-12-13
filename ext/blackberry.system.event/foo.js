@@ -19,6 +19,7 @@ module.exports = {
             // HACK start event for demo
             if (!_fooEventStarted) {
                 setInterval(this.foo, 5000);
+                _fooEventStarted = true;
             }
         }
     },
