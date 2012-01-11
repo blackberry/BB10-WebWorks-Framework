@@ -2,7 +2,6 @@ var srcPath = __dirname + '/../../../lib/';
 var framework = require(srcPath + 'framework'),
     util = require(srcPath + "utils"),
     webview = util.requireWebview(),
-    config = require(srcPath + 'config'),
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mock_request = {
         url: "http://www.dummy.com",
