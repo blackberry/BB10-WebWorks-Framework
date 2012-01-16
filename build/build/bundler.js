@@ -6,7 +6,9 @@ module.exports = {
             files = [
                 "lib/public/builder.js",
                 "lib/public/window.js",
-                "lib/public/event.js"
+                "lib/public/event.js",
+                "lib/utils.js",
+                "lib/exception.js"
             ],
             include = function (files, transform) {
                 files = files.map ? files : [files];
