@@ -1,18 +1,15 @@
-var config = require("./../../lib/config");
+var config = require("lib/config"); // uses lib/config for require id, ../.. causes problems
 
 module.exports = {
-    get: function (success, fail, args) {
-        success({
-            "author": config.author,
-            "name": config.name
-        });
-    },
-
     author: function (success, fail, args) {
         success(config.author);
     },
 
     name: function (success, fail, args) {
         success(config.name);
+    },
+
+    version: function (success, fail, args) {
+        success(config.version);
     }
 };
