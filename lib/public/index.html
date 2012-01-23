@@ -5,32 +5,10 @@
     <meta name="viewport" content="user-scalable=no, target-densitydpi=device-dpi, width=device-width">
     <title>WebWorks For BBX Bootstrap</title>
     <script src="./require.js"></script>
-    <script>require.load(["lib/config/default.js",
-                          "lib/config/user.js",
-                          "lib/config.js",
-                          "lib/webkitEvent.js",
-                          "lib/exception.js",
-                          "lib/framework.js",
-                          "lib/message.js",
-                          "lib/request.js",
-                          "lib/utils.js",
-                          "lib/webview.js",
-                          "lib/server.js",
-                          "lib/event.js",
-                          "lib/policy/whitelist.js",
-                          "lib/policy/folderAccess.js",
-                          "lib/plugins/bridge.js",
-                          "lib/plugins/extensions.js",
-                          "ext/blackberry.app/index.js",
-                          "ext/blackberry.app.event/index.js",
-                          "ext/blackberry.example.test/index.js",
-                          "ext/blackberry.system/index.js",
-                          "ext/blackberry.system.event/index.js",
-                          "ext/blackberry.system.event/device.js",
-                          "ext/blackberry.system.event/foo.js"
-                        ]);</script>
+    <script src="./frameworkModules.js"></script>
     <script>
         function start() {
+          require.load(frameworkModules);
           require('lib/framework').start();
         }
     </script>
