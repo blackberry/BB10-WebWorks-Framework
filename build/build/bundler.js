@@ -1,4 +1,5 @@
-var fs = require('fs');
+var fs = require('fs'),
+    path = require('path');
 
 module.exports = {
     bundle: function () {
@@ -18,7 +19,8 @@ module.exports = {
                 }).join('\n');
             },
             output = "",
-            filepath;
+            filepath, 
+            stats;
 
         //include LICENSE
         output += include("LICENSE", function (file) {
@@ -36,8 +38,12 @@ module.exports = {
 
         //include window.webworks
         output += include("lib/public/window-webworks.js");
-
-        filepath = __dirname.replace(/\\/g, '/');
-        fs.writeFileSync(filepath + "/../../lib/public/webworks.js", output);
+        
+        //create output folder if it doesn't exist
+        filepath = __dirname.replace(/\\/g, '/') + "/../../deliverables";
+        if (!path.existsSync(filepath)) {
+            fs.mkdirSync(filepath, 0777); //full permissions
+        }
+        fs.writeFileSync(filepath + "/webworks.js", output);
     }
 };
