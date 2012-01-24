@@ -46,9 +46,10 @@ function _copyFiles() {
     return  _copyCmd(_c.LIB, 'lib') + cmdSep +
             _copyCmd(_c.BIN, 'bin') + cmdSep +
             _copyCmd(_c.EXT, 'ext') + cmdSep +
-            _copyCmd(_c.DELIVERABLES, 'deliverables') + cmdSep +
+            _copyCmd(_c.CLIENTFILES, 'clientFiles') + cmdSep +
             _copyCmd(_c.NODE_MOD, 'node_modules') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_EMU_LIB, 'dependencies/BBX-Emulator/lib') + cmdSep +
+            _copyCmd(_c.DEPENDENCIES_BOOTSTRAP, 'dependencies/bootstrap') + cmdSep +
             _copyCmd(_c.ROOT + 'README.md', '') + cmdSep +
             _copyCmd(_c.ROOT + 'LICENSE', '');
 

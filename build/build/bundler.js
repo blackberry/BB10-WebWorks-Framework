@@ -27,7 +27,7 @@ module.exports = {
         });
 
         //include require
-        output += include("dependencies/browser-require/require.js");
+        output += include("dependencies/bootstrap/require.js");
 
         //include modules
         output += include(files, function (file, path) {
@@ -39,7 +39,7 @@ module.exports = {
         output += include("lib/public/window-webworks.js");
 
         //create output folder if it doesn't exist
-        filepath = __dirname.replace(/\\/g, '/') + "/../../deliverables";
+        filepath = __dirname.replace(/\\/g, '/') + "/../../clientFiles";
         if (!path.existsSync(filepath)) {
             fs.mkdirSync(filepath, 0777); //full permissions
         }

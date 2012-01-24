@@ -20,11 +20,12 @@ module.exports = {
     DEPLOY: path.normalize(__dirname + "/../../target/zip/"),
     TARGET: path.normalize(__dirname + "/../../target/"),
     BUILD: path.normalize(__dirname + "/.."),
-    DELIVERABLES: path.normalize(__dirname + "/../../deliverables"),
+    CLIENTFILES: path.normalize(__dirname + "/../../clientFiles"),
     LIB: path.normalize(__dirname + "/../../lib"),
     BIN: path.normalize(__dirname + "/../../bin"),
     EXT: path.normalize(__dirname + "/../../ext"),
     DEPENDENCIES: path.normalize(__dirname + "/../../dependencies"),
     DEPENDENCIES_EMU_LIB: path.normalize(__dirname + "/../../dependencies/BBX-Emulator/lib"),
+    DEPENDENCIES_BOOTSTRAP: path.normalize(__dirname + "/../../dependencies/bootstrap"),
     NODE_MOD: path.normalize(__dirname + "/../../node_modules")
 };
