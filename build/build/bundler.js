@@ -19,8 +19,7 @@ module.exports = {
                 }).join('\n');
             },
             output = "",
-            filepath, 
-            stats;
+            filepath;
 
         //include LICENSE
         output += include("LICENSE", function (file) {
@@ -38,7 +37,7 @@ module.exports = {
 
         //include window.webworks
         output += include("lib/public/window-webworks.js");
-        
+
         //create output folder if it doesn't exist
         filepath = __dirname.replace(/\\/g, '/') + "/../../deliverables";
         if (!path.existsSync(filepath)) {
