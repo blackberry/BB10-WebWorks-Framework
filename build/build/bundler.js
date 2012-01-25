@@ -41,7 +41,7 @@ module.exports = {
         //create output folder if it doesn't exist
         filepath = __dirname.replace(/\\/g, '/') + "/../../clientFiles";
         if (!path.existsSync(filepath)) {
-            fs.mkdirSync(filepath, 777); //full permissions
+            fs.mkdirSync(filepath, "0777"); //full permissions
         }
         fs.writeFileSync(filepath + "/webworks.js", output);
     }
