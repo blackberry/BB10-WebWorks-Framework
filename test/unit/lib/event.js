@@ -16,8 +16,9 @@
 var libRoot = __dirname + "/../../../lib/";
 
 describe("event", function () {
-    var event = require(libRoot + "event"),
-        webview = require(libRoot + "../dependencies/BBX-Emulator/lib/webview");
+    var util = require(libRoot + "utils"),
+        event = require(libRoot + "event"),
+        webview = util.requireWebview();
 
     describe("trigger", function () {
         it("can invoke the webview execute javascript", function () {

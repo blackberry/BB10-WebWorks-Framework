@@ -1,4 +1,5 @@
-var fs = require('fs');
+var fs = require('fs'),
+    path = require('path');
 
 module.exports = {
     bundle: function () {
@@ -6,7 +7,9 @@ module.exports = {
             files = [
                 "lib/public/builder.js",
                 "lib/public/window.js",
-                "lib/public/event.js"
+                "lib/public/event.js",
+                "lib/utils.js",
+                "lib/exception.js"
             ],
             include = function (files, transform) {
                 files = files.map ? files : [files];
@@ -24,7 +27,7 @@ module.exports = {
         });
 
         //include require
-        output += include("dependencies/browser-require/require.js");
+        output += include("dependencies/bootstrap/require.js");
 
         //include modules
         output += include(files, function (file, path) {
@@ -35,7 +38,11 @@ module.exports = {
         //include window.webworks
         output += include("lib/public/window-webworks.js");
 
-        filepath = __dirname.replace(/\\/g, '/');
-        fs.writeFileSync(filepath + "/../../lib/public/webworks.js", output);
+        //create output folder if it doesn't exist
+        filepath = __dirname.replace(/\\/g, '/') + "/../../clientFiles";
+        if (!path.existsSync(filepath)) {
+            fs.mkdirSync(filepath, "0777"); //full permissions
+        }
+        fs.writeFileSync(filepath + "/webworks.js", output);
     }
 };
