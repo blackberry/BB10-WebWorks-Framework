@@ -55,12 +55,29 @@ function _copyFiles() {
 
 }
 
+function _deleteFolderCmd(folderpath) {
+    var unix_path = (_c.DEPLOY + folderpath).replace(/([^\/]*)$/, '');
+    if (utils.isWindows()) {
+        return 'rmdir /S /Q ' + path.normalize(_c.DEPLOY + folderpath);
+    } else {
+        return 'rm -rf ' + unix_path;
+    }
+}
+
+function _deleteFilesFromTarget() {
+    return  _deleteFolderCmd('lib/public');
+}
+
+function _processFiles() {
+    return _copyFiles() + ' && ' + _deleteFilesFromTarget();
+}
+
 module.exports = function (src, baton) {
     baton.take();
 
     require('./bundler').bundle();
 
-    childProcess.exec(_copyFiles(), function (error, stdout, stderr) {
+    childProcess.exec(_processFiles(), function (error, stdout, stderr) {
         if (error) {
             console.log(stdout);
             console.log(stderr);
