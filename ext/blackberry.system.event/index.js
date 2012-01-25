@@ -1,4 +1,4 @@
-var _event = require("../../lib/event"),
+var _event = require("lib/event"),  // uses lib/event for require id, ../.. causes problems
     _actionMap = {
         batteryLevelChanged: {
             context: require("./device"),
