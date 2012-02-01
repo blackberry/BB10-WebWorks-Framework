@@ -57,7 +57,7 @@ function _copyFiles() {
 }
 
 function _deleteFolderCmd(folderpath) {
-    var unix_path = (_c.DEPLOY + folderpath).replace(/([^\/]*)$/, '');
+    var unix_path = (_c.DEPLOY + folderpath);
     if (utils.isWindows()) {
         return 'rmdir /S /Q ' + path.normalize(_c.DEPLOY + folderpath);
     } else {
