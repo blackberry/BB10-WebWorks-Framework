@@ -49,6 +49,7 @@ function _copyFiles() {
             _copyCmd(_c.CLIENTFILES, 'clientFiles') + cmdSep +
             _copyCmd(_c.NODE_MOD, 'node_modules') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_EMU_LIB, 'dependencies/BBX-Emulator/lib') + cmdSep +
+            _copyCmd(_c.DEPENDENCIES_WEB_FRAMEWORK_LIB, 'lib') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_BOOTSTRAP, 'dependencies/bootstrap') + cmdSep +
             _copyCmd(_c.ROOT + 'README.md', '') + cmdSep +
             _copyCmd(_c.ROOT + 'LICENSE', '');
@@ -56,7 +57,7 @@ function _copyFiles() {
 }
 
 function _deleteFolderCmd(folderpath) {
-    var unix_path = _c.DEPLOY + folderpath;
+    var unix_path = (_c.DEPLOY + folderpath).replace(/([^\/]*)$/, '');
     if (utils.isWindows()) {
         return 'rmdir /S /Q ' + path.normalize(_c.DEPLOY + folderpath);
     } else {
@@ -76,7 +77,7 @@ module.exports = function (src, baton) {
     baton.take();
 
     require('./bundler').bundle();
-
+    
     childProcess.exec(_processFiles(), function (error, stdout, stderr) {
         if (error) {
             console.log(stdout);
