@@ -1,3 +1,6 @@
 [submodule "dependencies/BBX-Emulator"]
 	path = dependencies/BBX-Emulator
 	url = http://github.com/blackberry-webworks/BBX-Emulator.git
+[submodule "dependencies/BB10-Web-Framework"]
+	path = dependencies/BB10-Web-Framework
+	url = https://github.com/blackberry-webworks/BB10-Web-Framework.git
