@@ -4,3 +4,6 @@
 [submodule "dependencies/BB10-Web-Framework"]
 	path = dependencies/BB10-Web-Framework
 	url = https://github.com/blackberry-webworks/BB10-Web-Framework.git
+[submodule "dependencies/webplatform-framework"]
+	path = dependencies/webplatform-framework
+	url = https://git@github.com/blackberry-webworks/webplatform-framework.git
