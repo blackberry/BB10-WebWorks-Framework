@@ -28,6 +28,8 @@
     "README.md",
     "LICENSE",
     "lib",
-    "bin/bbx-framework"
+    "bin/bbx-framework",
+    "dependencies",
+    "ext"
   ]
 }
