@@ -28,6 +28,17 @@ describe("framework", function () {
         expect(webview.create).toHaveBeenCalled();
     });
 
+    it("on start passing callback and setting object parameters to create method of webview", function () {
+        framework.start();
+        expect((webview.create.mostRecentCall.args)[0] instanceof Function).toBeTruthy(Function);
+        expect((webview.create.mostRecentCall.args)[1] instanceof Object).toBeTruthy();
+    });
+
+    it("setting object should have debugEnabled to be defined", function () {
+        framework.start();
+        expect((webview.create.mostRecentCall.args)[1].debugEnabled).toBeDefined();
+    });
+
     it("can start a webview instance with a url", function () {
         var url = "http://www.google.com";
         framework.start(url);
