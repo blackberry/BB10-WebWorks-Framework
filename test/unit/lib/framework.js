@@ -30,8 +30,7 @@ describe("framework", function () {
 
     it("on start passing callback and setting object parameters to create method of webview", function () {
         framework.start();
-        expect((webview.create.mostRecentCall.args)[0] instanceof Function).toBeTruthy(Function);
-        expect((webview.create.mostRecentCall.args)[1] instanceof Object).toBeTruthy();
+        expect(webview.create).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Object));
     });
 
     it("setting object should have debugEnabled to be defined", function () {
