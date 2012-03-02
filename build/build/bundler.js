@@ -27,7 +27,7 @@ module.exports = {
         });
 
         //include require
-        output += include("dependencies/bootstrap/require.js");
+        output += include("dependencies/webplatform-framework/dependencies/browser-require/require.js");
 
         //include modules
         output += include(files, function (file, path) {
