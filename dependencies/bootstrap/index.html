@@ -7,6 +7,48 @@
     <script src="./require.js"></script>
     <script src="./frameworkModules.js"></script>
     <script>
+        function NativeEvent() {
+          // TODO maybe
+          this.eventHandlers = new Array();
+        }
+        
+        /** processEvent
+         * JNEXT.processEvent is going to be magically called by the jnext.so!
+         * @param strNativeEvent The raw string from the native code that contains an id, 
+         *        the event (onChange), and data (json).
+         */
+        
+        NativeEvent.prototype.processEvent = function(strNativeEvent) {
+          // similar to the current implementation except for the dispatch events part. 
+          
+          console.log('JNEXT.processEvent( ' + strNativeEvent + ' )');
+
+          try {
+            /*
+            Are CustomEvents supported (in this webkit implementation)?
+
+            var evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent('QNX_PPS_EVENT', true, false, strNativeEvent);
+            document.dispatchEvent(evt);
+            */
+            var evt = document.createEvent('TextEvent');
+            evt.initTextEvent('textInput', true, false, null, strNativeEvent);
+            
+            var textarea = document.getElementById('textarea');
+            textarea.selectionStart = 0;
+            textarea.selectionEnd = 0;
+            
+            textarea.dispatchEvent(evt);
+          } 
+          catch (e) {
+            console.log('not supported. sorry.');
+          }
+          
+        } 
+        
+        // must be named 'JNEXT' (case sensitive)
+        var JNEXT = new NativeEvent();
+
         function start() {
           require.load(frameworkModules);
           require('lib/framework').start();
@@ -14,6 +56,7 @@
     </script>
   </head>
   <body onload="start();">
-      I am the man behind the curtain.
+      <textarea id="textarea">I am the man behind the curtain.</textarea>
+      <embed id="objJSExt" type="application/jnext-scriptable-plugin" width="0" height="0">
   </body>
 </html>
