@@ -9,7 +9,7 @@ var _self = {}, performExec = requireLocal('lib/utils').performExec;
 _self.invoke = function(appType, args) {
     performExec("blackberry.invoke", "invoke", {
         'appType': appType,
-        'args': encodeURIComponent(JSON.stringify(args))
+        'args': args
     });
 };
 /*
