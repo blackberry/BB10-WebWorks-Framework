@@ -1,15 +1,4 @@
-var _jnext = require("lib/jnext"), _pps = require("./pps"), _event = require("lib/event"), _actionMap = {
-    nativeEvent: {
-        context: document.getElementById('textarea'),
-        event: "textInput",
-        trigger: function(args) {
-            _pps.processEvent(args);
-        },
-        webviewTrigger: function(name, args) {
-            _event.trigger(name, args);
-        }
-    },
-};
+var _jnext = require("lib/jnext"), _event = require("lib/event");
 
 function callIfDefined(func, args) {
     if(func) {
@@ -19,6 +8,8 @@ function callIfDefined(func, args) {
 
 module.exports = {
     invoke: function(success, fall, args) {
+    	var argsObj = JSON.parse(decodeURIComponent(args.args));
+    	
         var path = "/pps/services", mode = 0;
         var ctrlObj = {
             'id': undefined,
@@ -29,7 +20,7 @@ module.exports = {
             }
         };
 
-        switch(args.appType) {
+        switch(parseInt(args.appType)) {
             // Camera
             case 4:
                 break;
@@ -37,12 +28,11 @@ module.exports = {
             case 5:
                 break;
             //Browser
-            default:
             case 11:
                 path += "/navigator/control?server";
                 mode = 2;
 
-                ctrlObj.obj.dat = (decodeURIComponent(decodeURIComponent(args.args))).url;
+                ctrlObj.obj.dat = argsObj.url;
                 ctrlObj.obj = encodeURIComponent(JSON.stringify(ctrlObj.obj));
                 break;
             // Music
@@ -57,8 +47,8 @@ module.exports = {
             // AppWorld
             case 16:
                 break;
-            //            default:
-            //              break;
+            default:
+                break;
         }
 
         open(function(id) {
@@ -129,7 +119,6 @@ function read(success, fail, args) {
  */
 function write(success, fail, args) {
     var invokeArgs = {}, rsp;
-
     // write requres "id cmd objStr"
     invokeArgs.id = args.id;
     invokeArgs.cmd = 'Write';
