@@ -1,64 +1,62 @@
 function requireLocal(id) {
-    if (require.resolve) { // node
-        return require(id);
-    } else { // browser
-        return window.require(id.replace(/\.\//, ""));
-    }
+    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
+    return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _cb,
-		windowObj = requireLocal("./window"),
-		performExec = requireLocal('lib/utils').performExec,
-		ID = "blackberry.invoke",
-		_self = {
-			
-			/** onEvent 
-			 * This method starts the chain of calls to register the event 
-			 * associated with the PPS object. First, on the client webworks side, the name
-			 * will be registered with the _handlers object.  Second, also within webworks, 
-			 * the name will be passed to the blackberry.invoke extension for registration.  
-			 * ie. blackberry.invoke.onEvent -> webworks.event.on --http GET--> blackberry.invoke.on
-			 * 
-			 * This resulting webworks GET URI will return either '<name> registered' or
-			 * '<name> invalid'
-			 *
-			 * Note: Calling this method without an object will unregister the event.
-			 * TODO: Separate the unregister functionality.
-			 *
-			 * @param cb {function pointer} The function to call on detection of registered event
-			 * @param eventId {numeric string} The id of the pps object. (returned from open)
-			 */
-			onEvent: function (cb, eventId) {
-				var window = windowObj.window();
-				console.log('onEvent: QNX_PPS_EVENT_' + eventId);
-				
-				if (cb) {
-					window.webworks.event.on(ID, 'QNX_PPS_EVENT_' + eventId, cb);
-				} else {
-					window.webworks.event.remove(ID, 'QNX_PPS_EVENT_' + eventId, _cb);
-				}
+var _self = {}, performExec = requireLocal('lib/utils').performExec;
+// uses lib/utils for require id, ../.. causes problems
 
-				_cb = cb;
-			},
-			
-		};
-
-/** activate
- * This method calls the extension's activate method.
- * After a few more layers, this effectively registers a DOM event listener. 
+_self.invoke = function(appType, args) {
+    performExec("blackberry.invoke", "invoke", {
+        'appType': appType,
+        'args': encodeURIComponent(JSON.stringify(args))
+    });
+};
+/*
+ * Constructor for a new CameraArguments object.
+ * readwrite  property  Number   view
  */
-_self.__defineGetter__("activate", function() {
-	console.log('activate the listener');
-	return performExec("blackberry.invoke", "activate");
+_self.invoke.CameraArguments = function() {
+    this.view = 0;
+};
+/*
+ * Define constants for CameraArguments
+ */
+_self.invoke.CameraArguments.__defineGetter__("VIEW_CAMERA", function() {
+    return 0;
 });
-
-/** deactivate
- * This method calls the extensions's deactivate method
- * This effectively removes the event listener.
+_self.invoke.CameraArguments.__defineGetter__("VIEW_RECORDER", function() {
+    return 1;
+});
+/* Open Browser application on the BlackBerry PlayBook.
+ * @param url The desired url to bring up in the browser.
  */
-_self.__defineGetter__("deactivate", function() {
-	console.log('deactivate the listener');
-	return performExec("blackberry.invoke", "deactivate");
+_self.invoke.BrowserArguments = function(url) {
+    this.url = url;
+};
+/*
+ * Define constants for appType
+ */
+_self.__defineGetter__("APP_CAMERA", function() {
+    return 4;
+});
+_self.__defineGetter__("APP_MAPS", function() {
+    return 5;
+});
+_self.__defineGetter__("APP_BROWSER", function() {
+    return 11;
+});
+_self.__defineGetter__("APP_MUSIC", function() {
+    return 13;
+});
+_self.__defineGetter__("APP_PHOTOS", function() {
+    return 14;
+});
+_self.__defineGetter__("APP_VIDEOS", function() {
+    return 15;
+});
+_self.__defineGetter__("APP_APPWORLD", function() {
+    return 16;
 });
 
 module.exports = _self;
