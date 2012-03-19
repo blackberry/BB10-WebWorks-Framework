@@ -1,4 +1,9 @@
-var _jnext = require("lib/jnext"), _event = require("lib/event");
+function requireLocal(id) {
+    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
+    return !!require.resolve ? require("../../" + id) : window.require(id);
+}
+
+var _jnext = requireLocal("lib/jnext"), _event = requireLocal("lib/event");
 
 function callIfDefined(func, args) {
     if(func) {
@@ -51,7 +56,7 @@ module.exports = {
                 break;
         }
 
-        open(function(id) {
+        open(function(id){ 
             ctrlObj.id = id
         }, new Function(), {
             'path': encodeURIComponent(path),
