@@ -1,7 +1,7 @@
 var _event = require("lib/event"), _ppsUtils = require("lib/pps/ppsUtils"), 
 _actionMap = {
     pause: {
-        context: require("lib/pps/ppsEvents"),
+        context: "",
         event: "",
         trigger: function(args) {
             _pps.processEvent(args);
