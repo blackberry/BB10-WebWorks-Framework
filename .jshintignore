@@ -4,3 +4,5 @@ target
 dependencies
 ext
 clientFiles
+lib/pps/ppsUtils.js
+lib/jnext.js
