@@ -3,13 +3,14 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _self = {}, performExec = requireLocal('lib/utils').performExec;
+var _self = {}, _ID = "blackberry.event", _cb;
 
 _self.addEventListener = function(eventType, cb) {
-    performExec("blackberry.event", "addEventListener", {
-        'eventType': appType,
-        'cb': cb
-    });
+    if(cb) {
+        window.webworks.event.on(_ID, eventType, cb);
+    } else {
+        window.webworks.event.remove(_ID, eventType, cb);
+    }
 };
 
 module.exports = _self;
