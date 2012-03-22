@@ -3,7 +3,7 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _self = {}, _ID = "blackberry.event", _cb;
+var _self = {}, _ID = "blackberry.event";
 
 _self.addEventListener = function(eventType, cb) {
     if(cb) {

@@ -1,22 +1,28 @@
 var _event = require("lib/event"), _ppsUtils = require("lib/pps/ppsUtils"), 
 _actionMap = {
-    pause: {
-        context: "",
-        event: "",
+    batterystatus: {
+        context: require("lib/pps/ppsEvents"),
+        event: "batterystatus",
         trigger: function(args) {
-            _pps.processEvent(args);
-        },
-        webviewTrigger: function(name, args) {
-            _event.trigger(name, args);
+            _event.trigger("batterystatus", args);
+        }
+    }
+/*    ,
+    batterylow: {
+        context: "",
+        event: "batterylow",
+        trigger: function(args) {
+            _event.trigger("foo", args);
         }
     },
-    resume: {
+    batterycritical: {
         context: "",
-        event: "BAR",
+        event: "batterycritical",
         trigger: function(args) {
             _event.trigger("foo", args);
         }
     }
+*/    
 };
 
 function callIfDefined(func, args) {
@@ -29,7 +35,7 @@ module.exports = {
     on: function(success, fail, args) {
         // TODO string argument surrounded by %22, to be fixed
         var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), action = _actionMap[eventName];
-        addEventListener(success, fail, eventName);
+        _event.on(action);
         /*
          if(name != "") {
          _ppsUtils.registerEvent(eventName, action.webviewTrigger);
@@ -52,14 +58,3 @@ module.exports = {
         }
     }
 }
-
-function addEventListener(success, fall, eventName) {
-    var path = "/pps/services/power/battery", mode = 0;
-
-    _ppsUtils.init();
-    _ppsUtils.onChange = function(data) {
-        console.log("Data from pps: " + data);
-    }
-
-    _ppsUtils.open(path, mode);
-};
