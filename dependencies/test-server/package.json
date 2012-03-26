@@ -1,0 +1,12 @@
+{
+  "name": "BB10-WebWorks-Browsertest",
+  "version": "BB10 WebWorks Jasmine Functional Tests",
+  "description": "Test",
+  "repository": "",
+  "dependencies": {
+    "express": "2.5.8",
+    "jasmine-node": "1.0.22",
+    "wrench": "1.3.7",
+    "zip": "0.0.6"
+  }
+}
