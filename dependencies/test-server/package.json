@@ -1,6 +1,6 @@
 {
   "name": "BB10-WebWorks-Browsertest",
-  "version": "BB10 WebWorks Jasmine Functional Tests",
+  "version": "1.0.0",
   "description": "Test",
   "repository": "",
   "dependencies": {
