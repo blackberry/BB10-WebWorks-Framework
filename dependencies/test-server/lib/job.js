@@ -8,12 +8,14 @@ var fs = require('fs'),
     _widget = path.normalize(__dirname + "/../widget"),
     _workspace = path.normalize(__dirname + "/../workspace"),
     DEVICE_IP = "192.168.137.88",
-    DEVICE_PASSWORD = "123";
+    DEVICE_PASSWORD = "123",
+    HUDSON_CI_HOSTNAME = "mac-ci",
+    HUDSON_CI_PORT = "9000";
 
 function prepare(job, callback) {
-    var PACKAGER_URL = "http://mac-ci:9000/job/" + job + "/ws/target/zip/*zip*/zip.zip",
-        EXECUTABLES_URL = "http://mac-ci:9000/job/" + job + "/ws/target/dependency/*zip*/dependency.zip",
-        FUNCTIONAL_TEST_URL = "http://mac-ci:9000/job/" + job + "/ws/Framework/test.functional/*zip*/test.functional.zip",
+    var PACKAGER_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/target/zip/*zip*/zip.zip",
+        EXECUTABLES_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/target/dependency/*zip*/dependency.zip",
+        FUNCTIONAL_TEST_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/Framework/test.functional/*zip*/test.functional.zip",
         PACKAGER_FILENAME = "/zip.zip",
         EXECUTABLES_FILENAME = "/dependency.zip",
         FUNCTIONAL_TEST_FILENAME = "/test.functional.zip";
