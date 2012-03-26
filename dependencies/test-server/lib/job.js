@@ -10,9 +10,10 @@ var fs = require('fs'),
     DEVICE_IP = "192.168.137.88",
     DEVICE_PASSWORD = "123",
     HUDSON_CI_HOSTNAME = "mac-ci",
-    HUDSON_CI_PORT = "9000";
+    HUDSON_CI_PORT = "9000",
+    BUILD_ON_HUDSON = false;
 
-function prepare(job, callback) {
+function prepareHudson(job, callback) {
     var PACKAGER_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/target/zip/*zip*/zip.zip",
         EXECUTABLES_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/target/dependency/*zip*/dependency.zip",
         FUNCTIONAL_TEST_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/Framework/test.functional/*zip*/test.functional.zip",
@@ -38,23 +39,50 @@ function prepare(job, callback) {
             downloadUnzipDelete(FUNCTIONAL_TEST_URL, FUNCTIONAL_TEST_FILENAME, callback);
         });
     });
+}
 
-    function downloadUnzipDelete(url, filename, callback) {
-        downloadDependency(url, filename, function (err) {
-            if (err) {
-                callback(err);
-            } else {
-                unzipDependency(filename, function (err) {
-                    if (err) { 
-                        callback(err);
-                    } else {
-                        fs.unlinkSync(_workspace + filename);
-                        callback();
-                    }
-                });
-            }
-        });
+function prepareLocal(callback) {
+    var PACKAGER_URL = path.normalize(__dirname + "/../../../../target/zip"),
+        FUNCTIONAL_TEST_URL = path.normalize(__dirname + "/../../../test.functional"),
+        // Temp location
+        EXECUTABLES_URL = "http://mac-ci:9000/job/BB10-Webworks-Packager-next-api-refactor/ws/target/dependency/*zip*/dependency.zip",
+        EXECUTABLES_FILENAME = "/dependency.zip";
+    
+    // CLEAN/Delete workspace first
+    if (!path.existsSync(_workspace)) {
+        console.log('CREATE: new workspace')
+        fs.mkdirSync(_workspace, "0755");
+    } else {
+        console.log('DELETE: old workspace')
+        wrench.rmdirSyncRecursive(_workspace);
+        console.log('CREATE: new workspace')
+        fs.mkdirSync(_workspace, "0755");
     }
+
+    console.log("local");   
+    wrench.copyDirSyncRecursive(PACKAGER_URL, _workspace + "/zip");
+    wrench.copyDirSyncRecursive(FUNCTIONAL_TEST_URL, _workspace + "/test.functional");
+
+    downloadUnzipDelete(EXECUTABLES_URL, EXECUTABLES_FILENAME, function() {
+        wrench.copyDirSyncRecursive(_workspace + "/dependency", _workspace + "/zip/dependencies");
+    });
+}
+
+function downloadUnzipDelete(url, filename, callback) {
+    downloadDependency(url, filename, function (err) {
+        if (err) {
+            callback(err);
+        } else {
+            unzipDependency(filename, function (err) {
+                if (err) { 
+                    callback(err);
+                } else {
+                    fs.unlinkSync(_workspace + filename);
+                    callback();
+                }
+            });
+        }
+    });
 }
 
 function downloadDependency(source, destination, callback) {
@@ -207,19 +235,35 @@ function deploy(callback) {
 
 _self = {
     run: function (job, callback) {
-        prepare(job, function (err) {
-            if (err) {
-                callback(err);
-            } else {
-                package(function (err) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        deploy(callback);
-                    }
-                });
-            }
-        });
+        if (BUILD_ON_HUDSON) {
+            prepareHudson(job, function (err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    package(function (err) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            deploy(callback);
+                        }
+                    });
+                }
+            });
+        } else {
+            prepareLocal(function (err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    package(function (err) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            deploy(callback);
+                        }
+                    });
+                }
+            });
+        }
     }
 };
 
