@@ -1,11 +1,12 @@
-describe("blackberry", function() {
+/* global webworks */
+describe("blackberry", function () {
 	it('should exist', function () {
 		expect(blackberry).toBeDefined();
 	});
 });
 
 
-describe("blackberry.app", function() {
+describe("blackberry.app", function  () {
 	xit('blackberry.app.event should exist', function () {
 		expect(blackberry.app.event).toBeDefined();
 	});
@@ -32,13 +33,13 @@ describe("blackberry.app", function() {
 
 });
 
-describe("blackberry.invoke", function() {
+describe("blackberry.invoke", function () {
 	it('invoke should exist', function () {
 		expect(blackberry.invoke).not.toBeDefined();
 	});
 });
 
-describe("webworks", function() {
+describe("webworks", function () {
 	it('should exist', function () {
 		expect(webworks).toBeDefined();
 	});
