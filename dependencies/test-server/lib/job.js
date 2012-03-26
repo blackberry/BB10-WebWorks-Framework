@@ -59,12 +59,12 @@ function prepareLocal(callback) {
         fs.mkdirSync(_workspace, "0755");
     }
 
-    console.log("local");   
     wrench.copyDirSyncRecursive(PACKAGER_URL, _workspace + "/zip");
     wrench.copyDirSyncRecursive(FUNCTIONAL_TEST_URL, _workspace + "/test.functional");
 
     downloadUnzipDelete(EXECUTABLES_URL, EXECUTABLES_FILENAME, function() {
         wrench.copyDirSyncRecursive(_workspace + "/dependency", _workspace + "/zip/dependencies");
+        callback();
     });
 }
 
