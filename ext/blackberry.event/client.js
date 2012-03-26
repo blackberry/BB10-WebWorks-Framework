@@ -1,9 +1,7 @@
-function requireLocal(id) {
-    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
-    return !!require.resolve ? require("../../" + id) : window.require(id);
-}
-
-var _self = {}, _ID = "blackberry.event";
+var _self = {}, 
+    _ID = "blackberry.event",
+    _libDir = __dirname + "./../../lib/",
+    window = require(_libDir + "public/window").window();
 
 _self.addEventListener = function(eventType, cb) {
     if(cb) {
