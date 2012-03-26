@@ -4,3 +4,4 @@ target
 dependencies
 ext
 clientFiles
+test.functional

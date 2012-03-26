@@ -1,4 +1,3 @@
-/* global webworks */
 describe("blackberry", function () {
 	it('should exist', function () {
 		expect(blackberry).toBeDefined();
