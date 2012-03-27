@@ -25,7 +25,7 @@
 ### How to use
 ###### Testing on your local machine
 - Make sure `LOCAL_PACKAGER` has been specified as the absolute path to your Webworks Packager
-- Use Browser and visit site `http://<server-hostname-ip>/run`
+- Use Browser and visit site `http://<server-hostname-ip>:3000/run` e.g. http://localhost:3000/run
 
 ###### Testing using Hudson
 - Send a HTTP GET request to 
