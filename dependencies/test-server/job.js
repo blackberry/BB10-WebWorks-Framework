@@ -5,18 +5,17 @@ var fs = require('fs'),
     childProcess = require("child_process"),
     wrench = require("wrench"),
     zip = require("zip"),
-    _widget = path.normalize(__dirname + "/../widget"),
-    _workspace = path.normalize(__dirname + "/../workspace"),
-    DEVICE_IP = "192.168.137.88",
+    _widget = path.normalize(__dirname + "/widget"),
+    _workspace = path.normalize(__dirname + "/workspace"),
+    DEVICE_IP = "192.168.198.128",
     DEVICE_PASSWORD = "123",
-    HUDSON_CI_HOSTNAME = "mac-ci",
-    HUDSON_CI_PORT = "9000",
-    BUILD_ON_HUDSON = false;
+    BUILD_ON_HUDSON = false,
+    LOCAL_PACKAGER = "C:/Users/adrilee/Desktop/50";
 
-function prepareHudson(job, callback) {
-    var PACKAGER_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/target/zip/*zip*/zip.zip",
-        EXECUTABLES_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/target/dependency/*zip*/dependency.zip",
-        FUNCTIONAL_TEST_URL = "http://" + HUDSON_CI_HOSTNAME + ":" + HUDSON_CI_PORT + "/job/" + job + "/ws/Framework/test.functional/*zip*/test.functional.zip",
+function prepare(job, callback) {
+    var PACKAGER_URL = "http://mac-ci:9000/job/" + job + "/ws/target/zip/*zip*/zip.zip",
+        EXECUTABLES_URL = "http://mac-ci:9000/job/" + job + "/ws/target/dependency/*zip*/dependency.zip",
+        FUNCTIONAL_TEST_URL = "http://mac-ci:9000/job/" + job + "/ws/Framework/ext/test.functional/*zip*/test.functional.zip",
         PACKAGER_FILENAME = "/zip.zip",
         EXECUTABLES_FILENAME = "/dependency.zip",
         FUNCTIONAL_TEST_FILENAME = "/test.functional.zip";
@@ -32,57 +31,34 @@ function prepareHudson(job, callback) {
         fs.mkdirSync(_workspace, "0755");
     }
 
-    // grab functional tests from framework/ext/test.functional and place in workpace/public/spec
-    downloadUnzipDelete(PACKAGER_URL, PACKAGER_FILENAME, function() {
-        downloadUnzipDelete(EXECUTABLES_URL, EXECUTABLES_FILENAME, function() {
-            wrench.copyDirSyncRecursive(_workspace + "/dependency", _workspace + "/zip/dependencies");
-            downloadUnzipDelete(FUNCTIONAL_TEST_URL, FUNCTIONAL_TEST_FILENAME, callback);
+    if (BUILD_ON_HUDSON) {
+        // grab functional tests from framework/ext/test.functional and place in workpace/public/spec
+        downloadUnzipDelete(PACKAGER_URL, PACKAGER_FILENAME, function() {
+            downloadUnzipDelete(EXECUTABLES_URL, EXECUTABLES_FILENAME, function() {
+                wrench.copyDirSyncRecursive(_workspace + "/dependency", _workspace + "/zip/dependencies");
+                downloadUnzipDelete(FUNCTIONAL_TEST_URL, FUNCTIONAL_TEST_FILENAME, callback);
+            });
         });
-    });
-}
 
-function prepareLocal(callback) {
-    var PACKAGER_URL = path.normalize(__dirname + "/../../../../target/zip"),
-        FUNCTIONAL_TEST_URL = path.normalize(__dirname + "/../../../test.functional"),
-        // Temp location
-        EXECUTABLES_URL = "http://mac-ci:9000/job/BB10-Webworks-Packager-next-api-refactor/ws/target/dependency/*zip*/dependency.zip",
-        EXECUTABLES_FILENAME = "/dependency.zip";
-    
-    // CLEAN/Delete workspace first
-    if (!path.existsSync(_workspace)) {
-        console.log('CREATE: new workspace')
-        fs.mkdirSync(_workspace, "0755");
-    } else {
-        console.log('DELETE: old workspace')
-        wrench.rmdirSyncRecursive(_workspace);
-        console.log('CREATE: new workspace')
-        fs.mkdirSync(_workspace, "0755");
-    }
-
-    wrench.copyDirSyncRecursive(PACKAGER_URL, _workspace + "/zip");
-    wrench.copyDirSyncRecursive(FUNCTIONAL_TEST_URL, _workspace + "/test.functional");
-
-    downloadUnzipDelete(EXECUTABLES_URL, EXECUTABLES_FILENAME, function() {
-        wrench.copyDirSyncRecursive(_workspace + "/dependency", _workspace + "/zip/dependencies");
-        callback();
-    });
-}
-
-function downloadUnzipDelete(url, filename, callback) {
-    downloadDependency(url, filename, function (err) {
-        if (err) {
-            callback(err);
-        } else {
-            unzipDependency(filename, function (err) {
-                if (err) { 
+        function downloadUnzipDelete(url, filename, callback) {
+            downloadDependency(url, filename, function (err) {
+                if (err) {
                     callback(err);
                 } else {
-                    fs.unlinkSync(_workspace + filename);
-                    callback();
+                    unzipDependency(filename, function (err) {
+                        if (err) { 
+                            callback(err);
+                        } else {
+                            fs.unlinkSync(_workspace + filename);
+                            callback();
+                        }
+                    });
                 }
             });
         }
-    });
+    } else {
+        callback();
+    }
 }
 
 function downloadDependency(source, destination, callback) {
@@ -202,20 +178,33 @@ function package(callback) {
 
     // ZIP widget & BBWP Package
     function packageWidget() {
-        var package_cmd = _workspace + "/zip/bbwp " + _widget + "/widget.zip -d";
+        var package_cmd;
+
+        if (BUILD_ON_HUDSON) {
+            package_cmd = _workspace + "/zip/bbwp " + _widget + "/widget.zip -d";
+        } else {
+            package_cmd = LOCAL_PACKAGER + "/bbwp " + _widget + "/widget.zip -d";
+        }
+
         execute(package_cmd, callback);
     }
 
     var zip_cmd = "cd " + _widget + " && " + "zip widget.zip config.xml";
-    execute(zip_cmd, packageWidget);
     
+    execute(zip_cmd, packageWidget);
 }
 
 
 function deploy(callback) {
-    // deploy -installApp -launchApp
-    var deploy_cmd = _workspace + "/zip/dependencies/tools/bin/blackberry-deploy.bat -package " + _widget + "/simulator/widget.bar " +
+    var deploy_cmd;
+
+    if (BUILD_ON_HUDSON) {
+        deploy_cmd = _workspace + "/zip/dependencies/tools/bin/blackberry-deploy.bat -package " + _widget + "/simulator/widget.bar " +
         "-device " + DEVICE_IP + " -password " + DEVICE_PASSWORD + " -installApp -launchApp";
+    } else {
+        deploy_cmd = LOCAL_PACKAGER + "/dependencies/tools/bin/blackberry-deploy.bat -package " + _widget + "/simulator/widget.bar " +
+        "-device " + DEVICE_IP + " -password " + DEVICE_PASSWORD + " -installApp -launchApp";
+    }
 
     console.log('DEPLOY: ' + deploy_cmd);
     spawn(deploy_cmd, function (success) {
@@ -235,35 +224,19 @@ function deploy(callback) {
 
 _self = {
     run: function (job, callback) {
-        if (BUILD_ON_HUDSON) {
-            prepareHudson(job, function (err) {
-                if (err) {
-                    callback(err);
-                } else {
-                    package(function (err) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            deploy(callback);
-                        }
-                    });
-                }
-            });
-        } else {
-            prepareLocal(function (err) {
-                if (err) {
-                    callback(err);
-                } else {
-                    package(function (err) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            deploy(callback);
-                        }
-                    });
-                }
-            });
-        }
+        prepare(job, function (err) {
+            if (err) {
+                callback(err);
+            } else {
+                package(function (err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        deploy(callback);
+                    }
+                });
+            }
+        });
     }
 };
 
