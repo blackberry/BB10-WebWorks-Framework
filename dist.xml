@@ -8,16 +8,10 @@ xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assemb
     <includeBaseDirectory>false</includeBaseDirectory>
     <baseDirectory>/</baseDirectory>    
 
-	<fileSets>
+    <fileSets>
         <fileSet>            
-            <directory>lib</directory>                    
-            <outputDirectory>lib</outputDirectory>            
+            <directory>target/zip</directory>                    
+            <outputDirectory></outputDirectory>            
         </fileSet>
-
-		<fileSet>            
-            <directory>bin</directory>                    
-            <outputDirectory>bin</outputDirectory>            
-        </fileSet>
-
     </fileSets>
 </assembly>

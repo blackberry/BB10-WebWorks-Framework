@@ -1,2 +1,7 @@
 .git
 node_modules
+target
+dependencies
+ext
+clientFiles
+test.functional

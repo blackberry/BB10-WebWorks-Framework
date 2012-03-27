@@ -1,4 +1,4 @@
-var srcPath = __dirname + '/../../lib/';
+var srcPath = __dirname + '/../../../lib/';
 
 describe("Config", function () {
     var config = require(srcPath + 'config.js');

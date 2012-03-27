@@ -1,5 +1,5 @@
 {
-    "predef": [ 
+    "predef": [
         "DOMDocument",
         "XMLHttpRequest",
         "$", "it", "describe",
@@ -26,13 +26,14 @@
         "arguments",
         "screen",
         "setInterval", "clearInterval", "setTimeout", "clearTimeout",
-        "require", "Node"
+        "require", "Node",
+        "qnx", "chrome", "NamedNodeMap"
     ],
- 
+
     "node" : true,
     "es5" : true,
     "browser" : true,
- 
+
     "boss" : false,
     "curly": false,
     "bitwise" : true,
