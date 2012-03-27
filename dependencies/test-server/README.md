@@ -21,7 +21,8 @@ Send a HTTP GET request to
 `http://<server-hostname-ip>/run/<job-name-on-hudson>`
 and expect response to be results of tests.
 ###### Testing on your local machine
-Use Browser and visit site `http://<server-hostname-ip>/run`
+- Make sure `LOCAL_PACKAGER` has been specified as the absolute path to your Webworks Packager
+- Use Browser and visit site `http://<server-hostname-ip>/run`
 
 
 ### Todo
