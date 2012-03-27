@@ -10,7 +10,11 @@
 `~ ./configure`<br/>
 
 ###### Configuration
-Open `job.js` and edit the varibles `DEVICE_IP` & `DEVICE_PASSWORD` & `LOCAL_PACKAGER`
+- Open `job.js` and edit the varibles `DEVICE_IP` & `DEVICE_PASSWORD` & `LOCAL_PACKAGER`
+- Open `widget/config.xml` and edit 
+  - `<content src="http://<server-hostname-ip>:3000">`
+  - `<access uri="http://<server-hostname-ip>:3000">`
+- Whitelist your features/extensions in `widget/config.xml`
 
 ###### Run server
 `~ node app.js`
@@ -26,7 +30,6 @@ and expect response to be results of tests.
 
 
 ### Todo
-
 - config.xml generator
 - document.body as HTTP GET response
 - hook up to Hudson CI
