@@ -127,10 +127,6 @@ function unzipDependency(target, callback) {
     callback();
 }
 
-function createPage() {
-    // just copy tests to public/spec folder...
-}
-
 function execute(cmd, callback) {
     childProcess.exec(cmd, function (error, stdout, stderr) {
         console.log('EXECUTE: ' + cmd);

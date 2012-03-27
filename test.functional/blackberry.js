@@ -5,7 +5,7 @@ describe("blackberry", function () {
 });
 
 
-describe("blackberry.app", function  () {
+describe("blackberry.app", function () {
 	xit('blackberry.app.event should exist', function () {
 		expect(blackberry.app.event).toBeDefined();
 	});
