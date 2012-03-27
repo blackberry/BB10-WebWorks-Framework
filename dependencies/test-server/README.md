@@ -27,9 +27,3 @@ and expect response to be results of tests.
 ###### Testing on your local machine
 - Make sure `LOCAL_PACKAGER` has been specified as the absolute path to your Webworks Packager
 - Use Browser and visit site `http://<server-hostname-ip>/run`
-
-
-### Todo
-- config.xml generator
-- document.body as HTTP GET response
-- hook up to Hudson CI
