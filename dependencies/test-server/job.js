@@ -7,6 +7,8 @@ var fs = require('fs'),
     zip = require("zip"),
     _widget = path.normalize(__dirname + "/widget"),
     _workspace = path.normalize(__dirname + "/workspace"),
+    _functional_dir = path.normalize(__dirname + "/../../test.functional"),
+    _spec_dir = path.normalize(__dirname + "/public/spec"),
     DEVICE_IP = "192.168.198.128",
     DEVICE_PASSWORD = "123",
     BUILD_ON_HUDSON = false,
@@ -57,6 +59,8 @@ function prepare(job, callback) {
             });
         }
     } else {
+        // copy framwork/test.functional content to test-server/public/spec dir.
+        wrench.copyDirSyncRecursive(_functional_dir, _spec_dir);
         callback();
     }
 }
