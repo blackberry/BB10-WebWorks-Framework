@@ -20,7 +20,7 @@ app.get('/run', function(req, res) {
         } else {
             eventEmitter.on('results', function(message){
                 console.log(message);
-                res.send("Yay jasmine tests are done!");
+                res.send(message);
             })
         }
     });
