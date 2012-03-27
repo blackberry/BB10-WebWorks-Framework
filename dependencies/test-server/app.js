@@ -12,15 +12,6 @@ app.configure(function() {
 });
 
 
-app.get('/hi', function(req, res) {
-    // res.sendfile(__dirname + '/public/index.html');
-});
-
-app.get('/hi', function(req, res) {
-    // res.sendfile(__dirname + '/public/index.html');
-    res.send("GET: /run/:job<br>GET: /run");
-});
-
 app.get('/run', function(req, res) {
     job.run(null, function (err) {
         if (err) {
@@ -29,7 +20,7 @@ app.get('/run', function(req, res) {
         } else {
             eventEmitter.on('results', function(message){
                 console.log(message);
-                res.send(message);
+                res.send("Yay jasmine tests are done!");
             })
         }
     });
@@ -58,4 +49,8 @@ app.post('/results', function(req, res) {
     }
 });
 
-app.listen(3000);
+
+var port = 3000;
+app.listen(port);
+
+console.log('Server now listening on port ' + port);
