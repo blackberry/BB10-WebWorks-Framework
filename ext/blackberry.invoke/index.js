@@ -10,7 +10,7 @@ var _event = requireLocal("lib/event"), PPSUtilsModule = requireLocal("lib/pps/p
 
 module.exports = {
     invoke: function (success, fail, args) {
-        var argsObj = JSON.parse(decodeURIComponent(args.args)), path = "/pps/services", mode = 2, url, PPSUtilsInstance,
+        var argsObj, path = "/pps/services", mode = 2, url, PPSUtilsInstance,
             ctrlObj = {
                 'id': "",
                 'dat': null,
@@ -28,26 +28,31 @@ module.exports = {
         case 11:
             path += "/navigator/control?server";
             
-            if (!argsObj) {
-                url = APP_URL_BROWSER;
-            }                       
-            else {
-                url = argsObj.url.split("://");
+            try {
+                argsObj = JSON.parse(decodeURIComponent(args.args));
                 
-                //No protocol given, append http protocol
-                if (url.length === 1) {
-                    url = APP_URL_BROWSER + url[0];
-                }
-                else if (url.length === 2) {
+                if (!argsObj || !argsObj.url) {
+                    url = APP_URL_BROWSER;
+                }                       
+                else {
+                    url = argsObj.url.split("://");
                     
-                    url = url[0].toLowerCase() + '://' + url[1];
-                    
-                    //Check if protocol is supported: http, https
-                    if (url.indexOf("http") !== 0) {
-                        fail(APP_BROWSER_ERROR, -1);
-                    }                            
+                    //No protocol given, append http protocol
+                    if (url.length === 1) {
+                        url = APP_URL_BROWSER + url[0];
+                    }
+                    else if (url.length === 2) {
+                        url = url[0].toLowerCase() + '://' + url[1];
+                        
+                        //Check if protocol is supported: http, https
+                        if (url.indexOf("http") !== 0) {
+                            fail(APP_BROWSER_ERROR, -1);
+                        }                            
+                    }
                 }
-            }
+            } catch (e) {
+                    url = APP_URL_BROWSER;
+                }
 
             ctrlObj.dat = url;
             break;
