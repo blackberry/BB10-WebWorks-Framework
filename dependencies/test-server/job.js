@@ -7,7 +7,7 @@ var fs = require('fs'),
     zip = require("zip"),
     _widget = path.normalize(__dirname + "/widget"),
     _workspace = path.normalize(__dirname + "/workspace"),
-    _functional_dir = path.normalize(__dirname + "/../../test.functional"),
+    _functional_dir = path.normalize(__dirname + "/../../test/functional"),
     _spec_dir = path.normalize(__dirname + "/public/spec"),
     DEVICE_IP = "192.168.198.128",
     DEVICE_PASSWORD = "123",
@@ -17,10 +17,10 @@ var fs = require('fs'),
 function prepare(job, callback) {
     var PACKAGER_URL = "http://mac-ci:9000/job/" + job + "/ws/target/zip/*zip*/zip.zip",
         EXECUTABLES_URL = "http://mac-ci:9000/job/" + job + "/ws/target/dependency/*zip*/dependency.zip",
-        FUNCTIONAL_TEST_URL = "http://mac-ci:9000/job/" + job + "/ws/Framework/ext/test.functional/*zip*/test.functional.zip",
+        FUNCTIONAL_TEST_URL = "http://mac-ci:9000/job/" + job + "/ws/Framework/ext/test/functional/*zip*/functional.zip",
         PACKAGER_FILENAME = "/zip.zip",
         EXECUTABLES_FILENAME = "/dependency.zip",
-        FUNCTIONAL_TEST_FILENAME = "/test.functional.zip";
+        FUNCTIONAL_TEST_FILENAME = "/functional.zip";
     
     // TODO: Do a CLEAN/Delete workspace first
     if (!path.existsSync(_workspace)) {
