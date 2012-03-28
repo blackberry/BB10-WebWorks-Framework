@@ -17,7 +17,6 @@ var libRoot = __dirname + "/../../../../lib/";
 
 describe("event", function () {
     var event = require(libRoot + "public/event"),
-        windowObj = require(libRoot + "public/window"),
         _window;
 
     beforeEach(function () {
@@ -26,14 +25,34 @@ describe("event", function () {
                 exec: jasmine.createSpy("window.webworks.exec")
             }
         };
+        GLOBAL.window = _window;
+    });
 
-        spyOn(windowObj, "window").andReturn(_window);
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     describe("on", function () {
+
         it("it can call webworks.exec action 'on' given valid featureId, eventName and callback", function () {
             event.on("blackberry.system.event", "foo", jasmine.createSpy());
             expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
+        });
+        
+        it("it will not register duplicate events", function () {
+            var JohnnyEnglish = jasmine.createSpy();
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
+            expect(_window.webworks.exec.callCount).toEqual(1);
         });
     });
 

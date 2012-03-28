@@ -11,24 +11,27 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.event/",
 describe("Event Listener", function () {
 
     beforeEach(function () {
-        //Create window object like in DOM and have it act the same way
-        GLOBAL.window = GLOBAL;
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window  = {webworks : mockedWebworks};
         client = require(_apiDir + "client");
     });
 
+    afterEach(function () {
+        delete GLOBAL.window;
+    });
+
     it("adds event listeners", function () {
-        var eventType = "GoldenEyeHijack",
+        var eventType = "GoldenEye",
             JamesBond = jasmine.createSpy();
         client.addEventListener(eventType, JamesBond);
         expect(mockedWebworks.event.on).toHaveBeenCalledWith("blackberry.event", eventType, JamesBond);
     });
 
     it("removes event listeners", function () {
-        var eventType = "";
-        client.addEventListener(eventType);
-        expect(mockedWebworks.event.remove).toHaveBeenCalledWith("blackberry.event", eventType, undefined);
+        var eventType = "GoldenEyeHijack",
+            JamesBond = jasmine.createSpy();
+        client.removeEventListener(eventType, JamesBond);
+        expect(mockedWebworks.event.remove).toHaveBeenCalledWith("blackberry.event", eventType, JamesBond);
     });
 
 });
