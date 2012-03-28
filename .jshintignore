@@ -3,6 +3,6 @@ node_modules
 target
 dependencies
 clientFiles
-test.functional
+test/functional
 lib/pps/ppsUtils.js
 lib/jnext.js
