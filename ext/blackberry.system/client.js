@@ -19,6 +19,14 @@ _self.hasPermission = function (module) {
     }
 };
 
+_self.__defineGetter__("ALLOW", function () {
+    return 0;
+});
+
+_self.__defineGetter__("DENY", function () {
+    return 1;
+});
+
 _self.__defineGetter__("model", function () {
     return performExec(ID, "model");
 });

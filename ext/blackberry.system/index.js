@@ -12,13 +12,12 @@ module.exports = {
     },
 
     hasPermission: function (success, fail, args, env) {
-        console.log(env);
-        console.log(args.module);
         // TODO string argument surrounded by %22
         // preserve dot for feature id
-        var module = args.module.replace(/[^a-zA-Z.]+/g, "");
-        console.log("request origin: " + env.request.origin);
-        console.log("module: " + module);
-        success(whitelist.isFeatureAllowed(env.request.origin, module));
+        var module = args.module.replace(/[^a-zA-Z.]+/g, ""),
+            allowed = whitelist.isFeatureAllowed(env.request.origin, module);
+
+        // ALLOW - 0, DENY - 1
+        success(allowed ? 0 : 1);
     }
 };
