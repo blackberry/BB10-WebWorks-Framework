@@ -34,8 +34,20 @@ describe("blackberry.app", function () {
 
 describe("blackberry.invoke", function () {
 	it('invoke should exist', function () {
-		expect(blackberry.invoke).not.toBeDefined();
+		expect(blackberry.invoke).toBeDefined();
 	});
+
+    it('BrowserArguments should exist', function () {
+        expect(blackberry.invoke.BrowserArguments).toBeDefined();
+    });
+
+    it('invoke should invoke', function () {
+        var args = new blackberry.invoke.BrowserArguments("http://www.google.com");
+        console.log(blackberry.invoke.BrowserArguments);
+        console.log(args);
+        blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+        expect(blackberry.invoke.invoke).toBeDefined();
+    });
 });
 
 describe("webworks", function () {
