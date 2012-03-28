@@ -1,7 +1,6 @@
 var _self = {}, 
     _ID = "blackberry.event",
-    _libDir = __dirname + "./../../lib/",
-    window = require(_libDir + "public/window").window();
+    _libDir = __dirname + "./../../lib/";
 
 _self.addEventListener = function(eventType, cb) {
     if(cb) {
