@@ -3,21 +3,18 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _event = requireLocal("lib/event"), _ppsUtils = requireLocal("lib/pps/ppsUtils"),
+var _event = requireLocal("lib/event"), _ppsModule = requireLocal("lib/pps/ppsUtils"),
     APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
     APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.";
 
 module.exports = {
-    invoke: function (success, fall, args) {
+    invoke: function (success, fail, args) {
         var argsObj = JSON.parse(decodeURIComponent(args.args)), path = "/pps/services", mode = 2, url,
             ctrlObj = {
-                'id': undefined,
-                'obj': {
-                    'id': "",
-                    'dat': null,
-                    'msg': "invoke"
-                }
+                'id': "",
+                'dat': null,
+                'msg': "invoke"
             };
 
         switch (parseInt(args.appType, 10)) {
@@ -43,17 +40,16 @@ module.exports = {
                 }
                 else if (url.length === 2) {
                     
-                    //Check if protocol is supported: http, https
-                    if (url[0].indexOf("http") !== 0)
-                        throw APP_BROWSER_ERROR;                                
+                    url = url[0].toLowerCase() + '://' + url[1];
                     
-                    else {
-                        url = argsObj.url;
-                    }
+                    //Check if protocol is supported: http, https
+                    if (url.indexOf("http") !== 0) {
+                        fail(APP_BROWSER_ERROR, -1);
+                    }                            
                 }
             }
 
-            ctrlObj.obj.dat = url;
+            ctrlObj.dat = url;
             break;
         // Music
         case 13:
@@ -68,12 +64,14 @@ module.exports = {
         case 16:
             break;
         default:
-            break;
+            fail(APP_TYPE_ERROR, -1);
         }
-
-        _ppsUtils.init();
-        _ppsUtils.open(path, mode);
-        _ppsUtils.write(ctrlObj);
-        _ppsUtils.close();
+        
+        var PPSUtilsInstance = new _ppsModule();
+        
+        PPSUtilsInstance.init();
+        PPSUtilsInstance.open(path, mode);
+        PPSUtilsInstance.write(ctrlObj);
+        PPSUtilsInstance.close();
     }
 };

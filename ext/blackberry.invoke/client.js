@@ -16,12 +16,8 @@ _self.invoke = function (appType, args) {
     });
 };
 
-_self.BrowserArguments = function (url, transport) {
-    this.url = url.split('://')[0].toLowerCase() + '://' + url.split('://')[1];
-
-    if (transport) {
-        this.transport = transport;
-    }
+_self.BrowserArguments = function (url) {
+    this.url = url;
 };
 
 /*
