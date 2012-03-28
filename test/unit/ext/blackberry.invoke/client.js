@@ -25,21 +25,18 @@ describe("blackberry.invoke client", function () {
 
     describe("BrowserArguments", function () {
         var url = "http://www.google.com", 
-            transport = "BES", 
             browserArguments;
 
         it("should create a new BrowserArguments Object with url", function () {
             browserArguments = new client.BrowserArguments(url);
 
             expect(browserArguments.url).toBeDefined();
-            expect(browserArguments.transport).not.toBeDefined();
         });
 
-        it("should create a new BrowserArguments Object with url and transport", function () {
-            browserArguments = new client.BrowserArguments(url, transport);
+        it("should create a new BrowserArguments Object with url", function () {
+            browserArguments = new client.BrowserArguments(url);
 
             expect(browserArguments.url).toBeDefined();
-            expect(browserArguments.transport).toBeDefined();
         });
 
         it("should create a new BrowserArguments Object with lowercase url protocol", function () {

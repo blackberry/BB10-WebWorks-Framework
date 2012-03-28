@@ -3,14 +3,14 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _event = requireLocal("lib/event"), _ppsModule = requireLocal("lib/pps/ppsUtils"),
+var _event = requireLocal("lib/event"), PPSUtilsModule = requireLocal("lib/pps/ppsUtils"),
     APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
     APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.";
 
 module.exports = {
     invoke: function (success, fail, args) {
-        var argsObj = JSON.parse(decodeURIComponent(args.args)), path = "/pps/services", mode = 2, url,
+        var argsObj = JSON.parse(decodeURIComponent(args.args)), path = "/pps/services", mode = 2, url, PPSUtilsInstance,
             ctrlObj = {
                 'id': "",
                 'dat': null,
@@ -67,7 +67,7 @@ module.exports = {
             fail(APP_TYPE_ERROR, -1);
         }
         
-        var PPSUtilsInstance = new _ppsModule();
+        PPSUtilsInstance = new PPSUtilsModule();
         
         PPSUtilsInstance.init();
         PPSUtilsInstance.open(path, mode);
