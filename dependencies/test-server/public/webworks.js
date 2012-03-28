@@ -992,7 +992,7 @@ self = module.exports = {
         return uri && uri.scheme && "data:".indexOf(uri.scheme) !== -1;
     },
 
-    performExec : function (featureId, property) {
+    performExec : function (featureId, property, args, sync) {
         var result,
             window = require("window").window(); // this function is used by client side, it uses the id "window" for require
 
@@ -1000,7 +1000,7 @@ self = module.exports = {
             result = data;
         }, function (data, response) {
             throw data;
-        }, featureId, property, null, true);
+        }, featureId, property, args, sync);
 
         return result;
     },
@@ -1215,7 +1215,7 @@ window.webworks = (function () {
                 }
             }
 
-            request[sync ? "makeSyncCall" : "makeAsyncCall"](success, fail);
+            request[sync ? "makeAsyncCall" : "makeSyncCall" ](success, fail);
         },
         successCallback: function (id, args) {
             //HACK: this will live later
