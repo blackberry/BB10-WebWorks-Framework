@@ -2,6 +2,7 @@
 node_modules
 target
 dependencies
-ext
 clientFiles
 test.functional
+lib/pps/ppsUtils.js
+lib/jnext.js

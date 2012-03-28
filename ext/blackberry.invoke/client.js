@@ -1,18 +1,22 @@
+/*globals requireLocal */
+
 function requireLocal(id) {
     id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _self = {}, performExec = requireLocal('lib/utils').performExec;
+var _self = {}, 
+    _ID = "blackberry.invoke",
+    performExec = requireLocal('lib/utils').performExec;
 
-_self.invoke = function(appType, args) {
-    performExec("blackberry.invoke", "invoke", {
+_self.invoke = function (appType, args) {
+    performExec(_ID, "invoke", {
         'appType': appType,
         'args': args
     });
 };
 
-_self.BrowserArguments = function(url, transport) {
+_self.BrowserArguments = function (url, transport) {
     this.url = url.split('://')[0].toLowerCase() + '://' + url.split('://')[1];
 
     if (transport) {
@@ -23,25 +27,25 @@ _self.BrowserArguments = function(url, transport) {
 /*
  * Define constants for appType
  */
-_self.__defineGetter__("APP_CAMERA", function() {
+_self.__defineGetter__("APP_CAMERA", function () {
     return 4;
 });
-_self.__defineGetter__("APP_MAPS", function() {
+_self.__defineGetter__("APP_MAPS", function () {
     return 5;
 });
-_self.__defineGetter__("APP_BROWSER", function() {
+_self.__defineGetter__("APP_BROWSER", function () {
     return 11;
 });
-_self.__defineGetter__("APP_MUSIC", function() {
+_self.__defineGetter__("APP_MUSIC", function () {
     return 13;
 });
-_self.__defineGetter__("APP_PHOTOS", function() {
+_self.__defineGetter__("APP_PHOTOS", function () {
     return 14;
 });
-_self.__defineGetter__("APP_VIDEOS", function() {
+_self.__defineGetter__("APP_VIDEOS", function () {
     return 15;
 });
-_self.__defineGetter__("APP_APPWORLD", function() {
+_self.__defineGetter__("APP_APPWORLD", function () {
     return 16;
 });
 
