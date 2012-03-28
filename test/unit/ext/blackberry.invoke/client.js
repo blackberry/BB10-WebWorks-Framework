@@ -38,13 +38,5 @@ describe("blackberry.invoke client", function () {
 
             expect(browserArguments.url).toBeDefined();
         });
-
-        it("should create a new BrowserArguments Object with lowercase url protocol", function () {
-            url = "HTTP://WWW.GOOGLE.COM";
-            browserArguments = new client.BrowserArguments(url);
-            
-            expect(browserArguments.url).toEqual("http://WWW.GOOGLE.COM");
-        });
     });
-
 });
