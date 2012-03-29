@@ -199,10 +199,10 @@ function deploy(callback) {
     var deploy_cmd;
 
     if (BUILD_ON_HUDSON) {
-        deploy_cmd = _workspace + "/zip/dependencies/tools/bin/blackberry-deploy.bat -package " + _widget + "/simulator/widget.bar " +
+        deploy_cmd = _workspace + "/zip/dependencies/tools/bin/blackberry-deploy -package " + _widget + "/simulator/widget.bar " +
         "-device " + DEVICE_IP + " -password " + DEVICE_PASSWORD + " -installApp -launchApp";
     } else {
-        deploy_cmd = LOCAL_PACKAGER + "/dependencies/tools/bin/blackberry-deploy.bat -package " + _widget + "/simulator/widget.bar " +
+        deploy_cmd = LOCAL_PACKAGER + "/dependencies/tools/bin/blackberry-deploy -package " + _widget + "/simulator/widget.bar " +
         "-device " + DEVICE_IP + " -password " + DEVICE_PASSWORD + " -installApp -launchApp";
     }
 
