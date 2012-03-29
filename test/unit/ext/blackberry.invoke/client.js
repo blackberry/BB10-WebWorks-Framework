@@ -3,16 +3,17 @@ var _ID = "blackberry.invoke",
     _libDir = __dirname + "./../../../../lib",
     _apiDir = _extDir + "/" + _ID,
     utils,
-    client;
-
+    client,
+    mockedWebworks = {
+        execAsync: function () {}
+    };
 
 describe("blackberry.invoke client", function () {
     beforeEach(function () {
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window  = {
-            webworks : {
-            }
-        };
+        GLOBAL.window = GLOBAL;
+        GLOBAL.window.webworks = mockedWebworks;
+
         utils = require(_libDir + "/utils");
         client = require(_apiDir + "/client");
     });
@@ -36,11 +37,15 @@ describe("blackberry.invoke client", function () {
     });
 
     describe("Browser Invoke", function () {
-        var url = "http://www.google.com";
         it("invoke should performExec", function () {
-            spyOn(utils, "performExec");
-            client.invoke(client.APP_BROWSER, new client.BrowserArguments(url));
-            expect(utils.performExec).toHaveBeenCalledWith(_ID, "invoke", { 'appType' : client.APP_BROWSER, args : { 'url' : url } });
+            var url = "http://www.google.com",
+                result;
+
+            spyOn(mockedWebworks, "execAsync").andReturn(0);
+
+            result = client.invoke(client.APP_BROWSER, new client.BrowserArguments(url));
+            
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invoke", { 'appType' : client.APP_BROWSER, args : { 'url' : url } });
         });
     });
 
