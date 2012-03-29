@@ -41,7 +41,7 @@ describe("blackberry.invoke client", function () {
             var url = "http://www.google.com",
                 result;
 
-            spyOn(mockedWebworks, "execSync").andReturn(0);
+            spyOn(mockedWebworks, "execAsync").andReturn(0);
 
             result = client.invoke(client.APP_BROWSER, new client.BrowserArguments(url));
             
