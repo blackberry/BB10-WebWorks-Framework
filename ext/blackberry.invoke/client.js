@@ -1,14 +1,8 @@
-function requireLocal(id) {
-    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
-    return !!require.resolve ? require("../../" + id) : window.require(id);
-}
-
 var _self = {}, 
-    _ID = "blackberry.invoke",
-    utils = requireLocal('lib/utils');
+    _ID = "blackberry.invoke";
 
 _self.invoke = function (appType, args) {
-    utils.performExec(_ID, "invoke", {
+    return window.webworks.execAsync(_ID, "invoke", {
         'appType': appType,
         'args': args
     });
