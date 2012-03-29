@@ -1,5 +1,3 @@
-/*globals requireLocal */
-
 function requireLocal(id) {
     id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
     return !!require.resolve ? require("../../" + id) : window.require(id);
@@ -7,10 +5,10 @@ function requireLocal(id) {
 
 var _self = {}, 
     _ID = "blackberry.invoke",
-    performExec = requireLocal('lib/utils').performExec;
+    utils = requireLocal('lib/utils');
 
 _self.invoke = function (appType, args) {
-    performExec(_ID, "invoke", {
+    utils.performExec(_ID, "invoke", {
         'appType': appType,
         'args': args
     });

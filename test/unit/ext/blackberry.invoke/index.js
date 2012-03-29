@@ -1,8 +1,28 @@
-/* Blocked on jnext using dom
-describe("blackberry.invoke index", function () {
-    var index = require('../../../../ext/blackberry.invoke/index'),
-        jnext = require('../../../../lib/jnext');
+var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
+    _libDir = __dirname + "./../../../../lib/",
+    index,
+    events = require(_libDir + "event"),
+    jsdom = require("jsdom");
 
+describe("blackberr.invoke index", function () {
+
+    beforeEach(function () {
+        //Set up mocking, no need to "spyOn" since spies are included in mock
+        GLOBAL.document = jsdom.jsdom("<html><body></body></html>");
+        GLOBAL.window = GLOBAL.document.createWindow();
+        GLOBAL.navigator = window.navigator;
+        GLOBAL.JNEXT = require(_libDir + "jnext");
+        index = require(_apiDir + "index");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.document;
+        delete GLOBAL.window;
+        delete GLOBAL.navigator;
+        delete GLOBAL.JNEXT;
+        index = null;
+    });
+/*
     describe("Browser Invoke", function () {
         var mock_args = {
                 appType: 11,
@@ -43,5 +63,5 @@ describe("blackberry.invoke index", function () {
             expect(jnext.invoke).toHaveBeenCalledWith(expected_invokeArgs);
         });
     });
+    */
 });
-*/

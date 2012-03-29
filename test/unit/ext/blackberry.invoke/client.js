@@ -1,6 +1,27 @@
+var _ID = "blackberry.invoke",
+    _extDir = __dirname + "./../../../../ext",
+    _libDir = __dirname + "./../../../../lib",
+    _apiDir = _extDir + "/" + _ID,
+    utils,
+    client;
+
+
 describe("blackberry.invoke client", function () {
-    var client = require('../../../../ext/blackberry.invoke/client'),
-        utils = require('../../../../lib/utils');
+    beforeEach(function () {
+        //Set up mocking, no need to "spyOn" since spies are included in mock
+        GLOBAL.window  = {
+            webworks : {
+            }
+        };
+        utils = require(_libDir + "/utils");
+        client = require(_apiDir + "/client");
+    });
+
+    afterEach(function () {
+        //delete GLOBAL.window;
+        utils = null;
+        client = null;
+    });
 
     describe("appType", function () {
         it("should return constant for appropriate appType", function () {
@@ -16,22 +37,16 @@ describe("blackberry.invoke client", function () {
 
     describe("Browser Invoke", function () {
         var url = "http://www.google.com";
-        xit("invoke should performExec", function () {
-            spyOn(utils, "performExec").andReturn(true);
+        it("invoke should performExec", function () {
+            spyOn(utils, "performExec");
             client.invoke(client.APP_BROWSER, new client.BrowserArguments(url));
-            expect(utils.performExec).toHaveBeenCalled();
+            expect(utils.performExec).toHaveBeenCalledWith(_ID, "invoke", { 'appType' : client.APP_BROWSER, args : { 'url' : url } });
         });
     });
 
     describe("BrowserArguments", function () {
         var url = "http://www.google.com", 
             browserArguments;
-
-        it("should create a new BrowserArguments Object with url", function () {
-            browserArguments = new client.BrowserArguments(url);
-
-            expect(browserArguments.url).toBeDefined();
-        });
 
         it("should create a new BrowserArguments Object with url", function () {
             browserArguments = new client.BrowserArguments(url);
