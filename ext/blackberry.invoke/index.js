@@ -1,5 +1,4 @@
 function requireLocal(id) {
-    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
@@ -11,7 +10,8 @@ var _event = requireLocal("lib/event"),
 
 module.exports = {
     invoke: function (success, fail, args) {
-        var argsObj, path = "/pps/services", 
+        var argsObj, 
+            path = "/pps/services", 
             mode = 2, 
             url, 
             PPSUtilsInstance,
@@ -76,7 +76,7 @@ module.exports = {
             fail(APP_TYPE_ERROR, -1);
         }
         
-        PPSUtilsInstance = new PPSUtilsModule();
+        PPSUtilsInstance = PPSUtilsModule.pps();
         
         PPSUtilsInstance.init();
         PPSUtilsInstance.open(path, mode);

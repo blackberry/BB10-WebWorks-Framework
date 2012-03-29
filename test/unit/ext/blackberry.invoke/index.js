@@ -1,9 +1,11 @@
-/*
 var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     _libDir = __dirname + "./../../../../lib/",
     index,
-    events = require(_libDir + "event");
-    jsdom = require("jsdom");
+    _ppsUtils,
+    events = require(_libDir + "event"),
+    jsdom = require("jsdom"),
+    jnext,
+    mockedPPS;
 
 describe("blackberr.invoke index", function () {
 
@@ -12,7 +14,14 @@ describe("blackberr.invoke index", function () {
         GLOBAL.document = jsdom.jsdom("<html><body></body></html>");
         GLOBAL.window = GLOBAL.document.createWindow();
         GLOBAL.navigator = window.navigator;
-        GLOBAL.JNEXT = require(_libDir + "jnext");
+        GLOBAL.JNEXT = {
+            invoke : function () {},
+            registerEvents: function () {},
+            unregisterEvents: function () {},
+            createObject: function () {},
+            require: function () {}
+        };
+        _ppsUtils = require(_libDir + "pps/ppsUtils");
         index = require(_apiDir + "index");
     });
 
@@ -31,29 +40,38 @@ describe("blackberr.invoke index", function () {
                     url: 'http://www.rim.com'
                 }))
             },
-            expected_invokeArgs = {
-                id: 1,
-                cmd: 'Open',
-                params: '/pps/services/navigator/control?server 2'
+            expectedOpenMethodArgs = {
+                path: '/pps/services/navigator/control?server',
+                mode: 2
+            };
+            expectedWriteMethodArgs = {
+                id: '',
+                dat: 'http://www.rim.com', 
+                msg: 'invoke'
             };
 
         beforeEach(function () {
-            spyOn(jnext, "require").andReturn(true);
-            spyOn(jnext, "createObject").andReturn(1);
-            spyOn(jnext, "invoke").andReturn('Ok');
+            mockedPPS = { 
+                init: jasmine.createSpy(),
+                open: jasmine.createSpy(),
+                read: jasmine.createSpy(),
+                write: jasmine.createSpy(),
+                close: jasmine.createSpy()
+            };
+            spyOn(_ppsUtils, "pps").andReturn(mockedPPS);
         });
         
-        it("should call jnext", function () {         
+        xit("should call jnext", function () {         
             index.invoke(function () {}, function () {}, mock_args);
             expect(jnext.invoke).toHaveBeenCalled();
         });
 
-        it("should require pps", function () {         
+        xit("should require pps", function () {         
             index.invoke(function () {}, function () {}, mock_args);
             expect(jnext.require).toHaveBeenCalledWith('pps');
         });
 
-        it("should createObject pps.PPS", function () {         
+        xit("should createObject pps.PPS", function () {         
             index.invoke(function () {}, function () {}, mock_args);
             expect(jnext.createObject).toHaveBeenCalledWith('pps.PPS');
         });
@@ -61,9 +79,11 @@ describe("blackberr.invoke index", function () {
         
         it("should generate expected invokeArgs output", function () {
             index.invoke(function () {}, function () {}, mock_args);            
-            expect(jnext.invoke).toHaveBeenCalledWith(expected_invokeArgs);
+            expect(mockedPPS.init).toHaveBeenCalled();
+            //expect(_ppsUtilsInst, "open").toHaveBeenCalledWith(expectedOpenMethodArgs.path, expectedOpenMethodArgs.mode);
+            //expect(_ppsUtilsInst, "write").toHaveBeenCalledWith(expectedWriteMethodArgs);
+            //expect(_ppsUtilsInst, "close").toHaveBeenCalled();
         });
     });
     
 });
-*/
