@@ -20,4 +20,12 @@ describe("blackberry.system index", function () {
         expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalled();
         expect(success).toHaveBeenCalledWith(0);
     });
+
+    it("hasCapability", function () {
+        var success = jasmine.createSpy();
+
+        sysIndex.hasCapability(success, undefined, {"capability": "network.wlan"}, undefined);
+
+        expect(success).toHaveBeenCalledWith(true);
+    });
 });
