@@ -1,4 +1,5 @@
 var fs = require('fs'),
+    fs_extra = require('fs-extra'),
     http = require('http'),
     url = require('url'),
     path = require("path"),
@@ -61,6 +62,7 @@ function prepare(job, callback) {
     } else {
         // copy framwork/test.functional content to test-server/public/spec dir.
         wrench.copyDirSyncRecursive(_functional_dir, _spec_dir);
+        fs_extra.copyFileSync(LOCAL_PACKAGER + "/Framework/clientFiles/webworks.js", path.normalize(__dirname + "/public/webworks.js"));
         callback();
     }
 }
@@ -199,10 +201,10 @@ function deploy(callback) {
     var deploy_cmd;
 
     if (BUILD_ON_HUDSON) {
-        deploy_cmd = _workspace + "/zip/dependencies/tools/bin/blackberry-deploy -package " + _widget + "/simulator/widget.bar " +
+        deploy_cmd = _workspace + "/zip/dependencies/tools/bin/blackberry-deploy" + (require(LOCAL_PACKAGER + "/lib/packager-utils.js").isWindows() ? ".bat" : "") + " -package " + _widget + "/simulator/widget.bar " +
         "-device " + DEVICE_IP + " -password " + DEVICE_PASSWORD + " -installApp -launchApp";
     } else {
-        deploy_cmd = LOCAL_PACKAGER + "/dependencies/tools/bin/blackberry-deploy -package " + _widget + "/simulator/widget.bar " +
+        deploy_cmd = LOCAL_PACKAGER + "/dependencies/tools/bin/blackberry-deploy" + (require(LOCAL_PACKAGER + "/lib/packager-utils.js").isWindows() ? ".bat" : "") + " -package " + _widget + "/simulator/widget.bar " +
         "-device " + DEVICE_IP + " -password " + DEVICE_PASSWORD + " -installApp -launchApp";
     }
 
