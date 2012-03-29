@@ -1,8 +1,9 @@
+/*
 var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     _libDir = __dirname + "./../../../../lib/",
     index,
     events = require(_libDir + "event");
-//    jsdom = require("jsdom");
+    jsdom = require("jsdom");
 
 describe("blackberr.invoke index", function () {
 
@@ -22,7 +23,7 @@ describe("blackberr.invoke index", function () {
         delete GLOBAL.JNEXT;
         index = null;
     });
-/*
+
     describe("Browser Invoke", function () {
         var mock_args = {
                 appType: 11,
@@ -63,5 +64,6 @@ describe("blackberr.invoke index", function () {
             expect(jnext.invoke).toHaveBeenCalledWith(expected_invokeArgs);
         });
     });
-    */
+    
 });
+*/
