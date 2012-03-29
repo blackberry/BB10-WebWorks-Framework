@@ -1,5 +1,4 @@
 function requireLocal(id) {
-    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 

@@ -18,7 +18,7 @@ describe("blackberry.invoke client", function () {
     });
 
     afterEach(function () {
-        //delete GLOBAL.window;
+        delete GLOBAL.window;
         utils = null;
         client = null;
     });

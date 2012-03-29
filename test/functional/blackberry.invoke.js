@@ -13,7 +13,7 @@ describe("blackberry.invoke", function () {
 
         try {
             blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
-        } catch(e) {
+        } catch (e) {
             console.log(e);
         }
 
@@ -23,13 +23,13 @@ describe("blackberry.invoke", function () {
     });
 
     it('invoke should invoke user specified link', function () {
-        var url = window.prompt("Please enter a URL");
+        var url = window.prompt("Please enter a URL"),
             args = new blackberry.invoke.BrowserArguments(url),
             confirm;
 
         try {
             blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
-        } catch(e) {
+        } catch (e) {
             console.log(e);
         }
 
