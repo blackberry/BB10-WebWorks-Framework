@@ -1,8 +1,8 @@
 var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     _libDir = __dirname + "./../../../../lib/",
     index,
-    events = require(_libDir + "event"),
-    jsdom = require("jsdom");
+    events = require(_libDir + "event");
+//    jsdom = require("jsdom");
 
 describe("blackberr.invoke index", function () {
 
