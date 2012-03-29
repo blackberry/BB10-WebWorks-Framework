@@ -39,16 +39,16 @@ describe("blackberr.invoke index", function () {
                 args: encodeURIComponent(JSON.stringify({
                     url: 'http://www.rim.com'
                 }))
-            },
-            expectedOpenMethodArgs = {
-                path: '/pps/services/navigator/control?server',
-                mode: 2
             };
-            expectedWriteMethodArgs = {
-                id: '',
-                dat: 'http://www.rim.com', 
-                msg: 'invoke'
-            };
+            // expectedOpenMethodArgs = {
+            //     path: '/pps/services/navigator/control?server',
+            //     mode: 2
+            // },
+            // expectedWriteMethodArgs = {
+            //     id: '',
+            //     dat: 'http://www.rim.com', 
+            //     msg: 'invoke'
+            // };
 
         beforeEach(function () {
             mockedPPS = { 
