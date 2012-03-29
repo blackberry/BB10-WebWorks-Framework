@@ -17,7 +17,7 @@ module.exports = function (done, custom) {
     var jasmine = require('jasmine-node'),
         verbose = false,
         colored = false,
-        specs = __dirname + "/../" + (custom ? custom : "test"),
+        specs = __dirname + "/../" + (custom ? custom : "test/unit"),
         key;    
 
     //HACK: this should be  taken out if our pull request in jasmine is accepted.
