@@ -18,6 +18,7 @@ describe("Event Listener", function () {
 
     afterEach(function () {
         delete GLOBAL.window;
+        client = null;
     });
 
     it("adds event listeners", function () {

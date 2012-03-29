@@ -41,16 +41,16 @@ describe("event", function () {
         
         it("it will not register duplicate events", function () {
             var JohnnyEnglish = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
-            event.on("blackberry.system.event", "foo", JohnnyEnglish );
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+            event.on("blackberry.system.event", "foo", JohnnyEnglish);
             expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
             expect(_window.webworks.exec.callCount).toEqual(1);
         });
