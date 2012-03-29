@@ -1,5 +1,5 @@
 describe("blackberry.invoke", function () {
-	it('invoke should exist', function () {
+	it('blackberry.invoke should exist', function () {
 		expect(blackberry.invoke).toBeDefined();
 	});
 
@@ -12,7 +12,7 @@ describe("blackberry.invoke", function () {
         	confirm;
 
         try {
-     	   blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+            blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
         } catch(e) {
         	console.log(e);
         }
@@ -28,7 +28,7 @@ describe("blackberry.invoke", function () {
         	confirm;
 
         try {
-     	   blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+            blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
         } catch(e) {
         	console.log(e);
         }
