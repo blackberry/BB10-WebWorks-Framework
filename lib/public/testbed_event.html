@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <script type="text/javascript" src="local://webworks.js"></script>
+        <script type="text/javascript">
+            var cb,
+                fooCallbacks = [];
+
+            function startListenBatteryLevelChangedEvent() {
+                cb = function (data) {
+                    console.log("Battery level changed! Data=" + data);
+                };
+                blackberry.system.event.onBatteryLevelChanged(cb);
+            }
+
+            function stopListenBatteryLevelChangedEvent() {
+                blackberry.system.event.onBatteryLevelChanged(null);
+            }
+
+            function startListenFooEvent() {
+                var fooCb = createCallback();
+                fooCallbacks.push(fooCb);
+                blackberry.system.event.foo(fooCb);
+            }
+
+            function stopListenFooEvent() {
+                var id;
+
+                fooCallbacks.reduce(function (prev, current, index, array) {
+                    if (prev === undefined || !array[prev]) {
+                        id = index;
+                    }
+
+                    return id;
+                }, id);
+
+                if (id !== undefined && fooCallbacks[id]) {
+                    console.log("Stop listen foo, id=" + id);
+                    blackberry.system.event.foo(fooCallbacks[id], true);
+                    delete fooCallbacks[id];
+                }
+            }
+
+            function createCallback() {
+                var callbackId = fooCallbacks.length;
+                return function (data) {
+                    console.log("Foo callback " + callbackId + " invoked! Data=" + data);
+                };
+            }
+        </script>
+    </head>
+    <body>
+        <div>This is a testbed!</div>
+        <input type="button" onclick="startListenBatteryLevelChangedEvent()" value="Start Listen Battery Event"><br>
+        <input type="button" onclick="stopListenBatteryLevelChangedEvent()" value="Stop Listen Battery Event"><br><br><br>
+        <input type="button" onclick="startListenFooEvent()" value="Start Listen Foo Event"><br>
+        <input type="button" onclick="stopListenFooEvent()" value="Stop Listen Foo Event"><br>
+    </body>
+</html>
+
