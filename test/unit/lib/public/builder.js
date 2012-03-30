@@ -2,7 +2,9 @@ var libRoot = __dirname + "/../../../../lib/",
     builder = require(libRoot + "public/builder"),
     mockedWebworks = {
         exec : function () {},
-        execSync: function () { return ""; }
+        execSync: function () {
+            return "";
+        }
     };
 
 describe("builder", function () {
