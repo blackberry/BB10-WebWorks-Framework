@@ -5,11 +5,12 @@
 		id="jasmine">
 	
     <name>Jasmine</name>
+
+    <description>This application points to a the functional test server.</description>
 	
     <content src="http://10.137.40.49:3000"/>
     
-    <author>Research In Motion Ltd.</author>
-	
+    <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 	
     <access subdomains="true" uri="http://10.137.40.49:3000">
 		<feature id="blackberry.app" required="true" version="1.0.0.0"/>
