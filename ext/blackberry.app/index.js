@@ -1,4 +1,8 @@
-var config = require("lib/config"); // uses lib/config for require id, ../.. causes problems
+function requireLocal(id) {
+    return !!require.resolve ? require("../../" + id) : window.require(id);
+}
+
+var config = requireLocal("lib/config");
 
 module.exports = {
     author: function (success, fail, args, env) {
