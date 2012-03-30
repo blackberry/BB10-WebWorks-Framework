@@ -7,9 +7,11 @@
     <script src="./require.js"></script>
     <script src="./frameworkModules.js"></script>
     <script>
+        var JNEXT;
         function start() {
           require.load(frameworkModules);
           require('lib/framework').start();
+          JNEXT = require("lib/jnext");
         }
     </script>
   </head>

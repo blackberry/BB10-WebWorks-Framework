@@ -6,6 +6,6 @@ describe("blackberry", function () {
 
 describe("webworks", function () {
 	it('should exist', function () {
-		expect(webworks).toBeDefined();
+		expect(window.webworks).toBeDefined();
 	});	
 });
