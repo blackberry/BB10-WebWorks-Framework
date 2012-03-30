@@ -109,6 +109,7 @@ describe("blackberr.invoke index", function () {
         it("should call fail callback when passed wrong protocol", function () {
             index.invoke(successCB, failCB, mockWrongArgsForProtocol1);
             index.invoke(successCB, failCB, mockWrongArgsForProtocol2);
+            expect(failCB.callCount).toEqual(2); 
             expect(failCB).toHaveBeenCalledWith("Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.", wrongAppType);            
         });
 
