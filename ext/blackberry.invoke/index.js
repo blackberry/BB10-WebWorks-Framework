@@ -22,12 +22,6 @@ module.exports = {
             };
 
         switch (parseInt(args.appType, 10)) {
-            // Camera
-        case 4:
-            break;
-        // Maps
-        case 5:
-            break;
         //Browser
         case 11:
             path += "/navigator/control?server";
@@ -60,18 +54,6 @@ module.exports = {
                 }
 
             ctrlObj.dat = url;
-            break;
-        // Music
-        case 13:
-            break;
-        //Photos
-        case 14:
-            break;
-        //Videos
-        case 15:
-            break;
-        // AppWorld
-        case 16:
             break;
         default:
             fail(APP_TYPE_ERROR, -1);
