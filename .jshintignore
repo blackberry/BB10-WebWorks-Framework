@@ -3,5 +3,6 @@ node_modules
 target
 dependencies
 clientFiles
+ext/blackberry.example.test
 lib/pps/ppsUtils.js
 lib/jnext.js

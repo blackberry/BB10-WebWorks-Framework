@@ -6,6 +6,7 @@ var _event = requireLocal("lib/event"),
     _ppsUtils = requireLocal("lib/pps/ppsUtils"),
     APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
+    APP_TYPE_ERROR_ID = -1,
     APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.";
 
 module.exports = {
@@ -22,6 +23,14 @@ module.exports = {
             };
 
         switch (parseInt(args.appType, 10)) {
+        // Camera
+        case 4:
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            return;
+        // Maps
+        case 5:
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            return;
         //Browser
         case 11:
             path += "/navigator/control?server";
@@ -55,8 +64,24 @@ module.exports = {
 
             ctrlObj.dat = url;
             break;
+        // Music
+        case 13:
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            return;
+        //Photos
+        case 14:
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            return;
+        //Videos
+        case 15:
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            return;
+        // AppWorld
+        case 16:
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            return;
         default:
-            fail(APP_TYPE_ERROR, -1);
+            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
             return;
             
         }
