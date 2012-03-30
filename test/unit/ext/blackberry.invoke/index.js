@@ -1,89 +1,134 @@
 var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     _libDir = __dirname + "./../../../../lib/",
     index,
-    _ppsUtils,
-    events = require(_libDir + "event"),
-    jsdom = require("jsdom"),
-    jnext,
+    ppsUtils,
     mockedPPS;
 
 describe("blackberr.invoke index", function () {
 
     beforeEach(function () {
-        //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.document = jsdom.jsdom("<html><body></body></html>");
-        GLOBAL.window = GLOBAL.document.createWindow();
-        GLOBAL.navigator = window.navigator;
-        GLOBAL.JNEXT = {
-            invoke : function () {},
-            registerEvents: function () {},
-            unregisterEvents: function () {},
-            createObject: function () {},
-            require: function () {}
-        };
-        _ppsUtils = require(_libDir + "pps/ppsUtils");
+        GLOBAL.JNEXT = {};
+        ppsUtils = require(_libDir + "pps/ppsUtils");
         index = require(_apiDir + "index");
     });
 
     afterEach(function () {
-        delete GLOBAL.document;
-        delete GLOBAL.window;
-        delete GLOBAL.navigator;
-        delete GLOBAL.JNEXT;
+        GLOBAL.JNEXT = null;
+        ppsUtils = null;
         index = null;
     });
 
     describe("Browser Invoke", function () {
-        var mock_args = {
-                appType: 11,
+        var appType_Browser = 11,
+            httpUrl = 'http://www.rim.com',
+            noProtocolUrl = 'www.rim.com',
+            wrongAppType = -1,
+            successCB,
+            failCB,
+            mockValidArgs = {
+                appType: appType_Browser,
                 args: encodeURIComponent(JSON.stringify({
-                    url: 'http://www.rim.com'
+                    url: httpUrl
                 }))
+            },
+            mockValidArgsNoProtocolUrl = {
+                appType: appType_Browser,
+                args: encodeURIComponent(JSON.stringify({
+                    url: noProtocolUrl
+                }))
+            },
+            mockWrongArgsForAppType = {
+                appType: wrongAppType,
+                args: encodeURIComponent(JSON.stringify({
+                    url: httpUrl
+                }))
+            },
+            mockWrongArgsForProtocol1 = {
+                appType: appType_Browser,
+                args: encodeURIComponent(JSON.stringify({
+                    url: 'wrong://www.rim.com'
+                }))
+            },
+            mockWrongArgsForProtocol2 = {
+                appType: appType_Browser,
+                args: encodeURIComponent(JSON.stringify({
+                    url: 'httpx://www.rim.com'
+                }))
+            },
+            expectedOpenMethodArgs = {
+                path: '/pps/services/navigator/control?server',
+                mode: 2
+            },
+            expectedWriteMethodArgs = {
+                id: '',
+                dat: httpUrl, 
+                msg: 'invoke'
             };
-            // expectedOpenMethodArgs = {
-            //     path: '/pps/services/navigator/control?server',
-            //     mode: 2
-            // },
-            // expectedWriteMethodArgs = {
-            //     id: '',
-            //     dat: 'http://www.rim.com', 
-            //     msg: 'invoke'
-            // };
 
         beforeEach(function () {
+            successCB = jasmine.createSpy("Success Callback");
+            failCB = jasmine.createSpy("Fail Callback");
             mockedPPS = { 
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy(),
-                read: jasmine.createSpy(),
-                write: jasmine.createSpy(),
-                close: jasmine.createSpy()
+                init: jasmine.createSpy("Init Method"),
+                open: jasmine.createSpy("Open Method"),
+                read: jasmine.createSpy("Read Method"),
+                write: jasmine.createSpy("Write Method"),
+                close: jasmine.createSpy("Close Method")
             };
-            spyOn(_ppsUtils, "pps").andReturn(mockedPPS);
+            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
         });
         
-        xit("should call jnext", function () {         
-            index.invoke(function () {}, function () {}, mock_args);
-            expect(jnext.invoke).toHaveBeenCalled();
+        afterEach(function () {
+            successCB = null;
+            failCB = null;
+            mockedPPS = null;
         });
 
-        xit("should require pps", function () {         
-            index.invoke(function () {}, function () {}, mock_args);
-            expect(jnext.require).toHaveBeenCalledWith('pps');
+        // Positive test cases
+        it("should call success callback when invoked with valid args", function () {
+            index.invoke(successCB, failCB, mockValidArgs);
+            index.invoke(successCB, failCB, mockValidArgsNoProtocolUrl);
+            expect(successCB.callCount).toEqual(2);            
         });
 
-        xit("should createObject pps.PPS", function () {         
-            index.invoke(function () {}, function () {}, mock_args);
-            expect(jnext.createObject).toHaveBeenCalledWith('pps.PPS');
-        });
-        
-        
-        it("should generate expected invokeArgs output", function () {
-            index.invoke(function () {}, function () {}, mock_args);            
+        it("should call ppsUtil methods when invoked with valid args", function () {
+            index.invoke(successCB, failCB, mockValidArgs);            
+            expect(ppsUtils.createObject).toHaveBeenCalled();
             expect(mockedPPS.init).toHaveBeenCalled();
-            //expect(_ppsUtilsInst, "open").toHaveBeenCalledWith(expectedOpenMethodArgs.path, expectedOpenMethodArgs.mode);
-            //expect(_ppsUtilsInst, "write").toHaveBeenCalledWith(expectedWriteMethodArgs);
-            //expect(_ppsUtilsInst, "close").toHaveBeenCalled();
+            expect(mockedPPS.open).toHaveBeenCalledWith(expectedOpenMethodArgs.path, expectedOpenMethodArgs.mode);
+            expect(mockedPPS.write).toHaveBeenCalledWith(expectedWriteMethodArgs);
+            expect(mockedPPS.close).toHaveBeenCalled();
+        });
+        
+        //Negative test cases
+        it("should call fail callback when passed wrong appType", function () {
+            index.invoke(successCB, failCB, mockWrongArgsForAppType);
+            expect(failCB).toHaveBeenCalledWith("The application specified to invoke is not supported.", wrongAppType);            
+        });
+
+        it("should call fail callback when passed wrong protocol", function () {
+            index.invoke(successCB, failCB, mockWrongArgsForProtocol1);
+            index.invoke(successCB, failCB, mockWrongArgsForProtocol2);
+            expect(failCB).toHaveBeenCalledWith("Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.", wrongAppType);            
+        });
+
+        it("should not call any of ppsUtils methods when passed wrong appType", function () {
+            index.invoke(successCB, failCB, mockWrongArgsForAppType);            
+            expect(ppsUtils.createObject).not.toHaveBeenCalled();
+            expect(mockedPPS.init).not.toHaveBeenCalled();
+            expect(mockedPPS.open).not.toHaveBeenCalled();
+            expect(mockedPPS.write).not.toHaveBeenCalled();
+            expect(mockedPPS.close).not.toHaveBeenCalled();
+        });
+
+        it("should not call any of ppsUtils methods when passed wrong protocol", function () {
+            index.invoke(successCB, failCB, mockWrongArgsForProtocol1);            
+            index.invoke(successCB, failCB, mockWrongArgsForProtocol2);            
+            expect(ppsUtils.createObject).not.toHaveBeenCalled();
+            expect(mockedPPS.init).not.toHaveBeenCalled();
+            expect(mockedPPS.open).not.toHaveBeenCalled();
+            expect(mockedPPS.write).not.toHaveBeenCalled();
+            expect(mockedPPS.close).not.toHaveBeenCalled();
         });
     });
-    
 });

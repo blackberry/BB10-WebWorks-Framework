@@ -3,7 +3,7 @@ function requireLocal(id) {
 }
 
 var _event = requireLocal("lib/event"), 
-    PPSUtilsModule = requireLocal("lib/pps/ppsUtils"),
+    _ppsUtils = requireLocal("lib/pps/ppsUtils"),
     APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
     APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.";
@@ -14,7 +14,7 @@ module.exports = {
             path = "/pps/services", 
             mode = 2, 
             url, 
-            PPSUtilsInstance,
+            PPSUtils,
             ctrlObj = {
                 'id': "",
                 'dat': null,
@@ -46,12 +46,13 @@ module.exports = {
                         url = APP_URL_BROWSER + url[0];
                     }
                     else if (url.length === 2) {
-                        url = url[0].toLowerCase() + '://' + url[1];
-                        
                         //Check if protocol is supported: http, https
-                        if (url.indexOf("http") !== 0) {
+                        if (url[0].toLowerCase() !== "http" && url[0].toLowerCase() !== "https") {
                             fail(APP_BROWSER_ERROR, -1);
+                            return;
                         }                            
+
+                        url = url[0].toLowerCase() + '://' + url[1];
                     }
                 }
             } catch (e) {
@@ -74,14 +75,17 @@ module.exports = {
             break;
         default:
             fail(APP_TYPE_ERROR, -1);
+            return;
+            
         }
         
-        PPSUtilsInstance = PPSUtilsModule.pps();
+        PPSUtils = _ppsUtils.createObject();
         
-        PPSUtilsInstance.init();
-        PPSUtilsInstance.open(path, mode);
-        PPSUtilsInstance.write(ctrlObj);
-        PPSUtilsInstance.close();
+        PPSUtils.init();
+        PPSUtils.open(path, mode);
+        PPSUtils.write(ctrlObj);
+        PPSUtils.close();
+        
         success();
     }
 };

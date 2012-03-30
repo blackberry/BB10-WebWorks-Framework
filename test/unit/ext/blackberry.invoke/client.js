@@ -10,7 +10,6 @@ var _ID = "blackberry.invoke",
 
 describe("blackberry.invoke client", function () {
     beforeEach(function () {
-        //Set up mocking, no need to "spyOn" since spies are included in mock
         GLOBAL.window = GLOBAL;
         GLOBAL.window.webworks = mockedWebworks;
 
@@ -37,7 +36,7 @@ describe("blackberry.invoke client", function () {
     });
 
     describe("Browser Invoke", function () {
-        it("invoke should performExec", function () {
+        it("should call execAsync when invoke called", function () {
             var url = "http://www.google.com",
                 result;
 
@@ -56,7 +55,7 @@ describe("blackberry.invoke client", function () {
         it("should create a new BrowserArguments Object with url", function () {
             browserArguments = new client.BrowserArguments(url);
 
-            expect(browserArguments.url).toBeDefined();
+            expect(browserArguments.url).toEqual(url);
         });
     });
 });
