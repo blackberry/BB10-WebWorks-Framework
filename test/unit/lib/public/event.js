@@ -17,7 +17,8 @@ var libRoot = __dirname + "/../../../../lib/";
 
 describe("event", function () {
     var event = require(libRoot + "public/event"),
-        _window;
+        _window,
+        callback;
 
     beforeEach(function () {
         _window = {
@@ -26,33 +27,36 @@ describe("event", function () {
             }
         };
         GLOBAL.window = _window;
+        callback = jasmine.createSpy();
     });
 
     afterEach(function () {
+        event.remove("blackberry.system.event", "foo", callback);
         delete GLOBAL.window;
     });
 
     describe("on", function () {
 
         it("it can call webworks.exec action 'on' given valid featureId, eventName and callback", function () {
-            event.on("blackberry.system.event", "foo", jasmine.createSpy());
+            event.on("blackberry.system.event", "foo", callback);
             expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
         });
         
-        it("it will not register duplicate events", function () {
-            var JohnnyEnglish = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
-            event.on("blackberry.system.event", "foo", JohnnyEnglish);
+        it("it will not call webworks.exec for multiple callbacks", function () {
+            var callback2 = jasmine.createSpy();
+            event.on("blackberry.system.event", "foo", callback);
+            event.on("blackberry.system.event", "foo", callback2);
             expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
             expect(_window.webworks.exec.callCount).toEqual(1);
+            event.remove("blackberry.system.event", "foo", callback2);
+        });
+
+        it("will not register duplicate callbacks", function () {
+            event.on("blackberry.system.event", "foo", callback);
+            event.on("blackberry.system.event", "foo", callback);
+            event.trigger("foo", {"id": 1});
+            expect(callback).toHaveBeenCalledWith({"id": 1});
+            expect(callback.callCount).toEqual(1);
         });
     });
 
@@ -67,10 +71,9 @@ describe("event", function () {
 
     describe("trigger", function () {
         it("will invoke callback if event has been added", function () {
-            var cb = jasmine.createSpy();
-            event.on("blackberry.system.event", "b", cb);
-            event.trigger("b", {"id": 1});
-            expect(cb).toHaveBeenCalledWith({"id": 1});
+            event.on("blackberry.system.event", "foo", callback);
+            event.trigger("foo", {"id": 1});
+            expect(callback).toHaveBeenCalledWith({"id": 1});
         });
 
         it("will not invoke callback if event has been removed", function () {
