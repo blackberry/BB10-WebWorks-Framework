@@ -54,9 +54,19 @@ describe("event", function () {
         it("will not register duplicate callbacks", function () {
             event.on("blackberry.system.event", "foo", callback);
             event.on("blackberry.system.event", "foo", callback);
-            event.trigger("foo", {"id": 1});
+            event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
             expect(callback.callCount).toEqual(1);
+        });
+
+        it("will register two distinct callbacks", function () {
+            var callback2 = jasmine.createSpy();
+            event.on("blackberry.system.event", "foo", callback);
+            event.on("blackberry.system.event", "foo", callback2);
+            event.trigger("foo", '{"id": 1}');
+            expect(callback).toHaveBeenCalledWith({"id": 1});
+            expect(callback2).toHaveBeenCalledWith({"id": 1});
+            event.remove("blackberry.system.event", "foo", callback2);
         });
     });
 
@@ -72,7 +82,7 @@ describe("event", function () {
     describe("trigger", function () {
         it("will invoke callback if event has been added", function () {
             event.on("blackberry.system.event", "foo", callback);
-            event.trigger("foo", {"id": 1});
+            event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
         });
 
