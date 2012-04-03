@@ -4,5 +4,6 @@ target
 dependencies
 clientFiles
 ext/blackberry.example.test
+test/functional/blackberry.event.js
 lib/pps/ppsUtils.js
 lib/jnext.js
