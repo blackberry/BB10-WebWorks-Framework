@@ -21,7 +21,7 @@ describe("bridge", function () {
             fail = jasmine.createSpy();
             args = {};
         });
-        
+
         it("checks if the feature is white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
 
@@ -31,30 +31,32 @@ describe("bridge", function () {
 
         it("returns 404 if the feature is not found", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            
+
             req.params.ext = "IDoNotExist";
 
             bridge.exec(req, succ, fail, args);
             expect(fail).toHaveBeenCalledWith(404, jasmine.any(String));
         });
-        
+
         it("returns 403 if the feature is not white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
 
             bridge.exec(req, succ, fail, args);
             expect(fail).toHaveBeenCalledWith(403, jasmine.any(String));
         });
-        
+
         it("calls the action method of the feature", function () {
+            var env = {"request": req, "response": res};
+
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
             spyOn(testExtension, "helloworld");
-            
+
             req.params.ext = "blackberry.example.test";
             req.params.method = "helloworld";
 
-            bridge.exec(req, succ, fail, args);
-            
-            expect(testExtension.helloworld).toHaveBeenCalledWith(succ, fail, args);
+            bridge.exec(req, succ, fail, args, env);
+
+            expect(testExtension.helloworld).toHaveBeenCalledWith(succ, fail, args, env);
         });
     });
-});  
+});
