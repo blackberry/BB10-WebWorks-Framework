@@ -4,27 +4,33 @@ describe("blackberry.app", function () {
 	});
 
 	it('blackberry.app.author should exist', function () {
-		expect(blackberry.app.author).toBeDefined('Research In Motion Ltd.');
+		expect(blackberry.app.author).toBeDefined();
+		expect(blackberry.app.author).toEqual("Research In Motion Ltd.");
 	});
 
 	it('blackberry.app.authorEmail should exist', function () {
-		expect(blackberry.app.authorEmail).toBeDefined("hello.bob@blah.com");
+		expect(blackberry.app.authorEmail).toBeDefined();
+		expect(blackberry.app.authorEmail).toEqual("hello.bob@blah.com");
 	});
 
 	it('blackberry.app.authorURL should exist', function () {
-		expect(blackberry.app.authorURL).toBeDefined("http://www.blah.com");
+		expect(blackberry.app.authorURL).toBeDefined();
+		expect(blackberry.app.authorURL).toEqual("http://www.blah.com");
 	});
 
 	it('blackberry.app.copyright should exist', function () {
-		expect(blackberry.app.copyright).toBeDefined("Copyright 1998-2011 My Corp");
+		expect(blackberry.app.copyright).toBeDefined();
+		expect(blackberry.app.copyright).toEqual("Copyright 1998-2011 My Corp");
 	});
 
 	it('blackberry.app.description should exist', function () {
-		expect(blackberry.app.description).toBeDefined("This application points to a the functional test server.");
+		expect(blackberry.app.description).toBeDefined();
+		expect(blackberry.app.description).toEqual("This application points to a the functional test server.");
 	});
 
 	it('blackberry.app.id should exist', function () {
-		expect(blackberry.app.id).toBeDefined('jasmine');
+		expect(blackberry.app.id).toBeDefined();
+		expect(blackberry.app.id).toEqual("jasmine");
 	});
 
 	it('blackberry.app.license should exist', function () {
@@ -34,14 +40,17 @@ describe("blackberry.app", function () {
 	});
 
 	it('blackberry.app.licenseURL should exist', function () {
-		expect(blackberry.app.licenseURL).toBeDefined("http://www.apache.org/licenses/LICENSE-2.0");
+		expect(blackberry.app.licenseURL).toBeDefined();
+		expect(blackberry.app.licenseURL).toEqual("http://www.apache.org/licenses/LICENSE-2.0");
 	});
 
 	it('blackberry.app.name should exist', function () {
-		expect(blackberry.app.name).toBeDefined("Jasmine");
+		expect(blackberry.app.name).toBeDefined();
+		expect(blackberry.app.name).toEqual("Jasmine");
 	});
 
 	it('blackberry.app.version should exist', function () {
-		expect(blackberry.app.version).toBeDefined("1.0.0");
+		expect(blackberry.app.version).toBeDefined();
+		expect(blackberry.app.version).toEqual("1.0.0");
 	});
 });
