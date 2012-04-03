@@ -1,14 +1,20 @@
 var libRoot = __dirname + "/../../../../lib/",
-    windowObj = require(libRoot + "public/window"),
-    utils = require(libRoot + "utils"),
-    builder = require(libRoot + "public/builder");
+    builder = require(libRoot + "public/builder"),
+    mockedWebworks = {
+        exec : function () {},
+        execSync: function () {
+            return "";
+        }
+    };
 
 describe("builder", function () {
 
     beforeEach(function () {
-        spyOn(utils, "performExec").andCallFake(function () {
-            return "some dummy text";
-        });
+        //Create window object like in DOM and have it act the same way
+        GLOBAL.window = GLOBAL;
+
+        //Set up mocking, no need to "spyOn" since spies are included in mock
+        GLOBAL.window.webworks = mockedWebworks;
     });
 
     it("can build an object with a single member", function () {
@@ -16,6 +22,7 @@ describe("builder", function () {
             target = {};
 
         builder.build(featureIds).into(target);
+
         expect(target.blackberry.app).toBeDefined();
         expect(target.blackberry.app.name).toBeDefined();
         expect(target.blackberry.app.version).toBeDefined();
