@@ -91,45 +91,37 @@ describe("ppsEvents", function () {
     describe("addEventListener for batteryStatus event", function () {
         it("should call appropriate ppsUtils methods", function () {
             var curIndexCall = 0, 
-                callsPerMethod = 1, 
                 batStat = _actionMap['batterystatus'], 
                 mockedPPSUtilsInst;
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
             mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst.init.callCount).toEqual(callsPerMethod);
-            expect(mockedPPSUtilsInst.open.callCount).toEqual(callsPerMethod);
+            expect(mockedPPSUtilsInst.init).toHaveBeenCalled();
             expect(mockedPPSUtilsInst.open).toHaveBeenCalledWith(batStat.event.eventDetailsArr[curIndexCall].path, batStat.event.mode);
             curIndexCall = 1;
             mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst.init.callCount).toEqual(callsPerMethod);
-            expect(mockedPPSUtilsInst.open.callCount).toEqual(callsPerMethod);
-            expect(mockedPPSUtilsInst.open).toHaveBeenCalledWith(batStat.event.eventDetailsArr[curIndexCall].path, batStat.event.mode);
+            expect(mockedPPSUtilsInst.init).toHaveBeenCalled();
             expect(mockedPPSUtilsInst.open).toHaveBeenCalledWith(batStat.event.eventDetailsArr[curIndexCall].path, batStat.event.mode);
         });
 
         it("should invoke onChange callback when StateOfCharge has been changed", function () {
             var curIndexCall = 0, 
-                callsPerMethod = 1, 
                 batStat = _actionMap['batterystatus'], 
                 onChange;
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
             onChange = batStat.event.eventDetailsArr[curIndexCall].ppsUtils.onChange;
             onChange({changed: {StateOfCharge: true}});
             expect(batStat.event.eventDetailsArr[curIndexCall].ppsUtils.read).toHaveBeenCalled();
-            expect(batStat.trigger.callCount).toEqual(callsPerMethod); 
             expect(batStat.trigger).toHaveBeenCalledWith({level: 100, isPlugged: false});
         });
 
         it("should invoke onChange callback when ChargingState field has been changed", function () {
             var curIndexCall = 1, 
-                callsPerMethod = 1, 
                 batStat = _actionMap['batterystatus'], 
                 onChange;
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
             onChange = batStat.event.eventDetailsArr[curIndexCall].ppsUtils.onChange;
             onChange({changed: {ChargingState: true}});
             expect(batStat.event.eventDetailsArr[curIndexCall].ppsUtils.read).toHaveBeenCalled();
-            expect(batStat.trigger.callCount).toEqual(callsPerMethod); 
             expect(batStat.trigger).toHaveBeenCalledWith({level: 100, isPlugged: false});
         });
     });
@@ -137,17 +129,16 @@ describe("ppsEvents", function () {
     describe("removeEventListener for batteryStatus event", function () {
         it("should call close method for each instance", function () {
             var curIndexCall = 0, 
-                callsPerMethod = 1, 
                 batStat = _actionMap['batterystatus'], 
                 mockedPPSUtilsInst;
             // As a result of calling to addEventListener there are two pps objects that instantiated to listen for battery events
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
             mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
             _ppsEvents.removeEventListener(batStat.event, batStat.trigger);
-            expect(mockedPPSUtilsInst.close.callCount).toEqual(callsPerMethod);
+            expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
             curIndexCall = 1;
             mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst.close.callCount).toEqual(callsPerMethod);
+            expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
         });
     });
 
