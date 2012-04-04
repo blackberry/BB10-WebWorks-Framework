@@ -1,43 +1,28 @@
 var _self = {};
 
-_self.__defineGetter__("author", function () {
-    return window.webworks.execSync("blackberry.app", "author", null);
-});
+function defineReadOnlyField(field) {
+    var value = window.webworks.execSync("blackberry.app", field, null);
+    Object.defineProperty(_self, field, {"value": value, "writable": false});
+}
 
-_self.__defineGetter__("authorEmail", function () {
-    return window.webworks.execSync("blackberry.app", "authorEmail", null);
-});
+defineReadOnlyField("author");
 
-_self.__defineGetter__("authorURL", function () {
-    return window.webworks.execSync("blackberry.app", "authorURL", null);
-});
+defineReadOnlyField("authorEmail");
 
-_self.__defineGetter__("copyright", function () {
-    return window.webworks.execSync("blackberry.app", "copyright", null);
-});
+defineReadOnlyField("authorURL");
 
-_self.__defineGetter__("description", function () {
-    return window.webworks.execSync("blackberry.app", "description", null);
-});
+defineReadOnlyField("copyright");
 
-_self.__defineGetter__("id", function () {
-    return window.webworks.execSync("blackberry.app", "id", null);
-});
+defineReadOnlyField("description");
 
-_self.__defineGetter__("license", function () {
-    return window.webworks.execSync("blackberry.app", "license", null);
-});
+defineReadOnlyField("id");
 
-_self.__defineGetter__("licenseURL", function () {
-    return window.webworks.execSync("blackberry.app", "licenseURL", null);
-});
+defineReadOnlyField("license");
 
-_self.__defineGetter__("name", function () {
-    return window.webworks.execSync("blackberry.app", "name", null);
-});
+defineReadOnlyField("licenseURL");
 
-_self.__defineGetter__("version", function () {
-    return window.webworks.execSync("blackberry.app", "version", null);
-});
+defineReadOnlyField("name");
+
+defineReadOnlyField("version");
 
 module.exports = _self;

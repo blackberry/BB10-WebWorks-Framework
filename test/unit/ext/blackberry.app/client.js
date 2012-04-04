@@ -3,101 +3,100 @@ var _ID = "blackberry.app",
     _apiDir = _extDir + "/" + _ID,
     client,
     mockedWebworks = {
-        execSync: function () {}
-    };
+        execSync: jasmine.createSpy()
+    },
+    fields = [
+        "author",
+        "authorEmail",
+        "authorURL",
+        "copyright",
+        "description",
+        "id",
+        "license",
+        "licenseURL",
+        "name",
+        "version"
+    ],
+    execSyncArgs = [];
 
-describe("blackberry.app client", function () {
-    beforeEach(function () {
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.webworks = mockedWebworks;
+beforeEach(function () {
+    GLOBAL.window = GLOBAL;
+    GLOBAL.window.webworks = mockedWebworks;
 
-        spyOn(console, "log");
-
-        client = require(_apiDir + "/client");
+    fields.forEach(function (field) {
+        execSyncArgs.push([_ID, field, null]);
     });
 
-    afterEach(function () {
-        delete GLOBAL.window;
-        client = null;
+    client = require(_apiDir + "/client");
+});
+
+afterEach(function () {
+    delete GLOBAL.window;
+    client = null;
+});
+
+describe("blackberry.app client", function () {
+    it("execSync should have been called once for each blackberry.app field", function () {
+        expect(mockedWebworks.execSync.callCount).toEqual(fields.length);
     });
 
     describe("author", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.author);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "author", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("author")]);
         });
     });
 
     describe("authorEmail", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.authorEmail);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "authorEmail", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("authorEmail")]);
         });
     });
 
     describe("authorURL", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.authorURL);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "authorURL", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("authorURL")]);
         });
     });
 
     describe("copyright", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.copyright);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "copyright", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("copyright")]);
         });
     });
 
     describe("description", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.description);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "description", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("description")]);
         });
     });
 
     describe("id", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.id);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "id", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("id")]);
         });
     });
 
     describe("license", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.license);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "license", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("license")]);
         });
     });
 
     describe("licenseURL", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.licenseURL);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "licenseURL", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("licenseURL")]);
         });
     });
 
     describe("name", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.name);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "name", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("name")]);
         });
     });
 
     describe("version", function () {
         it("should call execSync", function () {
-            spyOn(mockedWebworks, "execSync");
-            console.log(client.version);
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "version", null);
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("version")]);
         });
     });
 });

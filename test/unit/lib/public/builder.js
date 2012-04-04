@@ -24,8 +24,8 @@ describe("builder", function () {
         builder.build(featureIds).into(target);
 
         expect(target.blackberry.app).toBeDefined();
-        expect(target.blackberry.app.name).toBeDefined();
-        expect(target.blackberry.app.version).toBeDefined();
+        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeTruthy();
+        expect(Object.hasOwnProperty.call(target.blackberry.app, "version")).toBeTruthy();
     });
 
     it("can build an object with a nested member", function () {
@@ -33,7 +33,7 @@ describe("builder", function () {
             target = {};
 
         builder.build(featureIds).into(target);
-        expect(target.blackberry.app.name).toBeDefined();
+        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeTruthy();
         expect(target.blackberry.app.event).toBeDefined();
         expect(target.blackberry.app.event.onExit).toBeDefined();
     });
@@ -43,7 +43,7 @@ describe("builder", function () {
             target = {};
 
         builder.build(featureIds).into(target);
-        expect(target.blackberry.app.name).toBeDefined();
+        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeTruthy();
         expect(target.blackberry.app.event).toBeDefined();
         expect(target.blackberry.app.event.onExit).toBeDefined();
     });
@@ -53,7 +53,7 @@ describe("builder", function () {
             target = {};
 
         builder.build(featureIds).into(target);
-        expect(target.blackberry.app.name).toBeUndefined();
+        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeFalsy();
         expect(target.blackberry.app.event).toBeDefined();
         expect(target.blackberry.app.event.onExit).toBeDefined();
     });
