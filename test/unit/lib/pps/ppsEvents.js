@@ -90,93 +90,94 @@ describe("ppsEvents", function () {
     // Positive test cases
     describe("addEventListener for batteryStatus event", function () {
         it("should call appropriate ppsUtils methods", function () {
-            var curIndexCall = 0, 
-                batStat = _actionMap['batterystatus'], 
+            var batStat = _actionMap['batterystatus'], 
                 mockedPPSUtilsInst;
+            
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
-            mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst.init).toHaveBeenCalled();
-            expect(mockedPPSUtilsInst.open).toHaveBeenCalledWith(batStat.event.eventDetailsArr[curIndexCall].path, batStat.event.mode);
-            curIndexCall = 1;
-            mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst.init).toHaveBeenCalled();
-            expect(mockedPPSUtilsInst.open).toHaveBeenCalledWith(batStat.event.eventDetailsArr[curIndexCall].path, batStat.event.mode);
+            batStat.event.eventDetailsArr.forEach(function (eventDetailsItem) {
+                mockedPPSUtilsInst = eventDetailsItem.ppsUtils;
+                expect(mockedPPSUtilsInst.init).toHaveBeenCalled();
+                expect(mockedPPSUtilsInst.open).toHaveBeenCalledWith(eventDetailsItem.path, batStat.event.mode);
+            });
         });
 
         it("should invoke onChange callback when StateOfCharge has been changed", function () {
-            var curIndexCall = 0, 
+            var index = 0, // Corresponding ppsUtils instance handler of pps object that contains StateOfCharge property. 
                 batStat = _actionMap['batterystatus'], 
                 onChange;
+                
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
-            onChange = batStat.event.eventDetailsArr[curIndexCall].ppsUtils.onChange;
+            onChange = batStat.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {StateOfCharge: true}});
-            expect(batStat.event.eventDetailsArr[curIndexCall].ppsUtils.read).toHaveBeenCalled();
+            expect(batStat.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
             expect(batStat.trigger).toHaveBeenCalledWith({level: 100, isPlugged: false});
         });
 
         it("should invoke onChange callback when ChargingState field has been changed", function () {
-            var curIndexCall = 1, 
+            var index = 1, // Corresponding ppsUtils instance handler of pps object that contains ChargingState property.
                 batStat = _actionMap['batterystatus'], 
                 onChange;
+                
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
-            onChange = batStat.event.eventDetailsArr[curIndexCall].ppsUtils.onChange;
+            onChange = batStat.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {ChargingState: true}});
-            expect(batStat.event.eventDetailsArr[curIndexCall].ppsUtils.read).toHaveBeenCalled();
+            expect(batStat.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
             expect(batStat.trigger).toHaveBeenCalledWith({level: 100, isPlugged: false});
         });
     });
 
     describe("removeEventListener for batteryStatus event", function () {
         it("should call close method for each instance", function () {
-            var curIndexCall = 0, 
-                batStat = _actionMap['batterystatus'], 
+            var batStat = _actionMap['batterystatus'], 
                 mockedPPSUtilsInst;
-            // As a result of calling to addEventListener there are two pps objects that instantiated to listen for battery events
+                
+            // As a result of calling to addEventListener there are two pps objects were instantiated to listen for battery events
+            // close method of each should be invoked.
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
-            mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            _ppsEvents.removeEventListener(batStat.event, batStat.trigger);
-            expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
-            curIndexCall = 1;
-            mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
+            batStat.event.eventDetailsArr.forEach(function (eventDetailsItem) {
+                mockedPPSUtilsInst = eventDetailsItem.ppsUtils;
+                _ppsEvents.removeEventListener(batStat.event, batStat.trigger);
+                expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
+            });
         });
     });
 
     // Negative test cases
     describe("addEventListener for batteryStatus event", function () {
         it("should NOT invoke onChange callback when StateOfCharge has not been changed", function () {
-            var curIndexCall = 0, 
+            var index = 0, 
                 batStat = _actionMap['batterystatus'], 
                 onChange;
+                
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
-            onChange = batStat.event.eventDetailsArr[curIndexCall].ppsUtils.onChange;
+            onChange = batStat.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {WrongStateOfCharge: true}});
-            expect(batStat.event.eventDetailsArr[curIndexCall].ppsUtils.read).not.toHaveBeenCalled();
+            expect(batStat.event.eventDetailsArr[index].ppsUtils.read).not.toHaveBeenCalled();
             expect(batStat.trigger).not.toHaveBeenCalled(); 
         });
     
         it("should NOT invoke onChange callback when ChargingState field was not changed", function () {
-            var curIndexCall = 1, 
+            var index = 1, 
                 batStat = _actionMap['batterystatus'], 
                 onChange;
+                
             _ppsEvents.addEventListener(batStat.event, batStat.trigger);
-            onChange = batStat.event.eventDetailsArr[curIndexCall].ppsUtils.onChange;
+            onChange = batStat.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {WrongChargingState: true}});
-            expect(batStat.event.eventDetailsArr[curIndexCall].ppsUtils.read).not.toHaveBeenCalled();
+            expect(batStat.event.eventDetailsArr[index].ppsUtils.read).not.toHaveBeenCalled();
             expect(batStat.trigger).not.toHaveBeenCalled(); 
         });
     });
     describe("removeEventListener for batteryStatus event", function () {
         it("should NOT call close method when there is no instance to close", function () {
-            var curIndexCall = 0, 
-                batStat = _actionMap['batterystatus'], 
+            var batStat = _actionMap['batterystatus'], 
                 mockedPPSUtilsInst;
-            mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            _ppsEvents.removeEventListener(batStat.event, batStat.trigger);
-            expect(mockedPPSUtilsInst).not.toBeDefined();
-            curIndexCall = 1;
-            mockedPPSUtilsInst = batStat.event.eventDetailsArr[curIndexCall].ppsUtils;
-            expect(mockedPPSUtilsInst).not.toBeDefined();
+            
+            batStat.event.eventDetailsArr.forEach(function (eventDetailsItem) {
+                mockedPPSUtilsInst = eventDetailsItem.ppsUtils;
+                _ppsEvents.removeEventListener(batStat.event, batStat.trigger);
+                expect(mockedPPSUtilsInst).not.toBeDefined();
+            });
         });
     });
 });
