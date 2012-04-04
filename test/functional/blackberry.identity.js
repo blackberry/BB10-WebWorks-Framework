@@ -1,6 +1,6 @@
 function testValue(field) {
     expect(blackberry.identity[field]).toBeDefined();
-    expect(blackberry.identity[field]).any(string);
+    expect(blackberry.identity[field]).toEqual(jasmine.any(String));
 }
 
 function testReadOnly(field) {
