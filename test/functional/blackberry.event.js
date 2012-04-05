@@ -138,7 +138,7 @@ describe("blackberry.event", function () {
 
             waitsFor(function () {
                 return onBatteryStatusChange.callCount;
-            }, "event never fired", 000);
+            }, "event never fired", 15000);
 
             runs(function () {
                 console.log(onBatteryStatusChange.mostRecentCall.args[0]);
