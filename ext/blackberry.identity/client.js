@@ -14,7 +14,7 @@ function getFieldValue(field) {
 
 function defineReadOnlyField(field) {
     Object.defineProperty(_self, field, {
-        "value": getFieldValue("uuid"),
+        "value": getFieldValue(field),
         "writable": false
     });
 }
