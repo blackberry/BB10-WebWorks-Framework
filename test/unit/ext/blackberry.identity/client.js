@@ -28,7 +28,7 @@ function unloadClient() {
 }
 
 describe("blackberry.identity client", function () {
-    describe("when user has specified correct permission", function() {
+    describe("when user has specified correct permission", function () {
         beforeEach(function () {
             mockedWebworks.execSync = jasmine.createSpy().andReturn("0x12345678");
             GLOBAL.window.webworks = mockedWebworks;
