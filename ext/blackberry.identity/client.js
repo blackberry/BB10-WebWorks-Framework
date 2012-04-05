@@ -1,7 +1,7 @@
 var _self = {};
 
 function getFieldValue(field) {
-    var value = "";
+    var value = null;
 
     try {
         value = window.webworks.execSync("blackberry.identity", field, null);
