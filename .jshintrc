@@ -6,7 +6,7 @@
         "xit", "xdescribe",
         "itBrowser", "describeBrowser",
         "beforeEach", "afterEach",
-        "runs", "waits",
+        "runs", "waits", "waitsFor",
         "DOMElement",
         "it", "describe",
         "spyOn", "expect",
