@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 var _apiDir = __dirname + "./../../../../ext/blackberry.event/",
     _libDir = __dirname + "./../../../../lib/",
     index,

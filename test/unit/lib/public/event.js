@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 var libRoot = __dirname + "/../../../../lib/";
 
 describe("event", function () {
