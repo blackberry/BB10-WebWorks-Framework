@@ -13,25 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var _self = {};
 
-function requireLocal(id) {
-    id = id.replace(/local:\/\//, "").replace(/\.js$/, "");
-    return !!require.resolve ? require("../../" + id) : window.require(id);
+function defineReadOnlyField(field) {
+    var value = window.webworks.execSync("blackberry.app", field, null);
+    Object.defineProperty(_self, field, {"value": value, "writable": false});
 }
 
-var _self = {},
-    performExec = requireLocal('lib/utils').performExec; // uses lib/utils for require id, ../.. causes problems
+defineReadOnlyField("author");
 
-_self.__defineGetter__("name", function () {
-    return performExec("blackberry.app", "name");
-});
+defineReadOnlyField("authorEmail");
 
-_self.__defineGetter__("author", function () {
-    return performExec("blackberry.app", "author");
-});
+defineReadOnlyField("authorURL");
 
-_self.__defineGetter__("version", function () {
-    return performExec("blackberry.app", "version");
-});
+defineReadOnlyField("copyright");
+
+defineReadOnlyField("description");
+
+defineReadOnlyField("id");
+
+defineReadOnlyField("license");
+
+defineReadOnlyField("licenseURL");
+
+defineReadOnlyField("name");
+
+defineReadOnlyField("version");
 
 module.exports = _self;
