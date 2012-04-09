@@ -20,6 +20,60 @@ function requireLocal(id) {
 
 var _event = requireLocal("lib/event"), 
     _eventsMap = {
+        batterycritical: {
+            eventName: "batterycritical",
+            eventDetailsArr: [{
+                path: "/pps/services/power/battery?wait,delta",
+                fieldNameArr: [{
+                    eventName: "StateOfCharge",
+                    paramName: "level",
+                    formatValue: function (str) {
+                        return parseInt(str, 10);
+                    },
+                    triggerCheck: function (value) {
+                        return value < 5;
+                    }
+                }]
+            }, {
+                path: "/pps/services/power/charger?wait,delta",
+                disableOnChange: true,
+                fieldNameArr: [{
+                    eventName: "ChargingState",
+                    paramName: "isPlugged",
+                    formatValue: function (str) {
+                        return (str === "NC" ? false : true);
+                    }
+                }]
+            }],
+            mode: 0
+        },
+        batterylow: {
+            eventName: "batterylow",
+            eventDetailsArr: [{
+                path: "/pps/services/power/battery?wait,delta",
+                fieldNameArr: [{
+                    eventName: "StateOfCharge",
+                    paramName: "level",
+                    formatValue: function (str) {
+                        return parseInt(str, 10);
+                    },
+                    triggerCheck: function (value) {
+                        return value < 15;
+                    }
+                }]
+            }, {
+                path: "/pps/services/power/charger?wait,delta",
+                disableOnChange: true,
+                fieldNameArr: [{
+                    eventName: "ChargingState",
+                    paramName: "isPlugged",
+                    formatValue: function (str) {
+                        return (str === "NC" ? false : true);
+                    }
+                }]
+            }],
+            mode: 0
+        },
         batterystatus: {
             eventName: "batterystatus",
             eventDetailsArr: [{
