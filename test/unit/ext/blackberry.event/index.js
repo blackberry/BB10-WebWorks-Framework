@@ -31,22 +31,61 @@ describe("blackberr.event index", function () {
         index = null;
     });
 
-    it("responds to 'batterystatus' events", function () {
-        var event = "batterystatus",
-            args = {eventName : encodeURIComponent(event)}; 
+    it("responds to 'batterycritical' events", function () {
+        var eventName = "batterycritical",
+            args = {eventName : encodeURIComponent(eventName)}; 
         spyOn(events, "on");
         index.on(null, null, args);
         expect(events.on).toHaveBeenCalled();
-        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual("batterystatus");
+        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
     });
 
-    it("removes 'batterystatus' events", function () {
-        var event = "batterystatus",
-            args = {eventName : encodeURIComponent(event)}; 
+    it("removes 'batterycritical' events", function () {
+        var eventName = "batterycritical",
+            args = {eventName : encodeURIComponent(eventName)}; 
         spyOn(events, "remove");
         index.remove(null, null, args);
         expect(events.remove).toHaveBeenCalled();
-        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual("batterystatus");
+        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+    });
+
+    it("responds to 'batterylow' events", function () {
+        var eventName = "batterylow",
+            args = {eventName : encodeURIComponent(eventName)}; 
+        spyOn(events, "on");
+        index.on(null, null, args);
+        expect(events.on).toHaveBeenCalled();
+        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+    });
+
+    it("removes 'batterylow' events", function () {
+        var eventName = "batterylow",
+            args = {eventName : encodeURIComponent(eventName)}; 
+        spyOn(events, "remove");
+        index.remove(null, null, args);
+        expect(events.remove).toHaveBeenCalled();
+        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+    });
+
+    it("responds to 'batterystatus' events", function () {
+        var eventName = "batterystatus",
+            args = {eventName : encodeURIComponent(eventName)}; 
+        spyOn(events, "on");
+        index.on(null, null, args);
+        expect(events.on).toHaveBeenCalled();
+        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+    });
+
+    it("removes 'batterystatus' events", function () {
+        var eventName = "batterystatus",
+            args = {eventName : encodeURIComponent(eventName)}; 
+        spyOn(events, "remove");
+        index.remove(null, null, args);
+        expect(events.remove).toHaveBeenCalled();
+        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
     });
 
 });
