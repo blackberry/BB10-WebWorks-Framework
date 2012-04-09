@@ -29,6 +29,9 @@
                                 </goals>
                                 <configuration>
                                     <executable>configure.bat</executable>
+                                    <arguments>
+                                        <argument>${scm}</argument>
+                                    </arguments>
                                 </configuration>
                             </execution>
                         </executions>
