@@ -5,17 +5,18 @@
         id="jasmine">
     
     <name>Jasmine</name>
+
+    <description>This application points to a the functional test server.</description>
+	
+    <content src="http://10.137.40.49:3000"/>
     
-    <content src="http://10.137.40.51:3000"/>
-    
-    <author>Research In Motion Ltd.</author>
-    
-    
-    <access subdomains="true" uri="http://10.137.40.51:3000">
-        <feature id="blackberry.identity" required="true" version="1.0.0.0"/>
-        <feature id="blackberry.app" required="true" version="1.0.0.0"/>
-    </access>
-    
+    <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
+	
+    <access subdomains="true" uri="http://10.137.40.49:3000">
+		<feature id="blackberry.app" required="true" version="1.0.0.0"/>
+		<feature id="blackberry.app" required="true" version="1.0.0.0"/>
+	</access>
+  	
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
         Licensed under the Apache License, Version 2.0 (the "License");
         #you may not use this file except in compliance with the License.
