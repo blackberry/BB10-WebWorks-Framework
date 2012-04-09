@@ -30,8 +30,8 @@ var _event = requireLocal("lib/event"),
                     formatValue: function (str) {
                         return parseInt(str, 10);
                     },
-                    triggerCheck: function (value) {
-                        return value < 5;
+                    skipTrigger: function (value) {
+                        return value >= 5;
                     }
                 }]
             }, {
@@ -57,8 +57,8 @@ var _event = requireLocal("lib/event"),
                     formatValue: function (str) {
                         return parseInt(str, 10);
                     },
-                    triggerCheck: function (value) {
-                        return value < 15;
+                    skipTrigger: function (value) {
+                        return value >= 15;
                     }
                 }]
             }, {
@@ -99,6 +99,20 @@ var _event = requireLocal("lib/event"),
         }
     }, 
     _actionMap = {
+        batterycritical: {
+            context: requireLocal("lib/pps/ppsEvents"),
+            event: _eventsMap.batterycritical,
+            trigger: function (args) {
+                _event.trigger("batterycritical", args);
+            }
+        },
+        batterylow: {
+            context: requireLocal("lib/pps/ppsEvents"),
+            event: _eventsMap.batterylow,
+            trigger: function (args) {
+                _event.trigger("batterylow", args);
+            }
+        },
         batterystatus: {
             context: requireLocal("lib/pps/ppsEvents"),
             event: _eventsMap.batterystatus,
