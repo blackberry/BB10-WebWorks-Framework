@@ -18,7 +18,10 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _event = requireLocal("lib/event"), 
+var _event = requireLocal("lib/event"),
+    // This object is used by action map and contains links between pps object fields monitored for change in that object helper methods
+    // to analyze if the value is the one callback should be invoked and fields name and value format as would appear on return.
+    // Set disableOnChange to true if not interested on change for a particular field but still interested to return its value.  
     _eventsMap = {
         batterycritical: {
             eventName: "batterycritical",
