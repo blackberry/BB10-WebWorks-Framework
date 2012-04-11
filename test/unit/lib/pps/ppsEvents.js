@@ -36,7 +36,7 @@ describe("ppsEvents", function () {
             };
         });
         // ActionMap defines the relationships between looked up fields their pps paths, property names and values on return result object to user.
-        // i.e if listening on events for Field1 and Field2 in corresponding paths then return object is {returnField1: 1, returnField2: true}
+        // i.e if listening on events for Field1 and Field2 and Field 3 in corresponding paths then return object is {returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message"}
         _actionMap = {
             event: {
                 eventDetailsArr: [{
