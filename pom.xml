@@ -6,6 +6,10 @@
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <scm>ci</scm>
+    </properties>
+
     <profiles>
         <profile>
             <id>exec-configure-win</id>
@@ -63,6 +67,7 @@
                                     <executable>sudo</executable>
                                     <arguments>
                                         <argument>./configure</argument>
+                                        <argument>${scm}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
