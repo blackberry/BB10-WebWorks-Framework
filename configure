@@ -1,4 +1,4 @@
 npm install -g jake jshint@0.5.2 csslint uglify-js
 npm install jasmine-node express
 npm install
-if [ "$1" != "-p" ]; then git submodule update --init; fi
+if [ "$1" != "-scm" ]; then git submodule update --init; fi
