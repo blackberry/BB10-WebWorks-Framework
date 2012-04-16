@@ -54,15 +54,39 @@ var _event = requireLocal("lib/event"),
         }
     };
 
+var ADD_EVENT_ERROR = "Error occured while adding event listener.",
+    REMOVE_EVENT_ERROR = "Error occured while removing event listener.",
+    ERROR_ID = -1;
+
 module.exports = {
     on: function (success, fail, args) {
-        var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
-        action = _actionMap[eventName];
-        _event.on(action);
+        try {
+            var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
+            action = _actionMap[eventName];
+            _event.on(action);
+            if (success) {
+                success();
+            }
+        }
+        catch (e) {
+            if (fail) {
+                fail(ERROR_ID, ADD_EVENT_ERROR);
+            }
+        }
     },
     remove: function (success, fail, args) {
-        var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
-        action = _actionMap[eventName];
-        _event.remove(action);
+        try {
+            var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
+            action = _actionMap[eventName];
+            _event.remove(action);
+            if (success) {
+                success();
+            }
+        }
+        catch (e) {
+            if (fail) {
+                fail(ERROR_ID, REMOVE_EVENT_ERROR);
+            }
+        }
     }
 };
