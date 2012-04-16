@@ -30,11 +30,17 @@ var _event = requireLocal("lib/event"),
                 fieldNameArr: [{
                     eventName: "StateOfCharge",
                     paramName: "level",
+                    lastValue: null,
                     formatValue: function (str) {
                         return parseInt(str, 10);
                     },
                     skipTrigger: function (value) {
-                        return value >= 5;
+                        var threshold = 4,
+                            result = (value > threshold) || (this.lastValue && this.lastValue <= threshold);
+
+                        this.lastValue = value;
+
+                        return result;
                     }
                 }]
             }, {
@@ -57,11 +63,17 @@ var _event = requireLocal("lib/event"),
                 fieldNameArr: [{
                     eventName: "StateOfCharge",
                     paramName: "level",
+                    lastValue: null,
                     formatValue: function (str) {
                         return parseInt(str, 10);
                     },
                     skipTrigger: function (value) {
-                        return value >= 15;
+                        var threshold = 14,
+                            result = (value > threshold) || (this.lastValue && this.lastValue <= threshold);
+
+                        this.lastValue = value;
+
+                        return result;
                     }
                 }]
             }, {
@@ -124,6 +136,10 @@ var _event = requireLocal("lib/event"),
             }
         }
     };
+
+var ADD_EVENT_ERROR = "Error occured while adding event listener.",
+    REMOVE_EVENT_ERROR = "Error occured while removing event listener.",
+    ERROR_ID = -1;
 
 module.exports = {
     on: function (success, fail, args) {
