@@ -51,7 +51,8 @@ function _copyFiles() {
             _copyCmd(_c.DEPENDENCIES_EMU_LIB, 'dependencies/BBX-Emulator/lib') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_BOOTSTRAP, 'dependencies/bootstrap') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, 'dependencies/bootstrap/') + cmdSep +
-            _copyCmd(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, 'lib') + cmdSep +
+            // DO NOT copy webplatform-framework lib/* files over
+            // _copyCmd(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, 'lib') + cmdSep +
             _copyCmd(_c.ROOT + 'README.md', '') + cmdSep +
             _copyCmd(_c.ROOT + 'LICENSE', '');
 
