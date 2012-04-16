@@ -17,36 +17,45 @@
 var _apiDir = __dirname + "./../../../../ext/blackberry.event/",
     _libDir = __dirname + "./../../../../lib/",
     index,
-    events = require(_libDir + "event");
+    events = require(_libDir + "event"),
+    successCB,
+    failCB;
 
 describe("blackberr.event index", function () {
 
     beforeEach(function () {
         GLOBAL.JNEXT = {};
         index = require(_apiDir + "index");
+        successCB = jasmine.createSpy("Success Callback");
+        failCB = jasmine.createSpy("Fail Callback");
+
     });
 
     afterEach(function () {
         delete GLOBAL.JNEXT;
         index = null;
+        successCB = null;
+        failCB = null;
     });
 
     it("responds to 'batterystatus' events", function () {
-        var event = "batterystatus",
-            args = {eventName : encodeURIComponent(event)}; 
+        var eventName = "batterystatus",
+            args = {eventName: encodeURIComponent(eventName)}; 
         spyOn(events, "on");
-        index.on(null, null, args);
+        index.on(successCB, failCB, args);
         expect(events.on).toHaveBeenCalled();
-        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual("batterystatus");
+        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+        expect(successCB).toHaveBeenCalled();            
     });
 
     it("removes 'batterystatus' events", function () {
-        var event = "batterystatus",
-            args = {eventName : encodeURIComponent(event)}; 
+        var eventName = "batterystatus",
+            args = {eventName: encodeURIComponent(eventName)}; 
         spyOn(events, "remove");
-        index.remove(null, null, args);
+        index.remove(successCB, failCB, args);
         expect(events.remove).toHaveBeenCalled();
-        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual("batterystatus");
+        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        expect(successCB).toHaveBeenCalled();            
     });
-
 });
