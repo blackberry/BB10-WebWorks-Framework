@@ -59,7 +59,6 @@ describe("ppsEvents", function () {
                     }]
                 }, {
                     path: "some/pps/obj/path3",
-                    disableOnChange: true,
                     fieldNameArr: [{
                         eventName: "Field3",
                         paramName: "returnField3",
@@ -192,7 +191,7 @@ describe("ppsEvents", function () {
             expect(_actionMap.trigger).not.toHaveBeenCalled(); 
         });
     });
-    describe("removeEventListener negaive test", function () {
+    describe("removeEventListener negative test", function () {
         it("should NOT call close method when there is no instance to close", function () {
             var mockedPPSUtilsInst;
             

@@ -146,6 +146,7 @@ module.exports = {
         try {
             var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
             action = _actionMap[eventName];
+            
             _event.on(action);
             if (success) {
                 success();
