@@ -76,7 +76,7 @@ describe("whitelist", function () {
             expect(whitelist.isAccessAllowed("http://www.cnn.com")).toEqual(false);
         });
 
-        it("can allow access to whitelisted URL with different case", function () {
+        it("can allow access to whitelisted URL with different case (host)", function () {
             var whitelist = new Whitelist({
                 hasMultiAccess : false,
                 accessList : [{
@@ -87,6 +87,19 @@ describe("whitelist", function () {
             });
 
             expect(whitelist.isAccessAllowed("http://www.GOOGLE.com")).toEqual(true);
+        });
+
+        it("can allow access to whitelisted URL with different case (path)", function () {
+            var whitelist = new Whitelist({
+                hasMultiAccess : false,
+                accessList : [{
+                    uri : "http://google.com/SOME/path",
+                    allowSubDomain : true,
+                    features : null
+                }]
+            });
+
+            expect(whitelist.isAccessAllowed("http://www.google.com/some/path")).toEqual(true);
         });
 
         it("can deny access to non-whitelisted HTTP URL", function () {
