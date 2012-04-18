@@ -17,7 +17,7 @@
 describe("bridge", function () {
     var bridge = require('../../../../lib/plugins/bridge'),
         Whitelist = require('../../../../lib/policy/whitelist').Whitelist,
-        testExtension = require("../../../../ext/blackberry.example.test/index");
+        testExtension = require("../../../../ext/blackberry.app/index");
 
     beforeEach(function () {
         spyOn(console, "log");
@@ -65,14 +65,14 @@ describe("bridge", function () {
             var env = {"request": req, "response": res};
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(testExtension, "helloworld");
+            spyOn(testExtension, "author");
 
-            req.params.ext = "blackberry.example.test";
-            req.params.method = "helloworld";
+            req.params.ext = "blackberry.app";
+            req.params.method = "author";
 
             bridge.exec(req, succ, fail, args, env);
 
-            expect(testExtension.helloworld).toHaveBeenCalledWith(succ, fail, args, env);
+            expect(testExtension.author).toHaveBeenCalledWith(succ, fail, args, env);
         });
     });
 });

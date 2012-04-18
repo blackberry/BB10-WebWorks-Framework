@@ -43,8 +43,8 @@ describe("extensions", function () {
         it("calls the success callback with featureIds", function () {
             spyOn(Whitelist.prototype, "getFeaturesForUrl").andReturn(["MyFeatureId"]);
             
-            req.params.ext = "blackberry.example.test";
-            req.params.method = "helloworld";
+            req.params.ext = "blackberry.identity";
+            req.params.method = "uuid";
 
             extensions.get(req, succ, fail);
             expect(succ).toHaveBeenCalledWith(["MyFeatureId"]);
