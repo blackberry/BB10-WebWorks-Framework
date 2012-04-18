@@ -44,11 +44,8 @@ function _copyCmd(source, destination) {
 function _copyFiles() {
     var cmdSep = " && ";
     return  _copyCmd(_c.LIB, 'lib') + cmdSep +
-            _copyCmd(_c.BIN, 'bin') + cmdSep +
             _copyCmd(_c.EXT, 'ext') + cmdSep +
             _copyCmd(_c.CLIENTFILES, 'clientFiles') + cmdSep +
-            _copyCmd(_c.NODE_MOD, 'node_modules') + cmdSep +
-            _copyCmd(_c.DEPENDENCIES_EMU_LIB, 'dependencies/BBX-Emulator/lib') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_BOOTSTRAP, 'dependencies/bootstrap') + cmdSep +
             _copyCmd(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, 'dependencies/bootstrap/') + cmdSep +
             // DO NOT copy webplatform-framework lib/* files over
