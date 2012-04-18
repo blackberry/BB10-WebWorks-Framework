@@ -27,8 +27,10 @@ var srcPath = __dirname + '/../../../lib/',
 
 describe("framework", function () {
     beforeEach(function () {
-        GLOBAL.qnx = {callExtensionMethod : function () { return 42}};
-        webview = util.requireWebview(),
+        GLOBAL.qnx = {callExtensionMethod : function () {
+            return 42;
+        }};
+        webview = util.requireWebview();
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
