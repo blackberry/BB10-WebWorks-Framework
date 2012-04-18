@@ -96,10 +96,16 @@ describe("whitelist", function () {
                     uri : "http://google.com/SOME/path",
                     allowSubDomain : true,
                     features : null
+                },
+                {
+                    uri : "http://google.com/another/path",
+                    allowSubDomain : true,
+                    features : null
                 }]
             });
 
             expect(whitelist.isAccessAllowed("http://www.google.com/some/path")).toEqual(true);
+            expect(whitelist.isAccessAllowed("http://www.google.com/ANOTHER/path")).toEqual(true);
         });
 
         it("can deny access to non-whitelisted HTTP URL", function () {
