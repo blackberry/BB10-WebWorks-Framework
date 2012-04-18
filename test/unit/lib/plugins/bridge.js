@@ -51,14 +51,14 @@ describe("bridge", function () {
             req.params.ext = "IDoNotExist";
 
             bridge.exec(req, succ, fail, args);
-            expect(fail).toHaveBeenCalledWith(404, jasmine.any(String));
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
         });
 
         it("returns 403 if the feature is not white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
 
             bridge.exec(req, succ, fail, args);
-            expect(fail).toHaveBeenCalledWith(403, jasmine.any(String));
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 403);
         });
 
         it("calls the action method of the feature", function () {

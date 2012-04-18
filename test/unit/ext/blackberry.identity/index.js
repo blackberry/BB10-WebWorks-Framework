@@ -68,7 +68,7 @@ describe("blackberry.identity index", function () {
             expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
             expect(mockedPPS.read).not.toHaveBeenCalled();
             expect(mockedPPS.close).toHaveBeenCalled();            
-            expect(fail).toHaveBeenCalled();
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
         });
     });
 });
