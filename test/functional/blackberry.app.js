@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function testValue(field, value) {
+function testAppValue(field, value) {
     expect(blackberry.app[field]).toBeDefined();
     expect(blackberry.app[field]).toEqual(value);
 }
 
-function testReadOnly(field) {
+function testAppReadOnly(field) {
     var before = blackberry.app[field];
     blackberry.app[field] = "MODIFIED";
     expect(blackberry.app[field]).toEqual(before);
@@ -30,51 +30,51 @@ describe("blackberry.app", function () {
     });
 
     it('blackberry.app.author should exist', function () {
-        testValue("author", "Research In Motion Ltd.");
+        testAppValue("author", "Research In Motion Ltd.");
     });
 
     it('blackberry.app.author should be read-only', function () {
-        testReadOnly("author");
+        testAppReadOnly("author");
     });
 
     it('blackberry.app.authorEmail should exist', function () {
-        testValue("authorEmail", "hello.bob@blah.com");
+        testAppValue("authorEmail", "hello.bob@blah.com");
     });
 
     it('blackberry.app.authorEmail should be read-only', function () {
-        testReadOnly("authorEmail");
+        testAppReadOnly("authorEmail");
     });
 
     it('blackberry.app.authorURL should exist', function () {
-        testValue("authorURL", "http://www.blah.com");
+        testAppValue("authorURL", "http://www.blah.com");
     });
 
     it('blackberry.app.authorURL should be read-only', function () {
-        testReadOnly("authorURL");
+        testAppReadOnly("authorURL");
     });
 
     it('blackberry.app.copyright should exist', function () {
-        testValue("copyright", "Copyright 1998-2011 My Corp");
+        testAppValue("copyright", "Copyright 1998-2011 My Corp");
     });
 
     it('blackberry.app.copyright should be read-only', function () {
-        testReadOnly("copyright");
+        testAppReadOnly("copyright");
     });
 
     it('blackberry.app.description should exist', function () {
-        testValue("description", "This application points to a the functional test server.");
+        testAppValue("description", "This application points to a the functional test server.");
     });
 
     it('blackberry.app.description should be read-only', function () {
-        testReadOnly("description");
+        testAppReadOnly("description");
     });
 
     it('blackberry.app.id should exist', function () {
-        testValue("id", "jasmine");
+        testAppValue("id", "jasmine");
     });
 
     it('blackberry.app.id should be read-only', function () {
-        testReadOnly("id");
+        testAppReadOnly("id");
     });
 
     it('blackberry.app.license should exist', function () {
@@ -84,30 +84,30 @@ describe("blackberry.app", function () {
     });
 
     it('blackberry.app.license should be read-only', function () {
-        testReadOnly("license");
+        testAppReadOnly("license");
     });
 
     it('blackberry.app.licenseURL should exist', function () {
-        testValue("licenseURL", "http://www.apache.org/licenses/LICENSE-2.0");
+        testAppValue("licenseURL", "http://www.apache.org/licenses/LICENSE-2.0");
     });
 
     it('blackberry.app.licenseURL should be read-only', function () {
-        testReadOnly("licenseURL");
+        testAppReadOnly("licenseURL");
     });
 
     it('blackberry.app.name should exist', function () {
-        testValue("name", "Jasmine");
+        testAppValue("name", "Jasmine");
     });
 
     it('blackberry.app.name should be read-only', function () {
-        testReadOnly("name");
+        testAppReadOnly("name");
     });
 
     it('blackberry.app.version should exist', function () {
-        testValue("version", "1.0.0");
+        testAppValue("version", "1.0.0");
     });
 
     it('blackberry.app.version should be read-only', function () {
-        testReadOnly("version");
+        testAppReadOnly("version");
     });
 });
