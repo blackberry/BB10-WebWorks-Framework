@@ -15,6 +15,7 @@
  */
 
 describe("blackberry.event", function () {
+	var waitForTimeout = 15000;
     it("should exist", function () {
         expect(blackberry.event).toBeDefined();
     });
@@ -39,11 +40,11 @@ describe("blackberry.event", function () {
             blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
             blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
 
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'StateOfCharge' to 'DC' in battery PPS Object");
+            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
 
             waitsFor(function () { 
                 return (onBatteryStatusChange.callCount === 0); 
-            }, "Battery event fired", 5000);
+            }, "Battery event fired", waitForTimeout);
 
             runs(function () {
                 expect(onBatteryStatusChange).not.toHaveBeenCalled();
@@ -57,11 +58,11 @@ describe("blackberry.event", function () {
             blackberry.event.addEventListener('batterystatus', onBatteryStatusChangeA);
             blackberry.event.addEventListener('batterystatus', onBatteryStatusChangeB);
 
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'StateOfCharge' to 'DC' in battery PPS Object");
+            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
 
             waitsFor(function () { 
                 return onBatteryStatusChangeA.callCount && onBatteryStatusChangeB.callCount; 
-            }, "Battery event fired", 15000);
+            }, "Battery event fired", waitForTimeout);
 
             runs(function () {
                 expect(onBatteryStatusChangeA).toHaveBeenCalled();
@@ -71,21 +72,46 @@ describe("blackberry.event", function () {
             });
         });
 
-        xit("should fire event once even if same eventListeners called multiple times", function () {
+        it("should fire event once even if same eventListeners called multiple times", function () {
             var onBatteryStatusChange = jasmine.createSpy("onBatteryStatusChange");
                 
             blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
             blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
             blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
 
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'StateOfCharge' to 'DC' in battery PPS Object");
+            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
 
-            waits(3000);
+            waitsFor(function () { 
+                return onBatteryStatusChange.callCount; 
+            }, "Battery event fired", waitForTimeout);
 
             runs(function () {
                 expect(onBatteryStatusChange.callCount).toEqual(1);
                 blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-            });
+            }); 
+        });
+
+        it("should fire event even when re-register it 3 times and more", function () {
+            var onBatteryStatusChange = jasmine.createSpy("onBatteryStatusChange");
+                
+            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
+            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
+            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
+            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
+            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
+            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
+            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
+
+            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
+
+            waitsFor(function () { 
+                return onBatteryStatusChange.callCount; 
+            }, "Battery event fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryStatusChange.callCount).toEqual(1);
+                blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
+            }); 
         });
     });
 
@@ -108,10 +134,9 @@ describe("blackberry.event", function () {
 
             waitsFor(function () { 
                 return onBatteryStatusChange.callCount;
-            }, "event never fired", 15000);
+            }, "event never fired", waitForTimeout);
 
             runs(function () {
-                console.log(onBatteryStatusChange.mostRecentCall.args[0]);
                 expect(onBatteryStatusChange).toHaveBeenCalled();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeFalsy();
@@ -123,10 +148,9 @@ describe("blackberry.event", function () {
 
             waitsFor(function () { 
                 return onBatteryStatusChange.callCount;
-            }, "event never fired", 15000);
+            }, "event never fired", waitForTimeout);
 
             runs(function () {
-                console.log(onBatteryStatusChange.mostRecentCall.args[0]);
                 expect(onBatteryStatusChange).toHaveBeenCalled();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeTruthy();
@@ -139,10 +163,9 @@ describe("blackberry.event", function () {
 
             waitsFor(function () { 
                 return onBatteryStatusChange.callCount;
-            }, "event never fired", 15000);
+            }, "event never fired", waitForTimeout);
 
             runs(function () {
-                console.log(onBatteryStatusChange.mostRecentCall.args[0]);
                 expect(onBatteryStatusChange).toHaveBeenCalled();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeTruthy();
@@ -154,14 +177,117 @@ describe("blackberry.event", function () {
 
             waitsFor(function () {
                 return onBatteryStatusChange.callCount;
-            }, "event never fired", 15000);
+            }, "event never fired", waitForTimeout);
 
             runs(function () {
-                console.log(onBatteryStatusChange.mostRecentCall.args[0]);
                 expect(onBatteryStatusChange).toHaveBeenCalled();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
                 expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeFalsy();
             });
         });
+    });
+    
+    describe("batterylow", function () {
+        var onBatteryLow;
+
+        beforeEach(function () {
+            onBatteryLow = jasmine.createSpy("onBatteryLow");
+            blackberry.event.addEventListener('batterylow', onBatteryLow);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener('batterylow', onBatteryLow);
+            onBatteryLow = null;
+        });
+
+        it("should be called when the battery level decreases to lower than 15%", function () {
+            window.confirm("[Device]Drain the battery to level lower than 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 15%");
+
+            waitsFor(function () { 
+                return onBatteryLow.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).toHaveBeenCalledWith(jasmine.any(Object));
+                expect(onBatteryLow.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryLow.mostRecentCall.args[0].isPlugged).toBeDefined();
+            });
+        });
+        
+        it("should not be called when the battery level decreases but still higher or equal to 15%", function () {
+            window.confirm("[Device]Drain the battery to level higher or equal to 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level higher or equal to 15%");
+
+            waitsFor(function () { 
+                return (onBatteryLow.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).not.toHaveBeenCalled();
+            });
+        });
+
+        it("should not be called to any change to power source state", function () {
+            window.confirm("[Device]Change the power source state (Plug/Unplug). [SIM]Tweak 'ChargingState' to 'NC' or 'DC' in charger PPS Object");
+
+            waitsFor(function () { 
+                return (onBatteryLow.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).not.toHaveBeenCalled();
+            });
+        });
     });   
+    
+    describe("batterycritical", function () {
+        var onBatteryCritical;
+
+        beforeEach(function () {
+            onBatteryCritical = jasmine.createSpy("onBatteryCritical");
+            blackberry.event.addEventListener('batterycritical', onBatteryCritical);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener('batterycritical', onBatteryCritical);
+            onBatteryCritical = null;
+        });
+
+        it("should be called when the battery level decreases to lower than 5%", function () {
+            window.confirm("[Device]Drain the battery to level lower than 5%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 5%");
+
+            waitsFor(function () { 
+                return onBatteryCritical.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryCritical).toHaveBeenCalledWith(jasmine.any(Object));
+                expect(onBatteryCritical.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryCritical.mostRecentCall.args[0].isPlugged).toBeDefined();
+            });
+        });
+        
+        it("should not be called when the battery level decreases but still higher or equal to 5%", function () {
+            window.confirm("[Device]Drain the battery to level higher or equal to 5%. [SIM]Set 'StateOfCharge' in battery PPS Object to level higher or equal to 5%");
+
+            waitsFor(function () { 
+                return (onBatteryCritical.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryCritical).not.toHaveBeenCalled();
+            });
+        });
+        
+        it("should not be called to any change to power source state", function () {
+            window.confirm("[Device]Change the power source state (Plug/Unplug). [SIM]Tweak 'ChargingState' to 'NC' or 'DC' in charger PPS Object");
+
+            waitsFor(function () { 
+                return (onBatteryCritical.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryCritical).not.toHaveBeenCalled();
+            });
+        });
+    });    
 });

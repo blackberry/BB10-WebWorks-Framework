@@ -31,12 +31,12 @@ describe("ppsEvents", function () {
             return  {
                 init: jasmine.createSpy("Init Method"),
                 open: jasmine.createSpy("Open Method"),
-                read: jasmine.createSpy("Read Method").andReturn({Field1: "str1", Field2: "str2", SomeOtherField: "test"}),
+                read: jasmine.createSpy("Read Method").andReturn({Field1: "str1", Field2: "str2", Field3: "str3", Field4: "str4", OtherField: "Data"}),
                 close: jasmine.createSpy("Close Method")
             };
         });
         // ActionMap defines the relationships between looked up fields their pps paths, property names and values on return result object to user.
-        // i.e if listening on events for Field1 and Field2 in corresponding paths then return object is {returnField1: 1, returnField2: true}
+        // i.e if listening on events for Field1 and Field2 and Field 3 in corresponding paths then return object is {returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message"}
         _actionMap = {
             event: {
                 eventDetailsArr: [{
@@ -55,6 +55,28 @@ describe("ppsEvents", function () {
                         paramName: "returnField2",
                         formatValue: function (str) {
                             return true;
+                        }
+                    }]
+                }, {
+                    path: "some/pps/obj/path3",
+                    fieldNameArr: [{
+                        eventName: "Field3",
+                        paramName: "returnField3",
+                        formatValue: function (str) {
+                            return false;
+                        },
+                        skipTrigger: function (value) {
+                            return value === false;
+                        }
+                    }]
+                }, {
+                    path: "some/pps/obj/path4",
+                    disableOnChange: true,
+                    fieldNameArr: [{
+                        eventName: "Field4",
+                        paramName: "returnField4",
+                        formatValue: function (str) {
+                            return "Message";
                         }
                     }]
                 }],
@@ -92,9 +114,9 @@ describe("ppsEvents", function () {
                 
             _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
             onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
-            onChange({changed: {Field1: true}});
+            onChange({changed: {Field1: true, Field3: true}});
             expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
-            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true});
+            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message"});
         });
 
         it("should invoke onChange callback when second looked up field has been changed", function () {
@@ -103,9 +125,30 @@ describe("ppsEvents", function () {
                 
             _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
             onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
-            onChange({changed: {Field2: true}});
+            onChange({changed: {Field2: true, Field100: true}});
             expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
-            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true});
+            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message"});
+        });
+
+        it("should not invoke onChange callback when none of the looked up fields have been changed", function () {
+            var index = 0, // Corresponding ppsUtils instance handler of pps object that contains looked up field.
+                onChange;
+                
+            _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
+            onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
+            onChange({changed: {Field3: true, Field100: true}});
+            expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).not.toHaveBeenCalled();
+            expect(_actionMap.trigger).not.toHaveBeenCalled(); 
+        });
+
+        it("should have onChange method not defined when there is no interest to listen for changes on the field", function () {
+            var index = 3; // Corresponding ppsUtils instance handler of pps object that contains looked up field.
+                
+            _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
+            expect(_actionMap.event.eventDetailsArr[index].ppsUtils.onChange).not.toBeDefined();
+            expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).not.toHaveBeenCalled();
+            expect(_actionMap.trigger).not.toHaveBeenCalled(); 
+
         });
     });
 
@@ -126,7 +169,7 @@ describe("ppsEvents", function () {
 
     // Negative test cases
     describe("addEventListener negative test", function () {
-        it("should NOT invoke onChange callback when looked up field has not been changed", function () {
+        it("should NOT invoke onChange callback when first looked up field has not been changed", function () {
             var index = 0, 
                 onChange;
                 
@@ -137,7 +180,7 @@ describe("ppsEvents", function () {
             expect(_actionMap.trigger).not.toHaveBeenCalled(); 
         });
     
-        it("should NOT invoke onChange callback when looked up field was not changed", function () {
+        it("should NOT invoke onChange callback when second looked up field has not been changed", function () {
             var index = 1, 
                 onChange;
                 
@@ -148,7 +191,7 @@ describe("ppsEvents", function () {
             expect(_actionMap.trigger).not.toHaveBeenCalled(); 
         });
     });
-    describe("removeEventListener negaive test", function () {
+    describe("removeEventListener negative test", function () {
         it("should NOT call close method when there is no instance to close", function () {
             var mockedPPSUtilsInst;
             
