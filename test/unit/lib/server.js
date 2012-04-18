@@ -98,7 +98,7 @@ describe("server", function () {
     
     describe("when handling feature requests", function () {
         var req, res;
-
+/*
         beforeEach(function () {
             req = {
                 params: {
