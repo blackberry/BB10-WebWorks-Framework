@@ -97,8 +97,9 @@ describe("server", function () {
     });
     
     describe("when handling feature requests", function () {
+/*        
         var req, res;
-/*
+
         beforeEach(function () {
             req = {
                 params: {
@@ -115,7 +116,7 @@ describe("server", function () {
                 send: jasmine.createSpy()
             };
         });
-/*
+
         it("checks if the feature is white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
             server.handleFeature(req, res);
