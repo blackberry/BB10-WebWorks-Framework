@@ -83,10 +83,16 @@ describe("whitelist", function () {
                     uri : "http://google.com",
                     allowSubDomain : true,
                     features : null
+                },
+                {
+                    uri : "http://ABC.com",
+                    allowSubDomain : true,
+                    features : null
                 }]
             });
 
             expect(whitelist.isAccessAllowed("http://www.GOOGLE.com")).toEqual(true);
+            expect(whitelist.isAccessAllowed("http://www.abc.com")).toEqual(true);
         });
 
         it("can allow access to whitelisted URL with different case (path)", function () {
