@@ -20,7 +20,7 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     ppsUtils,
     mockedPPS;
 
-describe("blackberr.invoke index", function () {
+describe("blackberry.invoke index", function () {
 
     beforeEach(function () {
         GLOBAL.JNEXT = {};

@@ -15,11 +15,11 @@
  */
 var _self = {};
 
-function getFieldValue(field) {
-    return window.webworks.execSync("blackberry.app", field, null);
-//    Object.defineProperty(_self, field, {"value": value, "writable": false});
+function defineReadOnlyField(field) {
+    var value = window.webworks.execSync("blackberry.app", field, null);
+    Object.defineProperty(_self, field, {"value": value, "writable": false});
 }
-/*
+
 defineReadOnlyField("author");
 
 defineReadOnlyField("authorEmail");
@@ -39,8 +39,5 @@ defineReadOnlyField("licenseURL");
 defineReadOnlyField("name");
 
 defineReadOnlyField("version");
-*/
-
-window.webworks.defineReadOnlyField(_self, "author", getFieldValue("author"));
 
 module.exports = _self;
