@@ -16,15 +16,17 @@
 
 describe("extensions", function () {
     var extensions = require("../../../../lib/plugins/extensions"),
-        Whitelist = require('../../../../lib/policy/whitelist').Whitelist;
+        Whitelist = require('../../../../lib/policy/whitelist').Whitelist,
+        req,
+        res,
+        succ,
+        fail;
 
     beforeEach(function () {
         spyOn(console, "log");
     });
 
     describe("when handling get requests", function () {
-        var req, res, succ, fail;
-
         beforeEach(function () {
             req = {
                 params: {}
