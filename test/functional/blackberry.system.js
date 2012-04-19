@@ -30,14 +30,6 @@ describe("blackberry.system", function () {
         expect(blackberry.system).toBeDefined();
     });
 
-    it("blackberry.system.ALLOW should exist", function () {
-        expect(blackberry.system.ALLOW).toBeDefined();
-    });
-
-    it("blackberry.system.DENY should exist", function () {
-        expect(blackberry.system.DENY).toBeDefined();
-    });
-
     it("blackberry.system ALLOW and DENY should be defined", function () {
         testSystemValue("ALLOW", 0);
         testSystemValue("DENY", 1);
