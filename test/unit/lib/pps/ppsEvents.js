@@ -84,9 +84,9 @@ describe("ppsEvents", function () {
                     fieldNameArr: [{
                         eventName: "Field5",
                         paramName: "returnField5",
-                        lastValue: null,
-                        setValue: function (value) {
-                            this.lastValue = this.formatValue(value);
+                        fieldValue: null,
+                        setFieldValue: function (value) {
+                            this.fieldValue = this.formatValue(value);
                         },                        
                         formatValue: function (str) {
                             return 50;
@@ -167,7 +167,7 @@ describe("ppsEvents", function () {
 
         });
         
-        it("should set lastValue field when there is logic for skipTrigger", function () {
+        it("should set fieldValue field when there is logic for skipTrigger", function () {
             var index = 4, // Corresponding ppsUtils instance handler of pps object that contains looked up field.
                 onChange;
                 
@@ -175,8 +175,7 @@ describe("ppsEvents", function () {
             onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {Field5: true, Field100: true}});
             expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
-            expect(typeof _actionMap.event.eventDetailsArr[index].fieldNameArr[0].skipTrigger === "function").toBeTruthy();
-            expect(_actionMap.event.eventDetailsArr[index].fieldNameArr[0].lastValue === 50).toBeTruthy();
+            expect(_actionMap.event.eventDetailsArr[index].fieldNameArr[0].fieldValue === 50).toBeTruthy();
         });
 
     });
