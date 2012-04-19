@@ -85,6 +85,9 @@ describe("ppsEvents", function () {
                         eventName: "Field5",
                         paramName: "returnField5",
                         lastValue: null,
+                        setValue: function (value) {
+                            this.lastValue = this.formatValue(value);
+                        },                        
                         formatValue: function (str) {
                             return 50;
                         },
