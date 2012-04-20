@@ -85,6 +85,7 @@ describe("ppsEvents", function () {
                         eventName: "Field5",
                         paramName: "returnField5",
                         fieldValue: null,
+                        reset: jasmine.createSpy("Reset Method"),
                         setFieldValue: function (value) {
                             this.fieldValue = this.formatValue(value);
                         },                        
@@ -192,6 +193,14 @@ describe("ppsEvents", function () {
                 _ppsEvents.removeEventListener(_actionMap.event, _actionMap.trigger);
                 expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
             });
+        });
+
+        it("should call reset method when removing an event", function () {
+            var index = 4;
+
+            _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
+            _ppsEvents.removeEventListener(_actionMap.event, _actionMap.trigger);
+            expect(_actionMap.event.eventDetailsArr[index].fieldNameArr[0].reset).toHaveBeenCalled();
         });
     });
 
