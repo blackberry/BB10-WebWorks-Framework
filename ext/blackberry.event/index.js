@@ -30,15 +30,22 @@ var _event = requireLocal("lib/event"),
                 fieldNameArr: [{
                     eventName: "StateOfCharge",
                     paramName: "level",
-                    lastValue: null,
+                    fieldValue: null,
+                    reset: function () {
+                        this.setFieldValue(null);
+                    },
+                    setFieldValue: function (value) {
+                        this.fieldValue = value ? this.formatValue(value) : value;
+                    },
                     formatValue: function (str) {
                         return parseInt(str, 10);
                     },
                     skipTrigger: function (value) {
                         var threshold = 4,
-                            result = (value > threshold) || (this.lastValue && this.lastValue <= threshold);
+                            formattedValue = this.formatValue(value),
+                            result = (formattedValue > threshold) || (this.fieldValue && this.fieldValue <= threshold);
 
-                        this.lastValue = value;
+                        this.fieldValue = formattedValue;
 
                         return result;
                     }
@@ -63,15 +70,22 @@ var _event = requireLocal("lib/event"),
                 fieldNameArr: [{
                     eventName: "StateOfCharge",
                     paramName: "level",
-                    lastValue: null,
+                    fieldValue: null,
+                    reset: function () {
+                        this.setFieldValue(null);
+                    },
+                    setFieldValue: function (value) {
+                        this.fieldValue = value ? this.formatValue(value) : value;
+                    },
                     formatValue: function (str) {
                         return parseInt(str, 10);
                     },
                     skipTrigger: function (value) {
                         var threshold = 14,
-                            result = (value > threshold) || (this.lastValue && this.lastValue <= threshold);
+                            formattedValue = this.formatValue(value),
+                            result = (formattedValue > threshold) || (this.fieldValue && this.fieldValue <= threshold);
 
-                        this.lastValue = value;
+                        this.fieldValue = value;
 
                         return result;
                     }

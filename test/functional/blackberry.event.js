@@ -237,6 +237,27 @@ describe("blackberry.event", function () {
                 expect(onBatteryLow).not.toHaveBeenCalled();
             });
         });
+        
+        it("should trigger callback for low event when re-entering threshold after adding event lister after all were removed", function () {
+
+            window.confirm("[Device]Drain the battery to level lower than 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 15%");
+            blackberry.event.removeEventListener('batterylow', onBatteryLow);
+            window.confirm("[Device]Charge the battery to level higher or equal to 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level higher or equal to 15");
+            window.confirm("[Device]Drain the battery to level lower than 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 15%");
+            blackberry.event.addEventListener('batterylow', onBatteryLow);
+
+            waitsFor(function () { 
+                return onBatteryLow.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).toHaveBeenCalledWith(jasmine.any(Object));
+                expect(onBatteryLow.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryLow.mostRecentCall.args[0].isPlugged).toBeDefined();
+            });
+        });
+        
+
     });   
     
     describe("batterycritical", function () {
