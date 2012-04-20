@@ -315,18 +315,6 @@ describe("blackberry.event", function () {
                 expect(onPause).toHaveBeenCalled();
             });
         });
-
-        it("should NOT invoked callback when application is thumbnailed when Application Behavior is 'Showcase'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Showcase', then thumbnail this app");
-
-            waitsFor(function () {
-                return onPause.callCount;
-            }, "event never fired", waitForTimeout);
-
-            runs(function () {
-                expect(onPause).not.toHaveBeenCalled();
-            });
-        });
     });
 
     describe("resume", function () {
@@ -342,8 +330,8 @@ describe("blackberry.event", function () {
             onResume = null;
         });
 
-        it("should invoke callback when application is fullscreened when Application Behavior is 'Default'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Default', thumbnail this app, then tap it to make it fullscreen");
+        it("should invoke callback when application is fullscreened when Application Behavior is 'Paused'", function () {
+            window.confirm("Changed settings General -> Application Behavior to 'Paused', thumbnail this app, then tap it to make it fullscreen");
 
             waitsFor(function () {
                 return onResume.callCount;
@@ -351,18 +339,6 @@ describe("blackberry.event", function () {
 
             runs(function () {
                 expect(onResume).toHaveBeenCalled();
-            });
-        });
-
-        it("should NOT invoked callback when application is fullscreened when Application Behavior is 'Showcase'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Showcase', thumbnail this app, then tap it to make it fullscreen");
-
-            waitsFor(function () {
-                return onResume.callCount;
-            }, "event never fired", waitForTimeout);
-
-            runs(function () {
-                expect(onResume).not.toHaveBeenCalled();
             });
         });
     });
