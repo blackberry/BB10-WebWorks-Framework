@@ -46,6 +46,7 @@ describe("blackberry.identity client", function () {
     describe("when user has specified correct permission", function () {
         beforeEach(function () {
             mockedWebworks.execSync = jasmine.createSpy().andReturn("0x12345678");
+            mockedWebworks.defineReadOnlyField = jasmine.createSpy();
             GLOBAL.window.webworks = mockedWebworks;
             // client needs to be required for each test
             client = require(_apiDir + "/client");
@@ -59,7 +60,7 @@ describe("blackberry.identity client", function () {
 
         it("uuid should call execSync and equal to execSync return value", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("uuid")]);
-            expect(client.uuid).toEqual("0x12345678");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "uuid", "0x12345678");
         });
     });
 
@@ -75,7 +76,7 @@ describe("blackberry.identity client", function () {
 
         it("uuid should call execSync and catch error and return null", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("uuid")]);
-            expect(client.uuid).toEqual(null);
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "uuid", null);
         });
     });
 });

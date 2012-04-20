@@ -25,16 +25,7 @@ _self.hasCapability = function (capability) {
     return window.webworks.execSync(ID, "hasCapability", {"capability": capability});
 };
 
-_self.__defineGetter__("ALLOW", function () {
-    return 0;
-});
-
-_self.__defineGetter__("DENY", function () {
-    return 1;
-});
-
-_self.__defineGetter__("model", function () {
-    return window.webworks.execSync(ID, "model");
-});
+window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
+window.webworks.defineReadOnlyField(_self, "DENY", 1);
 
 module.exports = _self;

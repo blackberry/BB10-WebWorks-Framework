@@ -134,7 +134,7 @@ describe("blackberr.event index", function () {
         index.on(successCB, failCB, args);
         expect(events.on).toHaveBeenCalled();
         expect(successCB).not.toHaveBeenCalled();            
-        expect(failCB).toHaveBeenCalled();            
+        expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
     });
 
     it("invokes fail callback when exception occured", function () {
@@ -147,6 +147,6 @@ describe("blackberr.event index", function () {
         index.remove(successCB, failCB, args);
         expect(events.remove).toHaveBeenCalled();
         expect(successCB).not.toHaveBeenCalled();            
-        expect(failCB).toHaveBeenCalled();            
+        expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
     });
 });
