@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function testValue(field) {
+function testIdentityValue(field) {
     expect(blackberry.identity[field]).toBeDefined();
     expect(blackberry.identity[field]).toEqual(jasmine.any(String));
     expect(blackberry.identity[field]).not.toEqual("");
 }
 
-function testReadOnly(field) {
+function testIdentityReadOnly(field) {
     var before = blackberry.identity[field];
     blackberry.identity[field] = "MODIFIED";
     expect(blackberry.identity[field]).toEqual(before);
@@ -27,10 +27,10 @@ function testReadOnly(field) {
 
 describe("blackberry.identity", function () {
     it('blackberry.identity.uuid should exist', function () {
-        testValue("uuid");
+        testIdentityValue("uuid");
     });
 
     it('blackberry.identity.uuid should be read-only', function () {
-        testReadOnly("uuid");
+        testIdentityReadOnly("uuid");
     });
 });

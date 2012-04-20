@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
+function testSystemValue(field, value) {
+    expect(blackberry.system[field]).toBeDefined();
+    expect(blackberry.system[field]).toEqual(value);
+}
+
+function testSystemReadOnly(field) {
+    var before = blackberry.system[field];
+    blackberry.system[field] = "MODIFIED";
+    expect(blackberry.system[field]).toEqual(before);
+}
+
 describe("blackberry.system", function () {
     it("blackberry.system should exist", function () {
         expect(blackberry.system).toBeDefined();
     });
 
-    it("blackberry.system.ALLOW should exist", function () {
-        expect(blackberry.system.ALLOW).toBeDefined(0);
+    it("blackberry.system ALLOW and DENY should be defined", function () {
+        testSystemValue("ALLOW", 0);
+        testSystemValue("DENY", 1);
     });
 
-    it("blackberry.system.DENY should exist", function () {
-        expect(blackberry.system.DENY).toBeDefined(1);
+    it("blackberry.system ALLOW and DENY should be read-only", function () {
+        testSystemReadOnly("ALLOW");
+        testSystemReadOnly("DENY");
     });
 
     it("blackberry.system.hasPermission should exist", function () {

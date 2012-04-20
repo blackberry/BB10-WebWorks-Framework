@@ -35,7 +35,7 @@ module.exports = {
         if (deviceprops) {
             success(deviceprops.devicepin);
         } else {
-            fail("Cannot open PPS object");
+            fail(-1, "Cannot open PPS object");
         }
     }
 };

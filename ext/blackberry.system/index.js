@@ -22,10 +22,6 @@ var Whitelist = requireLocal("lib/policy/whitelist").Whitelist,
     whitelist = new Whitelist();
 
 module.exports = {
-    model: function (success, fail, args) {
-        success("BB10");
-    },
-
     hasPermission: function (success, fail, args, env) {
         // TODO string argument surrounded by %22
         // preserve dot for feature id

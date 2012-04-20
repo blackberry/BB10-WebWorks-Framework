@@ -21,7 +21,7 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.identity/",
     path = "/pps/services/private/deviceproperties",
     mode = "0";
 
-describe("blackberr.identity index", function () {
+describe("blackberry.identity index", function () {
     beforeEach(function () {
         GLOBAL.JNEXT = {};
         ppsUtils = require(_libDir + "pps/ppsUtils");
@@ -68,7 +68,7 @@ describe("blackberr.identity index", function () {
             expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
             expect(mockedPPS.read).not.toHaveBeenCalled();
             expect(mockedPPS.close).toHaveBeenCalled();            
-            expect(fail).toHaveBeenCalled();
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
         });
     });
 });
