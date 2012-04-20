@@ -31,7 +31,7 @@ describe("ppsEvents", function () {
             return  {
                 init: jasmine.createSpy("Init Method"),
                 open: jasmine.createSpy("Open Method"),
-                read: jasmine.createSpy("Read Method").andReturn({Field1: "str1", Field2: "str2", Field3: "str3", Field4: "str4", OtherField: "Data"}),
+                read: jasmine.createSpy("Read Method").andReturn({Field1: "str1", Field2: "str2", Field3: "str3", Field4: "str4", Field5: "50", OtherField: "Data"}),
                 close: jasmine.createSpy("Close Method")
             };
         });
@@ -79,6 +79,23 @@ describe("ppsEvents", function () {
                             return "Message";
                         }
                     }]
+                }, {
+                    path: "some/pps/obj/path5",
+                    fieldNameArr: [{
+                        eventName: "Field5",
+                        paramName: "returnField5",
+                        fieldValue: null,
+                        reset: jasmine.createSpy("Reset Method"),
+                        setFieldValue: function (value) {
+                            this.fieldValue = this.formatValue(value);
+                        },                        
+                        formatValue: function (str) {
+                            return 50;
+                        },
+                        skipTrigger: function (value) {
+                            return false;
+                        }
+                    }]
                 }],
                 mode: 0
 
@@ -116,7 +133,7 @@ describe("ppsEvents", function () {
             onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {Field1: true, Field3: true}});
             expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
-            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message"});
+            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message", returnField5: 50});
         });
 
         it("should invoke onChange callback when second looked up field has been changed", function () {
@@ -127,7 +144,7 @@ describe("ppsEvents", function () {
             onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
             onChange({changed: {Field2: true, Field100: true}});
             expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
-            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message"});
+            expect(_actionMap.trigger).toHaveBeenCalledWith({returnField1: 1, returnField2: true, returnField3: false, returnField4: "Message", returnField5: 50});
         });
 
         it("should not invoke onChange callback when none of the looked up fields have been changed", function () {
@@ -150,6 +167,18 @@ describe("ppsEvents", function () {
             expect(_actionMap.trigger).not.toHaveBeenCalled(); 
 
         });
+        
+        it("should set fieldValue field when there is logic for skipTrigger", function () {
+            var index = 4, // Corresponding ppsUtils instance handler of pps object that contains looked up field.
+                onChange;
+                
+            _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
+            onChange = _actionMap.event.eventDetailsArr[index].ppsUtils.onChange;
+            onChange({changed: {Field5: true, Field100: true}});
+            expect(_actionMap.event.eventDetailsArr[index].ppsUtils.read).toHaveBeenCalled();
+            expect(_actionMap.event.eventDetailsArr[index].fieldNameArr[0].fieldValue === 50).toBeTruthy();
+        });
+
     });
 
     describe("removeEventListener positive test", function () {
@@ -164,6 +193,14 @@ describe("ppsEvents", function () {
                 _ppsEvents.removeEventListener(_actionMap.event, _actionMap.trigger);
                 expect(mockedPPSUtilsInst.close).toHaveBeenCalled();
             });
+        });
+
+        it("should call reset method when removing an event", function () {
+            var index = 4;
+
+            _ppsEvents.addEventListener(_actionMap.event, _actionMap.trigger);
+            _ppsEvents.removeEventListener(_actionMap.event, _actionMap.trigger);
+            expect(_actionMap.event.eventDetailsArr[index].fieldNameArr[0].reset).toHaveBeenCalled();
         });
     });
 
