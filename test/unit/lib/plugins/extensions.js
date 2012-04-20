@@ -16,15 +16,17 @@
 
 describe("extensions", function () {
     var extensions = require("../../../../lib/plugins/extensions"),
-        Whitelist = require('../../../../lib/policy/whitelist').Whitelist;
+        Whitelist = require('../../../../lib/policy/whitelist').Whitelist,
+        req,
+        res,
+        succ,
+        fail;
 
     beforeEach(function () {
         spyOn(console, "log");
     });
 
     describe("when handling get requests", function () {
-        var req, succ, fail;
-
         beforeEach(function () {
             req = {
                 params: {}
@@ -43,11 +45,61 @@ describe("extensions", function () {
         it("calls the success callback with featureIds", function () {
             spyOn(Whitelist.prototype, "getFeaturesForUrl").andReturn(["MyFeatureId"]);
             
-            req.params.ext = "blackberry.example.test";
-            req.params.method = "helloworld";
+            req.params.ext = "blackberry.identity";
+            req.params.method = "uuid";
 
             extensions.get(req, succ, fail);
             expect(succ).toHaveBeenCalledWith(["MyFeatureId"]);
+        });
+    });
+
+    describe("load client", function () {
+        beforeEach(function () {
+            GLOBAL.XMLHttpRequest = function () {};
+            GLOBAL.XMLHttpRequest.prototype.open = jasmine.createSpy();
+            GLOBAL.XMLHttpRequest.prototype.send = jasmine.createSpy();
+            GLOBAL.XMLHttpRequest.prototype.responseText = "blah";
+            req = {
+                params: {
+                    ext: "blackberry.app"
+                },
+                origin: "abc"
+            };
+            res = {
+                send: jasmine.createSpy()
+            };
+            succ = jasmine.createSpy();
+            fail = jasmine.createSpy();
+        });
+
+        it("sends xhr response text if feature is whitelisted", function () {
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+
+            extensions.load(req, succ, fail, undefined, {request: req, response: res});
+
+            expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
+            expect(XMLHttpRequest.prototype.open).toHaveBeenCalledWith("GET", "ext/blackberry.app/client.js", false);
+            expect(XMLHttpRequest.prototype.send).toHaveBeenCalled();
+            expect(res.send).toHaveBeenCalledWith(200, "blah");
+        });
+
+        it("calls fail callback with HTTP 404 if whitelisted feature does not exist", function () {
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            GLOBAL.XMLHttpRequest.prototype.send = jasmine.createSpy().andThrow("TOO BAD");
+
+            extensions.load(req, succ, fail, undefined, {request: req, response: res});
+
+            expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
+        });
+
+        it("calls fail callback with HTTP 403 if feature is NOT whitelisted", function () {
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
+
+            extensions.load(req, succ, fail, undefined, {request: req, response: res});
+
+            expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 403);
         });
     });
 });  

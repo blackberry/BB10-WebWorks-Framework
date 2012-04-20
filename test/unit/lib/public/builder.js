@@ -33,6 +33,10 @@ describe("builder", function () {
         GLOBAL.window.webworks = mockedWebworks;
     });
 
+    afterEach(function () {
+        delete GLOBAL.window;        
+    });
+
     it("can build an object with a single member", function () {
         var featureIds = ['blackberry.app'],
             target = {};
@@ -44,7 +48,9 @@ describe("builder", function () {
         expect(Object.hasOwnProperty.call(target.blackberry.app, "version")).toBeTruthy();
     });
 
-    it("can build an object with a nested member", function () {
+    // blackberry.app.event is removed since it does not contain any functional API
+    // there is no nested namespace at this point, comment out test case for now
+    xit("can build an object with a nested member", function () {
         var featureIds = ['blackberry.app', 'blackberry.app.event'],
             target = {};
 
@@ -54,7 +60,9 @@ describe("builder", function () {
         expect(target.blackberry.app.event.onExit).toBeDefined();
     });
 
-    it("can build with feature IDs provided in any order", function () {
+    // blackberry.app.event is removed since it does not contain any functional API
+    // there is no nested namespace at this point, comment out test case for now
+    xit("can build with feature IDs provided in any order", function () {
         var featureIds = ['blackberry.app.event', 'blackberry.app'],
             target = {};
 
@@ -64,7 +72,9 @@ describe("builder", function () {
         expect(target.blackberry.app.event.onExit).toBeDefined();
     });
 
-    it("can build an object with only the nested member", function () {
+    // blackberry.app.event is removed since it does not contain any functional API
+    // there is no nested namespace at this point, comment out test case for now
+    xit("can build an object with only the nested member", function () {
         var featureIds = ['blackberry.app.event'],
             target = {};
 

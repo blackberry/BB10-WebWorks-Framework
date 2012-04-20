@@ -16,7 +16,9 @@
 
 describe("server", function () {
     var server = require('../../../lib/server'),
-        plugin = require("../../../lib/plugins/extensions");
+        plugin = require("../../../lib/plugins/extensions"),
+        Whitelist = require("../../../lib/policy/whitelist").Whitelist,
+        applicationAPIServer = require("../../../ext/blackberry.app/index");
 
     beforeEach(function () {
         spyOn(console, "log");
@@ -81,7 +83,7 @@ describe("server", function () {
 
         it("returns the result and code -1 when fail callback called", function () {
             spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
-                fail("ErrorMessage", -1);
+                fail(-1, "ErrorMessage");
             });
 
             req.params.service = "extensions";
@@ -96,14 +98,18 @@ describe("server", function () {
         });
     });
     
-    describe("when handling feature requests", function () {
+    describe("when handling feature requests", function () {       
         var req, res;
 
         beforeEach(function () {
             req = {
                 params: {
-                    featureId: "blackberry.app",
-                    action: "author"
+                    service: "bridge",
+                    action: "exec",
+                    ext: "blackberry.app",
+                    method: "author",
+                    args: null,
+                    origin: null
                 },
                 headers: {
                     host: ""
@@ -115,23 +121,23 @@ describe("server", function () {
                 send: jasmine.createSpy()
             };
         });
-/*
+
         it("checks if the feature is white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            server.handleFeature(req, res);
+            server.handle(req, res);
             expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalled();
         });
         
         it("returns 403 if the feature is not white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
-            server.handleFeature(req, res);
-            expect(res.send).toHaveBeenCalledWith(403);
+            server.handle(req, res);
+            expect(res.send).toHaveBeenCalledWith(403, jasmine.any(Object));
         });
         
         it("calls the action method on the feature", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
             spyOn(applicationAPIServer, "author");
-            server.handleFeature(req, res);            
+            server.handle(req, res);            
             expect(applicationAPIServer.author).toHaveBeenCalled();
         });
         
@@ -143,9 +149,9 @@ describe("server", function () {
                 success(expectedResult);
             });
             
-            server.handleFeature(req, res);
+            server.handle(req, res);
             
-            expect(res.send).toHaveBeenCalledWith({
+            expect(res.send).toHaveBeenCalledWith(200, {
                 code: 1,
                 data: expectedResult
             });
@@ -156,17 +162,16 @@ describe("server", function () {
             
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
             spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
-                fail(expectedResult);
+                fail(-1, expectedResult);
             });
             
-            server.handleFeature(req, res);
+            server.handle(req, res);
             
-            expect(res.send).toHaveBeenCalledWith({
+            expect(res.send).toHaveBeenCalledWith(200, {
                 code: -1,
                 data: null,
                 msg: expectedResult
             });
         });
-*/      
     });
 });  

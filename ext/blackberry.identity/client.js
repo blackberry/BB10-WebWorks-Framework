@@ -27,13 +27,6 @@ function getFieldValue(field) {
     return value;
 }
 
-function defineReadOnlyField(field) {
-    Object.defineProperty(_self, field, {
-        "value": getFieldValue(field),
-        "writable": false
-    });
-}
-
-defineReadOnlyField("uuid");
+window.webworks.defineReadOnlyField(_self, "uuid", getFieldValue("uuid"));
 
 module.exports = _self;

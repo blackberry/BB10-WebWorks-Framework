@@ -31,26 +31,12 @@ _self.BrowserArguments = function (url) {
 /*
  * Define constants for appType
  */
-_self.__defineGetter__("APP_CAMERA", function () {
-    return 4;
-});
-_self.__defineGetter__("APP_MAPS", function () {
-    return 5;
-});
-_self.__defineGetter__("APP_BROWSER", function () {
-    return 11;
-});
-_self.__defineGetter__("APP_MUSIC", function () {
-    return 13;
-});
-_self.__defineGetter__("APP_PHOTOS", function () {
-    return 14;
-});
-_self.__defineGetter__("APP_VIDEOS", function () {
-    return 15;
-});
-_self.__defineGetter__("APP_APPWORLD", function () {
-    return 16;
-});
+window.webworks.defineReadOnlyField(_self, "APP_CAMERA", 4);
+window.webworks.defineReadOnlyField(_self, "APP_MAPS", 5);
+window.webworks.defineReadOnlyField(_self, "APP_BROWSER", 11);
+window.webworks.defineReadOnlyField(_self, "APP_MUSIC", 13);
+window.webworks.defineReadOnlyField(_self, "APP_PHOTOS", 14);
+window.webworks.defineReadOnlyField(_self, "APP_VIDEOS", 15);
+window.webworks.defineReadOnlyField(_self, "APP_APPWORLD", 16);
 
 module.exports = _self;

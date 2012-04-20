@@ -21,8 +21,19 @@ var _ID = "blackberry.invoke",
     utils,
     client,
     mockedWebworks = {
-        execAsync: function () {}
-    };
+        execAsync: function () {},
+        defineReadOnlyField: jasmine.createSpy()
+    },
+    constants = {
+        "APP_CAMERA": 4,
+        "APP_MAPS": 5,
+        "APP_BROWSER": 11,
+        "APP_MUSIC": 13,
+        "APP_PHOTOS": 14,
+        "APP_VIDEOS": 15,
+        "APP_APPWORLD": 16
+    },
+    defineROFieldArgs = [];
 
 describe("blackberry.invoke client", function () {
     beforeEach(function () {
@@ -41,13 +52,17 @@ describe("blackberry.invoke client", function () {
 
     describe("appType", function () {
         it("should return constant for appropriate appType", function () {
-            expect(client.APP_CAMERA).toEqual(4);
-            expect(client.APP_MAPS).toEqual(5);
-            expect(client.APP_BROWSER).toEqual(11);
-            expect(client.APP_MUSIC).toEqual(13);
-            expect(client.APP_PHOTOS).toEqual(14);
-            expect(client.APP_VIDEOS).toEqual(15);
-            expect(client.APP_APPWORLD).toEqual(16);
+            Object.getOwnPropertyNames(constants).forEach(function (c) {
+                defineROFieldArgs.push([client, c, constants[c]]);
+            });
+
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_CAMERA")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_MAPS")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_BROWSER")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_MUSIC")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_PHOTOS")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_VIDEOS")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_APPWORLD")]);
         });
     });
 

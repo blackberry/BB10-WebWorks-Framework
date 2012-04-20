@@ -20,7 +20,7 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     ppsUtils,
     mockedPPS;
 
-describe("blackberr.invoke index", function () {
+describe("blackberry.invoke index", function () {
 
     beforeEach(function () {
         GLOBAL.JNEXT = {};
@@ -119,14 +119,14 @@ describe("blackberr.invoke index", function () {
         //Negative test cases
         it("should call fail callback when passed wrong appType", function () {
             index.invoke(successCB, failCB, mockWrongArgsForAppType);
-            expect(failCB).toHaveBeenCalledWith("The application specified to invoke is not supported.", wrongAppType);            
+            expect(failCB).toHaveBeenCalledWith(wrongAppType, "The application specified to invoke is not supported.");
         });
 
         it("should call fail callback when passed wrong protocol", function () {
             index.invoke(successCB, failCB, mockWrongArgsForProtocol1);
             index.invoke(successCB, failCB, mockWrongArgsForProtocol2);
             expect(failCB.callCount).toEqual(2); 
-            expect(failCB).toHaveBeenCalledWith("Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.", wrongAppType);            
+            expect(failCB).toHaveBeenCalledWith(wrongAppType, "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.");
         });
 
         it("should not call any of ppsUtils methods when passed wrong appType", function () {
