@@ -31,8 +31,11 @@ var _event = requireLocal("lib/event"),
                     eventName: "StateOfCharge",
                     paramName: "level",
                     fieldValue: null,
+                    reset: function () {
+                        this.setFieldValue(null);
+                    },
                     setFieldValue: function (value) {
-                        this.fieldValue = this.formatValue(value);
+                        this.fieldValue = value ? this.formatValue(value) : value;
                     },
                     formatValue: function (str) {
                         return parseInt(str, 10);
@@ -68,8 +71,11 @@ var _event = requireLocal("lib/event"),
                     eventName: "StateOfCharge",
                     paramName: "level",
                     fieldValue: null,
+                    reset: function () {
+                        this.setFieldValue(null);
+                    },
                     setFieldValue: function (value) {
-                        this.fieldValue = this.formatValue(value);
+                        this.fieldValue = value ? this.formatValue(value) : value;
                     },
                     formatValue: function (str) {
                         return parseInt(str, 10);
