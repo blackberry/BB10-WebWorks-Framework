@@ -310,5 +310,57 @@ describe("blackberry.event", function () {
                 expect(onBatteryCritical).not.toHaveBeenCalled();
             });
         });
-    });    
+    });
+
+    describe("pause", function () {
+        var onPause;
+
+        beforeEach(function () {
+            onPause = jasmine.createSpy();
+            blackberry.event.addEventListener("pause", onPause);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("pause", onPause);
+            onPause = null;
+        });
+
+        it("should invoke callback when application is thumbnailed when Application Behavior is 'Paused'", function () {
+            window.confirm("Changed settings General -> Application Behavior to 'Paused', then thumbnail this app");
+
+            waitsFor(function () {
+                return onPause.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onPause).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe("resume", function () {
+        var onResume;
+
+        beforeEach(function () {
+            onResume = jasmine.createSpy();
+            blackberry.event.addEventListener("resume", onResume);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("resume", onResume);
+            onResume = null;
+        });
+
+        it("should invoke callback when application is fullscreened when Application Behavior is 'Paused'", function () {
+            window.confirm("Changed settings General -> Application Behavior to 'Paused', thumbnail this app, then tap it to make it fullscreen");
+
+            waitsFor(function () {
+                return onResume.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onResume).toHaveBeenCalled();
+            });
+        });
+    });
 });
