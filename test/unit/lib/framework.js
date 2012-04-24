@@ -92,8 +92,10 @@ describe("framework", function () {
 
     it("can apply whitelist rules and deny blocked urls", function () {
         spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        spyOn(webview, "executeJavascript");
         var url = "http://www.google.com";
         framework.start(url);
         expect(mock_request.deny).toHaveBeenCalled();
+        expect(webview.executeJavascript.mostRecentCall.args[0]).toEqual("alert('Access to \"http://www.dummy.com\" not allowed')");
     });
 });

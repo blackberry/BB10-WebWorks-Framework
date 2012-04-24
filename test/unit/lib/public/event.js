@@ -87,6 +87,12 @@ describe("event", function () {
             expect(callback).toHaveBeenCalledWith({"id": 1});
         });
 
+        it("will invoke callback if no args are provided", function () {
+            event.on("blackberry.event", "pause", callback);
+            event.trigger("pause");
+            expect(callback).toHaveBeenCalled();
+        });
+
         it("will not invoke callback if event has been removed", function () {
             var cb = jasmine.createSpy();
             event.on("blackberry.system.event", "c", cb);

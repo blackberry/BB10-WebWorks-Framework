@@ -21,132 +21,172 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.event/",
     successCB,
     failCB;
 
-describe("blackberr.event index", function () {
+describe("blackberry.event index", function () {
+    describe("battery events", function () {
+        beforeEach(function () {
+            GLOBAL.JNEXT = {};
+            index = require(_apiDir + "index");
+            successCB = jasmine.createSpy("Success Callback");
+            failCB = jasmine.createSpy("Fail Callback");
 
-    beforeEach(function () {
-        GLOBAL.JNEXT = {};
-        index = require(_apiDir + "index");
-        successCB = jasmine.createSpy("Success Callback");
-        failCB = jasmine.createSpy("Fail Callback");
+        });
 
-    });
+        afterEach(function () {
+            delete GLOBAL.JNEXT;
+            index = null;
+            successCB = null;
+            failCB = null;
+        });
 
-    afterEach(function () {
-        delete GLOBAL.JNEXT;
-        index = null;
-        successCB = null;
-        failCB = null;
-    });
+        it("responds to 'batterycritical' events", function () {
+            var eventName = "batterycritical",
+                args = {eventName : encodeURIComponent(eventName)}; 
+            spyOn(events, "on");
+            index.on(null, null, args);
+            expect(events.on).toHaveBeenCalled();
+            expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+        });
 
-    it("responds to 'batterycritical' events", function () {
-        var eventName = "batterycritical",
-            args = {eventName : encodeURIComponent(eventName)}; 
-        spyOn(events, "on");
-        index.on(null, null, args);
-        expect(events.on).toHaveBeenCalled();
-        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-    });
+        it("removes 'batterycritical' events", function () {
+            var eventName = "batterycritical",
+                args = {eventName : encodeURIComponent(eventName)}; 
+            spyOn(events, "remove");
+            index.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalled();
+            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        });
 
-    it("removes 'batterycritical' events", function () {
-        var eventName = "batterycritical",
-            args = {eventName : encodeURIComponent(eventName)}; 
-        spyOn(events, "remove");
-        index.remove(null, null, args);
-        expect(events.remove).toHaveBeenCalled();
-        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-    });
+        it("responds to 'batterylow' events", function () {
+            var eventName = "batterylow",
+                args = {eventName : encodeURIComponent(eventName)}; 
+            spyOn(events, "on");
+            index.on(null, null, args);
+            expect(events.on).toHaveBeenCalled();
+            expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+        });
 
-    it("responds to 'batterylow' events", function () {
-        var eventName = "batterylow",
-            args = {eventName : encodeURIComponent(eventName)}; 
-        spyOn(events, "on");
-        index.on(null, null, args);
-        expect(events.on).toHaveBeenCalled();
-        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-    });
+        it("removes 'batterylow' events", function () {
+            var eventName = "batterylow",
+                args = {eventName : encodeURIComponent(eventName)}; 
+            spyOn(events, "remove");
+            index.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalled();
+            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+        });
 
-    it("removes 'batterylow' events", function () {
-        var eventName = "batterylow",
-            args = {eventName : encodeURIComponent(eventName)}; 
-        spyOn(events, "remove");
-        index.remove(null, null, args);
-        expect(events.remove).toHaveBeenCalled();
-        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-    });
+        it("responds to 'batterystatus' events", function () {
+            var eventName = "batterystatus",
+                args = {eventName: encodeURIComponent(eventName)};
+                 
+            spyOn(events, "on");
+            index.on(successCB, failCB, args);
+            expect(events.on).toHaveBeenCalled();
+            expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+            expect(failCB).not.toHaveBeenCalled();            
+        });
 
-    it("responds to 'batterystatus' events", function () {
-        var eventName = "batterystatus",
-            args = {eventName: encodeURIComponent(eventName)};
-             
-        spyOn(events, "on");
-        index.on(successCB, failCB, args);
-        expect(events.on).toHaveBeenCalled();
-        expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-        expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-        expect(successCB).toHaveBeenCalled();
-        expect(failCB).not.toHaveBeenCalled();            
-    });
+        it("removes 'batterystatus' events", function () {
+            var eventName = "batterystatus",
+                args = {eventName: encodeURIComponent(eventName)}; 
 
-    it("removes 'batterystatus' events", function () {
-        var eventName = "batterystatus",
-            args = {eventName: encodeURIComponent(eventName)}; 
+            spyOn(events, "remove");
+            index.remove(successCB, failCB, args);
+            expect(events.remove).toHaveBeenCalled();
+            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(successCB).toHaveBeenCalled();            
+            expect(failCB).not.toHaveBeenCalled();            
+        });
 
-        spyOn(events, "remove");
-        index.remove(successCB, failCB, args);
-        expect(events.remove).toHaveBeenCalled();
-        expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-        expect(successCB).toHaveBeenCalled();            
-        expect(failCB).not.toHaveBeenCalled();            
-    });
+        it("invokes success callback when battery event name with not defined", function () {
+            var eventName = "batteryeventnotdefined",
+                args = {eventName: encodeURIComponent(eventName)};
+                 
+            spyOn(events, "on");
+            index.on(successCB, failCB, args);
+            expect(events.on).toHaveBeenCalled();
+            expect(successCB).toHaveBeenCalled();            
+            expect(failCB).not.toHaveBeenCalled();            
+        });
 
-    it("invokes success callback when battery event name with not defined", function () {
-        var eventName = "batteryeventnotdefined",
-            args = {eventName: encodeURIComponent(eventName)};
-             
-        spyOn(events, "on");
-        index.on(successCB, failCB, args);
-        expect(events.on).toHaveBeenCalled();
-        expect(successCB).toHaveBeenCalled();            
-        expect(failCB).not.toHaveBeenCalled();            
-    });
-
-    it("invokes success callback when tring to remove battery event with name not defined", function () {
-        var eventName = "batteryeventnotdefined",
-            args = {eventName: encodeURIComponent(eventName)};
-             
-        spyOn(events, "remove");
-        index.remove(successCB, failCB, args);
-        expect(events.remove).toHaveBeenCalled();
-        expect(successCB).toHaveBeenCalled();            
-        expect(failCB).not.toHaveBeenCalled();            
-    });
-    
-    it("invokes fail callback when exception occured", function () {
-        var eventName = "batteryeventnotdefined",
-            args = {eventName: encodeURIComponent(eventName)};
-             
-        spyOn(events, "on").andCallFake(function () {
-            throw "";
+        it("invokes success callback when tring to remove battery event with name not defined", function () {
+            var eventName = "batteryeventnotdefined",
+                args = {eventName: encodeURIComponent(eventName)};
+                 
+            spyOn(events, "remove");
+            index.remove(successCB, failCB, args);
+            expect(events.remove).toHaveBeenCalled();
+            expect(successCB).toHaveBeenCalled();            
+            expect(failCB).not.toHaveBeenCalled();            
         });
         
-        index.on(successCB, failCB, args);
-        expect(events.on).toHaveBeenCalled();
-        expect(successCB).not.toHaveBeenCalled();            
-        expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
+        it("invokes fail callback when exception occured", function () {
+            var eventName = "batteryeventnotdefined",
+                args = {eventName: encodeURIComponent(eventName)};
+                 
+            spyOn(events, "on").andCallFake(function () {
+                throw "";
+            });
+            
+            index.on(successCB, failCB, args);
+            expect(events.on).toHaveBeenCalled();
+            expect(successCB).not.toHaveBeenCalled();            
+            expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
+        });
+
+        it("invokes fail callback when exception occured", function () {
+            var eventName = "batteryeventnotdefined",
+                args = {eventName: encodeURIComponent(eventName)};
+                 
+            spyOn(events, "remove").andCallFake(function () {
+                throw "";
+            });
+            index.remove(successCB, failCB, args);
+            expect(events.remove).toHaveBeenCalled();
+            expect(successCB).not.toHaveBeenCalled();            
+            expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
+
+        });
     });
 
-    it("invokes fail callback when exception occured", function () {
-        var eventName = "batteryeventnotdefined",
-            args = {eventName: encodeURIComponent(eventName)};
-             
-        spyOn(events, "remove").andCallFake(function () {
-            throw "";
+    describe("pause/resume", function () {
+        beforeEach(function () {
+            index = require(_apiDir + "index");
         });
-        index.remove(successCB, failCB, args);
-        expect(events.remove).toHaveBeenCalled();
-        expect(successCB).not.toHaveBeenCalled();            
-        expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
+
+        afterEach(function () {
+            index = null;
+        });
+
+        it("can register 'pause' and 'resume' event", function () {
+            var evts = ["pause", "resume"],
+                args;
+            spyOn(events, "on");
+
+            evts.forEach(function (e) {
+                args = {eventName : encodeURIComponent(e)}; 
+                index.on(null, null, args);
+                expect(events.on).toHaveBeenCalled();
+                expect(events.on.mostRecentCall.args[0].event).toEqual(e);
+                expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));                
+            });
+        });
+
+        it("can un-register 'pause' and 'resume' event", function () {
+            var evts = ["pause", "resume"],
+                args;
+            spyOn(events, "remove");
+
+            evts.forEach(function (e) {
+                args = {eventName : encodeURIComponent(e)}; 
+                index.remove(null, null, args);
+                expect(events.remove).toHaveBeenCalled();
+                expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
+                expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            });
+        });
     });
 });

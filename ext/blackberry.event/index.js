@@ -148,7 +148,21 @@ var _event = requireLocal("lib/event"),
             trigger: function (args) {
                 _event.trigger("batterystatus", args);
             }
-        }
+        },
+        pause: {
+            context: require("./navEvents"),
+            event: "pause",
+            trigger: function () {
+                _event.trigger("pause");
+            }
+        },
+        resume: {
+            context: require("./navEvents"),
+            event: "resume",
+            trigger: function () {
+                _event.trigger("resume");
+            }
+        }        
     };
 
 var ADD_EVENT_ERROR = "Error occured while adding event listener.",
