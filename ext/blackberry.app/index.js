@@ -13,19 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+function requireLocal(id) {
+    return !!require.resolve ? require("../../" + id) : window.require(id);
+}
 
-var config = require("lib/config"); // uses lib/config for require id, ../.. causes problems
+var config = requireLocal("lib/config");
 
 module.exports = {
-    author: function (success, fail, args) {
+    author: function (success, fail, args, env) {
         success(config.author);
     },
 
-    name: function (success, fail, args) {
+    authorEmail: function (success, fail, args, env) {
+        success(config.authorEmail);
+    },
+
+    authorURL: function (success, fail, args, env) {
+        success(config.authorURL);
+    },
+
+    copyright: function (success, fail, args, env) {
+        success(config.copyright);
+    },
+
+    description: function (success, fail, args, env) {
+        success(config.description);
+    },
+
+    id: function (success, fail, args, env) {
+        success(config.id);
+    },
+
+    license: function (success, fail, args, env) {
+        success(config.license);
+    },
+
+    licenseURL: function (success, fail, args, env) {
+        success(config.licenseURL);
+    },
+
+    name: function (success, fail, args, env) {
         success(config.name);
     },
 
-    version: function (success, fail, args) {
+    version: function (success, fail, args, env) {
         success(config.version);
     }
 };

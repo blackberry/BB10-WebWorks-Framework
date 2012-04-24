@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var _self = {};
 
-module.exports = {
-    onExit: function (success, fail, args) {
-        success("exiting");
+function getFieldValue(field) {
+    var value = null;
+
+    try {
+        value = window.webworks.execSync("blackberry.identity", field, null);
+    } catch (e) {
+        console.error(e);
     }
-};
+
+    return value;
+}
+
+window.webworks.defineReadOnlyField(_self, "uuid", getFieldValue("uuid"));
+
+module.exports = _self;
