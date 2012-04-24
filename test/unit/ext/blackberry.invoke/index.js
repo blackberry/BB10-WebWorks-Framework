@@ -16,21 +16,17 @@
 
 var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
     _libDir = __dirname + "./../../../../lib/",
-    index,
-    ppsUtils,
-    mockedPPS;
+    index;
 
 describe("blackberry.invoke index", function () {
 
     beforeEach(function () {
-        GLOBAL.JNEXT = {};
-        ppsUtils = require(_libDir + "pps/ppsUtils");
+        GLOBAL.qnx = {callExtensionMethod : function () {}};
         index = require(_apiDir + "index");
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
-        ppsUtils = null;
+        GLOBAL.qnx = null;
         index = null;
     });
 
@@ -70,34 +66,16 @@ describe("blackberry.invoke index", function () {
                 args: encodeURIComponent(JSON.stringify({
                     url: 'httpx://www.rim.com'
                 }))
-            },
-            expectedOpenMethodArgs = {
-                path: '/pps/services/navigator/control?server',
-                mode: 2
-            },
-            expectedWriteMethodArgs = {
-                id: '',
-                dat: httpUrl, 
-                msg: 'invoke'
             };
 
         beforeEach(function () {
             successCB = jasmine.createSpy("Success Callback");
             failCB = jasmine.createSpy("Fail Callback");
-            mockedPPS = { 
-                init: jasmine.createSpy("Init Method"),
-                open: jasmine.createSpy("Open Method"),
-                read: jasmine.createSpy("Read Method"),
-                write: jasmine.createSpy("Write Method"),
-                close: jasmine.createSpy("Close Method")
-            };
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
         });
         
         afterEach(function () {
             successCB = null;
             failCB = null;
-            mockedPPS = null;
         });
 
         // Positive test cases
@@ -107,15 +85,12 @@ describe("blackberry.invoke index", function () {
             expect(successCB.callCount).toEqual(2);            
         });
 
-        it("should call ppsUtil methods when invoked with valid args", function () {
+        it("should call qnx.callExtensionMethod when invoked with valid args", function () {
+            spyOn(qnx, "callExtensionMethod");
             index.invoke(successCB, failCB, mockValidArgs);            
-            expect(ppsUtils.createObject).toHaveBeenCalled();
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(expectedOpenMethodArgs.path, expectedOpenMethodArgs.mode);
-            expect(mockedPPS.write).toHaveBeenCalledWith(expectedWriteMethodArgs);
-            expect(mockedPPS.close).toHaveBeenCalled();
+            expect(qnx.callExtensionMethod).toHaveBeenCalledWith("navigator.invoke", "http://www.rim.com");
         });
-        
+
         //Negative test cases
         it("should call fail callback when passed wrong appType", function () {
             index.invoke(successCB, failCB, mockWrongArgsForAppType);
@@ -129,23 +104,17 @@ describe("blackberry.invoke index", function () {
             expect(failCB).toHaveBeenCalledWith(wrongAppType, "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.");
         });
 
-        it("should not call any of ppsUtils methods when passed wrong appType", function () {
-            index.invoke(successCB, failCB, mockWrongArgsForAppType);            
-            expect(ppsUtils.createObject).not.toHaveBeenCalled();
-            expect(mockedPPS.init).not.toHaveBeenCalled();
-            expect(mockedPPS.open).not.toHaveBeenCalled();
-            expect(mockedPPS.write).not.toHaveBeenCalled();
-            expect(mockedPPS.close).not.toHaveBeenCalled();
+        it("should not call qnx.callExtensionMethod when passed wrong appType", function () {
+            spyOn(qnx, "callExtensionMethod");
+            index.invoke(successCB, failCB, mockWrongArgsForAppType);
+            expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
         });
 
-        it("should not call any of ppsUtils methods when passed wrong protocol", function () {
-            index.invoke(successCB, failCB, mockWrongArgsForProtocol1);            
-            index.invoke(successCB, failCB, mockWrongArgsForProtocol2);            
-            expect(ppsUtils.createObject).not.toHaveBeenCalled();
-            expect(mockedPPS.init).not.toHaveBeenCalled();
-            expect(mockedPPS.open).not.toHaveBeenCalled();
-            expect(mockedPPS.write).not.toHaveBeenCalled();
-            expect(mockedPPS.close).not.toHaveBeenCalled();
+        it("should not call any of qnx.callExtensionMethod methods when passed wrong protocol", function () {
+            spyOn(qnx, "callExtensionMethod");
+            index.invoke(successCB, failCB, mockWrongArgsForProtocol1);
+            index.invoke(successCB, failCB, mockWrongArgsForProtocol2);
+            expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
         });
     });
 });
