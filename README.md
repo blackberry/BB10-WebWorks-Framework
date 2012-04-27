@@ -1,23 +1,20 @@
-BB10-Framework Setup
----------------------------
+#BB10-WebWorks-Framework Setup
 
-Recommended Node.js Version: 0.6.10
+##Requirements
+1. You must have node and npm installed and on your path. [Download Here](http://nodejs.org/#download)
 
-For Mac:
+##Set Up:
+1. git clone https://github.com/blackberry-webworks/BB10-WebWorks-Framework.git
 
-1. ./configure (sudo ./configure if you get permission errors)
+2. cd BB10-WebWorks-Framework
 
-2. Run the unit tests:
+3. Configuration:
+    - For Mac:
+        ./configure (do a sudo ./configure if it fails)
+    - For Windows:
+        Run configure.bat 
+
+4. Run the unit tests
 	Run 'jake test' and check that jake runs and completes
 
-3. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
-
-
-For Windows:
-
-1. Run configure.bat
-
-2. Run the unit tests:
-    Run 'jake test' and check that jake runs and completes
-
-3. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
+5. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
