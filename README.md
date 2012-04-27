@@ -4,8 +4,7 @@
 ##Requirements
 1. You must have node and npm installed and on your path
 
-For Mac:
-=======
+##For Mac:
 1. git clone https://github.com/blackberry-webworks/BB10-WebWorks-Framework.git
 
 3. cd BB10-WebWorks-Framework
@@ -20,8 +19,7 @@ For Mac:
 7. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
 
 
-For Windows:
-===========
+##For Windows:
 1. git clone https://github.com/blackberry-webworks/BB10-WebWorks-Framework.git
 
 2. cd BB10-WebWorks-Framework
