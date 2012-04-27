@@ -1,6 +1,6 @@
 /*
  *  Copyright 2011 Research In Motion Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-desc("run all tests in node - jake test [path,path2]");
-task('default', [], function () {
+desc("runs jake build");
+task('default', [], require('./build/build'));
+
+desc("package framework - jake build");
+task('build', [], require('./build/build'));
+
+desc("bundle webworks.js");
+task('bundle', [], function () {
+    require('./build/build/bundler').bundle();
+});
+
+desc("start server");
+task('start', [], function () {
     require('./lib/server').start(process.argv);
 });
 
