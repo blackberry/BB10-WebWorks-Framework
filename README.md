@@ -12,9 +12,9 @@
 4. git checkout next
 
 5. Configuration:
-    For Mac:
+    5.1 For Mac:
         ./configure (sudo ./configure if you get permission errors. Don't do this off the bat or your submodules will be created as root)
-    For Windows:
+    5.2 For Windows:
         Run configure.bat 
 
 6. Run the unit tests:
