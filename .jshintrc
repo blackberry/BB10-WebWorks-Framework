@@ -1,12 +1,12 @@
 {
-    "predef": [ 
+    "predef": [
         "DOMDocument",
         "XMLHttpRequest",
         "$", "it", "describe",
         "xit", "xdescribe",
         "itBrowser", "describeBrowser",
         "beforeEach", "afterEach",
-        "runs", "waits",
+        "runs", "waits", "waitsFor",
         "DOMElement",
         "it", "describe",
         "spyOn", "expect",
@@ -26,13 +26,14 @@
         "arguments",
         "screen",
         "setInterval", "clearInterval", "setTimeout", "clearTimeout",
-        "require", "Node"
+        "require", "Node",
+        "qnx", "chrome", "NamedNodeMap"
     ],
- 
+
     "node" : true,
     "es5" : true,
     "browser" : true,
- 
+
     "boss" : false,
     "curly": false,
     "bitwise" : true,
