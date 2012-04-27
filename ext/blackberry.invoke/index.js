@@ -18,39 +18,27 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
-var _event = requireLocal("lib/event"), 
-    _ppsUtils = requireLocal("lib/pps/ppsUtils"),
-    APP_URL_BROWSER = "http://",
+var APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
     APP_TYPE_ERROR_ID = -1,
     APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.";
 
 module.exports = {
     invoke: function (success, fail, args) {
-        var argsObj, 
-            path = "/pps/services", 
-            mode = 2, 
-            url, 
-            PPSUtils,
-            ctrlObj = {
-                'id': "",
-                'dat': null,
-                'msg': "invoke"
-            };
+        var argsObj,
+            url;
 
         switch (parseInt(args.appType, 10)) {
         // Camera
         case 4:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
         // Maps
         case 5:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
         //Browser
-        case 11:
-            path += "/navigator/control?server";
-            
+        case 11:            
             try {
                 argsObj = JSON.parse(decodeURIComponent(args.args));
                 
@@ -67,7 +55,7 @@ module.exports = {
                     else if (url.length === 2) {
                         //Check if protocol is supported: http, https
                         if (url[0].toLowerCase() !== "http" && url[0].toLowerCase() !== "https") {
-                            fail(APP_BROWSER_ERROR, -1);
+                            fail(APP_TYPE_ERROR_ID, APP_BROWSER_ERROR);
                             return;
                         }                            
 
@@ -75,39 +63,33 @@ module.exports = {
                     }
                 }
             } catch (e) {
-                    url = APP_URL_BROWSER;
-                }
+                url = APP_URL_BROWSER;
+            }       
 
-            ctrlObj.dat = url;
             break;
         // Music
         case 13:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
         //Photos
         case 14:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
         //Videos
         case 15:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
         // AppWorld
         case 16:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
         default:
-            fail(APP_TYPE_ERROR, APP_TYPE_ERROR_ID);
+            fail(APP_TYPE_ERROR_ID, APP_TYPE_ERROR);
             return;
             
         }
         
-        PPSUtils = _ppsUtils.createObject();
-        
-        PPSUtils.init();
-        PPSUtils.open(path, mode);
-        PPSUtils.write(ctrlObj);
-        PPSUtils.close();
+        qnx.callExtensionMethod("navigator.invoke", url);
         
         success();
     }

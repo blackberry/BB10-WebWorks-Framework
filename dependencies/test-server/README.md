@@ -3,7 +3,7 @@
 
 ### Requirements
 - Playbook device/simulator
-- node & npm
+- node(v0.6.12) & npm
 - [Windows] zip cli. Place `http://stahlworks.com/dev/zip.exe` in your Windows folder.
 
 ### Instructions
@@ -12,7 +12,9 @@
 
 ###### Configuration
 - Open `job.js` and edit 
-  - variables `DEVICE` & `DEVICE_IP` & `DEVICE_PASSWORD` & `LOCAL_PACKAGER`
+  - edit `DEVICE` true if running on a device. false if running on a simulator
+  - edit `DEVICE_IP` & `DEVICE_PASSWORD`
+  - edit `LOCAL_PACKAGER` e.g. C:/Users/adrilee/Desktop/50 (use forward slashes)
 - Open `widget/config.xml` and edit 
   - Whitelist your features/extensions
   - `<content src="http://<server-hostname-ip>:3000">`

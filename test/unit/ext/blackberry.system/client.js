@@ -15,10 +15,11 @@
  */
 
 var root = __dirname + "/../../../../",
-    sysClient = require(root + "ext/blackberry.system/client"),
+    sysClient = null,
     mockedWebworks = {
         exec : function () {},
-        execSync: function () {}
+        execSync: function () {},
+        defineReadOnlyField: jasmine.createSpy()
     };
 
 describe("blackberry.system client", function () {
@@ -28,6 +29,7 @@ describe("blackberry.system client", function () {
 
         //Set up mocking, no need to "spyOn" since spies are included in mock
         GLOBAL.window.webworks = mockedWebworks;
+        sysClient = require(root + "ext/blackberry.system/client");
     });
 
     it("hasPermission", function () {
@@ -53,10 +55,10 @@ describe("blackberry.system client", function () {
     });
 
     it("ALLOW", function () {
-        expect(sysClient.ALLOW).toEqual(0);
+        expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "ALLOW", 0);
     });
 
     it("DENY", function () {
-        expect(sysClient.DENY).toEqual(1);
+        expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "DENY", 1);
     });
 });

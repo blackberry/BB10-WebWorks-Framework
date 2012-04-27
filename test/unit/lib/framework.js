@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-var srcPath = __dirname + '/../../../lib/';
-var framework = require(srcPath + 'framework'),
+var srcPath = __dirname + '/../../../lib/',
+    framework = require(srcPath + 'framework'),
     util = require(srcPath + "utils"),
-    webview = util.requireWebview(),
+    webview,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mock_request = {
         url: "http://www.dummy.com",
@@ -27,6 +27,10 @@ var framework = require(srcPath + 'framework'),
 
 describe("framework", function () {
     beforeEach(function () {
+        GLOBAL.qnx = {callExtensionMethod : function () {
+            return 42;
+        }};
+        webview = util.requireWebview();
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
@@ -88,8 +92,10 @@ describe("framework", function () {
 
     it("can apply whitelist rules and deny blocked urls", function () {
         spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        spyOn(webview, "executeJavascript");
         var url = "http://www.google.com";
         framework.start(url);
         expect(mock_request.deny).toHaveBeenCalled();
+        expect(webview.executeJavascript.mostRecentCall.args[0]).toEqual("alert('Access to \"http://www.dummy.com\" not allowed')");
     });
 });
