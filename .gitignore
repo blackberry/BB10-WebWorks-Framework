@@ -1,5 +1,7 @@
 .idea/*
 node_modules/
+ext/*/simulator/
+ext/*/device/
 build/.idea/*
 solution/.idea/*
 .project
@@ -13,3 +15,5 @@ build_output/
 pkg
 target/
 clientFiles/
+
+ 
