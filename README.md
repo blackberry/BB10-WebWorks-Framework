@@ -1,5 +1,5 @@
 #BB10-WebWorks-Framework Setup
----------------------------
+------------------------------
 
 ##Requirements
 1. You must have node and npm installed and on your path
