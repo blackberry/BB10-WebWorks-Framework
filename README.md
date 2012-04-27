@@ -18,9 +18,3 @@
 	Run 'jake test' and check that jake runs and completes
 
 5. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
-
-{{{
-* a
-* should be nested 
-* but it's not
-}}}
