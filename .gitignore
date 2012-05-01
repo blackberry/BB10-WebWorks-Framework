@@ -15,5 +15,5 @@ build_output/
 pkg
 target/
 clientFiles/
+ext/*/native/unitTests/build/*
 
- 
