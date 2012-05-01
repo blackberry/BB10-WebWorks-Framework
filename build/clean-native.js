@@ -18,14 +18,15 @@ var childProcess = require("child_process"),
     jWorkflow = require("jWorkflow"),
     clean = require("./build/clean"),
     buildNative = require("./build/build-native"),
+    cleanNative = require("./build/clean-native"),
     pack = require("./build/pack");
 
 function _done(error) {
     if (error) {
-        util.puts("BB10-Framework BUILD FAILED:\n" + error);
+        util.puts("BB10-Framework CLEAN FAILED:\n" + error);
         process.exit(1);
     } else {
-        util.puts("BB10-Framework BUILD SUCCESS");
+        util.puts("BB10-Framework CLEAN SUCCESS");
         process.exit();
     }
 }
@@ -42,8 +43,7 @@ function _handle(func) {
 
 module.exports = _handle(function () {
     var build = jWorkflow.order(clean)
-                         .andThen(buildNative)
-                         .andThen(pack);
+                         .andThen(cleanNative);
 
     build.start(function (error) {
         _done(error);

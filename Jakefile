@@ -25,6 +25,10 @@ task('bundle', [], function () {
     require('./build/build/bundler').bundle();
 });
 
+desc("runs jake build cleaning native");
+task('clean', [], require('./build/clean-native'));
+
+
 desc("start server");
 task('start', [], function () {
     require('./lib/server').start(process.argv);
