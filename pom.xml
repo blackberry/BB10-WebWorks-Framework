@@ -8,6 +8,11 @@
 
     <properties>
         <scm>ci</scm>
+        <version.file>version</version.file>
+        <major>1</major>
+        <minor>0</minor>
+        <revision>0</revision>
+        <subrevision>7</subrevision>
     </properties>
 
     <profiles>
@@ -83,6 +88,29 @@
         <finalName>BBXwebworks</finalName>
 
         <plugins>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.3.9</version>
+                <executions>
+                    <execution>
+                        <id>set-version</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <file>${version.file}</file>
+                            <replacements>
+                                <replacement>
+                                    <token>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+</token>
+                                    <value>${major}.${minor}.${revision}.${subrevision}</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
