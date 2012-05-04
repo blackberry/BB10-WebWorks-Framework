@@ -19,6 +19,7 @@ module.exports = {
                 }).join('\n');
             },
             output = "",
+            version = fs.readFileSync("version", "utf-8").trim(),
             filepath;
 
         //include LICENSE
@@ -43,6 +44,6 @@ module.exports = {
         if (!path.existsSync(filepath)) {
             fs.mkdirSync(filepath, "0777"); //full permissions
         }
-        fs.writeFileSync(filepath + "/webworks.js", output);
+        fs.writeFileSync(filepath + "/webworks-" + version + ".js", output);
     }
 };
