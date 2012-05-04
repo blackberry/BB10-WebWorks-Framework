@@ -24,7 +24,7 @@ class Connection : public JSExt
 public:
 	Connection(const std::string& id);
 	virtual ~Connection() {}
-	virtual std::String InvokeMethod(const std::string& command);
+	virtual std::string InvokeMethod(const std::string& command);
 	virtual bool CanDelete() { return true; }
 private:
 	std::string m_id;
