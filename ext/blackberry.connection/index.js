@@ -31,7 +31,7 @@ JNEXT.Connection = function ()
 
     self.getType = function () {
         var val = JNEXT.invoke(self.m_id, "getType");
-        return val;
+        return JSON.parse(val);
     };
 
     self.getId = function () {
