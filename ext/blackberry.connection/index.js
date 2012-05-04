@@ -40,11 +40,11 @@ JNEXT.Connection = function ()
 
     self.init = function ()
     {
-        if (!JNEXT.require("connection")) {
+        if (!JNEXT.require("netstatus")) {
             return false;
         }
 
-        self.m_id = JNEXT.createObject("connection.Connection");
+        self.m_id = JNEXT.createObject("netstatus.Connection");
 
         if (self.m_id === "") {
             return false;
