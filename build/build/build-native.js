@@ -20,40 +20,53 @@ var childProcess = require("child_process"),
     _c = require("./conf");
 
 function _getCmd() {
-    if (utils.isWindows()) {
-        return "cmd /c if exist " + _c.DEPLOY + " rd /s /q " + _c.DEPLOY + " && " +
-               "cmd /c if not exist " + _c.TARGET + " md " + _c.TARGET + " && " + 
-               "cmd /c if not exist " + _c.DEPLOY + " md " + _c.DEPLOY;
-    } else {
-            //go into the ext folder
-        var exts = fs.readdirSync(_c.EXT),
-            cmd = "",
-            ext;
-        //find all extension that need to built
-        for (ext in exts) {
-            if (path.existsSync(_c.EXT + "/" + exts[ext] + "/native")) {
-                //we know native extension exists
-                if (!path.existsSync(_c.EXT + "/" + exts[ext] + "/" + "simulator")) {
-                    fs.mkdirSync(_c.EXT + "/" + exts[ext] + "/" + "simulator");
-                }
-
-                if (!path.existsSync(_c.EXT + "/" + exts[ext] + "/" + "device")) {
-                    fs.mkdirSync(_c.EXT + "/" + exts[ext] + "/" + "device");
-                }
-                if (cmd) {
-                    cmd += " && ";
-                }
-                cmd += "cd " + _c.EXT + '/' + exts[ext] + '/' + 'simulator' + " && " + 
-                    "../native/configure-qsk x86" + " && " +
-                    "make" + " && " +
-                    "cd " + _c.EXT + '/' + exts[ext] + '/' + 'device' + " && " + 
-                    "../native/configure-qsk arm a9" + " && " +
-                    "make";
+    var exts = fs.readdirSync(_c.EXT),
+        ext,
+        cmd = "",
+        nativeDir,
+        simDir,
+        deviceDir;
+        
+    for (ext in exts) {
+        //Native build directories
+        nativeDir = path.join(_c.EXT, exts[ext], "native");
+        simDir = path.join(_c.EXT, exts[ext], "simulator");
+        deviceDir = path.join(_c.EXT, exts[ext], "device");
+    
+        //If native folder exists, Build
+        if (path.existsSync(nativeDir)) {
+            if (!path.existsSync(simDir)) {
+                fs.mkdirSync(simDir);
             }
-        } 
 
-        return cmd;
+            if (!path.existsSync(deviceDir)) {
+                fs.mkdirSync(deviceDir);
+            }
+            
+            if (cmd) {
+                cmd += " && ";
+            }
+            
+            if (utils.isWindows()) {
+                cmd += "cd " + simDir + " && " + 
+                "sh " + path.join(nativeDir, "configure-qsk x86") + " && " +
+                "make" + " && " +
+                "cd " + deviceDir + " && " + 
+                "sh " + path.join(nativeDir, "configure-qsk arm a9") + " && " +
+                "make";
+            } else {
+                cmd += "cd " + simDir + " && " + 
+                "../native/configure-qsk x86" + " && " +
+                "make" + " && " +
+                "cd " + deviceDir + " && " + 
+                "../native/configure-qsk arm a9" + " && " +
+                "make";
+            }
+            
+        }
     }
+
+    return cmd;
 }
 
 module.exports = function (prev, baton) {

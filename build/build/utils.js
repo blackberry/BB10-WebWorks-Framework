@@ -13,10 +13,29 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var os = require("os");
+var os = require("os"),
+    fs = require('fs'),
+    wrench = require("../../node_modules/wrench"),
+    path = require('path');
    
 module.exports = {
     isWindows : function () {
         return os.type().toLowerCase().indexOf("windows") >= 0;
+    },
+    
+    copyFile: function (srcFile, destDir, baseDir) {
+        var filename = path.basename(srcFile),
+            fileBuffer = fs.readFileSync(srcFile),
+            fileLocation;
+        
+        //if a base directory was provided, determine
+        //folder structure from the relative path of the base folder
+        if (baseDir && srcFile.indexOf(baseDir) === 0) {
+            fileLocation = srcFile.replace(baseDir, destDir);
+            wrench.mkdirSyncRecursive(path.dirname(fileLocation), "0755");
+            fs.writeFileSync(fileLocation, fileBuffer);
+        } else {
+            fs.writeFileSync(path.join(destDir, filename), fileBuffer);
+        }
     }
 };
