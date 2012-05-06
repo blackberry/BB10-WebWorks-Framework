@@ -37,8 +37,6 @@ module.exports = function (src, baton) {
         //files
         readmeFile = path.join(_c.ROOT, 'README.md'),
         licenseFile = path.join(_c.ROOT, 'LICENSE');
-    
-    baton.take();
 
     require('./bundler').bundle();
 
@@ -53,7 +51,6 @@ module.exports = function (src, baton) {
     utils.copyFile(readmeFile, _c.DEPLOY);
     utils.copyFile(licenseFile, _c.DEPLOY);
     
+    //Remove public folder
     wrench.rmdirSyncRecursive(_c.DEPLOY + 'lib/public', true);
-    
-    baton.pass(src);
 };

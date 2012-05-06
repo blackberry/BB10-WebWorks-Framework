@@ -20,18 +20,26 @@ var childProcess = require("child_process"),
     _c = require("./conf");
 
 function _getCmd() {
-    var exts = fs.readdirSync(_c.EXT),
-        ext,
+    var exts = fs.readdirSync(_c.EXT), ext,
         cmd = "",
-        nativeDir,
-        simDir,
-        deviceDir;
+        nativeDir, simDir, deviceDir,
+        configureX86, configureArm,
+        
+        //Command constants
+        AND_CMD = " && ",
+        CD_CMD = "cd ",
+        MAKE_CMD = "make",
+        SH_CMD = "sh ";
         
     for (ext in exts) {
         //Native build directories
         nativeDir = path.join(_c.EXT, exts[ext], "native");
         simDir = path.join(_c.EXT, exts[ext], "simulator");
         deviceDir = path.join(_c.EXT, exts[ext], "device");
+        
+        //configure-qsk commands
+        configureX86 = path.join(nativeDir, "configure-qsk x86");
+        configureArm = path.join(nativeDir, "configure-qsk arm a9");
     
         //If native folder exists, Build
         if (path.existsSync(nativeDir)) {
@@ -44,23 +52,23 @@ function _getCmd() {
             }
             
             if (cmd) {
-                cmd += " && ";
+                cmd += AND_CMD;
             }
             
             if (utils.isWindows()) {
-                cmd += "cd " + simDir + " && " + 
-                "sh " + path.join(nativeDir, "configure-qsk x86") + " && " +
-                "make" + " && " +
-                "cd " + deviceDir + " && " + 
-                "sh " + path.join(nativeDir, "configure-qsk arm a9") + " && " +
-                "make";
+                cmd += CD_CMD + simDir + AND_CMD + 
+                SH_CMD + configureX86 + AND_CMD +
+                MAKE_CMD + AND_CMD +
+                CD_CMD + deviceDir + AND_CMD + 
+                SH_CMD + configureArm + AND_CMD +
+                MAKE_CMD;
             } else {
-                cmd += "cd " + simDir + " && " + 
-                "../native/configure-qsk x86" + " && " +
-                "make" + " && " +
-                "cd " + deviceDir + " && " + 
-                "../native/configure-qsk arm a9" + " && " +
-                "make";
+                cmd += CD_CMD + simDir + AND_CMD + 
+                configureX86 + AND_CMD +
+                MAKE_CMD + AND_CMD +
+                CD_CMD + deviceDir + AND_CMD + 
+                configureArm + AND_CMD +
+                MAKE_CMD;
             }
             
         }

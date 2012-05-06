@@ -18,10 +18,6 @@ var wrench = require("../../node_modules/wrench"),
     _c = require("./conf");
 
 module.exports = function (prev, baton) {
-    baton.take();
-
     //Remove existing target directory
-    wrench.rmdirSyncRecursive(_c.TARGET, true);  
-    
-    baton.pass(prev);
+    wrench.rmdirSyncRecursive(_c.TARGET, true);
 };
