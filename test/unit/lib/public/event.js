@@ -121,11 +121,20 @@ describe("event", function () {
 
         it("will remove once listeners after they are triggered", function () {
             var callback = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", callback);
+            event.once("blackberry.system.event", "foo", callback);
             event.trigger("foo", '{"id": 1}');
             event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
             expect(callback.callCount).toEqual(1);
+        });
+
+        it("will not remove on listeners after they are triggered", function () {
+            var callback = jasmine.createSpy();
+            event.on("blackberry.system.event", "foo", callback);
+            event.trigger("foo", '{"id": 1}');
+            event.trigger("foo", '{"id": 1}');
+            expect(callback).toHaveBeenCalledWith({"id": 1});
+            expect(callback.callCount).toEqual(2);
         });
     });
 });
