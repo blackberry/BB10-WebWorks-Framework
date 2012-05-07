@@ -17,7 +17,7 @@
 #include "connection_js.hpp"
 #include "connection_bps.hpp"
 
-namespace webworks {
+//namespace webworks {
 
 Connection::Connection(const std::string& id) : m_id(id)
 {
@@ -67,5 +67,5 @@ bool Connection::CanDelete()
 	return true;
 }
 
-} // namespace webworks
+//} // namespace webworks
 

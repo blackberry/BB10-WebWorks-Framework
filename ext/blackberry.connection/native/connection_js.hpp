@@ -20,7 +20,7 @@
 #include "../common/plugin.h"
 #include <sstream>
 
-namespace webworks {
+//namespace webworks {
 
 class Connection : public JSExt
 {
@@ -33,6 +33,6 @@ private:
 	std::string m_id;
 };
 
-} // namespace webworks
+//} // namespace webworks
 
 #endif /* CONNECTION_JS_H_ */
