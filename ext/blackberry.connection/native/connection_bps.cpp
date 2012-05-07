@@ -13,7 +13,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-#include "connection_bps.h"
+
+#include "connection_bps.hpp"
+
+namespace webworks {
 
 ConnectionBPS::ConnectionBPS()
 {
@@ -22,7 +25,7 @@ ConnectionBPS::ConnectionBPS()
 
 ConnectionBPS::~ConnectionBPS()
 {
-
+	bps_shutdown();
 }
 
 ConnectionTypes ConnectionBPS::GetConnectionType()
@@ -79,4 +82,5 @@ ConnectionTypes ConnectionBPS::GetConnectionType()
 	return returnType;
 }
 
+} // namespace webworks
 

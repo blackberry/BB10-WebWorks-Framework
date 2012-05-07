@@ -13,10 +13,18 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-#include "connection_js.h"
-#include "connection_bps.h"
+
+#include "connection_js.hpp"
+#include "connection_bps.hpp"
+
+namespace webworks {
 
 Connection::Connection(const std::string& id) : m_id(id)
+{
+
+}
+
+Connection::~Connection()
 {
 
 }
@@ -42,15 +50,23 @@ std::string Connection::InvokeMethod(const std::string& command)
 
 	string strCommand = command.substr(0, index);
 	string jsonObject = command.substr(index + 1, command.length());
-	char buffer;
 	string returnValue;
 
 	if (strCommand == "getType") {
 		ConnectionBPS *connection = new ConnectionBPS();
-		itoa(connection->GetConnectionType(), &buffer, 10);
-		returnValue.assign(&buffer);
+		std::stringstream ss;
+		ss << connection->GetConnectionType();
+		returnValue.assign(ss.str());
+		delete connection;
 	}
 
 	return returnValue;
 }
+
+bool Connection::CanDelete()
+{
+	return true;
+}
+
+} // namespace webworks
 

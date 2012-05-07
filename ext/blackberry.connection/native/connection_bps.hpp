@@ -13,21 +13,34 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-#include "../common/plugin.h"
-#include <string>
 
-#ifndef CONNECTION_JS_H_
-#define CONNECTION_JS_H_
+#ifndef CONNECTION_BPS_H_
+#define CONNECTION_BPS_H_
 
-class Connection : public JSExt
-{
-public:
-	Connection(const std::string& id);
-	virtual ~Connection() {}
-	virtual std::string InvokeMethod(const std::string& command);
-	virtual bool CanDelete() { return true; }
-private:
-	std::string m_id;
+#include <bps/bps.h>
+#include <bps/netstatus.h>
+
+namespace webworks {
+
+enum ConnectionTypes {
+	UNKNOWN = 0,
+	ETHERNET = 1,
+	WIFI = 2,
+	BLUETOOTH_DUN = 3,
+	USB = 4,
+	VPN = 5,
+	BB = 6,
+	CELLULAR = 7,
+	NONE = 8
 };
 
-#endif /* CONNECTION_JS_H_ */
+class ConnectionBPS {
+public:
+	ConnectionBPS();
+	~ConnectionBPS();
+	ConnectionTypes GetConnectionType();
+};
+
+} // namespace webworks
+
+#endif /* CONNECTION_BPS_H_ */
