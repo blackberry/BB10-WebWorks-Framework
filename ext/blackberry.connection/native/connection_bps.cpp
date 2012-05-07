@@ -25,7 +25,7 @@ ConnectionBPS::ConnectionBPS()
 
 ConnectionBPS::~ConnectionBPS()
 {
-	//bps_shutdown();
+	bps_shutdown();
 }
 
 ConnectionTypes ConnectionBPS::GetConnectionType()

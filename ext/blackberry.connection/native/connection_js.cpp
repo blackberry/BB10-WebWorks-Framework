@@ -17,8 +17,6 @@
 #include "connection_js.hpp"
 #include "connection_bps.hpp"
 
-//namespace webworks {
-
 Connection::Connection(const std::string& id) : m_id(id)
 {
 
@@ -52,10 +50,10 @@ std::string Connection::InvokeMethod(const std::string& command)
 	string jsonObject = command.substr(index + 1, command.length());
 
 	if (strCommand == "getType") {
-		ConnectionBPS *connection = new ConnectionBPS();
+		webworks::ConnectionBPS *connection = new webworks::ConnectionBPS();
 		std::stringstream ss;
 		ss << connection->GetConnectionType();
-		//delete connection;
+		delete connection;
 		return ss.str();
 	}
 
@@ -66,6 +64,4 @@ bool Connection::CanDelete()
 {
 	return true;
 }
-
-//} // namespace webworks
 
