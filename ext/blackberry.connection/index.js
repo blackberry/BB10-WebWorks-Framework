@@ -17,7 +17,11 @@ var connection;
 
 module.exports = {
     type: function (success, fail, args) {
-        success(connection.getType());
+        try {
+            success(connection.getType());
+        } catch (e) {
+            fail(-1, e);
+        }
     }
 };
 
@@ -25,8 +29,7 @@ module.exports = {
 // JavaScript wrapper for JNEXT plugin
 ///////////////////////////////////////////////////////////////////
 
-JNEXT.Connection = function ()
-{
+JNEXT.Connection = function () {
     var self = this;
 
     self.getType = function () {
@@ -38,8 +41,7 @@ JNEXT.Connection = function ()
         return self.m_id;
     };
 
-    self.init = function ()
-    {
+    self.init = function () {
         if (!JNEXT.require("netstatus")) {
             return false;
         }

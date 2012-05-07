@@ -14,18 +14,28 @@
 * limitations under the License.
 */
 var _self = {},
-    _ID = "blackberry.connection";
+    _ID = "blackberry.connection",
+    UNKNOWN = 0;
 
 Object.defineProperty(_self, "type", {
     get: function () {
-        return window.webworks.execSync(_ID, "type");
+        var type;
+
+        try {
+            type = window.webworks.execSync(_ID, "type");
+        } catch (e) {
+            type = UNKNOWN;
+            console.error(e);
+        }
+
+        return type;
     }
 });
 
 /*
  * Define constants for type constants
  */
-window.webworks.defineReadOnlyField(_self, "UNKNOWN", 0);
+window.webworks.defineReadOnlyField(_self, "UNKNOWN", UNKNOWN);
 window.webworks.defineReadOnlyField(_self, "ETHERNET", 1);
 window.webworks.defineReadOnlyField(_self, "WIFI", 2);
 window.webworks.defineReadOnlyField(_self, "BLUETOOTH_DUN", 3);

@@ -39,13 +39,26 @@ describe("blackberry.connection index", function () {
             expect(JNEXT.createObject).toHaveBeenCalledWith("netstatus.Connection");
         });
 
-        it("can call success with connection type", function () {
-            var success = jasmine.createSpy();
+        describe("type", function () {
+            it("can call success", function () {
+                var success = jasmine.createSpy();
 
-            index.type(success, null, null, null);
+                index.type(success, null, null, null);
 
-            expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getType");
-            expect(success).toHaveBeenCalledWith(2);
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getType");
+                expect(success).toHaveBeenCalledWith(2);
+            });
+
+            it("can call fail", function () {
+                var fail = jasmine.createSpy();
+
+                spyOn(JSON, "parse").andThrow("Parse error");
+
+                index.type(null, fail, null, null);
+
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getType");
+                expect(fail).toHaveBeenCalledWith(-1, "Parse error");
+            });
         });
     });
 });
