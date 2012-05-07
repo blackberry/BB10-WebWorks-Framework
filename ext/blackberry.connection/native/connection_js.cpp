@@ -50,17 +50,16 @@ std::string Connection::InvokeMethod(const std::string& command)
 
 	string strCommand = command.substr(0, index);
 	string jsonObject = command.substr(index + 1, command.length());
-	string returnValue;
 
 	if (strCommand == "getType") {
 		ConnectionBPS *connection = new ConnectionBPS();
 		std::stringstream ss;
 		ss << connection->GetConnectionType();
-		returnValue.assign(ss.str());
 		delete connection;
+		return ss.str();
 	}
 
-	return returnValue;
+	return NULL;
 }
 
 bool Connection::CanDelete()
