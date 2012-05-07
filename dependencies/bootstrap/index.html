@@ -8,11 +8,12 @@
     <script src="./webplatform.js"></script>
     <script src="./frameworkModules.js"></script>
     <script>
-        var JNEXT;
         function start() {
-          require.load(frameworkModules);
-          require('lib/framework').start();
-          JNEXT = require("lib/jnext");
+            //Must load jnext first, as there seemed to be a race condition for if it was defined before it was used
+            require("lib/jnext.js");
+            require(frameworkModules, function () {
+                require('lib/framework').start();
+            });
         }
     </script>
   </head>

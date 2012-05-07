@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-function requireLocal(id) {
-    return !!require.resolve ? require("../../" + id) : window.require(id);
-}
-
-var _event = requireLocal("lib/event"),
+var _event = require("../../lib/event"),
     _actionMap = {};
 
 var ADD_EVENT_ERROR = "Error occured while adding event listener.",

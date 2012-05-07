@@ -13,23 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-function requireLocal(id) {
-    if (/^lib/.test(id)) {
-        return !!require.resolve ? require("../../" + id) : window.require(id);
-    } else if (/^ext/.test(id)) {
-        var idParts = id.split("/"),
-            nodePath;
-        idParts.splice(0, 1);
-        nodePath = "../" + idParts.join("/");
-        return !!require.resolve ? require(nodePath) : window.require(id);
-    }
-}
-
-var Whitelist = requireLocal("lib/policy/whitelist").Whitelist,
+var Whitelist = require("../../lib/policy/whitelist").Whitelist,
     _whitelist = new Whitelist(),
-    _event = requireLocal("lib/event"),
-    _eventExt = requireLocal("ext/blackberry.event/index"),
+    _event = require("../../lib/event"),
+    _eventExt = require("../blackberry.event/index"),
+    _ppsEvents = require("../../lib/pps/ppsEvents"),
     // This object is used by action map and contains links between pps object fields monitored for change in that object helper methods
     // to analyze if the value is the one callback should be invoked and fields name and value format as would appear on return.
     // Set disableOnChange to true if not interested on change for a particular field but still interested to return its value.  
@@ -140,21 +128,21 @@ var Whitelist = requireLocal("lib/policy/whitelist").Whitelist,
     },
     _actionMap = {
         batterycritical: {
-            context: requireLocal("lib/pps/ppsEvents"),
+            context: _ppsEvents,
             event: _eventsMap.batterycritical,
             trigger: function (args) {
                 _event.trigger("batterycritical", args);
             }
         },
         batterylow: {
-            context: requireLocal("lib/pps/ppsEvents"),
+            context: _ppsEvents,
             event: _eventsMap.batterylow,
             trigger: function (args) {
                 _event.trigger("batterylow", args);
             }
         },
         batterystatus: {
-            context: requireLocal("lib/pps/ppsEvents"),
+            context: _ppsEvents,
             event: _eventsMap.batterystatus,
             trigger: function (args) {
                 _event.trigger("batterystatus", args);
