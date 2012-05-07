@@ -55,7 +55,7 @@ std::string Connection::InvokeMethod(const std::string& command)
 		ConnectionBPS *connection = new ConnectionBPS();
 		std::stringstream ss;
 		ss << connection->GetConnectionType();
-		delete connection;
+		//delete connection;
 		return ss.str();
 	}
 
