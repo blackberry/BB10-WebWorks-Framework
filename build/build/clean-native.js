@@ -20,10 +20,10 @@ var wrench = require("../../node_modules/wrench"),
 
 module.exports = function (prev, baton) {
     //cleanup simulator and device folders for all native extensions
-    for (var ext in fs.readdirSync(_c.EXT)) {
+    fs.readdirSync(_c.EXT).forEach(function (ext) {
         if (path.existsSync(path.join(_c.EXT, ext, "native"))) {
             wrench.rmdirSyncRecursive(path.join(_c.EXT, ext, 'simulator'), true);
             wrench.rmdirSyncRecursive(path.join(_c.EXT, ext, 'device'), true);
-        }
-    }
+        } 
+    });
 };
