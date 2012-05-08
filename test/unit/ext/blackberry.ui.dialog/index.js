@@ -74,4 +74,45 @@ describe("blackberry.ui.dialog", function () {
         
         expect(failCB).toHaveBeenCalled();
     });
+
+    it("makes sure that JNEXT is called properly for standard dialogs", function () {
+        var successCB = jasmine.createSpy(),
+            failCB = jasmine.createSpy(),
+            args = {};
+       
+        args.message = "Hello World";
+        args.type = 0;
+        args.settings = { title: "Hi", size: "large", position: "stuff" };
+        args.message = encodeURIComponent(args.message);
+        args.type = encodeURIComponent(args.type);
+        args.settings = encodeURIComponent(JSON.stringify(args.settings));
+        
+        index.standardAskAsync(successCB, failCB, args);
+
+        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalled();
+    });
+
+    it("makes sure that a message is specified for standard dialogs", function () {
+        var successCB = jasmine.createSpy(),
+            failCB = jasmine.createSpy(),
+            args = {};
+
+        args.type = 1;
+        args.type = encodeURIComponent(args.type);
+        index.standardAskAsync(successCB, failCB, args);
+
+        expect(failCB).toHaveBeenCalled();
+    });
+    
+    it("makes sure the type is specified for standard dialogs", function () {
+        var successCB = jasmine.createSpy(),
+            failCB = jasmine.createSpy(),
+            args = {};
+        
+        args.message = "Hello World";
+        args.message = encodeURIComponent(args.message);
+        index.standardAskAsync(successCB, failCB, args);
+        
+        expect(failCB).toHaveBeenCalled();
+    });
 });

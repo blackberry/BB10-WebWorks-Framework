@@ -52,6 +52,54 @@ module.exports = {
         
         dialog.show(args.eventId, args.message, args.buttons, args.settings);
         success();
+    },
+
+    standardAskAsync: function (success, fail, args, env) {
+        if (args.message) {
+            args.message = decodeURIComponent(args.message);
+        } else {
+            fail("message is undefined");
+            return;
+        }
+        
+        if (args.type) {
+            args.type = JSON.parse(decodeURIComponent(args.type));
+        } else {
+            fail("type is undefined");
+            return;
+        }
+        
+        if (args.settings) {
+            args.settings = JSON.parse(decodeURIComponent(args.settings));
+        } else {
+            args.settings = { title : "", size: "medium", position: "middleCenter" };
+        }
+
+        var buttons;
+
+        switch (args.type) {
+        case 0:  // D_OK
+            buttons = ["Ok"];
+            break;
+        case 1:  // D_SAVE
+            buttons = ["Save", "Discard"];
+            break;
+        case 2:  // D_DELETE
+            buttons = ["Delete", "Cancel"];
+            break;
+        case 3:  // D_YES_NO
+            buttons = ["Yes", "No"];
+            break;
+        case 4:  // D_OK_CANCEL
+            buttons = ["Ok", "Cancel"];
+            break;
+        default:
+            fail("invalid dialog type: " + args.type);
+            return;
+        }
+
+        dialog.show(args.eventId, args.message, buttons, args.settings);
+        success();
     }
 };
 
