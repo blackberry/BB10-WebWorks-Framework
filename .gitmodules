@@ -1,6 +1,3 @@
-[submodule "dependencies/webplatform-framework"]
-	path = dependencies/webplatform-framework
-	url = https://github.com/blackberry-webworks/webplatform-framework.git
 [submodule "dependencies/test-server/public/lib/jasmine"]
 	path = dependencies/test-server/public/lib/jasmine
 	url = https://github.com/pivotal/jasmine.git
@@ -13,3 +10,9 @@
 [submodule "dependencies/gtest"]
 	path = dependencies/gtest
 	url = http://github.rim.net/webworks/gtest.git
+[submodule "dependencies/webplatform"]
+	path = dependencies/webplatform
+	url = git@github.com:blackberry-webworks/webplatform.git 
+[submodule "dependencies/browser-require"]
+	path = dependencies/browser-require
+	url = https://github.com/rsms/browser-require

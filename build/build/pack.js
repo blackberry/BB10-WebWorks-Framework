@@ -75,6 +75,7 @@ module.exports = function (src, baton) {
         clientFilesDest = path.join(_c.DEPLOY, 'clientFiles'),
         bootstrapDest = path.join(_c.DEPLOY, 'dependencies/bootstrap'),
         browserRequireDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
+        webplatformDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
         
         //files
         readmeFile = path.join(_c.ROOT, 'README.md'),
@@ -90,6 +91,7 @@ module.exports = function (src, baton) {
     
     //Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
     utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
+    utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
     utils.copyFile(readmeFile, _c.DEPLOY);
     utils.copyFile(licenseFile, _c.DEPLOY);
     
