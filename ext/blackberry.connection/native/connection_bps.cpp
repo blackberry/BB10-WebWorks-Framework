@@ -20,66 +20,66 @@ namespace webworks {
 
 ConnectionBPS::ConnectionBPS()
 {
-	bps_initialize();
+    bps_initialize();
 }
 
 ConnectionBPS::~ConnectionBPS()
 {
-	bps_shutdown();
+    bps_shutdown();
 }
 
 ConnectionTypes ConnectionBPS::GetConnectionType()
 {
-	bool available;
-	char* interface;
-	netstatus_interface_details_t* details;
-	netstatus_interface_type_t type;
-	int status;
-	ConnectionTypes returnType;
+    bool available;
+    char* interface;
+    netstatus_interface_details_t* details;
+    netstatus_interface_type_t type;
+    int status;
+    ConnectionTypes returnType;
 
-	netstatus_get_availability(&available);
+    netstatus_get_availability(&available);
 
-	if (available) {
-		netstatus_get_default_interface(&interface);
-		status = netstatus_get_interface_details(interface, &details);
+    if (available) {
+        netstatus_get_default_interface(&interface);
+        status = netstatus_get_interface_details(interface, &details);
 
-		if (status == BPS_SUCCESS) {
-			type = netstatus_interface_get_type(details);
+        if (status == BPS_SUCCESS) {
+            type = netstatus_interface_get_type(details);
 
-			switch (type) {
-			case NETSTATUS_INTERFACE_TYPE_UNKNOWN:
-				returnType = UNKNOWN;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_WIRED:
-				returnType = ETHERNET;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_WIFI:
-				returnType = WIFI;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_BLUETOOTH_DUN:
-				returnType = BLUETOOTH_DUN;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_USB:
-				returnType = USB;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_VPN:
-				returnType = VPN;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_BB:
-				returnType = BB;
-				break;
-			case NETSTATUS_INTERFACE_TYPE_CELLULAR:
-				returnType = CELLULAR;
-				break;
-			};
+            switch (type) {
+            case NETSTATUS_INTERFACE_TYPE_UNKNOWN:
+                returnType = UNKNOWN;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_WIRED:
+                returnType = ETHERNET;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_WIFI:
+                returnType = WIFI;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_BLUETOOTH_DUN:
+                returnType = BLUETOOTH_DUN;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_USB:
+                returnType = USB;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_VPN:
+                returnType = VPN;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_BB:
+                returnType = BB;
+                break;
+            case NETSTATUS_INTERFACE_TYPE_CELLULAR:
+                returnType = CELLULAR;
+                break;
+            };
 
-			netstatus_free_interface_details(&details);
-		}
-	} else {
-		returnType = NONE;
-	}
+            netstatus_free_interface_details(&details);
+        }
+    } else {
+        returnType = NONE;
+    }
 
-	return returnType;
+    return returnType;
 }
 
 } // namespace webworks

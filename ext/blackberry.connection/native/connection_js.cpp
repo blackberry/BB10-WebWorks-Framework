@@ -29,39 +29,38 @@ Connection::~Connection()
 
 char* onGetObjList()
 {
-	static char name[] = "Connection";
-	return name;
+    static char name[] = "Connection";
+    return name;
 }
 
 JSExt* onCreateObject(const std::string& className, const std::string& id)
 {
-	if (className != "Connection") {
-		return NULL;
-	}
+    if (className != "Connection") {
+        return NULL;
+    }
 
-	return new Connection(id);
+    return new Connection(id);
 }
 
 std::string Connection::InvokeMethod(const std::string& command)
 {
-	int index = command.find_first_of(" ");
+    int index = command.find_first_of(" ");
 
-	string strCommand = command.substr(0, index);
-	string jsonObject = command.substr(index + 1, command.length());
+    string strCommand = command.substr(0, index);
 
-	if (strCommand == "getType") {
-		webworks::ConnectionBPS *connection = new webworks::ConnectionBPS();
-		std::stringstream ss;
-		ss << connection->GetConnectionType();
-		delete connection;
-		return ss.str();
-	}
+    if (strCommand == "getType") {
+        webworks::ConnectionBPS *connection = new webworks::ConnectionBPS();
+        std::stringstream ss;
+        ss << connection->GetConnectionType();
+        delete connection;
+        return ss.str();
+    }
 
-	return NULL;
+    return NULL;
 }
 
 bool Connection::CanDelete()
 {
-	return true;
+    return true;
 }
 

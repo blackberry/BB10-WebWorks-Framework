@@ -23,22 +23,22 @@
 namespace webworks {
 
 enum ConnectionTypes {
-	UNKNOWN = 0,
-	ETHERNET = 1,
-	WIFI = 2,
-	BLUETOOTH_DUN = 3,
-	USB = 4,
-	VPN = 5,
-	BB = 6,
-	CELLULAR = 7,
-	NONE = 8
+    UNKNOWN = 0,
+    ETHERNET = 1,
+    WIFI = 2,
+    BLUETOOTH_DUN = 3,
+    USB = 4,
+    VPN = 5,
+    BB = 6,
+    CELLULAR = 7,
+    NONE = 8
 };
 
 class ConnectionBPS {
 public:
-	ConnectionBPS();
-	~ConnectionBPS();
-	ConnectionTypes GetConnectionType();
+    ConnectionBPS();
+    ~ConnectionBPS();
+    ConnectionTypes GetConnectionType();
 };
 
 } // namespace webworks

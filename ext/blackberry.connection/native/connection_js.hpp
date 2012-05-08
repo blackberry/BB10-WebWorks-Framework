@@ -23,12 +23,12 @@
 class Connection : public JSExt
 {
 public:
-	Connection(const std::string& id);
-	virtual ~Connection();
-	virtual std::string InvokeMethod(const std::string& command);
-	virtual bool CanDelete();
+    Connection(const std::string& id);
+    virtual ~Connection();
+    virtual std::string InvokeMethod(const std::string& command);
+    virtual bool CanDelete();
 private:
-	std::string m_id;
+    std::string m_id;
 };
 
 #endif /* CONNECTION_JS_H_ */
