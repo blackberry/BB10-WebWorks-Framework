@@ -27,7 +27,8 @@
         "screen",
         "setInterval", "clearInterval", "setTimeout", "clearTimeout",
         "require", "Node",
-        "qnx", "chrome", "NamedNodeMap"
+        "qnx", "chrome", "NamedNodeMap",
+        "JNEXT"
     ],
 
     "node" : true,
