@@ -71,9 +71,8 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>sudo</executable>
+                                    <executable>./configure</executable>
                                     <arguments>
-                                        <argument>./configure</argument>
                                         <argument>${scm}</argument>
                                     </arguments>
                                 </configuration>
