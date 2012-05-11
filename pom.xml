@@ -38,8 +38,9 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>configure.bat</executable>
+                                    <executable>sh</executable>
                                     <arguments>
+                                        <argument>configure</argument>
                                         <argument>${scm}</argument>
                                     </arguments>
                                 </configuration>
