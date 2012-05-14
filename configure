@@ -1,4 +1,8 @@
-npm install -g jake jshint@0.5.2 csslint uglify-js
+if [[ "`uname`" == *Windows* ]] ; then
+    npm install -g jake jshint@0.5.2 csslint uglify-js
+else
+    sudo npm install -g jake jshint@0.5.2 csslint uglify-js
+fi
 npm install jasmine-node express wrench@1.3.6
 npm install
 if [ "$1" != "-scm" ]; then git submodule update --init; fi
