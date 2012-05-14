@@ -28,14 +28,14 @@ module.exports = {
         if (args.message) {
             args.message = decodeURIComponent(args.message);
         } else {
-            fail("message is undefined");
+            fail(-1, "message is undefined");
             return;
         }
                 
         if (args.buttons) {
             args.buttons = JSON.parse(decodeURIComponent(args.buttons));
         } else {
-            fail("buttons is undefined");
+            fail(-1, "buttons is undefined");
             return;
         }
 
@@ -46,7 +46,7 @@ module.exports = {
         }
         
         if (!Array.isArray(args.buttons)) {
-            fail("buttons is not an array");
+            fail(-1, "buttons is not an array");
             return;
         }
         
@@ -58,47 +58,37 @@ module.exports = {
         if (args.message) {
             args.message = decodeURIComponent(args.message);
         } else {
-            fail("message is undefined");
+            fail(-1, "message is undefined");
             return;
         }
         
         if (args.type) {
             args.type = JSON.parse(decodeURIComponent(args.type));
         } else {
-            fail("type is undefined");
+            fail(-1, "type is undefined");
             return;
         }
         
+        if (args.type < 0 || args.type > 4) {
+            fail(-1, "invalid dialog type: " + args.type);
+            return;
+        }
+
         if (args.settings) {
             args.settings = JSON.parse(decodeURIComponent(args.settings));
         } else {
             args.settings = { title : "", size: "medium", position: "middleCenter" };
         }
 
-        var buttons;
+        var buttons = {
+            0: ["Ok"],                  // D_OK
+            1: ["Save", "Discard"],     // D_SAVE
+            2: ["Delete", "Cancel"],    // D_DELETE
+            3: ["Yes", "No"],           // D_YES_NO
+            4: ["Ok", "Cancel"]         // D_OK_CANCEL
+        };
 
-        switch (args.type) {
-        case 0:  // D_OK
-            buttons = ["Ok"];
-            break;
-        case 1:  // D_SAVE
-            buttons = ["Save", "Discard"];
-            break;
-        case 2:  // D_DELETE
-            buttons = ["Delete", "Cancel"];
-            break;
-        case 3:  // D_YES_NO
-            buttons = ["Yes", "No"];
-            break;
-        case 4:  // D_OK_CANCEL
-            buttons = ["Ok", "Cancel"];
-            break;
-        default:
-            fail("invalid dialog type: " + args.type);
-            return;
-        }
-
-        dialog.show(args.eventId, args.message, buttons, args.settings);
+        dialog.show(args.eventId, args.message, buttons[args.type], args.settings);
         success();
     }
 };

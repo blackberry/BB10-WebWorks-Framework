@@ -90,6 +90,7 @@ describe("blackberry.ui.dialog", function () {
         index.standardAskAsync(successCB, failCB, args);
 
         expect(GLOBAL.JNEXT.invoke).toHaveBeenCalled();
+        expect(successCB).toHaveBeenCalledWith();
     });
 
     it("makes sure that a message is specified for standard dialogs", function () {
@@ -101,7 +102,7 @@ describe("blackberry.ui.dialog", function () {
         args.type = encodeURIComponent(args.type);
         index.standardAskAsync(successCB, failCB, args);
 
-        expect(failCB).toHaveBeenCalled();
+        expect(failCB).toHaveBeenCalledWith(-1, "message is undefined");
     });
     
     it("makes sure the type is specified for standard dialogs", function () {
@@ -113,6 +114,21 @@ describe("blackberry.ui.dialog", function () {
         args.message = encodeURIComponent(args.message);
         index.standardAskAsync(successCB, failCB, args);
         
-        expect(failCB).toHaveBeenCalled();
+        expect(failCB).toHaveBeenCalledWith(-1, "type is undefined");
+    });
+
+    it("makes sure the type is valid for standard dialogs", function () {
+        var successCB = jasmine.createSpy(),
+            failCB = jasmine.createSpy(),
+            args = {};
+
+        args.message = "Hello World";
+        args.type = 5;
+        args.message = encodeURIComponent(args.message);
+        args.type = encodeURIComponent(args.type);
+
+        index.standardAskAsync(successCB, failCB, args);
+
+        expect(failCB).toHaveBeenCalledWith(-1, "invalid dialog type: 5");
     });
 });

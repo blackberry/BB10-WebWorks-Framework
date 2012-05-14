@@ -17,8 +17,12 @@
 var _self = {},
     _ID = "blackberry.ui.dialog";
 
+function getUniqueEventId() {
+    return parseInt(Math.floor((Math.random() * 1000000) + 1), 10);
+}
+
 _self.customAskAsync = function (message, buttons, callback, settings) {
-    var eventId = parseInt(Math.floor((Math.random() * 1000000) + 1), 10),
+    var eventId = getUniqueEventId(),
         args = { "eventId" : eventId, "message" : message, "buttons" : buttons, "callback" : callback };
     if (settings) {
         args.settings = settings;
@@ -29,9 +33,12 @@ _self.customAskAsync = function (message, buttons, callback, settings) {
 };
 
 _self.standardAskAsync = function (message, type, callback, settings) {
-    var eventId = parseInt(Math.floor((Math.random() * 1000000) + 1), 10),
+    var eventId = getUniqueEventId(),
         args = { "eventId" : eventId, "message" : message, "type" : type, "callback" : callback };
-    if (settings) args.settings = settings;
+    if (settings) {
+        args.settings = settings;
+    }
+
     window.webworks.event.once(_ID, eventId, callback);
     return window.webworks.execAsync(_ID, "standardAskAsync", args);
 };
