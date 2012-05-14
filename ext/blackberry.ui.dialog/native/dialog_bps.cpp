@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
+#include <string>
+#include <vector>
+
 #include "dialog_bps.hpp"
 
 namespace webworks {
 
 DialogBPS::DialogBPS()
 {
-	m_dialog = NULL;
-	m_pSizeMap = new StringToIntMap;
-	m_pSizeMap->insert(StringToIntMap::value_type("small", DIALOG_SIZE_SMALL));
-	m_pSizeMap->insert(StringToIntMap::value_type("medium", DIALOG_SIZE_MEDIUM));
+    m_dialog = NULL;
+    m_pSizeMap = new StringToIntMap;
+    m_pSizeMap->insert(StringToIntMap::value_type("small", DIALOG_SIZE_SMALL));
+    m_pSizeMap->insert(StringToIntMap::value_type("medium", DIALOG_SIZE_MEDIUM));
     m_pSizeMap->insert(StringToIntMap::value_type("large", DIALOG_SIZE_LARGE));
     m_pSizeMap->insert(StringToIntMap::value_type("tall", DIALOG_SIZE_TALL));
     m_pSizeMap->insert(StringToIntMap::value_type("full", DIALOG_SIZE_FULL));
@@ -32,49 +35,49 @@ DialogBPS::DialogBPS()
     m_pPositionMap->insert(StringToIntMap::value_type("topCenter", DIALOG_POSITION_TOP_CENTER));
     m_pPositionMap->insert(StringToIntMap::value_type("middleCenter", DIALOG_POSITION_MIDDLE_CENTER));
     m_pPositionMap->insert(StringToIntMap::value_type("bottomCenter", DIALOG_POSITION_BOTTOM_CENTER));
-    
-	bps_initialize();
+
+    bps_initialize();
 }
 
 DialogBPS::~DialogBPS()
 {
-	if (m_pSizeMap) {
-		delete m_pSizeMap;
-		m_pSizeMap = NULL;
-	}
+    if (m_pSizeMap) {
+        delete m_pSizeMap;
+        m_pSizeMap = NULL;
+    }
 
-	if (m_pPositionMap) {
-		delete m_pPositionMap;
-		m_pPositionMap = NULL;
-	}
+    if (m_pPositionMap) {
+        delete m_pPositionMap;
+        m_pPositionMap = NULL;
+    }
 
-	bps_shutdown();
+    bps_shutdown();
 }
 
 int DialogBPS::Show(DialogConfig *dialogInfo)
 {
-	if (dialog_create_alert(&m_dialog) != BPS_SUCCESS) {
-	    return -1;
-	}
+    if (dialog_create_alert(&m_dialog) != BPS_SUCCESS) {
+        return -1;
+    }
 
-	if (dialog_set_alert_message_text(m_dialog, dialogInfo->message.c_str()) != BPS_SUCCESS) {
+    if (dialog_set_alert_message_text(m_dialog, dialogInfo->message.c_str()) != BPS_SUCCESS) {
         dialog_destroy(m_dialog);
         m_dialog = NULL;
         return -1;
-	}
-	
+    }
+
     if (dialog_set_title_text(m_dialog, dialogInfo->title.c_str()) != BPS_SUCCESS) {
-	      dialog_destroy(m_dialog);
-	      m_dialog = NULL;
-	      return -1;
-	}
-    
+          dialog_destroy(m_dialog);
+          m_dialog = NULL;
+          return -1;
+    }
+
     if (dialog_set_size(m_dialog, static_cast<dialog_size_t>(m_pSizeMap->find(dialogInfo->size)->second)) != BPS_SUCCESS) {
         dialog_destroy(m_dialog);
         m_dialog = NULL;
         return -1;
     }
-    
+
     if (dialog_set_position(m_dialog, static_cast<dialog_position_t>(m_pPositionMap->find(dialogInfo->position)->second)) != BPS_SUCCESS) {
         dialog_destroy(m_dialog);
         m_dialog = NULL;
@@ -91,31 +94,32 @@ int DialogBPS::Show(DialogConfig *dialogInfo)
     }
 
     for (std::vector<std::string>::iterator it = dialogInfo->buttons.begin(); it < dialogInfo->buttons.end(); it++) {
-		if (dialog_add_button(m_dialog, it->c_str(), true, 0, true) != BPS_SUCCESS) {
-			  dialog_destroy(m_dialog);
-			  m_dialog = NULL;
-			  return -1;
-		}
-	}
+        if (dialog_add_button(m_dialog, it->c_str(), true, 0, true) != BPS_SUCCESS) {
+              dialog_destroy(m_dialog);
+              m_dialog = NULL;
+              return -1;
+        }
+    }
 
-	if (dialog_show(m_dialog) != BPS_SUCCESS) {
-	    dialog_destroy(m_dialog);
-	    m_dialog = NULL;
-	    return -1;
-	}
+    if (dialog_show(m_dialog) != BPS_SUCCESS) {
+        dialog_destroy(m_dialog);
+        m_dialog = NULL;
+        return -1;
+    }
 
-	dialog_request_events(0);
+    dialog_request_events(0);
 
-	bps_event_t *event;
-	bps_get_event(&event, -1);
+    bps_event_t *event;
+    bps_get_event(&event, -1);
 
-	if (event) {
-		if (bps_event_get_domain(event) == dialog_get_domain()) {
-			int selectedIndex = dialog_event_get_selected_index(event);
-			return selectedIndex;
-		}
-	}
-
-	return -1;
+    if (event) {
+        if (bps_event_get_domain(event) == dialog_get_domain()) {
+            int selectedIndex = dialog_event_get_selected_index(event);
+            dialog_destroy(m_dialog);
+            return selectedIndex;
+        }
+    }
+    dialog_destroy(m_dialog);
+    return -1;
 }
 } // namespace webworks

@@ -17,13 +17,14 @@
 #ifndef CONNECTION_JS_H_
 #define CONNECTION_JS_H_
 
-#include "../common/plugin.h"
 #include <sstream>
+#include <string>
+#include "../common/plugin.h"
 
 class Connection : public JSExt
 {
 public:
-    Connection(const std::string& id);
+    explicit Connection(const std::string& id);
     virtual ~Connection();
     virtual std::string InvokeMethod(const std::string& command);
     virtual bool CanDelete();

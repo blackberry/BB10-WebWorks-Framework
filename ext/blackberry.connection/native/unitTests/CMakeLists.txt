@@ -10,10 +10,10 @@ set(srcs
 )
 
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/../../../../dependencies/gtest/src/public/)
+include_directories(${CMAKE_SOURCE_DIR}/../../../dependencies/gtest/src/public/)
 
 add_definitions(-DXP_UNIX)
-ADD_EXECUTABLE(test ${srcs})
+add_executable(test ${srcs})
 
 target_link_libraries(test m bps)
 set_target_properties(test PROPERTIES PREFIX "")

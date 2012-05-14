@@ -17,12 +17,12 @@
 #ifndef DIALOG_BPS_H_
 #define DIALOG_BPS_H_
 
-#include <string>
-#include <vector>
-#include <map>
-#include <bps/bps.h>
 #include <bps/event.h>
 #include <bps/dialog.h>
+#include <map>
+#include <string>
+#include <vector>
+
 
 namespace webworks {
 

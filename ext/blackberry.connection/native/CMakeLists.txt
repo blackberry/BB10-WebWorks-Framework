@@ -10,9 +10,9 @@ set(connection_srcs
 )
 
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../dependencies/jnext_1_0_8_3/jncore/jnext-core/Win-Linux-npapi/gecko-sdk/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../dependencies/jnext_1_0_8_3/jncore/jnext-extensions/common)
+add_subdirectory(unitTests)
 
 add_definitions(-DXP_UNIX)
 add_library(netstatus MODULE ${connection_srcs})

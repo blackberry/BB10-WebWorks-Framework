@@ -41,7 +41,7 @@ task('test', [], function () {
 
 desc("runs jshint + csslint - jake lint [path1] [path2]");
 task('lint', [], function () {
-    require('./build/lint')(complete, Array.prototype.slice.call(arguments));
+    require('./build/lint')(Array.prototype.slice.call(arguments));
 }, true);
 
 desc("show various codebase stats");
