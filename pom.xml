@@ -71,8 +71,9 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>./configure</executable>
+                                    <executable>sh</executable>
                                     <arguments>
+                                        <argument>configure</argument>
                                         <argument>${scm}</argument>
                                     </arguments>
                                 </configuration>
