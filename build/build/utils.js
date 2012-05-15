@@ -37,5 +37,21 @@ module.exports = {
         } else {
             fs.writeFileSync(path.join(destDir, filename), fileBuffer);
         }
-    }
+    },
+    
+    listFiles: function (directory, filter) {
+        var files = wrench.readdirSyncRecursive(directory),
+            filteredFiles = [];
+        
+        files.forEach(function (file) {
+            //On mac wrench.readdirSyncRecursive does not return absolute paths, so resolve one.
+            file = path.resolve(directory, file);
+        
+            if (filter(file)) {
+                filteredFiles.push(file);
+            }
+        });
+        
+        return filteredFiles;
+    },
 };

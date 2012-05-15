@@ -16,6 +16,7 @@
 var wrench = require("../../node_modules/wrench"),
     utils = require("./utils"),
     _c = require("./conf"),
+    fs = require("fs"),
     path = require("path");
 
 function copyFolder(source, destination) {
@@ -25,6 +26,47 @@ function copyFolder(source, destination) {
     }
 
     wrench.copyDirSyncRecursive(source, destination);
+}
+
+function copyExtensions(extPath, extDest) {
+    if (path.existsSync(extPath)) {
+        //Iterate over extensions directory
+        fs.readdirSync(extPath).forEach(function (extension) {
+            var apiDir = path.normalize(path.resolve(extPath, extension)),
+                apiDest = path.join(extDest, extension),
+                soPath, soDest,
+                apiNativeDir,
+                jsFiles, soFiles;
+            
+            //find all .js files
+            jsFiles = utils.listFiles(apiDir, function (file) {
+                return path.extname(file) === ".js";
+            });
+            
+            //Copy each .js file to its extensions folder
+            jsFiles.forEach(function (jsFile) {
+                utils.copyFile(jsFile, apiDest, apiDir);
+            });
+            
+            //find and copy each .so file to the extension folder 
+            ["device", "simulator"].forEach(function (target) {
+                soPath = path.normalize(path.join(apiDir, target));
+                soDest = path.join(apiDest, target);
+                apiNativeDir = path.normalize(path.join(apiDir, "native"));
+                
+                //If this is a native extension, copy all .so files
+                if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
+                    soFiles = utils.listFiles(soPath, function (file) {
+                        return path.extname(file) === ".so";
+                    });
+                    
+                    soFiles.forEach(function (soFile) {
+                        utils.copyFile(soFile, soDest, soPath);
+                    });
+                }
+            });
+        });
+    }
 }
 
 module.exports = function (src, baton) {
@@ -42,7 +84,7 @@ module.exports = function (src, baton) {
 
     //Copy folders to target directory
     copyFolder(_c.LIB, libDest);
-    copyFolder(_c.EXT, extDest);
+    copyExtensions(_c.EXT, extDest);
     copyFolder(_c.CLIENTFILES, clientFilesDest);
     copyFolder(_c.DEPENDENCIES_BOOTSTRAP, bootstrapDest);
     
