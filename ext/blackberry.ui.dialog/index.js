@@ -17,32 +17,40 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
+function validateIdMessageSettings(args) {
+    args.eventId = JSON.parse(decodeURIComponent(args.eventId));
+
+    if (args.settings) {
+        args.settings = JSON.parse(decodeURIComponent(args.settings));
+    } else {
+        args.settings = { title : "", size: "medium", position: "middleCenter" };
+    }
+
+    if (args.message) {
+        args.message = decodeURIComponent(args.message);
+    } else {
+        return 1;
+    }
+
+    return 0;
+}
+
 var dialog,
     _event = requireLocal("lib/event"),
     _webview = requireLocal("lib/webview");
     
 module.exports = {
     customAskAsync: function (success, fail, args, env) {
-        args.eventId = JSON.parse(decodeURIComponent(args.eventId));
-
-        if (args.message) {
-            args.message = decodeURIComponent(args.message);
-        } else {
+        if (validateIdMessageSettings(args) === 1) {
             fail(-1, "message is undefined");
             return;
         }
-                
+
         if (args.buttons) {
             args.buttons = JSON.parse(decodeURIComponent(args.buttons));
         } else {
             fail(-1, "buttons is undefined");
             return;
-        }
-
-        if (args.settings) {
-            args.settings = JSON.parse(decodeURIComponent(args.settings));
-        } else {
-            args.settings = { title : "", size: "medium", position: "middleCenter" };
         }
         
         if (!Array.isArray(args.buttons)) {
@@ -55,9 +63,7 @@ module.exports = {
     },
 
     standardAskAsync: function (success, fail, args, env) {
-        if (args.message) {
-            args.message = decodeURIComponent(args.message);
-        } else {
+        if (validateIdMessageSettings(args) === 1) {
             fail(-1, "message is undefined");
             return;
         }
@@ -72,12 +78,6 @@ module.exports = {
         if (args.type < 0 || args.type > 4) {
             fail(-1, "invalid dialog type: " + args.type);
             return;
-        }
-
-        if (args.settings) {
-            args.settings = JSON.parse(decodeURIComponent(args.settings));
-        } else {
-            args.settings = { title : "", size: "medium", position: "middleCenter" };
         }
 
         var buttons = {

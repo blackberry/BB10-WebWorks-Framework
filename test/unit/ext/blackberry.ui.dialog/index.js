@@ -80,6 +80,7 @@ describe("blackberry.ui.dialog", function () {
             failCB = jasmine.createSpy(),
             args = {};
        
+        args.eventId = "12345";
         args.message = "Hello World";
         args.type = 0;
         args.settings = { title: "Hi", size: "large", position: "stuff" };
@@ -98,6 +99,7 @@ describe("blackberry.ui.dialog", function () {
             failCB = jasmine.createSpy(),
             args = {};
 
+        args.eventId = "12345";
         args.type = 1;
         args.type = encodeURIComponent(args.type);
         index.standardAskAsync(successCB, failCB, args);
@@ -110,6 +112,7 @@ describe("blackberry.ui.dialog", function () {
             failCB = jasmine.createSpy(),
             args = {};
         
+        args.eventId = "12345";
         args.message = "Hello World";
         args.message = encodeURIComponent(args.message);
         index.standardAskAsync(successCB, failCB, args);
@@ -122,6 +125,7 @@ describe("blackberry.ui.dialog", function () {
             failCB = jasmine.createSpy(),
             args = {};
 
+        args.eventId = "12345";
         args.message = "Hello World";
         args.type = 5;
         args.message = encodeURIComponent(args.message);
