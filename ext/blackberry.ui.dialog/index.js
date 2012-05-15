@@ -17,40 +17,78 @@ function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
 }
 
+function validateIdMessageSettings(args) {
+    args.eventId = JSON.parse(decodeURIComponent(args.eventId));
+
+    if (args.settings) {
+        args.settings = JSON.parse(decodeURIComponent(args.settings));
+    } else {
+        args.settings = { title : "", size: "medium", position: "middleCenter" };
+    }
+
+    if (args.message) {
+        args.message = decodeURIComponent(args.message);
+    } else {
+        return 1;
+    }
+
+    return 0;
+}
+
 var dialog,
     _event = requireLocal("lib/event"),
     _webview = requireLocal("lib/webview");
     
 module.exports = {
     customAskAsync: function (success, fail, args, env) {
-        args.eventId = JSON.parse(decodeURIComponent(args.eventId));
-
-        if (args.message) {
-            args.message = decodeURIComponent(args.message);
-        } else {
-            fail("message is undefined");
+        if (validateIdMessageSettings(args) === 1) {
+            fail(-1, "message is undefined");
             return;
         }
-                
+
         if (args.buttons) {
             args.buttons = JSON.parse(decodeURIComponent(args.buttons));
         } else {
-            fail("buttons is undefined");
+            fail(-1, "buttons is undefined");
             return;
-        }
-
-        if (args.settings) {
-            args.settings = JSON.parse(decodeURIComponent(args.settings));
-        } else {
-            args.settings = { title : "", size: "medium", position: "middleCenter" };
         }
         
         if (!Array.isArray(args.buttons)) {
-            fail("buttons is not an array");
+            fail(-1, "buttons is not an array");
             return;
         }
         
         dialog.show(args.eventId, args.message, args.buttons, args.settings);
+        success();
+    },
+
+    standardAskAsync: function (success, fail, args, env) {
+        if (validateIdMessageSettings(args) === 1) {
+            fail(-1, "message is undefined");
+            return;
+        }
+        
+        if (args.type) {
+            args.type = JSON.parse(decodeURIComponent(args.type));
+        } else {
+            fail(-1, "type is undefined");
+            return;
+        }
+        
+        if (args.type < 0 || args.type > 4) {
+            fail(-1, "invalid dialog type: " + args.type);
+            return;
+        }
+
+        var buttons = {
+            0: ["Ok"],                  // D_OK
+            1: ["Save", "Discard"],     // D_SAVE
+            2: ["Delete", "Cancel"],    // D_DELETE
+            3: ["Yes", "No"],           // D_YES_NO
+            4: ["Ok", "Cancel"]         // D_OK_CANCEL
+        };
+
+        dialog.show(args.eventId, args.message, buttons[args.type], args.settings);
         success();
     }
 };

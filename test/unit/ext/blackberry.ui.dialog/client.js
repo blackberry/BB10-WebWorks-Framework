@@ -29,7 +29,12 @@ var root = __dirname + "/../../../../",
         "SIZE_TALL": "tall",
         "BOTTOM": "bottomCenter",
         "CENTER": "middleCenter",
-        "TOP": "topCenter"
+        "TOP": "topCenter",
+        "D_OK": 0,
+        "D_SAVE": 1,
+        "D_DELETE": 2,
+        "D_YES_NO": 3,
+        "D_OK_CANCEL": 4
     },
     defineROFieldArgs = [];
 
@@ -54,6 +59,11 @@ describe("blackberry.ui.dialog", function () {
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("BOTTOM")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CENTER")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("TOP")]);
+        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_OK")]);
+        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_SAVE")]);
+        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_DELETE")]);
+        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_YES_NO")]);
+        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_OK_CANCEL")]);
     });
     
     it("creates a dialog", function () {
@@ -67,4 +77,14 @@ describe("blackberry.ui.dialog", function () {
         expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.ui.dialog", "customAskAsync", { "eventId" : jasmine.any(Number), "message" : message, "buttons" : buttons, "callback" : callback, "settings" : settings });
     });
     
+    it("creates a standard dialog", function () {
+        var message = "hello world",
+            type = 0,
+            callback,
+            settings = {};
+            
+        client.standardAskAsync(message, type, callback, settings);
+        expect(mockedWebworks.event.once).toHaveBeenCalledWith("blackberry.ui.dialog", jasmine.any(Number), callback);
+        expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.ui.dialog", "standardAskAsync", { "eventId" : jasmine.any(Number), "message" : message, "type" : type, "callback" : callback, "settings" : settings });
+    });
 });

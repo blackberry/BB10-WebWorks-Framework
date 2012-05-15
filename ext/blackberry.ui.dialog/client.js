@@ -17,8 +17,12 @@
 var _self = {},
     _ID = "blackberry.ui.dialog";
 
+function getUniqueEventId() {
+    return parseInt(Math.floor((Math.random() * 1000000) + 1), 10);
+}
+
 _self.customAskAsync = function (message, buttons, callback, settings) {
-    var eventId = parseInt(Math.floor((Math.random() * 1000000) + 1), 10),
+    var eventId = getUniqueEventId(),
         args = { "eventId" : eventId, "message" : message, "buttons" : buttons, "callback" : callback };
     if (settings) {
         args.settings = settings;
@@ -26,6 +30,17 @@ _self.customAskAsync = function (message, buttons, callback, settings) {
 
     window.webworks.event.once(_ID, eventId, callback);
     return window.webworks.execAsync(_ID, "customAskAsync", args);
+};
+
+_self.standardAskAsync = function (message, type, callback, settings) {
+    var eventId = getUniqueEventId(),
+        args = { "eventId" : eventId, "message" : message, "type" : type, "callback" : callback };
+    if (settings) {
+        args.settings = settings;
+    }
+
+    window.webworks.event.once(_ID, eventId, callback);
+    return window.webworks.execAsync(_ID, "standardAskAsync", args);
 };
 
 window.webworks.defineReadOnlyField(_self, "SIZE_FULL", "full");
@@ -36,5 +51,11 @@ window.webworks.defineReadOnlyField(_self, "SIZE_TALL", "tall");
 window.webworks.defineReadOnlyField(_self, "BOTTOM", "bottomCenter");
 window.webworks.defineReadOnlyField(_self, "CENTER", "middleCenter");
 window.webworks.defineReadOnlyField(_self, "TOP", "topCenter");
+
+window.webworks.defineReadOnlyField(_self, "D_OK", 0);
+window.webworks.defineReadOnlyField(_self, "D_SAVE", 1);
+window.webworks.defineReadOnlyField(_self, "D_DELETE", 2);
+window.webworks.defineReadOnlyField(_self, "D_YES_NO", 3);
+window.webworks.defineReadOnlyField(_self, "D_OK_CANCEL", 4);
 
 module.exports = _self;
