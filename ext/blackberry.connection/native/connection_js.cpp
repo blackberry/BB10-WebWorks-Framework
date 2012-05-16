@@ -14,17 +14,16 @@
 * limitations under the License.
 */
 
+#include <string>
 #include "connection_js.hpp"
 #include "connection_bps.hpp"
 
 Connection::Connection(const std::string& id) : m_id(id)
 {
-
 }
 
 Connection::~Connection()
 {
-
 }
 
 char* onGetObjList()

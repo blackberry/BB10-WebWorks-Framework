@@ -16,10 +16,11 @@
 
 #include "dialog_js.hpp"
 #include "dialog_bps.hpp"
-#include <sstream>
 #include <bps/bps.h>
 #include <pthread.h>
 #include <json/reader.h>
+#include <sstream>
+#include <string>
 
 webworks::DialogConfig *dialogConfig;
 
@@ -119,7 +120,7 @@ bool Dialog::CanDelete()
 }
 
 // Notifies JavaScript of an event
-void Dialog::NotifyEvent(std::string& event)
+void Dialog::NotifyEvent(const std::string& event)
 {
     std::string eventString = m_id + " result ";
     eventString.append(event);

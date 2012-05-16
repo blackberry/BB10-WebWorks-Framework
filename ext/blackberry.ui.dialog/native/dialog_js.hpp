@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "../common/plugin.h"
+#include <pthread.h>
 #include <string>
 #include <vector>
-#include <pthread.h>
+
+#include "../common/plugin.h"
 
 #ifndef DIALOG_JS_H_
 #define DIALOG_JS_H_
@@ -25,11 +26,11 @@
 class Dialog : public JSExt
 {
 public:
-    Dialog(const std::string& id);
+    explicit Dialog(const std::string& id);
     virtual ~Dialog() {}
     virtual std::string InvokeMethod(const std::string& command);
     virtual bool CanDelete();
-    void NotifyEvent(std::string& event);
+    void NotifyEvent(const std::string& event);
     void StartThread();
     void StopThread();
 private:
