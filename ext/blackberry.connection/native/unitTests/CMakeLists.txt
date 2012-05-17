@@ -6,6 +6,8 @@ endif ()
 set(srcs
     test_main.cpp
     ../connection_bps.cpp
+    ../connection_js.cpp
+    ../../../../dependencies/jnext_1_0_8_3/jncore/jnext-extensions/common/plugin.cpp
     ../../../../dependencies/gtest/src/gmock-gtest-all.cc
 )
 
