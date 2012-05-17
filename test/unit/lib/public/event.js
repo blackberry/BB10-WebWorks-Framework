@@ -135,6 +135,27 @@ describe("event", function () {
             event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
             expect(callback.callCount).toEqual(2);
+            event.remove("blackberry.system.event", "foo", callback);
+        });
+    });
+
+    describe("isOn", function () {
+        it("returns false with no listeners", function () {
+            expect(event.isOn("foo")).toEqual(false);
+        });
+
+        it("returns true with listeners", function () {
+            var callback = jasmine.createSpy();
+            event.add("blackberry.system.event", "foo", callback);
+            expect(event.isOn("foo")).toEqual(true);
+            event.remove("blackberry.system.event", "foo", callback);
+        });
+
+        it("Updates properly once listeners are removed", function () {
+            var callback = jasmine.createSpy();
+            event.add("blackberry.system.event", "foo", callback);
+            event.remove("blackberry.system.event", "foo", callback);
+            expect(event.isOn("foo")).toEqual(false);
         });
     });
 });
