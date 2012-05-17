@@ -15,31 +15,32 @@
  */
  
 var _self = {},
-    _ID = "blackberry.ui.dialog";
+    _ID = "blackberry.ui.dialog",
+    _eventId = "blackberry.ui.dialogEventId";
 
-function getUniqueEventId() {
-    return parseInt(Math.floor((Math.random() * 1000000) + 1), 10);
+function createEventHandler(callback) {
+    if (!window.webworks.event.isOn(_eventId)) {
+        window.webworks.event.once(_ID, _eventId, callback);
+    }
 }
 
 _self.customAskAsync = function (message, buttons, callback, settings) {
-    var eventId = getUniqueEventId(),
-        args = { "eventId" : eventId, "message" : message, "buttons" : buttons, "callback" : callback };
+    var args = { "eventId" : _eventId, "message" : message, "buttons" : buttons, "callback" : callback };
     if (settings) {
         args.settings = settings;
     }
 
-    window.webworks.event.once(_ID, eventId, callback);
+    createEventHandler(callback);
     return window.webworks.execAsync(_ID, "customAskAsync", args);
 };
 
 _self.standardAskAsync = function (message, type, callback, settings) {
-    var eventId = getUniqueEventId(),
-        args = { "eventId" : eventId, "message" : message, "type" : type, "callback" : callback };
+    var  args = { "eventId" : _eventId, "message" : message, "type" : type, "callback" : callback };
     if (settings) {
         args.settings = settings;
     }
 
-    window.webworks.event.once(_ID, eventId, callback);
+    createEventHandler(callback);
     return window.webworks.execAsync(_ID, "standardAskAsync", args);
 };
 
