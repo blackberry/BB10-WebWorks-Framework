@@ -47,6 +47,10 @@ void* DialogThread(void *parent)
         dialogConfig = 0;
     }
 
+    if (dialog) {
+        delete dialog;
+    }
+
     pParent->StopThread();
     return NULL;
 }

@@ -19,7 +19,8 @@ var root = __dirname + "/../../../../",
     mockedWebworks = {
         execAsync: jasmine.createSpy(),
         defineReadOnlyField: jasmine.createSpy(),
-        event: { once : jasmine.createSpy() }
+        event: { once : jasmine.createSpy(),
+                 isOn : jasmine.createSpy() }
     },
     constants = {
         "SIZE_FULL": "full",
@@ -73,8 +74,8 @@ describe("blackberry.ui.dialog", function () {
             settings = {};
             
         client.customAskAsync(message, buttons, callback, settings);
-        expect(mockedWebworks.event.once).toHaveBeenCalledWith("blackberry.ui.dialog", jasmine.any(Number), callback);
-        expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.ui.dialog", "customAskAsync", { "eventId" : jasmine.any(Number), "message" : message, "buttons" : buttons, "callback" : callback, "settings" : settings });
+        expect(mockedWebworks.event.once).toHaveBeenCalledWith("blackberry.ui.dialog", "blackberry.ui.dialogEventId", callback);
+        expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.ui.dialog", "customAskAsync", { "eventId" : "blackberry.ui.dialogEventId", "message" : message, "buttons" : buttons, "callback" : callback, "settings" : settings });
     });
     
     it("creates a standard dialog", function () {
@@ -84,7 +85,7 @@ describe("blackberry.ui.dialog", function () {
             settings = {};
             
         client.standardAskAsync(message, type, callback, settings);
-        expect(mockedWebworks.event.once).toHaveBeenCalledWith("blackberry.ui.dialog", jasmine.any(Number), callback);
-        expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.ui.dialog", "standardAskAsync", { "eventId" : jasmine.any(Number), "message" : message, "type" : type, "callback" : callback, "settings" : settings });
+        expect(mockedWebworks.event.once).toHaveBeenCalledWith("blackberry.ui.dialog", "blackberry.ui.dialogEventId", callback);
+        expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.ui.dialog", "standardAskAsync", { "eventId" : "blackberry.ui.dialogEventId", "message" : message, "type" : type, "callback" : callback, "settings" : settings });
     });
 });
