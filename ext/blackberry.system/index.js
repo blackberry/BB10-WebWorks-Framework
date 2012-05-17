@@ -137,7 +137,7 @@ var Whitelist = requireLocal("lib/policy/whitelist").Whitelist,
             }],
             mode: 0
         }
-    }, 
+    },
     _actionMap = {
         batterycritical: {
             context: requireLocal("lib/pps/ppsEvents"),
@@ -162,12 +162,15 @@ var Whitelist = requireLocal("lib/policy/whitelist").Whitelist,
         }
     };
 
-// register event handling code with blackberry.event
-Object.getOwnPropertyNames(_actionMap).forEach(function (eventName) {
-    _eventExt.registerEvent(eventName, _actionMap[eventName]);
-});
-
 module.exports = {
+    registerEvents: function (success, fail, args, env) {
+        Object.getOwnPropertyNames(_actionMap).forEach(function (eventName) {
+            _eventExt.registerEvent(eventName, _actionMap[eventName]);
+        });
+
+        success();
+    },
+
     hasPermission: function (success, fail, args, env) {
         // TODO string argument surrounded by %22
         // preserve dot for feature id

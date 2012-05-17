@@ -45,12 +45,15 @@ var _config = requireLocal("lib/config"),
         }
     };
 
-// register event handling code with blackberry.event
-Object.getOwnPropertyNames(_actionMap).forEach(function (eventName) {
-    _eventExt.registerEvent(eventName, _actionMap[eventName]);
-});
-
 module.exports = {
+    registerEvents: function (success, fail, args, env) {
+        Object.getOwnPropertyNames(_actionMap).forEach(function (eventName) {
+            _eventExt.registerEvent(eventName, _actionMap[eventName]);
+        });
+
+        success();
+    },
+
     author: function (success, fail, args, env) {
         success(_config.author);
     },
