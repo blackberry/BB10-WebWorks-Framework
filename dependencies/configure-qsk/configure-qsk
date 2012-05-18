@@ -93,8 +93,7 @@ fi
 if [[ "`uname`" == *MINGW32* ]] ; then
     CC_COMMAND="$CC_COMMAND.exe"
 fi
-
-if [[ "`uname`" == *Windows* ]] ; then
+if [[ "$OS" == *Windows* ]] ; then
     CC_COMMAND="$CC_COMMAND.exe"
     echo cmake \
         -DCPU=$CPU \
