@@ -118,16 +118,16 @@ describe("blackberr.app index", function () {
                 args,
                 success = jasmine.createSpy();
 
-            spyOn(events, "on");
+            spyOn(events, "add");
 
             evts.forEach(function (e) {
                 args = {eventName : encodeURIComponent(e)}; 
                 index.registerEvents(success);
-                eventExt.on(null, null, args);
+                eventExt.add(null, null, args);
                 expect(success).toHaveBeenCalled();
-                expect(events.on).toHaveBeenCalled();
-                expect(events.on.mostRecentCall.args[0].event).toEqual(e);
-                expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));                
+                expect(events.add).toHaveBeenCalled();
+                expect(events.add.mostRecentCall.args[0].event).toEqual(e);
+                expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));                
             });
         });
 

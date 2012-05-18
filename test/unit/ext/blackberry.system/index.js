@@ -73,12 +73,12 @@ describe("blackberry.system index", function () {
         it("responds to 'batterycritical' events", function () {
             var eventName = "batterycritical",
                 args = {eventName : encodeURIComponent(eventName)}; 
-            spyOn(events, "on");
+            spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.on(null, null, args);
-            expect(events.on).toHaveBeenCalled();
-            expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalled();
+            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
         });
 
         it("removes 'batterycritical' events", function () {
@@ -93,12 +93,12 @@ describe("blackberry.system index", function () {
         it("responds to 'batterylow' events", function () {
             var eventName = "batterylow",
                 args = {eventName : encodeURIComponent(eventName)}; 
-            spyOn(events, "on");
+            spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.on(null, null, args);
-            expect(events.on).toHaveBeenCalled();
-            expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalled();
+            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
         });
 
         it("removes 'batterylow' events", function () {
@@ -114,12 +114,12 @@ describe("blackberry.system index", function () {
             var eventName = "batterystatus",
                 args = {eventName: encodeURIComponent(eventName)};
                  
-            spyOn(events, "on");
+            spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.on(successCB, failCB, args);
-            expect(events.on).toHaveBeenCalled();
-            expect(events.on.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.on.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            eventExt.add(successCB, failCB, args);
+            expect(events.add).toHaveBeenCalled();
+            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
             expect(successCB).toHaveBeenCalled();
             expect(failCB).not.toHaveBeenCalled();            
         });
@@ -140,10 +140,10 @@ describe("blackberry.system index", function () {
             var eventName = "batteryeventnotdefined",
                 args = {eventName: encodeURIComponent(eventName)};
                  
-            spyOn(events, "on");
+            spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.on(successCB, failCB, args);
-            expect(events.on).toHaveBeenCalled();
+            eventExt.add(successCB, failCB, args);
+            expect(events.add).toHaveBeenCalled();
             expect(successCB).toHaveBeenCalled();            
             expect(failCB).not.toHaveBeenCalled();            
         });
@@ -163,13 +163,13 @@ describe("blackberry.system index", function () {
             var eventName = "batteryeventnotdefined",
                 args = {eventName: encodeURIComponent(eventName)};
                  
-            spyOn(events, "on").andCallFake(function () {
+            spyOn(events, "add").andCallFake(function () {
                 throw "";
             });
             
             sysIndex.registerEvents(jasmine.createSpy());            
-            eventExt.on(successCB, failCB, args);
-            expect(events.on).toHaveBeenCalled();
+            eventExt.add(successCB, failCB, args);
+            expect(events.add).toHaveBeenCalled();
             expect(successCB).not.toHaveBeenCalled();            
             expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
         });

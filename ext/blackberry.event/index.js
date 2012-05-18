@@ -26,12 +26,12 @@ var ADD_EVENT_ERROR = "Error occured while adding event listener.",
     ERROR_ID = -1;
 
 module.exports = {
-    on: function (success, fail, args) {
+    add: function (success, fail, args) {
         try {
             var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
                 action = _actionMap[eventName];
 
-            _event.on(action);
+            _event.add(action);
 
             if (success) {
                 success();

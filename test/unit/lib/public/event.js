@@ -33,21 +33,21 @@ describe("event", function () {
         delete GLOBAL.window;
     });
 
-    describe("on", function () {
+    describe("add", function () {
 
-        it("it can call webworks.exec action 'on' given valid featureId, eventName and callback", function () {
+        it("it can call webworks.exec action 'add' given valid featureId, eventName and callback", function () {
             var callback = function () {};
-            event.on("blackberry.system.event", "foo", callback);
-            expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
+            event.add("blackberry.system.event", "foo", callback);
+            expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "add", {"eventName": "foo"});
             event.remove("blackberry.system.event", "foo", callback);
         });
         
         it("it will not call webworks.exec for multiple callbacks", function () {
             var callback = jasmine.createSpy(),
                 callback2 = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", callback);
-            event.on("blackberry.system.event", "foo", callback2);
-            expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "on", {"eventName": "foo"});
+            event.add("blackberry.system.event", "foo", callback);
+            event.add("blackberry.system.event", "foo", callback2);
+            expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "add", {"eventName": "foo"});
             expect(_window.webworks.exec.callCount).toEqual(1);
             event.remove("blackberry.system.event", "foo", callback);
             event.remove("blackberry.system.event", "foo", callback2);
@@ -55,8 +55,8 @@ describe("event", function () {
 
         it("will not register duplicate callbacks", function () {
             var callback = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", callback);
-            event.on("blackberry.system.event", "foo", callback);
+            event.add("blackberry.system.event", "foo", callback);
+            event.add("blackberry.system.event", "foo", callback);
             event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
             expect(callback.callCount).toEqual(1);
@@ -66,8 +66,8 @@ describe("event", function () {
         it("will register two distinct callbacks", function () {
             var callback = jasmine.createSpy(),
                 callback2 = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", callback);
-            event.on("blackberry.system.event", "foo", callback2);
+            event.add("blackberry.system.event", "foo", callback);
+            event.add("blackberry.system.event", "foo", callback2);
             event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
             expect(callback2).toHaveBeenCalledWith({"id": 1});
@@ -88,7 +88,7 @@ describe("event", function () {
     describe("remove", function () {
         it("can call webworks.exec action 'remove' given valid featureId, eventName and callback", function () {
             var cb = jasmine.createSpy();
-            event.on("blackberry.system.event", "a", cb);
+            event.add("blackberry.system.event", "a", cb);
             event.remove("blackberry.system.event", "a", cb);
             expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "remove", {"eventName": "a"});
         });
@@ -97,7 +97,7 @@ describe("event", function () {
     describe("trigger", function () {
         it("will invoke callback if event has been added", function () {
             var callback = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", callback);
+            event.add("blackberry.system.event", "foo", callback);
             event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
             event.remove("blackberry.system.event", "foo", callback);
@@ -105,7 +105,7 @@ describe("event", function () {
 
         it("will invoke callback if no args are provided", function () {
             var callback = jasmine.createSpy();
-            event.on("blackberry.event", "pause", callback);
+            event.add("blackberry.event", "pause", callback);
             event.trigger("pause");
             expect(callback).toHaveBeenCalled();
             event.remove("blackberry.system.event", "foo", callback);
@@ -113,7 +113,7 @@ describe("event", function () {
 
         it("will not invoke callback if event has been removed", function () {
             var cb = jasmine.createSpy();
-            event.on("blackberry.system.event", "c", cb);
+            event.add("blackberry.system.event", "c", cb);
             event.remove("blackberry.system.event", "c", cb);
             event.trigger("c", {"id": 1});
             expect(cb).not.toHaveBeenCalled();
@@ -130,7 +130,7 @@ describe("event", function () {
 
         it("will not remove on listeners after they are triggered", function () {
             var callback = jasmine.createSpy();
-            event.on("blackberry.system.event", "foo", callback);
+            event.add("blackberry.system.event", "foo", callback);
             event.trigger("foo", '{"id": 1}');
             event.trigger("foo", '{"id": 1}');
             expect(callback).toHaveBeenCalledWith({"id": 1});
