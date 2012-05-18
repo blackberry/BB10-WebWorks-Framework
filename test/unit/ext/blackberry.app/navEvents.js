@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-var _apiDir = __dirname + "./../../../../ext/blackberry.event/",
+var _apiDir = __dirname + "./../../../../ext/blackberry.app/",
     _libDir = __dirname + "./../../../../lib/",
     navEvents = require(_apiDir + "navEvents"),
     framework = require(_libDir + "framework");
 
-describe("blackberry.event navEvents", function () {
+describe("blackberry.app navEvents", function () {
     describe("addEventListener", function () {
         var trigger = function () {};
 

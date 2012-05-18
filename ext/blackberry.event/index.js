@@ -19,163 +19,20 @@ function requireLocal(id) {
 }
 
 var _event = requireLocal("lib/event"),
-    // This object is used by action map and contains links between pps object fields monitored for change in that object helper methods
-    // to analyze if the value is the one callback should be invoked and fields name and value format as would appear on return.
-    // Set disableOnChange to true if not interested on change for a particular field but still interested to return its value.  
-    _eventsMap = {
-        batterycritical: {
-            eventName: "batterycritical",
-            eventDetailsArr: [{
-                path: "/pps/services/power/battery?wait,delta",
-                fieldNameArr: [{
-                    eventName: "StateOfCharge",
-                    paramName: "level",
-                    fieldValue: null,
-                    reset: function () {
-                        this.setFieldValue(null);
-                    },
-                    setFieldValue: function (value) {
-                        this.fieldValue = value ? this.formatValue(value) : value;
-                    },
-                    formatValue: function (str) {
-                        return parseInt(str, 10);
-                    },
-                    skipTrigger: function (value) {
-                        var threshold = 4,
-                            formattedValue = this.formatValue(value),
-                            result = (formattedValue > threshold) || (this.fieldValue && this.fieldValue <= threshold);
-
-                        this.fieldValue = formattedValue;
-
-                        return result;
-                    }
-                }]
-            }, {
-                path: "/pps/services/power/charger?wait,delta",
-                disableOnChange: true,
-                fieldNameArr: [{
-                    eventName: "ChargingState",
-                    paramName: "isPlugged",
-                    formatValue: function (str) {
-                        return (str === "NC" ? false : true);
-                    }
-                }]
-            }],
-            mode: 0
-        },
-        batterylow: {
-            eventName: "batterylow",
-            eventDetailsArr: [{
-                path: "/pps/services/power/battery?wait,delta",
-                fieldNameArr: [{
-                    eventName: "StateOfCharge",
-                    paramName: "level",
-                    fieldValue: null,
-                    reset: function () {
-                        this.setFieldValue(null);
-                    },
-                    setFieldValue: function (value) {
-                        this.fieldValue = value ? this.formatValue(value) : value;
-                    },
-                    formatValue: function (str) {
-                        return parseInt(str, 10);
-                    },
-                    skipTrigger: function (value) {
-                        var threshold = 14,
-                            formattedValue = this.formatValue(value),
-                            result = (formattedValue > threshold) || (this.fieldValue && this.fieldValue <= threshold);
-
-                        this.fieldValue = value;
-
-                        return result;
-                    }
-                }]
-            }, {
-                path: "/pps/services/power/charger?wait,delta",
-                disableOnChange: true,
-                fieldNameArr: [{
-                    eventName: "ChargingState",
-                    paramName: "isPlugged",
-                    formatValue: function (str) {
-                        return (str === "NC" ? false : true);
-                    }
-                }]
-            }],
-            mode: 0
-        },
-        batterystatus: {
-            eventName: "batterystatus",
-            eventDetailsArr: [{
-                path: "/pps/services/power/battery?wait,delta",
-                fieldNameArr: [{
-                    eventName: "StateOfCharge",
-                    paramName: "level",
-                    formatValue: function (str) {
-                        return parseInt(str, 10);
-                    }
-                }]
-            }, {
-                path: "/pps/services/power/charger?wait,delta",
-                fieldNameArr: [{
-                    eventName: "ChargingState",
-                    paramName: "isPlugged",
-                    formatValue: function (str) {
-                        return (str === "NC" ? false : true);
-                    }
-                }]
-            }],
-            mode: 0
-        }
-    }, 
-    _actionMap = {
-        batterycritical: {
-            context: requireLocal("lib/pps/ppsEvents"),
-            event: _eventsMap.batterycritical,
-            trigger: function (args) {
-                _event.trigger("batterycritical", args);
-            }
-        },
-        batterylow: {
-            context: requireLocal("lib/pps/ppsEvents"),
-            event: _eventsMap.batterylow,
-            trigger: function (args) {
-                _event.trigger("batterylow", args);
-            }
-        },
-        batterystatus: {
-            context: requireLocal("lib/pps/ppsEvents"),
-            event: _eventsMap.batterystatus,
-            trigger: function (args) {
-                _event.trigger("batterystatus", args);
-            }
-        },
-        pause: {
-            context: require("./navEvents"),
-            event: "pause",
-            trigger: function () {
-                _event.trigger("pause");
-            }
-        },
-        resume: {
-            context: require("./navEvents"),
-            event: "resume",
-            trigger: function () {
-                _event.trigger("resume");
-            }
-        }        
-    };
+    _actionMap = {};
 
 var ADD_EVENT_ERROR = "Error occured while adding event listener.",
     REMOVE_EVENT_ERROR = "Error occured while removing event listener.",
     ERROR_ID = -1;
 
 module.exports = {
-    on: function (success, fail, args) {
+    add: function (success, fail, args) {
         try {
             var eventName = decodeURIComponent(args.eventName).replace(/\"/g, ""), 
-            action = _actionMap[eventName];
-            
-            _event.on(action);
+                action = _actionMap[eventName];
+
+            _event.add(action);
+
             if (success) {
                 success();
             }
@@ -200,5 +57,27 @@ module.exports = {
                 fail(ERROR_ID, REMOVE_EVENT_ERROR);
             }
         }
+    },
+    isEventRegistered: function (eventName) {
+        return !!_actionMap[eventName];
+    },
+    registerEvents: function (map) {
+        if (!map) {
+            throw "map is null or undefined";
+        }
+
+        Object.getOwnPropertyNames(map).forEach(function (eventName) {
+            if (eventName && map[eventName]) {
+                var action = map[eventName];
+
+                if (action.context && typeof action.context.addEventListener === "function" && typeof action.context.removeEventListener === "function") {
+                    _actionMap[eventName] = action;
+                } else {
+                    throw "action '" + eventName + "' does not have valid context";
+                }
+            } else {
+                throw "map contains invalid action: '" + eventName + "'";
+            }
+        });
     }
 };

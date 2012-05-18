@@ -14,49 +14,84 @@
  * limitations under the License.
  */
 function requireLocal(id) {
-    return !!require.resolve ? require("../../" + id) : window.require(id);
+    if (/^lib/.test(id)) {
+        return !!require.resolve ? require("../../" + id) : window.require(id);
+    } else if (/^ext/.test(id)) {
+        var idParts = id.split("/"),
+            nodePath;
+        idParts.splice(0, 1);
+        nodePath = "../" + idParts.join("/");
+        return !!require.resolve ? require(nodePath) : window.require(id);
+    }
 }
 
-var config = requireLocal("lib/config");
+var _config = requireLocal("lib/config"),
+    _event = requireLocal("lib/event"),
+    _eventExt = requireLocal("ext/blackberry.event/index"),
+    _actionMap = {
+        pause: {
+            context: require("./navEvents"),
+            event: "pause",
+            trigger: function () {
+                _event.trigger("pause");
+            }
+        },
+        resume: {
+            context: require("./navEvents"),
+            event: "resume",
+            trigger: function () {
+                _event.trigger("resume");
+            }
+        }
+    };
 
 module.exports = {
+    registerEvents: function (success, fail, args, env) {
+        try {
+            _eventExt.registerEvents(_actionMap);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
     author: function (success, fail, args, env) {
-        success(config.author);
+        success(_config.author);
     },
 
     authorEmail: function (success, fail, args, env) {
-        success(config.authorEmail);
+        success(_config.authorEmail);
     },
 
     authorURL: function (success, fail, args, env) {
-        success(config.authorURL);
+        success(_config.authorURL);
     },
 
     copyright: function (success, fail, args, env) {
-        success(config.copyright);
+        success(_config.copyright);
     },
 
     description: function (success, fail, args, env) {
-        success(config.description);
+        success(_config.description);
     },
 
     id: function (success, fail, args, env) {
-        success(config.id);
+        success(_config.id);
     },
 
     license: function (success, fail, args, env) {
-        success(config.license);
+        success(_config.license);
     },
 
     licenseURL: function (success, fail, args, env) {
-        success(config.licenseURL);
+        success(_config.licenseURL);
     },
 
     name: function (success, fail, args, env) {
-        success(config.name);
+        success(_config.name);
     },
 
     version: function (success, fail, args, env) {
-        success(config.version);
+        success(_config.version);
     }
 };
