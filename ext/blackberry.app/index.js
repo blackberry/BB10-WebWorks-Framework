@@ -47,11 +47,12 @@ var _config = requireLocal("lib/config"),
 
 module.exports = {
     registerEvents: function (success, fail, args, env) {
-        Object.getOwnPropertyNames(_actionMap).forEach(function (eventName) {
-            _eventExt.registerEvent(eventName, _actionMap[eventName]);
-        });
-
-        success();
+        try {
+            _eventExt.registerEvents(_actionMap);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
     },
 
     author: function (success, fail, args, env) {

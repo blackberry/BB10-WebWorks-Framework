@@ -61,16 +61,23 @@ module.exports = {
     isEventRegistered: function (eventName) {
         return !!_actionMap[eventName];
     },
-    registerEvent: function (eventName, action) {
-        if (eventName && action) {
-            if (action.event) {
-                if (action.context && typeof action.context.addEventListener === "function" && typeof action.context.removeEventListener === "function") {
-                    _actionMap[eventName] = action;
-                    return true;
-                }
-            }
+    registerEvents: function (map) {
+        if (!map) {
+            throw "map is null or undefined";
         }
 
-        return false;
+        Object.getOwnPropertyNames(map).forEach(function (eventName) {
+            if (eventName && map[eventName]) {
+                var action = map[eventName];
+
+                if (action.context && typeof action.context.addEventListener === "function" && typeof action.context.removeEventListener === "function") {
+                    _actionMap[eventName] = action;
+                } else {
+                    throw "action '" + eventName + "' does not have valid context";
+                }
+            } else {
+                throw "map contains invalid action: '" + eventName + "'";
+            }
+        });
     }
 };

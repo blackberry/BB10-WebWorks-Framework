@@ -18,26 +18,49 @@ var root = __dirname + "/../../../../",
     index = require(root + "ext/blackberry.event/index");
 
 describe("blackberry.event index", function () {
-    describe("registerEvent", function () {
-        it("returns false when eventName and action are not specified", function () {
-            expect(index.registerEvent()).toBeFalsy();
+    describe("registerEvents", function () {
+        it("throws error when map is not specified", function () {
+            expect(function () { index.registerEvents(); }).toThrow("map is null or undefined");
         });
 
-        it("returns false when action does not have all required attributes", function () {
-            expect(index.registerEvent("MyEvent", {
-                "event": "MyEvent",
-                "context": null
-            })).toBeFalsy();
+        it("throws error when map contains invalid action", function () {
+            var map = {
+                "Bad": null
+            };
+
+            expect(function () { index.registerEvents(map); }).toThrow("map contains invalid action: 'Bad'");
         });
 
-        it("returns true when event name and action are valid", function () {
-            expect(index.registerEvent("MyEvent", {
-                "event": "MyEvent",
-                "context": {
-                    addEventListener: function () {},
-                    removeEventListener: function () {}
+        it("throws error when action does not have all required attributes", function () {
+            var map = {
+                "MyEvent": {
+                    "event": "MyEvent",
+                    "context": null
                 }
-            })).toBeTruthy();
+            };
+
+            expect(function () { index.registerEvents(map); }).toThrow("action 'MyEvent' does not have valid context");
+        });
+
+        it("does not throw error when all actions in map are valid", function () {
+            var map = {
+                "MyEvent": {
+                    "event": "MyEvent",
+                    "context": {
+                        addEventListener: function () {},
+                        removeEventListener: function () {}
+                    }
+                },
+                "MyEvent2": {
+                    "event": "MyEvent2",
+                    "context": {
+                        addEventListener: function () {},
+                        removeEventListener: function () {}
+                    }
+                }
+            };
+
+            expect(function () { index.registerEvents(map); }).not.toThrow();
         });
     });
 
@@ -48,6 +71,7 @@ describe("blackberry.event index", function () {
 
         it("returns true for registered event", function () {
             expect(index.isEventRegistered("MyEvent")).toBeTruthy();
+            expect(index.isEventRegistered("MyEvent2")).toBeTruthy();
         });
     });
 });
