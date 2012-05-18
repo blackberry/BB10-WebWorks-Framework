@@ -20,7 +20,9 @@ var root = __dirname + "/../../../../",
 describe("blackberry.event index", function () {
     describe("registerEvents", function () {
         it("throws error when map is not specified", function () {
-            expect(function () { index.registerEvents(); }).toThrow("map is null or undefined");
+            expect(function () {
+                index.registerEvents();
+            }).toThrow("map is null or undefined");
         });
 
         it("throws error when map contains invalid action", function () {
@@ -28,7 +30,9 @@ describe("blackberry.event index", function () {
                 "Bad": null
             };
 
-            expect(function () { index.registerEvents(map); }).toThrow("map contains invalid action: 'Bad'");
+            expect(function () {
+                index.registerEvents(map);
+            }).toThrow("map contains invalid action: 'Bad'");
         });
 
         it("throws error when action does not have all required attributes", function () {
@@ -39,7 +43,9 @@ describe("blackberry.event index", function () {
                 }
             };
 
-            expect(function () { index.registerEvents(map); }).toThrow("action 'MyEvent' does not have valid context");
+            expect(function () {
+                index.registerEvents(map);
+            }).toThrow("action 'MyEvent' does not have valid context");
         });
 
         it("does not throw error when all actions in map are valid", function () {
@@ -60,7 +66,9 @@ describe("blackberry.event index", function () {
                 }
             };
 
-            expect(function () { index.registerEvents(map); }).not.toThrow();
+            expect(function () {
+                index.registerEvents(map);
+            }).not.toThrow();
         });
     });
 
