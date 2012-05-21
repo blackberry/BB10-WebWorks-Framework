@@ -1,4 +1,4 @@
-if [[ "`uname`" == *Windows* ]] ; then
+if [[ "$OS" == *Windows* ]] ; then
     npm install -g jake jshint@0.5.2 csslint@0.9.7 uglify-js
 else
     sudo npm install -g jake jshint@0.5.2 csslint@0.9.7 uglify-js
