@@ -72,16 +72,27 @@ int DialogBPS::Show(DialogConfig *dialogInfo)
           return -1;
     }
 
-    if (dialog_set_size(m_dialog, static_cast<dialog_size_t>(m_pSizeMap->find(dialogInfo->size)->second)) != BPS_SUCCESS) {
-        dialog_destroy(m_dialog);
-        m_dialog = NULL;
-        return -1;
+    if (!dialogInfo->size.empty()) {
+        const StringToIntMap::iterator findSize = m_pSizeMap->find(dialogInfo->size);
+        if (findSize != m_pSizeMap->end()) {
+            if (dialog_set_size(m_dialog, static_cast<dialog_size_t>(findSize->second)) != BPS_SUCCESS) {
+                dialog_destroy(m_dialog);
+                m_dialog = NULL;
+                 return -1;
+            }
+        }
     }
 
-    if (dialog_set_position(m_dialog, static_cast<dialog_position_t>(m_pPositionMap->find(dialogInfo->position)->second)) != BPS_SUCCESS) {
-        dialog_destroy(m_dialog);
-        m_dialog = NULL;
-        return -1;
+    if (!dialogInfo->position.empty())
+    {
+        const StringToIntMap::iterator findPosition = m_pPositionMap->find(dialogInfo->position);
+        if (findPosition != m_pPositionMap->end()) {
+            if (dialog_set_position(m_dialog, static_cast<dialog_position_t>(findPosition->second)) != BPS_SUCCESS) {
+                dialog_destroy(m_dialog);
+                m_dialog = NULL;
+                return -1;
+            }
+        }
     }
 
     if (!dialogInfo->global)
@@ -108,7 +119,6 @@ int DialogBPS::Show(DialogConfig *dialogInfo)
     }
 
     dialog_request_events(0);
-
     bps_event_t *event;
     bps_get_event(&event, -1);
 
