@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 Research In Motion Limited.
+* Copyright 2011-2012 Research In Motion Limited.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,87 +17,105 @@ var childProcess = require("child_process"),
     utils = require("./utils"),
     fs = require("fs"),
     path = require("path"),
+    jWorkflow = require("jWorkflow"),
     _c = require("./conf");
 
-function _getCmd() {
-    var exts = fs.readdirSync(_c.EXT), ext,
-        cmd = "",
-        nativeDir, simDir, deviceDir,
-        configureX86, configureARM,
-        stripX86, stripARM,
-        
+function _getCmd(ext) {
+    var cmd = "",
+        nativeDir,
+        simDir,
+        deviceDir,
+        configurePrefix,
+        configureX86, 
+        configureARM,
+
+        //strip binary commands
+        stripX86 = "ntox86-strip *.so",
+        stripARM = "ntoarmv7-strip *.so",
+
         //Command constants
         AND_CMD = " && ",
         CD_CMD = "cd ",
         MAKE_CMD = "make",
         CP_CMD = "cp ",
-        SH_CMD = "sh ";
-        
-    for (ext in exts) {
-        //Native build directories
-        nativeDir = path.join(_c.EXT, exts[ext], "native");
-        simDir = path.join(_c.EXT, exts[ext], "simulator");
-        deviceDir = path.join(_c.EXT, exts[ext], "device");
-        
-        //configure-qsk commands
-        configureX86 = path.join(simDir, "configure-qsk x86");
-        configureARM = path.join(deviceDir, "configure-qsk arm a9");
-    
-        //strip binary commands
-        stripX86 = "ntox86-strip *.so";
-        stripARM = "ntoarmv7-strip *.so";
-          
-        //If native folder exists, Build
-        if (path.existsSync(nativeDir)) {
-            if (!path.existsSync(simDir)) {
-                fs.mkdirSync(simDir);
-            }
+        SH_CMD = "bash ";
 
-            if (!path.existsSync(deviceDir)) {
-                fs.mkdirSync(deviceDir);
-            }
-            
-            if (cmd) {
-                cmd += AND_CMD;
-            }
-            
-            if (utils.isWindows()) {
-                cmd += CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK + " " +
-                simDir + AND_CMD + CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK +
-                " " + deviceDir + AND_CMD +
-                CD_CMD + simDir + AND_CMD + 
-                SH_CMD + configureX86 + AND_CMD +
-                MAKE_CMD + AND_CMD + stripX86 + AND_CMD + 
-                CD_CMD + deviceDir + AND_CMD + 
-                SH_CMD + configureARM + AND_CMD +
-                MAKE_CMD + AND_CMD + stripARM;
-            } else {
-                cmd += CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK + " " +
-                simDir + AND_CMD + CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK +
-                " " + deviceDir + AND_CMD +
-                CD_CMD + simDir + AND_CMD + 
-                configureX86 + AND_CMD +
-                MAKE_CMD + AND_CMD + stripX86 + AND_CMD +
-                CD_CMD + deviceDir + AND_CMD + 
-                configureARM + AND_CMD +
-                MAKE_CMD + AND_CMD + stripARM;
-            }
-            
+    //Native build directories
+    nativeDir = path.join(_c.EXT, ext, "native");
+    simDir = path.join(_c.EXT, ext, "simulator");
+    deviceDir = path.join(_c.EXT, ext, "device");
+
+    //configure-qsk commands
+    configurePrefix = utils.isWindows() ? SH_CMD : "";
+    configureX86 = configurePrefix + path.join(simDir, "configure-qsk x86");
+    configureARM = configurePrefix + path.join(deviceDir, "configure-qsk arm a9");
+
+    //If native folder exists, Build
+    if (path.existsSync(nativeDir)) {
+        if (!path.existsSync(simDir)) {
+            fs.mkdirSync(simDir);
         }
+
+        if (!path.existsSync(deviceDir)) {
+            fs.mkdirSync(deviceDir);
+        }
+        
+        cmd += CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK + " " +
+            simDir + AND_CMD + CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK +
+            " " + deviceDir + AND_CMD +
+            CD_CMD + simDir + AND_CMD + 
+            configureX86 + AND_CMD +
+            MAKE_CMD + AND_CMD + stripX86 + AND_CMD +
+            CD_CMD + deviceDir + AND_CMD + 
+            configureARM + AND_CMD +
+            MAKE_CMD + AND_CMD + stripARM;
+
     }
+    
     return cmd;
 }
 
-module.exports = function (prev, baton) {
-    baton.take();
+function createCmd(ext) {
+    return function (prev, baton) { 
+        baton.take();
+        childProcess.exec(_getCmd(ext), function (error, stdout, stderr) {
+            if (stdout !== "") {
+                console.log(stdout);
+            }
+            if (stderr !== "") {
+                console.log(stderr);
+            }
 
-    childProcess.exec(_getCmd(), function (error, stdout, stderr) {
+            if (error) {
+                baton.drop(error.code);
+            } else {
+                baton.pass(prev);
+            }
+        });
+    };
+}
+
+module.exports = function (prev, baton) {
+    var build = jWorkflow.order(),
+        i, 
+        thisBaton = baton,
+        exts = fs.readdirSync(_c.EXT);
+
+    thisBaton.take();
+
+    for (i = 0; i < exts.length; i++) {
+        build = build.andThen(createCmd(exts[i]));
+    }
+
+    //catch the success case
+    build = build.andThen(function () {
+        thisBaton.pass();
+    });
+
+    //catch the error case
+    build.start(function (error) {
         if (error) {
-            console.log(stdout);
-            console.log(stderr);
-            baton.pass(error.code);
-        } else {
-            baton.pass(prev);
+            thisBaton.drop(error);
         }
     });
 };
