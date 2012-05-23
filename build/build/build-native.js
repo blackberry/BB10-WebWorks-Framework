@@ -38,7 +38,7 @@ function _getCmd(ext) {
         CD_CMD = "cd ",
         MAKE_CMD = "make",
         CP_CMD = "cp ",
-        SH_CMD = "sh ";
+        SH_CMD = "bash ";
 
     //Native build directories
     nativeDir = path.join(_c.EXT, ext, "native");
