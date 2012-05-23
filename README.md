@@ -16,7 +16,7 @@
     - For Mac:
         ./configure (do a sudo ./configure if you get permission errors)
     - For Windows:
-        sh configure
+        bash configure
 5. Run 'jake test' and check that jake runs and completes
 6. Setup bbndk environment variable
     - For Mac:
