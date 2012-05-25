@@ -45,4 +45,6 @@ window.webworks.defineReadOnlyField(_self, "BB", 6);
 window.webworks.defineReadOnlyField(_self, "CELLULAR", 7);
 window.webworks.defineReadOnlyField(_self, "NONE", 8);
 
+window.webworks.execSync(_ID, "registerEvents", null);
+
 module.exports = _self;

@@ -15,6 +15,8 @@
  */
 var _apiDir = __dirname + "./../../../../ext/blackberry.connection/",
     _libDir = __dirname + "./../../../../lib/",
+    events = require(_libDir + "event"),
+    eventExt = require(__dirname + "./../../../../ext/blackberry.event/index"),
     index;
 
 describe("blackberry.connection index", function () {
@@ -23,6 +25,7 @@ describe("blackberry.connection index", function () {
             require: jasmine.createSpy().andReturn(true),
             createObject: jasmine.createSpy().andReturn("1"),
             invoke: jasmine.createSpy().andReturn(2),
+            registerEvents: jasmine.createSpy().andReturn(true),
             Connection: function () {}
         };
         index = require(_apiDir + "index");
@@ -34,11 +37,6 @@ describe("blackberry.connection index", function () {
     });
 
     describe("blackberry.connection", function () {
-        it("can access netstatus module in JNEXT", function () {
-            expect(JNEXT.require).toHaveBeenCalledWith("netstatus");
-            expect(JNEXT.createObject).toHaveBeenCalledWith("netstatus.Connection");
-        });
-
         describe("type", function () {
             it("can call success", function () {
                 var success = jasmine.createSpy();
@@ -58,6 +56,33 @@ describe("blackberry.connection index", function () {
 
                 expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getType");
                 expect(fail).toHaveBeenCalledWith(-1, "Parse error");
+            });
+        });
+
+        describe("connectionchange", function () {
+            it("can register the 'connectionchange' event", function () {
+                var eventName = "connectionchange",
+                    args = {eventName : encodeURIComponent(eventName)},
+                    success = jasmine.createSpy();
+
+                spyOn(events, "add");
+                index.registerEvents(success);
+                eventExt.add(null, null, args);
+                expect(success).toHaveBeenCalled();
+                expect(events.add).toHaveBeenCalled();
+                expect(events.add.mostRecentCall.args[0].event).toEqual(eventName);
+                expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            });
+
+            it("can un-register the 'connectionchange' event", function () {
+                var eventName = "connectionchange",
+                    args = {eventName : encodeURIComponent(eventName)};
+
+                spyOn(events, "remove");
+                eventExt.remove(null, null, args);
+                expect(events.remove).toHaveBeenCalled();
+                expect(events.remove.mostRecentCall.args[0].event).toEqual(eventName);
+                expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
             });
         });
     });

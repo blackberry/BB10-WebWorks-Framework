@@ -17,9 +17,12 @@
 #ifndef CONNECTION_JS_H_
 #define CONNECTION_JS_H_
 
+#include <pthread.h>
+#include <plugin.h>
 #include <sstream>
 #include <string>
-#include "../common/plugin.h"
+
+void* ConnectionEventThread(void *args);
 
 class Connection : public JSExt
 {
@@ -28,8 +31,12 @@ public:
     virtual ~Connection();
     virtual std::string InvokeMethod(const std::string& command);
     virtual bool CanDelete();
+    void NotifyEvent(const std::string& event);
+    void StartEvents();
+    void StopEvents();
 private:
     std::string m_id;
+    pthread_t m_thread;
 };
 
 #endif /* CONNECTION_JS_H_ */
