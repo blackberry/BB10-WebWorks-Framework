@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function requireLocal(id) {
-    return !!require.resolve ? require("../../" + id) : window.require(id);
-}
-
-var _ppsUtils = requireLocal("lib/pps/ppsUtils");
+var _ppsUtils = require("../../lib/pps/ppsUtils");
 
 module.exports = {
     uuid: function (success, fail, args, env) {

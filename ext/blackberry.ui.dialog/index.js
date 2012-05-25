@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function requireLocal(id) {
-    return !!require.resolve ? require("../../" + id) : window.require(id);
-}
-
 function validateIdMessageSettings(args) {
     args.eventId = JSON.parse(decodeURIComponent(args.eventId));
 
@@ -36,8 +32,8 @@ function validateIdMessageSettings(args) {
 }
 
 var dialog,
-    _event = requireLocal("lib/event"),
-    _webview = requireLocal("lib/webview");
+    _event = require("../../lib/event"),
+    _webview = require("../../lib/webview");
     
 module.exports = {
     customAskAsync: function (success, fail, args, env) {

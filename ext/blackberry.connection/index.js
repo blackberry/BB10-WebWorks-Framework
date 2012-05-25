@@ -14,21 +14,9 @@
 * limitations under the License.
 */
 
-function requireLocal(id) {
-    if (/^lib/.test(id)) {
-        return !!require.resolve ? require("../../" + id) : window.require(id);
-    } else if (/^ext/.test(id)) {
-        var idParts = id.split("/"),
-            nodePath;
-        idParts.splice(0, 1);
-        nodePath = "../" + idParts.join("/");
-        return !!require.resolve ? require(nodePath) : window.require(id);
-    }
-}
-
 var connection = require("./connectionJNEXT").connection,
-    _event = requireLocal("lib/event"),
-    _eventExt = requireLocal("ext/blackberry.event/index"),
+    _event = require("../../lib/event"),
+    _eventExt = require("../blackberry.event/index"),
     _actionMap = {
         connectionchange: {
             context: require("./connectionEvents"),

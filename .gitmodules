@@ -13,6 +13,3 @@
 [submodule "dependencies/webplatform"]
 	path = dependencies/webplatform
 	url = git@github.com:blackberry-webworks/webplatform.git 
-[submodule "dependencies/browser-require"]
-	path = dependencies/browser-require
-	url = https://github.com/rsms/browser-require

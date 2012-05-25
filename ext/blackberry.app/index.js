@@ -13,21 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function requireLocal(id) {
-    if (/^lib/.test(id)) {
-        return !!require.resolve ? require("../../" + id) : window.require(id);
-    } else if (/^ext/.test(id)) {
-        var idParts = id.split("/"),
-            nodePath;
-        idParts.splice(0, 1);
-        nodePath = "../" + idParts.join("/");
-        return !!require.resolve ? require(nodePath) : window.require(id);
-    }
-}
-
-var _config = requireLocal("lib/config"),
-    _event = requireLocal("lib/event"),
-    _eventExt = requireLocal("ext/blackberry.event/index"),
+var _config = require("./../../lib/config"),
+    _event = require("./../../lib/event"),
+    _eventExt = require("./../blackberry.event/index"),
     _actionMap = {
         pause: {
             context: require("./navEvents"),

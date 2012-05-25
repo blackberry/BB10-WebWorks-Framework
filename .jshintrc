@@ -1,37 +1,22 @@
 {
     "predef": [
-        "DOMDocument",
-        "XMLHttpRequest",
-        "$", "it", "describe",
+        //Jasmine
+        "jasmine", "it", "describe",
         "xit", "xdescribe",
-        "itBrowser", "describeBrowser",
         "beforeEach", "afterEach",
         "runs", "waits", "waitsFor",
-        "DOMElement",
-        "it", "describe",
-        "spyOn", "expect",
-        "blackberry",
-        "__dirname",
-        "process",
-        "jasmine",
-        "window",
-        "module",
-        "escape",
-        "global",
-        "unescape",
-        "document",
-        "setTimeout",
-        "escape",
-        "location",
-        "arguments",
-        "screen",
-        "setInterval", "clearInterval", "setTimeout", "clearTimeout",
-        "require", "Node",
-        "qnx", "chrome", "NamedNodeMap",
-        "JNEXT"
+        "spyOn", "expect", "global",
+        //Webworks
+        "qnx", "chrome",
+        "blackberry", "JNEXT",
+        //Node
+        "__dirname", "GLOBAL",
+        "process", "exports",
+        "module", "NamedNodeMap",
+        "require", "Node"
     ],
 
-    "node" : true,
+    "node" : false,
     "es5" : true,
     "browser" : true,
 
@@ -57,5 +42,6 @@
     "regexp": false,
     "undef": true,
     "sub": true,
-    "strict": false
+    "strict": false,
+    "vars": false
 }

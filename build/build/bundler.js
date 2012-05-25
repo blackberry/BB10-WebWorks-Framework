@@ -27,17 +27,23 @@ module.exports = {
             return "/*\n" + file + "\n*/\n";
         });
 
+        //Open closure
+        output = "(function () { \n";
+
         //include require
-        output += include("dependencies/browser-require/require.js");
+        output += include("dependencies/require/require.js");
 
         //include modules
         output += include(files, function (file, path) {
-            return "require.define('" + path.replace(/lib\/public\//, "").replace(/\.js$/, "") +
-                   "', function (require, module, exports) {\n" + file + "});\n";
+            return "define('" + path.replace(/lib\/public\//, "").replace(/\.js$/, "") +
+                   "', function (require, exports, module) {\n" + file + "});\n";
         });
 
         //include window.webworks
         output += include("lib/public/window-webworks.js");
+
+        //Close closure
+        output += "\n}());";
 
         //create output folder if it doesn't exist
         filepath = __dirname.replace(/\\/g, '/') + "/../../clientFiles";
