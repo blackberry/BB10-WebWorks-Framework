@@ -84,4 +84,3 @@ _self.query = function (request, onSuccess, onError) {
 };
 
 module.exports = _self;
-

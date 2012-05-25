@@ -140,7 +140,7 @@
                         </goals>
                         <configuration>
                             <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
+                            <workingDirectory></workingDirectory>
                             <arguments>
                                 <argument>lint</argument>
                             </arguments>
@@ -157,7 +157,7 @@
                         </goals>
                         <configuration>
                             <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
+                            <workingDirectory></workingDirectory>
                             <arguments>
                                 <argument>build</argument>
                             </arguments>
@@ -174,7 +174,7 @@
                         </goals>
                         <configuration>
                             <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
+                            <workingDirectory></workingDirectory>
                             <arguments>
                                 <argument>test</argument>
                             </arguments>
@@ -183,7 +183,7 @@
                             </successCodes>
                         </configuration>
                     </execution>
-                </executions>
+               </executions>
             </plugin>
 
             <plugin>
@@ -197,15 +197,15 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
-                        <configuration>          
+                        <configuration>
                             <descriptors>
                                 <descriptor>dist.xml</descriptor>
                             </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId> 
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>   
+            </plugin>
         </plugins>
     </build>
 </project>

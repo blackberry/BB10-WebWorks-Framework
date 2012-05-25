@@ -20,6 +20,7 @@ var _ID = "blackberry.invoke",
     client,
     mockedWebworks = {
         execAsync: jasmine.createSpy("webworks.execAsync"),
+        execSync: jasmine.createSpy(),
         defineReadOnlyField: jasmine.createSpy(),
         event: {
             isOn: jasmine.createSpy("webworks.event.isOn")

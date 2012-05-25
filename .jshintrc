@@ -6,6 +6,7 @@
         "xit", "xdescribe",
         "beforeEach", "afterEach",
         "runs", "waits", "waitsFor",
+        "DOMElement",
         "spyOn", "expect", "global",
         //Webworks
         "qnx", "chrome",
@@ -15,7 +16,10 @@
         "__dirname", "GLOBAL",
         "process", "exports",
         "module", "NamedNodeMap",
-        "require", "Node"
+        "require", "Node",
+        //UI Components
+        "x$",
+        "iris"
     ],
 
     "node" : false,

@@ -18,7 +18,11 @@ var srcPath = __dirname + '/../../../lib/',
     framework = require(srcPath + 'framework'),
     util = require(srcPath + "utils"),
     webview,
+    overlayWebView,
+    controllerWebView,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
+    mockedWebview,
+    mockedApplicationWindow,
     mock_request = {
         url: "http://www.dummy.com",
         allow: jasmine.createSpy(),
@@ -27,23 +31,56 @@ var srcPath = __dirname + '/../../../lib/',
 
 describe("framework", function () {
     beforeEach(function () {
+        mockedWebview = {
+            id: 42,
+            enableCrossSiteXHR: undefined,
+            visible: undefined,
+            active: undefined,
+            zOrder: undefined,
+            url: undefined,
+            setGeometry: jasmine.createSpy(),
+            onNetworkResourceRequested: undefined,
+            destroy: jasmine.createSpy(),
+            executeJavaScript: jasmine.createSpy(),
+            windowGroup: undefined,
+            addEventListener: jasmine.createSpy()
+        };
+        mockedApplicationWindow = {
+            visible: undefined
+        };
         GLOBAL.qnx = {
             callExtensionMethod : function () {
                 return 42;
+            },
+            webplatform : {
+                getController : function () {
+                    return mockedWebview;
+                },
+                getApplicationWindow : function () {
+                    return mockedApplicationWindow;
+                }
             }
         };
         webview = util.requireWebview();
+        overlayWebView = require(srcPath + "overlayWebView");
+        controllerWebView = require(srcPath + "controllerWebView");
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
+        spyOn(overlayWebView, "create").andCallFake(function (done) {
+            done();
+        });
+        spyOn(controllerWebView, "init");
         spyOn(webview, "destroy");
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");
+        spyOn(overlayWebView, "setURL");
         spyOn(console, "log");
     });
 
     it("can start a webview instance", function () {
         framework.start();
+        expect(controllerWebView.init).toHaveBeenCalled();
         expect(webview.create).toHaveBeenCalled();
     });
 

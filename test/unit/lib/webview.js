@@ -1,6 +1,6 @@
 describe("webview", function () {
     var webview,
-        libPath = "./../../../", 
+        libPath = "./../../../",
         mockedController,
         mockedWebview,
         mockedApplication,
@@ -13,7 +13,7 @@ describe("webview", function () {
             enableCrossSiteXHR: undefined,
             visible: undefined,
             active: undefined,
-            setGeometry: jasmine.createSpy()            
+            setGeometry: jasmine.createSpy()
         };
         mockedWebview = {
             id: 42,
@@ -24,10 +24,12 @@ describe("webview", function () {
             url: undefined,
             setFileSystemSandbox: undefined,
             setGeometry: jasmine.createSpy(),
+            onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
-            windowGroup: undefined
+            windowGroup: undefined,
+            enableWebEventRedirect: jasmine.createSpy()
         };
         mockedApplication = {
             windowVisible: undefined
@@ -59,20 +61,6 @@ describe("webview", function () {
     });
 
     describe("create", function () {
-        it("sets up the controller", function () {
-            webview.create();
-            expect(mockedController.enableWebInspector).toEqual(false);
-            expect(mockedController.enableCrossSiteXHR).toEqual(true);
-            expect(mockedController.visible).toEqual(true);
-            expect(mockedController.active).toEqual(false);
-            expect(mockedController.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, 0);
-        }); 
-
-        it("passes in config settings", function () {
-            webview.create(null, {debugEnabled: true});
-            expect(mockedController.enableWebInspector).toEqual(true);
-        });
-
         it("sets up the visible webview", function () {
             spyOn(request, "init").andCallThrough();
             webview.create();
@@ -84,6 +72,9 @@ describe("webview", function () {
                 expect(mockedWebview.zOrder).toEqual(0);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
                 expect(mockedApplication.windowVisible).toEqual(true);
+                expect(mockedWebview.enableWebEventRedirect.argsForCall[0]).toEqual(['ContextMenuRequestEvent', 3]);
+                expect(mockedWebview.enableWebEventRedirect.argsForCall[1]).toEqual(['ContextMenuCancelEvent', 3]);
+                expect(mockedWebview.enableWebEventRedirect.argsForCall[2]).toEqual(['PropertyCurrentContextEvent', 3]);
                 expect(request.init).toHaveBeenCalledWith(mockedWebview);
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
             });
@@ -121,14 +112,14 @@ describe("webview", function () {
             webview.destroy();
             expect(mockedWebview.destroy).toHaveBeenCalled();
         });
-        
+
         it("sets the url property", function () {
             var url = "http://AWESOMESAUCE.com";
             webview.create(mockedWebview);
             webview.setURL(url);
             expect(mockedWebview.url).toEqual(url);
         });
-        
+
         it("calls the underlying executeJavaScript", function () {
             var js = "var awesome='Jasmine BDD'";
             webview.create(mockedWebview);

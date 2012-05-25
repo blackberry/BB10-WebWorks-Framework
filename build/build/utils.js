@@ -53,5 +53,5 @@ module.exports = {
         });
         
         return filteredFiles;
-    },
+    }
 };
