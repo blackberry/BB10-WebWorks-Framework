@@ -17,9 +17,17 @@
 #include <gtest/gtest.h>
 #include "../connection_bps.hpp"
 
-TEST(Connection, Functional) {
+TEST(Connection, CanGetConnectionType) {
     webworks::ConnectionBPS *connectionBPS = new webworks::ConnectionBPS();
     EXPECT_EQ(webworks::WIFI, connectionBPS->GetConnectionType());
+    delete connectionBPS;
+}
+
+TEST(Connection, CanDisableEvents) {
+    webworks::ConnectionBPS *connectionBPS = new webworks::ConnectionBPS();
+    webworks::ConnectionBPS::DisableEvents();
+    EXPECT_EQ(0, connectionBPS->WaitForEvents());
+    delete connectionBPS;
 }
 
 int main(int argc, char **argv) {

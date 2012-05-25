@@ -18,12 +18,31 @@
 #include "connection_js.hpp"
 #include "connection_bps.hpp"
 
+void* ConnectionEventThread(void *args)
+{
+    Connection *parent = static_cast<Connection *>(args);
+    webworks::ConnectionBPS *connection  = new webworks::ConnectionBPS(parent);
+
+    if (connection) {
+        // Poll for events in ConnectionBPS. This will run until StopEvents() disables events.
+        connection->WaitForEvents();
+
+        delete connection;
+    }
+
+    return NULL;
+}
+
 Connection::Connection(const std::string& id) : m_id(id)
 {
+    m_thread = 0;
 }
 
 Connection::~Connection()
 {
+    if (m_thread) {
+        StopEvents();
+    }
 }
 
 char* onGetObjList()
@@ -54,6 +73,14 @@ std::string Connection::InvokeMethod(const std::string& command)
         delete connection;
         return ss.str();
     }
+    else if (strCommand == "startEvents") {
+        StartEvents();
+        return "";
+    }
+    else if (strCommand == "stopEvents") {
+        StopEvents();
+        return "";
+    }
 
     return NULL;
 }
@@ -63,3 +90,27 @@ bool Connection::CanDelete()
     return true;
 }
 
+// Notifies JavaScript of an event
+void Connection::NotifyEvent(const std::string& event)
+{
+    std::string eventString = m_id + " connectionchange ";
+    eventString.append(event);
+    SendPluginEvent(eventString.c_str(), m_pContext);
+}
+
+void Connection::StartEvents()
+{
+    if (!m_thread) {
+        webworks::ConnectionBPS::EnableEvents();
+        pthread_create(&m_thread, NULL, ConnectionEventThread, static_cast<void *>(this));
+    }
+}
+
+void Connection::StopEvents()
+{
+    if (m_thread) {
+        webworks::ConnectionBPS::DisableEvents();
+        pthread_join(m_thread, NULL);
+        m_thread = 0;
+    }
+}

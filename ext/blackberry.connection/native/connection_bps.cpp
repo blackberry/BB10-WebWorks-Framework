@@ -14,11 +14,16 @@
 * limitations under the License.
 */
 
+#include <sstream>
+#include <string>
+#include "connection_js.hpp"
 #include "connection_bps.hpp"
 
 namespace webworks {
 
-ConnectionBPS::ConnectionBPS()
+bool ConnectionBPS::m_eventsEnabled = 0;
+
+ConnectionBPS::ConnectionBPS(Connection *parent) : m_parent(parent)
 {
     bps_initialize();
 }
@@ -74,12 +79,60 @@ ConnectionTypes ConnectionBPS::GetConnectionType()
             };
 
             netstatus_free_interface_details(&details);
+            bps_free(interface);
         }
     } else {
         returnType = NONE;
     }
 
     return returnType;
+}
+
+int ConnectionBPS::WaitForEvents()
+{
+    int status = netstatus_request_events(0);
+
+    if (status == BPS_SUCCESS) {
+        ConnectionTypes oldType = GetConnectionType();
+
+        while (m_eventsEnabled) {
+            bps_event_t *event = NULL;
+            bps_get_event(&event, 0);   // Returns immediately
+
+            if (event) {
+                if (bps_event_get_domain(event) == netstatus_get_domain()) {
+                    if (bps_event_get_code(event) == NETSTATUS_INFO) {
+                        ConnectionTypes newType = GetConnectionType();
+
+                        if (newType != oldType)
+                        {
+                            // Convert to string
+                            std::stringstream ss;
+                            ss << oldType;
+                            ss << " ";
+                            ss << newType;
+                            std::string result = ss.str();
+
+                            m_parent->NotifyEvent(result);
+                            oldType = newType;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return (status == BPS_SUCCESS) ? 0 : 1;
+}
+
+void ConnectionBPS::EnableEvents()
+{
+    m_eventsEnabled = 1;
+}
+
+void ConnectionBPS::DisableEvents()
+{
+    m_eventsEnabled = 0;
 }
 
 } // namespace webworks

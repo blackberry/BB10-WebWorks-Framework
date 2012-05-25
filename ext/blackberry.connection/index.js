@@ -13,9 +13,42 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var connection;
+
+function requireLocal(id) {
+    if (/^lib/.test(id)) {
+        return !!require.resolve ? require("../../" + id) : window.require(id);
+    } else if (/^ext/.test(id)) {
+        var idParts = id.split("/"),
+            nodePath;
+        idParts.splice(0, 1);
+        nodePath = "../" + idParts.join("/");
+        return !!require.resolve ? require(nodePath) : window.require(id);
+    }
+}
+
+var connection = require("./connectionJNEXT").connection,
+    _event = requireLocal("lib/event"),
+    _eventExt = requireLocal("ext/blackberry.event/index"),
+    _actionMap = {
+        connectionchange: {
+            context: require("./connectionEvents"),
+            event: "connectionchange",
+            trigger: function (args) {
+                _event.trigger("connectionchange", args);
+            }
+        }
+    };
 
 module.exports = {
+    registerEvents: function (success, fail, args, env) {
+        try {
+            _eventExt.registerEvents(_actionMap);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
     type: function (success, fail, args) {
         try {
             success(connection.getType());
@@ -24,38 +57,3 @@ module.exports = {
         }
     }
 };
-
-///////////////////////////////////////////////////////////////////
-// JavaScript wrapper for JNEXT plugin
-///////////////////////////////////////////////////////////////////
-
-JNEXT.Connection = function () {
-    var self = this;
-
-    self.getType = function () {
-        var val = JNEXT.invoke(self.m_id, "getType");
-        return JSON.parse(val);
-    };
-
-    self.getId = function () {
-        return self.m_id;
-    };
-
-    self.init = function () {
-        if (!JNEXT.require("netstatus")) {
-            return false;
-        }
-
-        self.m_id = JNEXT.createObject("netstatus.Connection");
-
-        if (self.m_id === "") {
-            return false;
-        }
-    };
-
-    self.m_id = "";
-
-    self.init();
-};
-
-connection = new JNEXT.Connection();
