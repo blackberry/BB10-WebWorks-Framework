@@ -41,12 +41,13 @@ public:
     explicit ConnectionBPS(Connection *parent = NULL);
     ~ConnectionBPS();
     ConnectionTypes GetConnectionType();
+    int InitializeEvents();
     int WaitForEvents();
-    static void EnableEvents();
-    static void DisableEvents();
+    static void SendEndEvent();
 private:
     Connection *m_parent;
-    static bool m_eventsEnabled;
+    static int m_eventChannel;
+    static int m_endEventDomain;
 };
 
 } // namespace webworks
