@@ -15,7 +15,7 @@
 */
 var _self = {},
     _ID = "blackberry.connection",
-    UNKNOWN = 0;
+    UNKNOWN = "unknown";
 
 Object.defineProperty(_self, "type", {
     get: function () {
@@ -36,14 +36,16 @@ Object.defineProperty(_self, "type", {
  * Define constants for type constants
  */
 window.webworks.defineReadOnlyField(_self, "UNKNOWN", UNKNOWN);
-window.webworks.defineReadOnlyField(_self, "ETHERNET", 1);
-window.webworks.defineReadOnlyField(_self, "WIFI", 2);
-window.webworks.defineReadOnlyField(_self, "BLUETOOTH_DUN", 3);
-window.webworks.defineReadOnlyField(_self, "USB", 4);
-window.webworks.defineReadOnlyField(_self, "VPN", 5);
-window.webworks.defineReadOnlyField(_self, "BB", 6);
-window.webworks.defineReadOnlyField(_self, "CELLULAR", 7);
-window.webworks.defineReadOnlyField(_self, "NONE", 8);
+window.webworks.defineReadOnlyField(_self, "ETHERNET", "ethernet");
+window.webworks.defineReadOnlyField(_self, "WIFI", "wifi");
+window.webworks.defineReadOnlyField(_self, "BLUETOOTH_DUN", "bluetooth_dun");
+window.webworks.defineReadOnlyField(_self, "USB", "usb");
+window.webworks.defineReadOnlyField(_self, "VPN", "vpn");
+window.webworks.defineReadOnlyField(_self, "BB", "rim-bb");
+window.webworks.defineReadOnlyField(_self, "CELL_4G", "4g");
+window.webworks.defineReadOnlyField(_self, "NONE", "none");
+window.webworks.defineReadOnlyField(_self, "CELL_2G", "2g");
+window.webworks.defineReadOnlyField(_self, "CELL_3G", "3g");
 
 window.webworks.execSync(_ID, "registerEvents", null);
 

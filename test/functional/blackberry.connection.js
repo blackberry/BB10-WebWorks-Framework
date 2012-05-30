@@ -37,27 +37,31 @@ describe("blackberry.connection", function () {
     });
 
     it('blackberry.connection.* should be defined', function () {
-        testConnectionValue("BB", 6);
-        testConnectionValue("BLUETOOTH_DUN", 3);
-        testConnectionValue("CELLULAR", 7);
-        testConnectionValue("ETHERNET", 1);
-        testConnectionValue("NONE", 8);
-        testConnectionValue("UNKNOWN", 0);
-        testConnectionValue("USB", 4);
-        testConnectionValue("VPN", 5);
-        testConnectionValue("WIFI", 2);
+        testConnectionValue("BB", "rim-bb");
+        testConnectionValue("BLUETOOTH_DUN", "bluetooth_dun");
+        testConnectionValue("CELL_4G", "4g");
+        testConnectionValue("ETHERNET", "ethernet");
+        testConnectionValue("NONE", "none");
+        testConnectionValue("UNKNOWN", "unknown");
+        testConnectionValue("USB", "usb");
+        testConnectionValue("VPN", "vpn");
+        testConnectionValue("WIFI", "wifi");
+        testConnectionValue("CELL_2G", "2g");
+        testConnectionValue("CELL_3G", "3g");
     });
 
     it('blackberry.connection.* should be read-only', function () {
         testConnectionReadOnly("BB");
         testConnectionReadOnly("BLUETOOTH_DUN");
-        testConnectionReadOnly("CELLULAR");
+        testConnectionReadOnly("CELL_4G");
         testConnectionReadOnly("ETHERNET");
         testConnectionReadOnly("NONE");
         testConnectionReadOnly("UNKNOWN");
         testConnectionReadOnly("USB");
         testConnectionReadOnly("VPN");
         testConnectionReadOnly("WIFI");
+        testConnectionReadOnly("CELL_2G");
+        testConnectionReadOnly("CELL_3G");
     });
 
     it('blackberry.connection.type should return blackberry.connection.WIFI if device is connected to wi-fi', function () {

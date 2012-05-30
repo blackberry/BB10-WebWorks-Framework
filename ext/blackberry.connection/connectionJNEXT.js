@@ -17,6 +17,31 @@
 var connection,
     triggerCallback = null;
 
+function getConnectionTypeString(type) {
+    switch (type) {
+    case 0:
+        return "unknown";
+    case 1:
+        return "ethernet";
+    case 2:
+        return "wifi";
+    case 3:
+        return "bluetooth_dun";
+    case 4:
+        return "usb";
+    case 5:
+        return "vpn";
+    case 6:
+        return "rim-bb";
+    case 7:
+        return "4g"; // always return 4g for cellular
+    case 8:
+        return "none";
+    }
+
+    return type;
+}
+
 ///////////////////////////////////////////////////////////////////
 // JavaScript wrapper for JNEXT plugin for blackberry.connection
 ///////////////////////////////////////////////////////////////////
@@ -26,7 +51,7 @@ JNEXT.Connection = function () {
 
     self.getType = function () {
         var val = JNEXT.invoke(self.m_id, "getType");
-        return JSON.parse(val);
+        return getConnectionTypeString(JSON.parse(val));
     };
 
     self.startEvents = function (trigger) {
@@ -45,8 +70,8 @@ JNEXT.Connection = function () {
             info = {};
         
         if (strEventDesc === "connectionchange") {
-            info.oldType = JSON.parse(arData[1]);
-            info.newType = JSON.parse(arData[2]);
+            info.oldType = getConnectionTypeString(JSON.parse(arData[1]));
+            info.newType = getConnectionTypeString(JSON.parse(arData[2]));
 
             if (triggerCallback) {
                 triggerCallback(info);
