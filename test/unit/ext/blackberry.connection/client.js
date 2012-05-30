@@ -26,8 +26,23 @@ var _ID = "blackberry.connection",
         "USB",
         "VPN",
         "BB",
-        "CELLULAR",
-        "NONE"
+        "CELL_4G",
+        "NONE",
+        "CELL_2G",
+        "CELL_3G"
+    ],
+    fieldValues = [
+        "unknown",
+        "ethernet",
+        "wifi",
+        "bluetooth_dun",
+        "usb",
+        "vpn",
+        "rim-bb",
+        "4g",
+        "none",
+        "2g",
+        "3g"
     ],
     defineROFieldArgs = [];
 
@@ -47,13 +62,13 @@ function unloadClient() {
 
 describe("blackberry.connection", function () {
     beforeEach(function () {
-        mockedWebworks.execSync = jasmine.createSpy().andReturn(2);
+        mockedWebworks.execSync = jasmine.createSpy().andReturn("wifi");
         mockedWebworks.defineReadOnlyField = jasmine.createSpy();
         GLOBAL.window.webworks = mockedWebworks;
         // client needs to be required for each test
         client = require(_apiDir + "/client");
         fields.forEach(function (field, index) {
-            defineROFieldArgs.push([client, field, index]);
+            defineROFieldArgs.push([client, field, fieldValues[index]]);
         });
         spyOn(console, "error");
     });
@@ -76,20 +91,22 @@ describe("blackberry.connection", function () {
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("USB")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("VPN")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("BB")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("CELLULAR")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("CELL_4G")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("NONE")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("CELL_2G")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[fields.indexOf("CELL_3G")]);
         });
     });
 
     describe("blackberry.connection.type", function () {
         it("calls execSync and equals to execSync return value", function () {
-            expect(client.type).toEqual(2);
+            expect(client.type).toEqual("wifi");
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "type");
         });
 
         it("return UNKNOWN if execSync throws error", function () {
             mockedWebworks.execSync = jasmine.createSpy().andThrow("Too bad");
-            expect(client.type).toEqual(0);
+            expect(client.type).toEqual("unknown");
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "type");
         });
     });

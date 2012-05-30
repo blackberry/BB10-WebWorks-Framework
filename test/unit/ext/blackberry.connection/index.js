@@ -44,7 +44,7 @@ describe("blackberry.connection index", function () {
                 index.type(success, null, null, null);
 
                 expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getType");
-                expect(success).toHaveBeenCalledWith(2);
+                expect(success).toHaveBeenCalledWith("wifi");
             });
 
             it("can call fail", function () {
