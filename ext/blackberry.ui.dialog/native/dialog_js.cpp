@@ -134,7 +134,12 @@ void Dialog::NotifyEvent(const std::string& event)
 void Dialog::StartThread()
 {
     if (!m_thread) {
-        pthread_create(&m_thread, NULL, DialogThread, static_cast<void *>(this));
+        pthread_attr_t thread_attr;
+        pthread_attr_init(&thread_attr);
+        pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+
+        pthread_create(&m_thread, &thread_attr, DialogThread, static_cast<void *>(this));
+        pthread_attr_destroy(&thread_attr);
     }
 }
 
