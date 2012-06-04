@@ -18,7 +18,7 @@ var _self = {},
     _ID = "blackberry.event";
 
 _self.addEventListener = function (eventType, cb) {
-    window.webworks.event.on(_ID, eventType, cb);
+    window.webworks.event.add(_ID, eventType, cb);
 };
 
 _self.removeEventListener = function (eventType, cb) {

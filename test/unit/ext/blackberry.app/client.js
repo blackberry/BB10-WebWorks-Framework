@@ -52,7 +52,7 @@ afterEach(function () {
 
 describe("blackberry.app client", function () {
     it("execSync should have been called once for each blackberry.app field", function () {
-        expect(mockedWebworks.execSync.callCount).toEqual(fields.length);
+        expect(mockedWebworks.execSync.callCount).toEqual(fields.length + 1); // +1 to account for the call to execSync for events
     });
 
     describe("author", function () {

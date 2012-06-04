@@ -19,7 +19,7 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.event/",
     client,
     mockedWebworks = {
         event : {
-            on : jasmine.createSpy(), 
+            add : jasmine.createSpy(), 
             remove : jasmine.createSpy()
         }
     }; 
@@ -41,7 +41,7 @@ describe("Event Listener", function () {
         var eventType = "GoldenEye",
             JamesBond = jasmine.createSpy();
         client.addEventListener(eventType, JamesBond);
-        expect(mockedWebworks.event.on).toHaveBeenCalledWith("blackberry.event", eventType, JamesBond);
+        expect(mockedWebworks.event.add).toHaveBeenCalledWith("blackberry.event", eventType, JamesBond);
     });
 
     it("removes event listeners", function () {

@@ -27,5 +27,6 @@ _self.hasCapability = function (capability) {
 
 window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
 window.webworks.defineReadOnlyField(_self, "DENY", 1);
+window.webworks.execSync(ID, "registerEvents", null);
 
 module.exports = _self;
