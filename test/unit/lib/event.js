@@ -28,7 +28,7 @@ describe("event", function () {
         });
     });
 
-    describe("on/remove would invoke action context", function () {
+    describe("add/remove would invoke action context", function () {
         var action = {
             context: {
                 addEventListener: jasmine.createSpy(),
@@ -39,7 +39,7 @@ describe("event", function () {
         };
 
         it("can invoke action context add listener", function () {
-            event.on(action);
+            event.add(action);
             expect(action.context.addEventListener).toHaveBeenCalledWith(action.event, action.trigger);
         });
 

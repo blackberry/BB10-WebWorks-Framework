@@ -15,33 +15,54 @@
  */
 var childProcess = require('child_process'),
     util = require('util'),
+    jWorkflow = require("jWorkflow"),
     fs = require('fs');
 
-function _exec(cmdExpr, done) {
+function _exec(cmdExpr, prev, baton) {
+    baton.take();
     var proc = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         util.print(stdout);
         util.print(stderr);
     });
 
     proc.on("exit", function (code) {
-        process.exit(code);
+        if (code) {
+            util.puts("Lint FAILED");
+            process.exit(code);
+        }
+        baton.pass(prev);
     });
 }
-
-function _lintJS(files, done) {    
-    var options = ["--reporter", "build/lint/reporter.js", "--show-non-errors"];        
-    _exec('jshint ' + files.concat(options).join(' '), done);
+function _done() {
+    util.puts("Lint SUCCESS");
+    process.exit();
 }
 
-function _lintCSS(files, done) {
+function _lintJS(prev, baton) {
+    var options = ["--reporter", "build/lint/reporter.js", "--show-non-errors"],
+        files = ["."];        
+    _exec('jshint ' + files.concat(options).join(' '), prev, baton);
+}
+
+function _lintCSS(prev, baton) {
     var rules = JSON.parse(fs.readFileSync(__dirname + "/../.csslintrc", "utf-8")),
-        options = ["--rules=" + rules, "--format=compact"];
-    _exec('csslint ' + files.concat(options).join(' '), done);
+        options = ["--rules=" + rules, "--format=compact"],
+        files = ["lib", "test"];
+    _exec('csslint ' + files.concat(options).join(' '), prev, baton);
 }
 
-module.exports = function (done, files) {
-    var cssDirs = ["lib", "test"];
-    _lintJS(files && files.length > 0 ? files : ["."], function () {
-        _lintCSS(files && files.length > 0 ? files : cssDirs, done);
+function _lintCPP(prev, baton) {
+    var options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels"],
+        files = ["ext"];
+    _exec('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '), prev, baton);
+}
+
+module.exports = function (files) {
+    var lint = jWorkflow.order(_lintJS)
+                    .andThen(_lintCSS)
+                    .andThen(_lintCPP);
+
+    lint.start(function () {
+        _done();
     });
 };
