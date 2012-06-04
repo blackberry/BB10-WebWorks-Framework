@@ -25,6 +25,10 @@ task('bundle', [], function () {
     require('./build/build/bundler').bundle();
 });
 
+desc("runs jake build cleaning native");
+task('clean', [], require('./build/clean-native'));
+
+
 desc("start server");
 task('start', [], function () {
     require('./lib/server').start(process.argv);
@@ -37,7 +41,7 @@ task('test', [], function () {
 
 desc("runs jshint + csslint - jake lint [path1] [path2]");
 task('lint', [], function () {
-    require('./build/lint')(complete, Array.prototype.slice.call(arguments));
+    require('./build/lint')(Array.prototype.slice.call(arguments));
 }, true);
 
 desc("show various codebase stats");

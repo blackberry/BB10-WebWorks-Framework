@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-function requireLocal(id) {
-    return !!require.resolve ? require("../../" + id) : window.require(id);
-}
-
 var APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
     APP_TYPE_ERROR_ID = -1,

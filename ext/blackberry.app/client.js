@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _self = {};
+var _self = {},
+    ID = "blackberry.app";
 
 function defineReadOnlyField(field) {
-    var value = window.webworks.execSync("blackberry.app", field, null);
+    var value = window.webworks.execSync(ID, field, null);
     Object.defineProperty(_self, field, {"value": value, "writable": false});
 }
 
@@ -39,5 +40,7 @@ defineReadOnlyField("licenseURL");
 defineReadOnlyField("name");
 
 defineReadOnlyField("version");
+
+window.webworks.execSync(ID, "registerEvents", null);
 
 module.exports = _self;

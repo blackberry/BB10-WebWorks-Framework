@@ -1,7 +1,9 @@
 .git
 node_modules
 target
-dependencies
+dependencies/test-server
+dependencies/webplatform
+dependencies/jnext_1_0_8_3
 clientFiles
 ext/blackberry.example.test
 lib/pps/ppsUtils.js
