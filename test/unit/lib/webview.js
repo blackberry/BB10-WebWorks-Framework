@@ -22,6 +22,7 @@ describe("webview", function () {
             active: undefined,
             zOrder: undefined,
             url: undefined,
+            setFileSystemSandbox: undefined,
             setGeometry: jasmine.createSpy(),
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
@@ -82,9 +83,8 @@ describe("webview", function () {
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(0);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-
-                expect(mockedApplication.windowVisible).toEqual(true);
-
+                expect(mockedWebview.setFileSystemSandbox).toEqual(false);
+                expect(mockedApplicationWindow.visible).toEqual(true);
                 expect(request.init).toHaveBeenCalledWith(mockedWebview);
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
             });
