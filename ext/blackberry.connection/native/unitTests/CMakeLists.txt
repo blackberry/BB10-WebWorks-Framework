@@ -1,5 +1,5 @@
 if (CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS "-Werror -fexceptions ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "-Werror -lang-c++ -fexceptions ${CMAKE_CXX_FLAGS}")
     set(CMAKE_C_FLAGS "-Werror ${CMAKE_C_FLAGS}")
 endif ()
 
