@@ -114,4 +114,11 @@ describe("blackberry.app client", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("version")]);
         });
     });
+    
+    describe("exit", function () {
+        it("should call execSync", function () {
+            client.exit();
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith("blackberry.app", "exit");
+        });
+    });
 });

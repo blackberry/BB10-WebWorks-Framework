@@ -81,5 +81,9 @@ module.exports = {
 
     version: function (success, fail, args, env) {
         success(_config.version);
+    },
+
+    exit: function () {
+        window.qnx.webplatform.getApplication().exit();
     }
 };

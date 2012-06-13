@@ -18,18 +18,31 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.app/",
     events = require(_libDir + "event"),
     eventExt = require(__dirname + "./../../../../ext/blackberry.event/index"),
     index,
+    mockedExit,
     config;
 
-describe("blackberr.app index", function () {
+describe("blackberry.app index", function () {
 
     beforeEach(function () {
         config = require(_libDir + "config");
         index = require(_apiDir + "index");
+        mockedExit = jasmine.createSpy("exit");
+        GLOBAL.window = {};
+        GLOBAL.window.qnx = {
+            webplatform: {
+                getApplication: function () {
+                    return {
+                        exit: mockedExit
+                    };
+                }
+            }
+        };
     });
 
     afterEach(function () {
         config = null;
         index = null;
+        mockedExit = null;
     });
 
     describe("author", function () {
@@ -109,6 +122,14 @@ describe("blackberr.app index", function () {
             var success = jasmine.createSpy();
             index.version(success, null, null, null);
             expect(success).toHaveBeenCalledWith(config.version);
+        });
+    });
+
+    describe("exit", function () {
+        it("can call exit on the qnx.weblplatform Application", function () {
+            var success = jasmine.createSpy();
+            index.exit(success, null, null, null);
+            expect(mockedExit).toHaveBeenCalled();
         });
     });
 
