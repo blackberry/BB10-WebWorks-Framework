@@ -12,4 +12,4 @@
 	url = http://github.rim.net/webworks/gtest.git
 [submodule "dependencies/webplatform"]
 	path = dependencies/webplatform
-	url = git@github.com:blackberry-webworks/webplatform.git 
+	url = http://github.rim.net/webworks/webplatform.git
