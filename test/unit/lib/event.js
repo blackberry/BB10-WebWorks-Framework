@@ -45,7 +45,7 @@ describe("event", function () {
 
         it("can invoke action context remove listener", function () {
             event.remove(action);
-            expect(action.context.removeEventListener).toHaveBeenCalledWith(action.event);
+            expect(action.context.removeEventListener).toHaveBeenCalledWith(action.event, action.trigger);
         });
     });
 });

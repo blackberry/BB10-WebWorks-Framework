@@ -39,4 +39,6 @@ window.webworks.defineReadOnlyField(_self, "APP_PHOTOS", 14);
 window.webworks.defineReadOnlyField(_self, "APP_VIDEOS", 15);
 window.webworks.defineReadOnlyField(_self, "APP_APPWORLD", 16);
 
+window.webworks.execSync(_ID, "registerEvents", null);
+
 module.exports = _self;

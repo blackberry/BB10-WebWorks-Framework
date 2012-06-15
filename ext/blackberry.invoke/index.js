@@ -17,7 +17,19 @@
 var APP_URL_BROWSER = "http://",
     APP_TYPE_ERROR = "The application specified to invoke is not supported.",
     APP_TYPE_ERROR_ID = -1,
-    APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.";
+    APP_BROWSER_ERROR = "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.",
+    _event = require("./../../lib/event"),
+    _eventExt = require("./../blackberry.event/index"),
+    _actionMap = {
+        invoked: {
+            context: require("./invocationEvents"),
+            event: "invoked",
+            trigger: function () {
+                var onInvokedInfo = JSON.parse(window.qnx.webplatform.getApplication().invocation.getRequest());
+                _event.trigger("invoked", onInvokedInfo);
+            }
+        }
+    };
 
 module.exports = {
     invoke: function (success, fail, args) {
@@ -88,5 +100,15 @@ module.exports = {
         qnx.callExtensionMethod("navigator.invoke", url);
         
         success();
-    }
+    },
+
+    registerEvents: function (success, fail, args, env) {
+        try {
+            _eventExt.registerEvents(_actionMap);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
 };
