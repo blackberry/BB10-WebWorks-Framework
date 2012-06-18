@@ -14,7 +14,7 @@
 3. git checkout next
 4. Configuration:
     - For Mac:
-        ./configure (do a sudo ./configure if you get permission errors)
+        ./configure
     - For Windows:
         bash configure (run from command prompt)
 5. Run 'jake test' and check that jake runs and completes
