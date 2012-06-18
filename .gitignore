@@ -10,4 +10,4 @@ tags
 target/
 clientFiles/
 ext/*/native/unitTests/build/*
-
+lib/webworks-info.js

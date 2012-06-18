@@ -133,23 +133,6 @@
                 <version>1.1.1</version>
                 <executions>
                     <execution>
-                        <id>jake-test</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
-                            <arguments>
-                                <argument>test</argument>
-                            </arguments>
-                            <successCodes>
-                                <successCode>0</successCode>
-                            </successCodes>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>jake-lint</id>
                         <phase>package</phase>
                         <goals>
@@ -177,6 +160,23 @@
                             <workingDirectory></workingDirectory>            
                             <arguments>
                                 <argument>build</argument>
+                            </arguments>
+                            <successCodes>
+                                <successCode>0</successCode>
+                            </successCodes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jake-test</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>jake</executable>
+                            <workingDirectory></workingDirectory>            
+                            <arguments>
+                                <argument>test</argument>
                             </arguments>
                             <successCodes>
                                 <successCode>0</successCode>
