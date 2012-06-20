@@ -34,6 +34,12 @@ describe("blackberry.app navEvents", function () {
             navEvents.addEventListener("resume", trigger);
             expect(framework.setOnResume).toHaveBeenCalledWith(trigger);
         });
+        
+        it("calls framework setOnSwipeDown for 'swipedown' event", function () {
+            spyOn(framework, "setOnSwipeDown");
+            navEvents.addEventListener("swipedown", trigger);
+            expect(framework.setOnSwipeDown).toHaveBeenCalledWith(trigger);
+        });
     });
 
     describe("removeEventListener", function () {
@@ -47,6 +53,12 @@ describe("blackberry.app navEvents", function () {
             spyOn(framework, "setOnResume");
             navEvents.removeEventListener("resume");
             expect(framework.setOnResume).toHaveBeenCalledWith(null);
+        });
+        
+        it("calls framework setOnSwipeDown for 'swipedown' event", function () {
+            spyOn(framework, "setOnSwipeDown");
+            navEvents.removeEventListener("swipedown");
+            expect(framework.setOnSwipeDown).toHaveBeenCalledWith(null);
         });
     });
 });

@@ -21,6 +21,27 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.app/",
     mockedExit,
     config;
 
+function testRegisterEvent(e) {
+    var args = {eventName : encodeURIComponent(e)},
+        success = jasmine.createSpy();
+        
+    index.registerEvents(success);
+    eventExt.add(null, null, args);
+    expect(success).toHaveBeenCalled();
+    expect(events.add).toHaveBeenCalled();
+    expect(events.add.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+}
+
+function testUnRegisterEvent(e) {
+    var args = {eventName : encodeURIComponent(e)};
+    
+    eventExt.remove(null, null, args);
+    expect(events.remove).toHaveBeenCalled();
+    expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+}
+    
 describe("blackberry.app index", function () {
 
     beforeEach(function () {
@@ -132,38 +153,35 @@ describe("blackberry.app index", function () {
             expect(mockedExit).toHaveBeenCalled();
         });
     });
-
-    describe("pause/resume", function () {
-        it("can register 'pause' and 'resume' event", function () {
-            var evts = ["pause", "resume"],
-                args,
-                success = jasmine.createSpy();
-
+    
+    describe("events", function () {
+        beforeEach(function () {
             spyOn(events, "add");
-
-            evts.forEach(function (e) {
-                args = {eventName : encodeURIComponent(e)}; 
-                index.registerEvents(success);
-                eventExt.add(null, null, args);
-                expect(success).toHaveBeenCalled();
-                expect(events.add).toHaveBeenCalled();
-                expect(events.add.mostRecentCall.args[0].event).toEqual(e);
-                expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));                
-            });
+            spyOn(events, "remove");
+        });
+        
+        it("can register 'pause' event", function () {
+            testRegisterEvent("pause");
+        });
+        
+        it("can register 'resume' event", function () {
+            testRegisterEvent("resume");
+        });
+        
+        it("can register 'swipedown' event", function () {
+            testRegisterEvent("swipedown");
         });
 
-        it("can un-register 'pause' and 'resume' event", function () {
-            var evts = ["pause", "resume"],
-                args;
-            spyOn(events, "remove");
-
-            evts.forEach(function (e) {
-                args = {eventName : encodeURIComponent(e)}; 
-                eventExt.remove(null, null, args);
-                expect(events.remove).toHaveBeenCalled();
-                expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
-                expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-            });
+        it("can un-register 'pause' event", function () {
+            testUnRegisterEvent("pause");
+        });
+        
+        it("can un-register 'resume' event", function () {
+            testUnRegisterEvent("resume");
+        });
+        
+        it("can un-register 'swipedown' event", function () {
+            testUnRegisterEvent("swipedown");
         });
     });
 });
