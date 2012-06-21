@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,78 +16,105 @@
 
 var _ID = "blackberry.invoke",
     _extDir = __dirname + "./../../../../ext",
-    _libDir = __dirname + "./../../../../lib",
     _apiDir = _extDir + "/" + _ID,
-    utils,
     client,
     mockedWebworks = {
-        execAsync: function () {},
+        execAsync: jasmine.createSpy("webworks.execAsync"),
         execSync: jasmine.createSpy(),
-        defineReadOnlyField: jasmine.createSpy()
-    },
-    constants = {
-        "APP_CAMERA": 4,
-        "APP_MAPS": 5,
-        "APP_BROWSER": 11,
-        "APP_MUSIC": 13,
-        "APP_PHOTOS": 14,
-        "APP_VIDEOS": 15,
-        "APP_APPWORLD": 16
-    },
-    defineROFieldArgs = [];
+        defineReadOnlyField: jasmine.createSpy(),
+        event: {
+            isOn: jasmine.createSpy("webworks.event.isOn")
+        }
+    };
 
 describe("blackberry.invoke client", function () {
     beforeEach(function () {
         GLOBAL.window = GLOBAL;
+        GLOBAL.window.btoa = jasmine.createSpy("window.btoa").andReturn("base64 string");
+        mockedWebworks.event.once = jasmine.createSpy("webworks.event.once");
         GLOBAL.window.webworks = mockedWebworks;
-
-        utils = require(_libDir + "/utils");
         client = require(_apiDir + "/client");
     });
 
     afterEach(function () {
         delete GLOBAL.window;
-        utils = null;
         client = null;
     });
 
-    describe("appType", function () {
-        it("should return constant for appropriate appType", function () {
-            Object.getOwnPropertyNames(constants).forEach(function (c) {
-                defineROFieldArgs.push([client, c, constants[c]]);
+    describe("invoke", function () {
+        it("should call error callback if request is not valid", function () {
+            var onError = jasmine.createSpy("client onError");
+
+            client.invoke(null, null, onError);
+            expect(onError).toHaveBeenCalled();
+        });
+
+        it("should call once and execAsync", function () {
+            var request = {
+                    target: "abc.xyz"
+                },
+                callback = jasmine.createSpy("client callback");
+
+            client.invoke(request, callback);
+
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "blackberry.invoke.invokeEventId", jasmine.any(Function));
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invoke", {"request": request});
+        });
+
+        it("should encode data to base64 string", function () {
+            var request = {
+                    target: "abc.xyz",
+                    data: "my string"
+                },
+                callback = jasmine.createSpy("client callback");
+
+            client.invoke(request, callback);
+
+            expect(window.btoa).toHaveBeenCalledWith("my string");
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invoke", {
+                "request": {
+                    target: request.target,
+                    data: "base64 string"
+                }
             });
-
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_CAMERA")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_MAPS")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_BROWSER")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_MUSIC")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_PHOTOS")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_VIDEOS")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("APP_APPWORLD")]);
         });
-    });
 
-    describe("Browser Invoke", function () {
-        it("should call execAsync when invoke called", function () {
-            var url = "http://www.google.com",
-                result;
+        it("should call onError if failed to encode data to base64", function () {
+            var request = {
+                    target: "abc.xyz",
+                    data: "my string"
+                },
+                onError = jasmine.createSpy("client onError");
 
-            spyOn(mockedWebworks, "execAsync").andReturn(0);
-
-            result = client.invoke(client.APP_BROWSER, new client.BrowserArguments(url));
-            
-            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invoke", { 'appType' : client.APP_BROWSER, args : { 'url' : url } });
+            GLOBAL.window.btoa = jasmine.createSpy("window.btoa").andThrow("bad string");
+            client.invoke(request, null, onError);
+            expect(onError).toHaveBeenCalledWith("bad string");
         });
-    });
 
-    describe("BrowserArguments", function () {
-        var url = "http://www.google.com", 
-            browserArguments;
+        it("should call onSuccess if invocation is successful", function () {
+            var request = {
+                    target: "abc.xyz"
+                },
+                onSuccess = jasmine.createSpy("client onSuccess"),
+                onError = jasmine.createSpy("client onError");
 
-        it("should create a new BrowserArguments Object with url", function () {
-            browserArguments = new client.BrowserArguments(url);
+            client.invoke(request, onSuccess);
+            mockedWebworks.event.once.argsForCall[0][2]("");
+            expect(onSuccess).toHaveBeenCalled();
+            expect(onError).not.toHaveBeenCalled();
+        });
 
-            expect(browserArguments.url).toEqual(url);
+        it("should call onError if invocation failed", function () {
+            var request = {
+                    target: "abc.xyz"
+                },
+                onSuccess = jasmine.createSpy("client onSuccess"),
+                onError = jasmine.createSpy("client onError");
+
+            client.invoke(request, null, onError);
+            mockedWebworks.event.once.argsForCall[0][2]("There is an error");
+            expect(onSuccess).not.toHaveBeenCalled();
+            expect(onError).toHaveBeenCalled();
         });
     });
 
