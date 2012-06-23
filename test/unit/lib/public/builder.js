@@ -20,7 +20,8 @@ var libRoot = __dirname + "/../../../../lib/",
         exec : function () {},
         execSync: function () {
             return "";
-        }
+        },
+        defineReadOnlyField: function () {}
     };
 
 describe("builder", function () {
