@@ -6,7 +6,7 @@
 	url = http://github.rim.net/webworks/jnext_1_0_8_3.git
 [submodule "dependencies/JsonCpp"]
 	path = dependencies/JsonCpp
-	url = http://github.com/blackberry/JsonCpp.git
+	url = http://github.rim.net/webworks/JsonCpp.git
 [submodule "dependencies/gtest"]
 	path = dependencies/gtest
 	url = http://github.rim.net/webworks/gtest.git
