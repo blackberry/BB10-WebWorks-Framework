@@ -1,5 +1,6 @@
 {
     "predef": [
+        "escape", "unescape",
         //Jasmine
         "jasmine", "it", "describe",
         "xit", "xdescribe",
@@ -22,7 +23,7 @@
 
     "boss" : false,
     "curly": false,
-    "bitwise" : true,
+    "bitwise" : false,
     "white": true,
     "indent": 4,
     "evil": false,
