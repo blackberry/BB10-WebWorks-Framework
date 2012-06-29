@@ -10,6 +10,7 @@
         //Webworks
         "qnx", "chrome",
         "blackberry", "JNEXT",
+        "frameworkModules",
         //Node
         "__dirname", "GLOBAL",
         "process", "exports",
