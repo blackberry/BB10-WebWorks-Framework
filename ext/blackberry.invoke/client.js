@@ -63,10 +63,9 @@ _self.invoke = function (request, onSuccess, onError) {
     return window.webworks.execAsync(_ID, "invoke", {request: request});
 };
 
-window.webworks.execSync(_ID, "registerEvents", null);
-
 window.webworks.defineReadOnlyField(_self, "ACTION_OPEN", "bb.action.OPEN");
 window.webworks.defineReadOnlyField(_self, "ACTION_VIEW", "bb.action.VIEW");
 window.webworks.defineReadOnlyField(_self, "ACTION_SHARE", "bb.aciton.SHARE");
 
 module.exports = _self;
+

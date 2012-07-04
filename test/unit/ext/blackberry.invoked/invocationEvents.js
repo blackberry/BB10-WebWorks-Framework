@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
+var _apiDir = __dirname + "./../../../../ext/blackberry.invoked/",
     _libDir = __dirname + "./../../../../lib/",
     invocationEvents,
     startupMode,
     mockedInvocation;
 
-describe("blackberry.invoke invocationEvents", function () {
+describe("blackberry.invoked invocationEvents", function () {
     beforeEach(function () {
         mockedInvocation = {
             addEventListener: jasmine.createSpy("invocation addEventListener"),
@@ -75,3 +75,4 @@ describe("blackberry.invoke invocationEvents", function () {
         });
     });
 });
+

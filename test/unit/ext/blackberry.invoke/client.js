@@ -20,7 +20,6 @@ var _ID = "blackberry.invoke",
     client,
     mockedWebworks = {
         execAsync: jasmine.createSpy("webworks.execAsync"),
-        execSync: jasmine.createSpy(),
         defineReadOnlyField: jasmine.createSpy(),
         event: {
             isOn: jasmine.createSpy("webworks.event.isOn")
@@ -117,10 +116,5 @@ describe("blackberry.invoke client", function () {
             expect(onError).toHaveBeenCalled();
         });
     });
-
-    describe("registering for events", function () {
-        it("should register for events by calling registerEvents method", function () {
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "registerEvents", null);
-        });
-    });
 });
+

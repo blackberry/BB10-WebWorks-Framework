@@ -13,26 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _event = require("../../lib/event"),
-    _expectedParams = [
+var _expectedParams = [
         "target",
         "action",
         "uri",
         "type",
         "data"
     ],
-    _event = require("./../../lib/event"),
-    _eventExt = require("./../blackberry.event/index"),
-    _actionMap = {
-        invoked: {
-            context: require("./invocationEvents"),
-            event: "invoked",
-            trigger: function () {
-                var onInvokedInfo = JSON.parse(window.qnx.webplatform.getApplication().invocation.getRequest());
-                _event.trigger("invoked", onInvokedInfo);
-            }
-        }
-    };
+    _event = require("./../../lib/event");
 
 module.exports = {
     invoke: function (success, fail, args) {
@@ -58,13 +46,5 @@ module.exports = {
         success();
     },
 
-    registerEvents: function (success, fail, args, env) {
-        try {
-            _eventExt.registerEvents(_actionMap);
-            success();
-        } catch (e) {
-            fail(-1, e);
-        }
-    },
-
 };
+
