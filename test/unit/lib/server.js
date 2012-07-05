@@ -20,7 +20,8 @@ describe("server", function () {
         extensionPlugin = require("../../../lib/plugins/extensions"),
         Whitelist = require("../../../lib/policy/whitelist").Whitelist,
         applicationAPIServer = require("../../../ext/blackberry.app/index"),
-        DEFAULT_SERVICE = "exec";
+        DEFAULT_SERVICE = "default",
+        DEFAULT_ACTION = "exec";
 
     beforeEach(function () {
         spyOn(console, "log");
@@ -35,7 +36,8 @@ describe("server", function () {
                     service: "",
                     action: ""
                 },
-                body: "" 
+                body: "",
+                origin: ""
             };
             res = {
                 send: jasmine.createSpy()
@@ -48,12 +50,24 @@ describe("server", function () {
         });
 
         it("calls the default plugin if the service doesn't exist", function () {
-            spyOn(plugin, DEFAULT_SERVICE);
+            var rebuiltRequest = {
+                params: {
+                    service: DEFAULT_SERVICE,
+                    action: DEFAULT_ACTION,
+                    ext: "not",
+                    method: "here",
+                    args: null
+                },
+                body: "",
+                origin: ""
+            };
+            spyOn(plugin, DEFAULT_ACTION);
             req.params.service = "not";
             req.params.action = "here";
 
             server.handle(req, res);
-            expect(plugin[DEFAULT_SERVICE]).toHaveBeenCalled();
+
+            expect(plugin[DEFAULT_ACTION]).toHaveBeenCalledWith(rebuiltRequest, jasmine.any(Function), jasmine.any(Function), jasmine.any(Object), jasmine.any(Object));
         });
 
         it("returns 404 if the action doesn't exist", function () {

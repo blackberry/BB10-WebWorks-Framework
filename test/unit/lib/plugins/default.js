@@ -15,7 +15,7 @@
  */
 
 describe("default plugin", function () {
-    var bridge = require('../../../../lib/plugins/default'),
+    var defaultPlugin = require('../../../../lib/plugins/default'),
         Whitelist = require('../../../../lib/policy/whitelist').Whitelist,
         testExtension = require("../../../../ext/blackberry.app/index");
 
@@ -46,14 +46,14 @@ describe("default plugin", function () {
 
         it("returns 404 if the extension is not found", function () {
             req.params.ext = "NotAnExt";
-            bridge.exec(req, succ, fail, args);
+            defaultPlugin.exec(req, succ, fail, args);
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
         });
 
         it("returns 404 if the method is not found", function () {
             req.params.ext = "blackberry.app";
             req.params.method = "NotAMethod";
-            bridge.exec(req, succ, fail, args);
+            defaultPlugin.exec(req, succ, fail, args);
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
         });
 
@@ -64,7 +64,8 @@ describe("default plugin", function () {
             req.params.ext = "blackberry.app";
             req.params.method = "author";
 
-            bridge.exec(req, res, succ, fail, args);
+            defaultPlugin.exec(req, res, succ, fail, args);
+            expect(fail).wasNotCalled();
             expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith(req.origin, req.params.ext);
         });
 
@@ -75,7 +76,7 @@ describe("default plugin", function () {
             req.params.ext = "blackberry.app";
             req.params.method = "author";
 
-            bridge.exec(req, succ, fail, args);
+            defaultPlugin.exec(req, succ, fail, args);
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 403);
         });
 
@@ -88,9 +89,45 @@ describe("default plugin", function () {
             req.params.ext = "blackberry.app";
             req.params.method = "author";
 
-            bridge.exec(req, succ, fail, args, env);
+            defaultPlugin.exec(req, succ, fail, args, env);
 
             expect(testExtension.author).toHaveBeenCalledWith(succ, fail, args, env);
+        });
+
+        it("calls a multi-level method of the extension", function () {
+            var env = {"request": req, "response": res};
+
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(testExtension, "author");
+            testExtension.author.a = {
+                b : {
+                    c : jasmine.createSpy()
+                }
+            };
+
+            req.params.ext = "blackberry.app";
+            req.params.method = "author/a/b/c";
+
+            defaultPlugin.exec(req, succ, fail, args, env);
+
+            expect(fail).wasNotCalled();
+            expect(testExtension.author.a.b.c).toHaveBeenCalledWith(succ, fail, args, env);
+        });
+
+        it("throws a 404 is a multi-level method is not found", function () {
+            var env = {"request": req, "response": res};
+
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(testExtension, "author");
+            testExtension.author.a = {
+            };
+
+            req.params.ext = "blackberry.app";
+            req.params.method = "author/a/b/c";
+
+            defaultPlugin.exec(req, succ, fail, args, env);
+
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
         });
     });
 });
