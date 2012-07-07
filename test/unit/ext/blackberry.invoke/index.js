@@ -23,6 +23,7 @@ describe("blackberry.invoke index", function () {
     beforeEach(function () {
         mockedInvocation = {
             invoke: jasmine.createSpy("invocation.invoke"),
+            queryTargets: jasmine.createSpy("invocation.queryTargets"),
         };
         GLOBAL.window = {};
         GLOBAL.window.qnx = {
@@ -45,30 +46,271 @@ describe("blackberry.invoke index", function () {
         index = null;
     });
 
-    it("can invoke with target", function () {
-        var successCB = jasmine.createSpy(),
-            mockedArgs = {
-                "request": encodeURIComponent(JSON.stringify({target: "abc.xyz"}))
-            };
+    describe("invoke", function () {
 
-        index.invoke(successCB, null, mockedArgs);
-        expect(mockedInvocation.invoke).toHaveBeenCalledWith({
-            target: "abc.xyz"
-        }, jasmine.any(Function));
-        expect(successCB).toHaveBeenCalled();
+        it("can invoke with target", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    "request": encodeURIComponent(JSON.stringify({target: "abc.xyz"}))
+                };
+
+            index.invoke(successCB, null, mockedArgs);
+            expect(mockedInvocation.invoke).toHaveBeenCalledWith({
+                target: "abc.xyz"
+            }, jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+
+        it("can invoke with uri", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    "request": encodeURIComponent(JSON.stringify({uri: "http://www.rim.com"}))
+                };
+
+            index.invoke(successCB, null, mockedArgs);
+            expect(mockedInvocation.invoke).toHaveBeenCalledWith({
+                uri: "http://www.rim.com"
+            }, jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
     });
 
-    it("can invoke with uri", function () {
-        var successCB = jasmine.createSpy(),
-            mockedArgs = {
-                "request": encodeURIComponent(JSON.stringify({uri: "http://www.rim.com"}))
-            };
+    describe("query", function () {
 
-        index.invoke(successCB, null, mockedArgs);
-        expect(mockedInvocation.invoke).toHaveBeenCalledWith({
-            uri: "http://www.rim.com"
-        }, jasmine.any(Function));
-        expect(successCB).toHaveBeenCalled();
+        it("will whitelist properties of the request object", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "myProperty": "myValue",
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                whitelistRequest = JSON.parse(JSON.stringify(request)),
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            delete whitelistRequest.myProperty;
+            whitelistRequest["target_type"] = "ALL";
+
+            index.query(success, fail, args);
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(whitelistRequest, jasmine.any(Function));
+        });
+
+        it("can query the invocation framework", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for application targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "APPLICATION";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for viewer targets", function  () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "VIEWER";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for all targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("will not generate a target_type property in the request if it is not an array", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": "APPLICATION"
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            delete request["target_type"];
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("query", function () {
+
+        it("will whitelist properties of the request object", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "myProperty": "myValue",
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                whitelistRequest = JSON.parse(JSON.stringify(request)),
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            delete whitelistRequest.myProperty;
+            whitelistRequest["target_type"] = "ALL";
+
+            index.query(success, fail, args);
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(whitelistRequest, jasmine.any(Function));
+        });
+
+        it("can query the invocation framework", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for application targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "APPLICATION";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for viewer targets", function  () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "VIEWER";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for all targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("will not generate a target_type property in the request if it is not an array", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": "APPLICATION"
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            delete request["target_type"];
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
     });
 });
 

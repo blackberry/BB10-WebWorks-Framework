@@ -16,7 +16,8 @@
 
 var _self = {},
     _ID = "blackberry.invoke",
-    _eventId = "blackberry.invoke.invokeEventId";
+    _invokeEventId = "blackberry.invoke.invokeEventId",
+    _queryEventId = "blackberry.invoke.queryEventId";
 
 _self.invoke = function (request, onSuccess, onError) {
     var data,
@@ -56,16 +57,31 @@ _self.invoke = function (request, onSuccess, onError) {
         }
     };
 
-    if (!window.webworks.event.isOn(_eventId)) {
-        window.webworks.event.once(_ID, _eventId, callback);
+    if (!window.webworks.event.isOn(_invokeEventId)) {
+        window.webworks.event.once(_ID, _invokeEventId, callback);
     }
 
     return window.webworks.execAsync(_ID, "invoke", {request: request});
 };
 
-window.webworks.defineReadOnlyField(_self, "ACTION_OPEN", "bb.action.OPEN");
-window.webworks.defineReadOnlyField(_self, "ACTION_VIEW", "bb.action.VIEW");
-window.webworks.defineReadOnlyField(_self, "ACTION_SHARE", "bb.aciton.SHARE");
+_self.query = function (request, onSuccess, onError) {
+    var queryCallback = function (args) {
+            if (onError && typeof onError === 'function' &&
+                    args && args.error && typeof args.error === "string" &&
+                    args.error.length !== 0) {
+                onError(args.error);
+            } else if (onSuccess && typeof onSuccess === "function" &&
+                    args && args.response && args.response !== null) {
+                onSuccess(args.response);
+            }
+        };
+
+    if (!window.webworks.event.isOn(_queryEventId)) {
+        window.webworks.event.once(_ID, _queryEventId, queryCallback);
+    }
+
+    window.webworks.execAsync(_ID, "query", {request: request});
+};
 
 module.exports = _self;
 

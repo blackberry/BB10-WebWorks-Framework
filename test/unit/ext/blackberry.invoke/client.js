@@ -41,6 +41,7 @@ describe("blackberry.invoke client", function () {
     });
 
     describe("invoke", function () {
+
         it("should call error callback if request is not valid", function () {
             var onError = jasmine.createSpy("client onError");
 
@@ -116,5 +117,79 @@ describe("blackberry.invoke client", function () {
             expect(onError).toHaveBeenCalled();
         });
     });
-});
 
+    describe("query", function () {
+
+        beforeEach(function () {
+            mockedWebworks.event.once.andCallFake(function (id, eventId, func) {
+                mockedWebworks.event.handler = [];
+                mockedWebworks.event.handler[eventId] = func;
+            });
+
+            mockedWebworks.execAsync.andCallFake(function (id, action, args) {
+
+                if (id && id === "blackberry.invoke" && action && action === "query") {
+                    var _queryEventId = "blackberry.invoke.queryEventId";
+
+                    //Valid the args
+                    if (args && args.request && (args.request["type"] || args.request["uri"]) &&
+                            args.request["target_type"]) {
+                        mockedWebworks.event.handler[_queryEventId]({"error": "", "response": {}});
+                    } else {
+                        mockedWebworks.event.handler[_queryEventId]({"error": "invalid_argument", "response": null});
+                    }
+
+                    delete mockedWebworks.event.handler[_queryEventId];
+                }
+            });
+        });
+
+        afterEach(function () {
+            if (mockedWebworks.event.handler) {
+                delete mockedWebworks.event.handler;
+            }
+        });
+
+        it("should register an event callback to be triggered by the server side", function () {
+            var request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": "ALL"
+                },
+                onSuccess = jasmine.createSpy("client onSuccess"),
+                onError = jasmine.createSpy("client onError");
+
+            client.query(request, onSuccess, onError);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith("blackberry.invoke", "blackberry.invoke.queryEventId", jasmine.any(Function));
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith("blackberry.invoke", "query", {"request": request });
+        });
+
+        it("should call success callback if the invocation is successfull", function () {
+            var request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": "ALL"
+                },
+                onSuccess = jasmine.createSpy("client onSuccess"),
+                onError = jasmine.createSpy("client onError");
+
+            client.query(request, onSuccess, onError);
+            expect(window.webworks.execAsync).toHaveBeenCalledWith("blackberry.invoke", "query", {"request": request});
+            expect(onSuccess).toHaveBeenCalledWith(jasmine.any(Object));
+            expect(onError).not.toHaveBeenCalled();
+        });
+
+        it("should trigger error callback if the invocation is unsuccessfull", function () {
+            var request = {
+                    "action": "bb.action.OPEN",
+                    "target_type": "ALL"
+                },
+                onSuccess = jasmine.createSpy("client onSuccess"),
+                onError = jasmine.createSpy("client onError");
+
+            client.query(request, onSuccess, onError);
+            expect(onSuccess).not.toHaveBeenCalled();
+            expect(onError).toHaveBeenCalledWith(jasmine.any(String));
+        });
+    });
+});
