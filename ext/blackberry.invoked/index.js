@@ -19,9 +19,13 @@ var _event = require("./../../lib/event"),
         invoked: {
             context: require("./invocationEvents"),
             event: "invoked",
-            trigger: function () {
-                var onInvokedInfo = JSON.parse(window.qnx.webplatform.getApplication().invocation.getRequest());
-                _event.trigger("invoked", onInvokedInfo);
+            trigger: function (request) {
+                var onInvokedInfo = JSON.parse(request);
+
+                // Workaround for double invoke bug
+                if (onInvokedInfo.uri !== "invoke://localhost") {
+                    _event.trigger("invoked", onInvokedInfo);
+                }
             }
         }
     };

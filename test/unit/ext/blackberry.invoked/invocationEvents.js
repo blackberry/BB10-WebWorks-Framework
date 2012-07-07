@@ -28,6 +28,7 @@ describe("blackberry.invoked invocationEvents", function () {
             getStartupMode: jasmine.createSpy("getStartupMode").andCallFake(function () {
                 return startupMode;
             }),
+            getRequest: jasmine.createSpy("invocation getRequest"),
             LAUNCH: 0
         };
         GLOBAL.window.qnx = {
