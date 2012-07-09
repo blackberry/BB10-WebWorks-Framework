@@ -25,8 +25,15 @@ var contextmenu,
     _invocation = window.qnx.webplatform.getApplication().invocation,
     _controller = window.qnx.webplatform.getController(),
     _application = window.qnx.webplatform.getApplication(),
-    menuActions,
-    contextMenuEnabled = true;
+    _customContextItems = {},
+    _menuActions,
+    contextMenuEnabled = true,
+    CONTEXT_ALL = 'ALL',
+    CONTEXT_LINK = 'LINK',
+    CONTEXT_IMAGE_LINK = 'IMAGE_LINK',
+    CONTEXT_IMAGE = 'IMAGE',
+    CONTEXT_TEXT = 'TEXT',
+    CONTEXT_INPUT = 'INPUT';
 
 function enabled(success, fail, args, env) {
     if (args) {
@@ -49,7 +56,7 @@ function generateMenuItems(menuItems) {
     for (i = 0; i < menuItems.length; i++) {
         switch (menuItems[i]) {
         case 'ClearField':
-            items.push({'name': 'Clear Field', 'actionId': 'ClearField', 'imageUrl': 'assets/Browser_Cancel_Selection.png'});
+            items.push({'label': 'Clear Field', 'actionId': 'ClearField', 'imageUrl': 'assets/Browser_Cancel_Selection.png'});
             break;
         case 'SendLink':
             break;
@@ -60,38 +67,38 @@ function generateMenuItems(menuItems) {
         case 'Delete':
             break;
         case 'Cancel':
-            items.push({'name': 'Cancel', 'actionId': 'Cancel', 'imageUrl': 'assets/Browser_Cancel_Selection.png'});
+            items.push({'label': 'Cancel', 'actionId': 'Cancel', 'imageUrl': 'assets/Browser_Cancel_Selection.png'});
             break;
         case 'Cut':
-            items.push({'name': 'Cut', 'actionId': 'Cut', 'imageUrl': 'assets/Browser_Cut.png'});
+            items.push({'label': 'Cut', 'actionId': 'Cut', 'imageUrl': 'assets/Browser_Cut.png'});
             break;
         case 'Copy':
-            items.push({'name': 'Copy', 'actionId': 'Copy', 'imageUrl': 'assets/Browser_Copy.png'});
+            items.push({'label': 'Copy', 'actionId': 'Copy', 'imageUrl': 'assets/Browser_Copy.png'});
             break;
         case 'Paste':
-            items.push({'name': 'Paste', 'actionId': 'Paste', 'imageUrl': 'assets/crosscutmenu_paste.png'});
+            items.push({'label': 'Paste', 'actionId': 'Paste', 'imageUrl': 'assets/crosscutmenu_paste.png'});
             break;
         case 'Select':
-            items.push({'name': 'Select', 'actionId': 'Select', 'imageUrl': 'assets/crosscutmenu_paste.png'});
+            items.push({'label': 'Select', 'actionId': 'Select', 'imageUrl': 'assets/crosscutmenu_paste.png'});
             break;
         case 'AddLinkToBookmarks':
             break;
         case 'CopyLink':
-            items.push({'name': 'Copy Link', 'actionId': 'CopyLink', 'imageUrl': 'assets/Browser_CopyLink.png'});
+            items.push({'label': 'Copy Link', 'actionId': 'CopyLink', 'imageUrl': 'assets/Browser_CopyLink.png'});
             break;
         case 'OpenLinkInNewTab':
             break;
         case 'OpenLink':
-            items.push({'name': 'Open', 'actionId': 'OpenLink', 'imageUrl': 'assets/Browser_OpenLink.png'});
+            items.push({'label': 'Open', 'actionId': 'OpenLink', 'imageUrl': 'assets/Browser_OpenLink.png'});
             break;
         case 'SaveLinkAs':
-            items.push({'name': 'Save Link as', 'actionId': 'SaveLinkAs', 'imageUrl': 'assets/Browser_SaveLink.png'});
+            items.push({'label': 'Save Link as', 'actionId': 'SaveLinkAs', 'imageUrl': 'assets/Browser_SaveLink.png'});
             break;
         case 'SaveImage':
-            items.push({'name': 'Save Image', 'actionId': 'SaveImage', 'imageUrl': 'assets/Browser_SaveImage.png'});
+            items.push({'label': 'Save Image', 'actionId': 'SaveImage', 'imageUrl': 'assets/Browser_SaveImage.png'});
             break;
         case 'CopyImageLink':
-            items.push({'name': 'Copy Image Link', 'actionId': 'CopyImageLink', 'imageUrl': 'assets/Browser_CopyImageLink.png'});
+            items.push({'label': 'Copy Image Link', 'actionId': 'CopyImageLink', 'imageUrl': 'assets/Browser_CopyImageLink.png'});
             break;
         case 'ViewImage':
             break;
@@ -100,13 +107,13 @@ function generateMenuItems(menuItems) {
         case 'ShareLink':
             // local and file protocol won't have sharelink menuitem
             if (!/^local|^file/.test(_currentContext.url)) {
-                items.push({'name': 'Share Link', 'actionId': 'ShareLink', 'imageUrl': 'assets/Browser_ShareLink.png'});
+                items.push({'label': 'Share Link', 'actionId': 'ShareLink', 'imageUrl': 'assets/Browser_ShareLink.png'});
             }
             break;
         case 'ShareImage':
             break;
         case 'InspectElement':
-            items.push({'name': 'Inspect Element', 'actionId': 'InspectElement', 'imageUrl': 'assets/generic_81_81_placeholder.png'});
+            items.push({'label': 'Inspect Element', 'actionId': 'InspectElement', 'imageUrl': 'assets/generic_81_81_placeholder.png'});
             break;
         }
     }
@@ -118,6 +125,108 @@ function generateMenuItems(menuItems) {
     return items;
 }
 
+function safeEval(jsonString) {
+    return JSON.parse('{"obj":' + jsonString + '}').obj;
+}
+
+function addItem(success, fail, args, env) {
+    var contexts = JSON.parse(decodeURIComponent(args["contexts"])),
+        action = JSON.parse(decodeURIComponent(args["action"])),
+        context;
+    
+    // Check actionId is valid or if item already has been added
+    if (!action.actionId || action.actionId === '') {
+        return fail('Cannot add item.  actionId is not valid');
+    } else if (!_actions.addCustomItem(action.actionId)) {
+        return fail('Cannot add item.  A menu item with the actionId "' + action.actionId + '" already exists.');
+    }
+
+    for (context in contexts) {
+        if (!_customContextItems[contexts[context]]) {
+            _customContextItems[contexts[context]] = {};
+        }
+        _customContextItems[contexts[context]][action.actionId] = action; 
+    }
+   
+    success();
+}
+
+function removeItemFromAllContexts(actionId) {
+    var everyContext = [CONTEXT_ALL,
+                        CONTEXT_LINK, 
+                        CONTEXT_IMAGE_LINK,
+                        CONTEXT_IMAGE,
+                        CONTEXT_INPUT,
+                        CONTEXT_TEXT],
+        context;
+
+    for (context in everyContext) {
+        if (_customContextItems[everyContext[context]]) { 
+            delete _customContextItems[everyContext[context]][actionId];
+        } 
+    }
+}
+
+function removeItem(success, fail, args, env) {
+    var contexts = JSON.parse(decodeURIComponent(args["contexts"])),
+        actionId = safeEval(decodeURIComponent(args["actionId"])),
+        context;
+
+    for (context in contexts) {
+        if (contexts[context] === CONTEXT_ALL) {
+            removeItemFromAllContexts(actionId);
+        } else {
+            if (_customContextItems[contexts[context]]) {
+                delete _customContextItems[contexts[context]][actionId]; 
+            }
+        }
+    }
+    _actions.removeCustomItem(actionId);
+    success();
+}
+
+function addCustomItemsForContext(items, context) {
+    var customItem; 
+       
+    if (_customContextItems[context]) {
+        for (customItem in _customContextItems[context]) {
+            items.push(_customContextItems[context][customItem]); 
+        }
+    }
+}
+
+function addCustomItems(menuItems, currentContext) {
+      
+    var context;
+
+    // Add ALL
+    addCustomItemsForContext(menuItems, CONTEXT_ALL);
+   
+    // Determine context
+    if (currentContext.url && !currentContext.isImage) {
+        context = CONTEXT_LINK;
+    }
+    else if (currentContext.url && currentContext.isImage) {
+        context = CONTEXT_IMAGE_LINK;
+    }
+    else if (currentContext.isImage) {
+        context = CONTEXT_IMAGE;
+    }
+    else if (currentContext.isInput) {
+        context = CONTEXT_INPUT;
+    }
+    else if (currentContext.text) {
+        context = CONTEXT_TEXT;
+    }
+    
+    addCustomItemsForContext(menuItems, context);
+}
+
+function restoreDefaultMenu() {
+    _customContextItems = {};
+    _actions.clearCustomHandlers();
+}
+
 function init() {
 
     _overlayWebView.onPropertyCurrentContextEvent = function (value) {
@@ -127,45 +236,30 @@ function init() {
     _overlayWebView.onContextMenuRequestEvent = function (value) {
         var menu = JSON.parse(value),
             menuItems = generateMenuItems(menu.menuItems),
-        args = JSON.stringify({'menuItems': menuItems,
-                              '_currentContext': _currentContext});
-        _controller.publishRemoteFunction('executeMenuAction', function (args, callback) {
-            var action = args[0];
-            if (action) {
-                console.log("Executing action: " + args[0]);
-                //Call the items[action] function //
-                _actions[action](action);
-            } else {
-                console.log("No action item was set");
-            }
-        });
-
+            args; 
+            
         if (contextMenuEnabled) {
+            addCustomItems(menuItems, _currentContext);
+            args = JSON.stringify({'menuItems': menuItems, '_currentContext': _currentContext});
             _overlayWebView.executeJavascript("window.showMenu(" + args + ")");
-        } else {
-            console.log("Context Menu is disabled");
         }
         return '{"setPreventDefault":true}';
     };
-
     _controller.publishRemoteFunction('executeMenuAction', function (args, callback) {
-        var action = args[0];
-        if (action) {
-            console.log("Executing action: " + args[0]);
-            //Call the items[action] function //
-            _actions[action](action);
-        } else {
-            console.log("No action item was set");
+        var actionId = args[0];
+        if (actionId) {
+            _actions.runHandler(actionId);
         }
     });
-
-
+    _webview.addEventListener('DocumentLoaded', function () {
+        restoreDefaultMenu();
+    });
 }
 
 contextmenu = {
-    init: init,
-    setMenuOptions: setMenuOptions,
-    enabled : enabled
+    enabled : enabled,
+    addItem: addItem,
+    removeItem: removeItem
 };
 
 // Listen for the init event

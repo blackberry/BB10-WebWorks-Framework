@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 var contextmenu = {},
-    ID = "blackberry.ui.contextmenu";
+    _ID = "blackberry.ui.contextmenu",
+    _storedCallbacks = {},
+    _listeningForCallbacks = false;
+
+function defineReadOnlyField(field) {
+    Object.defineProperty(contextmenu, "CONTEXT_" + field, {"value": field, "writable": false});
+}
+
+function listen() {
+    window.blackberry.event.addEventListener('contextmenu.executeMenuAction', function (actionId) {
+        _storedCallbacks[actionId]();
+    });
+}
 
 // Define the enabled property that an API developer can access
 // to enable/disable the context menu UI
@@ -22,7 +34,7 @@ Object.defineProperty(contextmenu, "enabled", {
     get : function () {
         var enabled;
         try {
-            enabled = window.webworks.execAsync(ID, "enabled");
+            enabled = window.webworks.execAsync(_ID, "enabled");
         } catch (error) {
             console.log(error);
         }
@@ -30,11 +42,32 @@ Object.defineProperty(contextmenu, "enabled", {
     },
     set: function (value) {
         try {
-            window.webworks.execAsync(ID, "enabled", {"enabled": value});
+            window.webworks.execAsync(_ID, "enabled", {"enabled": value});
         } catch (error) {
             console.error(error);
         }
     }
 });
+
+contextmenu.addItem = function (contexts, action, callback) {
+    _storedCallbacks[action.actionId] = callback;
+    if (!_listeningForCallbacks) {
+        _listeningForCallbacks = true;
+        listen();
+    }
+    window.webworks.execAsync(_ID, 'addItem', {contexts: contexts, action: action});
+};
+
+contextmenu.removeItem = function (contexts, actionId) {
+    window.webworks.execAsync(_ID, 'removeItem', {contexts: contexts, actionId: actionId});
+    delete _storedCallbacks[actionId];
+};
+
+defineReadOnlyField("ALL");
+defineReadOnlyField("LINK");
+defineReadOnlyField("IMAGE_LINK");
+defineReadOnlyField("IMAGE");
+defineReadOnlyField("INPUT");
+defineReadOnlyField("TEXT");
 
 module.exports = contextmenu;

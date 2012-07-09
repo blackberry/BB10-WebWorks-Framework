@@ -17,10 +17,13 @@
 var _overlayWebView = require('./../../lib/overlayWebView'),
     _utils = require('./../../lib/utils'),
     _config = require('./../../lib/config.js'),
+    _event = require('./../../lib/event'),
     _menuItems,
     _currentContext,
     _invocation = window.qnx.webplatform.getApplication().invocation,
     _application = window.qnx.webplatform.getApplication(),
+    _handlers = {},
+    _customHandlers = {},
     menuActions;
 
 
@@ -177,8 +180,38 @@ function responseHandler(menuAction) {
     handleContextMenuResponse([menuAction]);
 }
 
-menuActions = {
+function customItemHandler(actionId) {
+    _event.trigger('contextmenu.executeMenuAction', actionId);    
+}
 
+function addCustomItem(actionId) {
+    if (_customHandlers[actionId]) {
+        return false;
+    } else {
+        _customHandlers[actionId] = customItemHandler.bind(this, actionId);
+        return true;
+    }
+}
+
+function removeCustomItem(actionId) {
+    if (_customHandlers[actionId]) {
+        delete _customHandlers[actionId];
+    }
+}
+
+function clearCustomHandlers() {
+    _customHandlers = {};
+}
+
+function runHandler(actionId) {
+    if (_customHandlers[actionId]) {
+        _customHandlers[actionId](actionId);
+    } else if (_handlers[actionId]) {
+        _handlers[actionId](actionId);
+    }
+}
+
+_handlers = {
     'SaveLink'       : saveLink,
     'Cancel'         : responseHandler,
     'ClearField'     : responseHandler,
@@ -192,8 +225,16 @@ menuActions = {
     'CopyImageLink'  : responseHandler,
     'SaveImage'      : saveImage,
     'ShareLink'      : shareLink,
-    'InspectElement' : responseHandler,
+    'InspectElement' : responseHandler
+};
+
+menuActions = {
+    handlers: _handlers,
+    runHandler: runHandler,
+    clearCustomHandlers: clearCustomHandlers,
     setCurrentContext: setCurrentContext,
+    addCustomItem: addCustomItem,
+    removeCustomItem: removeCustomItem
 };
 
 module.exports = menuActions;

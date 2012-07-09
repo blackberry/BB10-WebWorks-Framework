@@ -16,7 +16,9 @@
 var _apiDir = __dirname + "./../../../../ext/ui.contextmenu/",
     _libDir = __dirname + "./../../../../lib/",
     webview = require(_libDir + 'webview'),
-    index,
+    overlayWebView = require(_libDir + 'overlayWebView'),
+    controller = require(_libDir + 'controllerWebView'),
+    contextmenu,
     success,
     mockedWebWorks = {
         execAsync: jasmine.createSpy(),
@@ -25,7 +27,10 @@ var _apiDir = __dirname + "./../../../../ext/ui.contextmenu/",
     },
     mockedController = {
         remoteExec: jasmine.createSpy(),
-        addEventListener : jasmine.createSpy()
+        addEventListener : jasmine.createSpy().andCallFake(function (eventId, callback) {
+            callback();
+        }),
+        publishRemoteFunction: jasmine.createSpy()
     },
     mockedApplication = {
         invocation : {
@@ -39,6 +44,9 @@ var _apiDir = __dirname + "./../../../../ext/ui.contextmenu/",
         },
         getApplication : function () {
             return mockedApplication;
+        },
+        createWebView: function () {
+            return {};
         }
     };
 
@@ -54,17 +62,26 @@ describe("blackberry.ui.contextmenu index", function () {
                 },
                 getApplication : function () {
                     return mockedApplication;
+                },
+                createWebView: function () {
+                    return {};
                 }
             }
         };
-
-        index = require(_apiDir + "/index");
+        overlayWebView.create();
+        spyOn(webview, 'addEventListener').andCallFake(function (eventId, callback) {
+            callback();
+        });
+        contextmenu = require(_apiDir + "/index");
         success = jasmine.createSpy("success");
     });
 
+    it("adds a DocumentLoaded listener to the client webview", function () {
+        expect(webview.addEventListener).toHaveBeenCalledWith('DocumentLoaded', jasmine.any(Function));
+    });
 
     it("enabled is called with false on the webview.setContextMenuEnabled method", function () {
-        index.enabled(success, null, {
+        contextmenu.enabled(success, null, {
             "enabled": encodeURIComponent(JSON.stringify(false))
         }, null);
 
@@ -72,15 +89,70 @@ describe("blackberry.ui.contextmenu index", function () {
     });
 
     it("enabled is called with true on the webview.setContextMenuEnabled", function () {
-        index.enabled(success, null, {
+        contextmenu.enabled(success, null, {
             "enabled": encodeURIComponent(JSON.stringify(true))
         }, null);
 
         expect(success).toHaveBeenCalledWith('ContextMenuEnabled has been set to ' + true);
     });
 
+    it("can add a custom menu item", function () {
+        contextmenu.addItem(success, null, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "action": encodeURIComponent(JSON.stringify({actionId: 'explosion'}))
+        }, null);
 
+        expect(success).toHaveBeenCalled();
+    });
+    
+    it("cannot add custom items without an actionId", function () {
+        var fail = jasmine.createSpy();
+        contextmenu.addItem(null, fail, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "action": encodeURIComponent(JSON.stringify({}))
+        }, null);
 
+        expect(fail).toHaveBeenCalled();
+    });
+    
+    it("cannot add custom items with actionId as an empty string", function () {
+        var fail = jasmine.createSpy();
+        contextmenu.addItem(null, fail, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "action": encodeURIComponent(JSON.stringify({actionId: ''}))
+        }, null);
+
+        expect(fail).toHaveBeenCalled();
+    });
+    
+    it("cannot add multiple custom menu items with the same actionId", function () {
+        var fail = jasmine.createSpy();
+        contextmenu.addItem(success, null, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "action": encodeURIComponent(JSON.stringify({actionId: 'Copy'}))
+        }, null);
+
+        contextmenu.addItem(success, fail, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "action": encodeURIComponent(JSON.stringify({actionId: 'Copy'}))
+        }, null);
+
+        expect(fail).toHaveBeenCalled();
+    });
+
+    it("can remove a custom menu item", function () {
+        var dummy = jasmine.createSpy();
+        contextmenu.addItem(dummy, dummy, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "action": encodeURIComponent(JSON.stringify({actionId: 'explosion'}))
+        }, null);
+        contextmenu.removeItem(success, null, {
+            "contexts": encodeURIComponent(JSON.stringify(['ALL'])),
+            "actionId": encodeURIComponent(JSON.stringify('explosion'))
+        }, null);
+
+        expect(success).toHaveBeenCalled();
+    });
 
 });
 
