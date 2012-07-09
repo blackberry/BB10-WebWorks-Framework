@@ -15,16 +15,12 @@
  */
 var _apiDir = __dirname + "./../../../../ext/ui.contextmenu",
     _libDir = __dirname + "./../../../../lib/",
+    libEvent = require(_libDir + 'event'),
     config = require(_libDir + './config.js'),
     webview = require(_libDir + 'webview'),
     invocation,
     actions,
     success,
-    mockedWebWorks = {
-        execAsync: jasmine.createSpy(),
-        event: { once : jasmine.createSpy(),
-                 isOn : jasmine.createSpy() }
-    },
     mockedController = {
         remoteExec: jasmine.createSpy(),
         addEventListener : jasmine.createSpy()
@@ -46,10 +42,9 @@ var _apiDir = __dirname + "./../../../../ext/ui.contextmenu",
         }
     };
 
-describe("blackberry.ui.actions.index", function () {
+describe("blackberry.ui.actions.handlers index", function () {
     beforeEach(function () {
         GLOBAL.window.qnx.webplatform = mockedWebPlatform;
-        GLOBAL.window.webworks = mockedWebWorks;
         GLOBAL.qnx = {
             callExtensionMethod: jasmine.createSpy("bond"),
             webplatform : {
@@ -73,41 +68,42 @@ describe("blackberry.ui.actions.index", function () {
         GLOBAL.downloadSharedFile = jasmine.createSpy();
         actions = require(_apiDir + '/actions');
         invocation = window.qnx.webplatform.getApplication().invocation;
+        actions.clearCustomHandlers();
     });
 
 
     it("Cause the Copy function to get called properly", function () {
-        actions.Copy('Copy');
+        actions.handlers.Copy('Copy');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Copy');
     });
 
     it("Cause the ClearField function to get called properly", function () {
-        actions.ClearField('ClearField');
+        actions.handlers.ClearField('ClearField');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'ClearField');
     });
 
     it("Cause the Paste function to get called properly", function () {
-        actions.Paste('Paste');
+        actions.handlers.Paste('Paste');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Paste');
     });
 
     it("Cause the Cut function to get called properly", function () {
-        actions.Cut('Cut');
+        actions.handlers.Cut('Cut');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Cut');
     });
 
     it("Cause the Select function to get called properly", function () {
-        actions.Select('Select');
+        actions.handlers.Select('Select');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Select');
     });
 
     it("Cause the CopyLink function to get called properly", function () {
-        actions.CopyLink('CopyLink');
+        actions.handlers.CopyLink('CopyLink');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'CopyLink');
     });
 
     it("Cause the CopyImageLink function to get called properly", function () {
-        actions.CopyImageLink('CopyImageLink');
+        actions.handlers.CopyImageLink('CopyImageLink');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'CopyImageLink');
     });
 
@@ -117,7 +113,7 @@ describe("blackberry.ui.actions.index", function () {
             src : 'testSrc'
         };
         actions.setCurrentContext(currentContext);
-        actions.OpenLink('OpenLink');
+        actions.handlers.OpenLink('OpenLink');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.loadURL', 2, 'testUrl');
     });
 
@@ -127,25 +123,25 @@ describe("blackberry.ui.actions.index", function () {
             src : 'testSrc'
         };
         actions.setCurrentContext(currentContext);
-        actions.SaveLinkAs('SaveLink');
+        actions.handlers.SaveLinkAs('SaveLink');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.downloadURL', 2, 'testUrl');
     });
 
 
     it("Cause the InspectElement function to get called properly", function () {
-        actions.InspectElement('InspectElement');
+        actions.handlers.InspectElement('InspectElement');
         expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'InspectElement');
     });
 
 
     it("has a SaveImage function", function () {
-        expect(actions.SaveImage).toBeDefined();
+        expect(actions.handlers.SaveImage).toBeDefined();
     });
 
     it("Causes the saveImage function to return", function () {
         var currentContext = {};
         actions.setCurrentContext(currentContext);
-        actions.SaveImage('SaveImage');
+        actions.handlers.SaveImage('SaveImage');
         expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
     });
 
@@ -157,12 +153,35 @@ describe("blackberry.ui.actions.index", function () {
         };
 
         actions.setCurrentContext(currentContext);
-        actions.SaveImage('SaveImage');
+        actions.handlers.SaveImage('SaveImage');
         expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
     });
 
     it("has a ShareLink function", function () {
-        expect(actions.ShareLink).toBeDefined();
+        expect(actions.handlers.ShareLink).toBeDefined();
+    });
+    
+    it("can add and execute custom menu items", function () {
+        var actionId = 'awesomeCity';
+        spyOn(libEvent, 'trigger');
+        expect(actions.addCustomItem(actionId)).toEqual(true);
+        actions.runHandler(actionId);
+        expect(libEvent.trigger).toHaveBeenCalledWith('contextmenu.executeMenuAction', actionId);
+    });
+    
+    it("cannot add duplicate custom menu items", function () {
+        var actionId = 'awesomeCity';
+        expect(actions.addCustomItem(actionId)).toEqual(true);
+        expect(actions.addCustomItem(actionId)).toEqual(false);
+    });
+    
+    it("can remove a custom menu item", function () {
+        var actionId = 'awesomeCity';
+        spyOn(libEvent, 'trigger');
+        expect(actions.addCustomItem(actionId)).toEqual(true);
+        actions.removeCustomItem(actionId);
+        actions.runHandler(actionId);
+        expect(libEvent.trigger).not.toHaveBeenCalled();
     });
 
 });

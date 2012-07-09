@@ -79,7 +79,7 @@ contextmenu = {
             menuImage = document.createElement('img');
             menuImage.src = options[i].imageUrl ? options[i].imageUrl : 'assets/generic_81_81_placeholder.png';
             menuItem.appendChild(menuImage);
-            menuItem.appendChild(document.createTextNode(options[i].name));
+            menuItem.appendChild(document.createTextNode(options[i].label));
             menuItem.setAttribute("class", "menuItem");
             menuItem.ontouchstart = handleTouchStart.bind(this, menuItem);
             menuItem.ontouchend = handleTouchEnd.bind(this, options[i].actionId, menuItem);
@@ -130,6 +130,7 @@ contextmenu = {
         menuVisible = false;
         menuPeeked = false;
         menu.className = 'hideMenu';
+
         // Reset sensitivity
         window.qnx.webplatform.getController().remoteExec(1, 'webview.setSensitivity', ['SensitivityTest']);
     },
