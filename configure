@@ -6,11 +6,11 @@ fi
 npm install jasmine-node express wrench@1.3.6 jWorkflow mustache
 if [ "$1" != "-scm" ]; then 
     git submodule update --init;
-    cd ./dependencies/webplatform/framework;
-    if [[ $OS == *Windows* ]]; then
-        source configure;
-    else
-        ./configure
-    fi
-    jake;
 fi
+cd ./dependencies/webplatform/framework;
+if [[ "$OS" == *Windows* ]]; then
+    source configure;
+else
+    ./configure
+fi
+jake;
