@@ -16,9 +16,25 @@
 var contextmenu = {},
     ID = "blackberry.ui.contextmenu";
 
-//contextmenu.defineSetter/defineGetter for 'enabled'
-        
-//var returnValue = window.webworks.execSync(ID, 'enabled', inputValue);
-
+// Define the enabled property that an API developer can access
+// to enable/disable the context menu UI
+Object.defineProperty(contextmenu, "enabled", {
+    get : function () {
+        var enabled;
+         try {
+            enabled = window.webworks.execSync(ID, "enabled");
+        } catch (error) {
+            console.log(error);
+        }
+        return enabled;
+    },
+    set: function (value) {
+        try {
+            window.webworks.execSync(ID, "enabled", {"enabled": value});
+        } catch (error) {
+            console.error(error);
+        }
+    }
+});
 
 module.exports = contextmenu;

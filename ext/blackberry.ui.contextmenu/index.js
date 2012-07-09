@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+var _webview = require('./../../lib/webview');
+
 module.exports = {
     enabled: function (success, fail, args, env) {
-        success('return value goes here for success');
+
+        if (args) {
+            var enabled = JSON.parse(decodeURIComponent(args["enabled"]));
+            _webview.setContextMenuEnabled(enabled);
+
+            success('return value goes here for success');
+        } else {
+            fail('ContextMenuEnabled property can only be set with true false.');
+        }
     }
 };
