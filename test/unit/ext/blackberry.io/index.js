@@ -82,7 +82,6 @@ describe("blackberry.io index", function () {
     it("SDCard calls getEnv('HOME')", function () {
         var success = jasmine.createSpy();
         index.SDCard(success);
-        expect(mockedApplication.getEnv).toHaveBeenCalledWith("HOME");
-        expect(success).toHaveBeenCalledWith("/home/../../../removable/sdcard");
+        expect(success).toHaveBeenCalledWith("/accounts/1000/removable/sdcard");
     });
 });

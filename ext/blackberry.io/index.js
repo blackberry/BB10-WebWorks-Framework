@@ -16,6 +16,17 @@
 var _util = require("./../../lib/utils"),
     _webview;
 
+function getHomeDir() {
+    var homeDir = window.qnx.webplatform.getApplication().getEnv("HOME");
+
+    // HOME environment variable starts with two slashes for some reason, get rid of the extra slash
+    if (homeDir.match("^//")) {
+        return homeDir.substring(1);
+    } else {
+        return homeDir;
+    }
+}
+
 module.exports = {
     sandbox: function (success, fail, args, env) {
         var value;
@@ -36,16 +47,15 @@ module.exports = {
     },
 
     home: function (success, fail, args, env) {
-        success(window.qnx.webplatform.getApplication().getEnv("HOME"));
+        success(getHomeDir());
     },
 
     sharedFolder: function (success, fail, args, env) {
-        var home = window.qnx.webplatform.getApplication().getEnv("HOME");
+        var home = getHomeDir();
         success(home + "/../shared");
     },
 
     SDCard: function (success, fail, args, env) {
-        var home = window.qnx.webplatform.getApplication().getEnv("HOME");
-        success(home + "/../../../removable/sdcard");
+        success("/accounts/1000/removable/sdcard");
     }
 };
