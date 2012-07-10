@@ -21,7 +21,7 @@ var contextmenu = {},
 Object.defineProperty(contextmenu, "enabled", {
     get : function () {
         var enabled;
-         try {
+        try {
             enabled = window.webworks.execSync(ID, "enabled");
         } catch (error) {
             console.log(error);
