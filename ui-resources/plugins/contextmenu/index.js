@@ -117,7 +117,6 @@ contextmenu = {
         menuVisible = false;
         menuPeeked = false;
         menu.className = 'hideMenu';
-        qnx.callExtensionMethod("webview.notifyContextMenuCancelled", 2);
 
         // Reset sensitivity
         window.qnx.webplatform.getController().remoteExec(1, 'webview.setSensitivity', ['SensitivityTest']);
