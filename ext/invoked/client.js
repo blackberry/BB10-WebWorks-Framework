@@ -17,6 +17,18 @@
 var _self = {},
     _ID = require("./manifest.json").namespace;
 
+_self.cardResizeDone = function () {
+    window.webworks.execSync(_ID, "cardResizeDone");
+};
+
+_self.cardStartPeek = function (peekType) {
+    window.webworks.execSync(_ID, "cardStartPeek", {'peekType': peekType});
+};
+
+_self.cardRequestClosure = function (request) {
+    window.webworks.execSync(_ID, "cardRequestClosure", {request: request});
+};
+
 window.webworks.execSync(_ID, "registerEvents", null);
 
 module.exports = _self;

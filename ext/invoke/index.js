@@ -13,7 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _event = require("../../lib/event");
+var _event = require("../../lib/event"),
+    _actionMap = {
+        onChildCardStartPeek: {
+            context: require("./invocationEvents"),
+            event: "onChildCardStartPeek",
+            trigger: function (peekType) {
+                _event.trigger("onChildCardStartPeek", peekType);
+            }
+        },
+        onChildCardEndPeek: {
+            context: require("./invocationEvents"),
+            event: "onChildCardEndPeek",
+            trigger: function () {
+                _event.trigger("onChildCardEndPeek");
+            }
+        },
+        onChildCardClosed: {
+            context: require("./invocationEvents"),
+            event: "onChildCardClosed",
+            trigger: function (info) {
+                _event.trigger("onChildCardClosed", info);
+            }
+        }
+    };
 
 module.exports = {
     invoke: function (success, fail, args) {
@@ -57,7 +80,7 @@ module.exports = {
                 "perimeter",
                 "brokering_mod"
             ],
-            expectedTypes = ["APPLICATION", "VIEWER"],
+            expectedTypes = ["APPLICATION", "VIEWER", "CARD"],
             request = {},
             callback = function (error, response) {
                 _event.trigger("invoke.queryEventId", {"error": error, "response": response});
@@ -103,6 +126,27 @@ module.exports = {
 
         window.qnx.webplatform.getApplication().invocation.queryTargets(request, callback);
         success();
+    },
+
+    closeChildCard: function (success, fail) {
+        try {
+            window.qnx.webplatform.getApplication().invocation.closeChildCard();
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
+    registerEvents: function (success, fail, args, env) {
+        try {
+            var utils = require("./../../lib/utils"),
+                eventExt = utils.loadExtensionModule("event", "index");
+
+            eventExt.registerEvents(_actionMap);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
     }
 
 };

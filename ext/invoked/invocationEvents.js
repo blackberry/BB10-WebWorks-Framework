@@ -18,23 +18,39 @@ var _application = window.qnx.webplatform.getApplication(),
 
 module.exports = {
     addEventListener: function (event, trigger) {
-        if (event === "invoked") {
+        switch (event) {
+        case "invoked":
             if (_startupMode !== _application.invocation.LAUNCH) {
                 trigger(_application.invocation.getRequest());
                 _startupMode = _application.invocation.LAUNCH;
             }
             window.qnx.webplatform.getApplication().invocation.addEventListener("Invoked", trigger);
-        }
-        else {
+            break;
+        case "onCardResize":
+            window.qnx.webplatform.getApplication().invocation.addEventListener("cardResize", trigger);
+            break;
+        case "onCardClosed":
+            window.qnx.webplatform.getApplication().invocation.addEventListener("cardClosed", trigger);
+            break;
+        default:
             console.log("Ignore registration for unknown event: " + event);
+            break;
         }
     },
     removeEventListener: function (event, trigger) {
-        if (event === "invoked") {
+        switch (event) {
+        case "invoked":
             window.qnx.webplatform.getApplication().invocation.removeEventListener("Invoked", trigger);
-        }
-        else {
+            break;
+        case "onCardResize":
+            window.qnx.webplatform.getApplication().invocation.removeEventListener("cardResize", trigger);
+            break;
+        case "onCardClosed":
+            window.qnx.webplatform.getApplication().invocation.removeEventListener("cardClosed", trigger);
+            break;
+        default:
             console.log("Ignore un-registration for unknown event: " + event);
+            break;
         }
     }
 };
