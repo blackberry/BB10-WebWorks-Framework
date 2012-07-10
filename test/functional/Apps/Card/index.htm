@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<!--
+ * Copyright 2012 Research In Motion Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
+<html>
+	<head>
+		<title>InvokedEventCard</title>
+		<script src="webworks-1.0.0.7.js" type="text/javascript"></script>
+		<script src="script.js" type="text/javascript"></script>
+	</head>
+	<body bgcolor="Teal">
+		<h2 align="center">Hi, I'm a Card!</h2>
+		<div align="left">
+			<br/>
+			<br/>
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="blackberry.event.addEventListener('invoked', onInvoked)">
+				Add Listener: 'invoked'
+			</button>
+			<br />
+			<br />
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="blackberry.event.addEventListener('onCardResize', onCardResize)">
+				Add Listener: 'onCardResize'
+			</button>
+			<br />
+			<br />
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="onResizeDone()">
+				Call cardResizeDone
+			</button>
+			<br />
+			<br />
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="blackberry.event.addEventListener('onCardClosed', onCardClosed)">
+				Add Listener: 'onCardClosed'
+			</button>
+		</div>
+		<div align="center">
+			<br/>
+			<br/>
+			<button style="width:250px; height: 250px; font-size: 200%; background-color: #CC3333" onclick="cardPeek()">
+				Peek Card
+			</button>
+			<button style="width:250px; height: 250px; font-size: 200%; background-color: #CC3333" onclick="sendCardDone()">
+				Close Card
+			</button>
+		</div>
+		<div align="left">
+			<br/>
+			<br/>
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="blackberry.event.removeEventListener('invoked', onInvoked)">
+				Remove Listener: 'invoked'
+			</button>
+			<br />
+			<br />
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="blackberry.event.removeEventListener('onCardResize', onCardResize)">
+				Remove Listener: 'onCardResize'
+			</button>
+			<br />
+			<br />
+			<button style="width: 600px; height: 100px; font-size: 200%" onclick="blackberry.event.removeEventListener('onCardClosed', onCardClosed)">
+				Remove Listener: 'onCardClosed'
+			</button>
+		</div>
+	</body>
+</html>

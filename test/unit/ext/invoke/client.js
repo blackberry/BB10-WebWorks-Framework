@@ -19,8 +19,8 @@ var _extDir = __dirname + "./../../../../ext",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
     mockedWebworks = {
+        execSync: jasmine.createSpy("webworks.execSync"),
         execAsync: jasmine.createSpy("webworks.execAsync"),
-        execSync: jasmine.createSpy(),
         defineReadOnlyField: jasmine.createSpy(),
         event: {
             isOn: jasmine.createSpy("webworks.event.isOn")
@@ -191,6 +191,20 @@ describe("invoke client", function () {
             client.query(request, onSuccess, onError);
             expect(onSuccess).not.toHaveBeenCalled();
             expect(onError).toHaveBeenCalledWith(jasmine.any(String));
+        });
+    });
+
+    describe("closeChildCard", function () {
+        it("should call execSync for closeChildCard", function () {
+            expect(client.closeChildCard).toBeDefined();
+            client.closeChildCard();
+            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "closeChildCard");
+        });
+    });
+
+    describe("registerEvents", function () {
+        it("should call registerEvents to enable events map for the extension", function () {
+            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "registerEvents", null);
         });
     });
 });

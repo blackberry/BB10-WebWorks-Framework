@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-describe("blackberry.invoke", function () {
-    it('blackberry.invoke should exist', function () {
-        expect(blackberry.invoke).toBeDefined();
+describe("blackberry.invoked", function () {
+    it('blackberry.invoked should exist', function () {
+        expect(blackberry.invoked).toBeDefined();
     });
 });

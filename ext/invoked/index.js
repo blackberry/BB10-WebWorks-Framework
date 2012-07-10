@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 var _event = require("./../../lib/event"),
-    _utils = require("./../../lib/utils"),
     _actionMap = {
         invoked: {
             context: require("./invocationEvents"),
@@ -27,14 +26,63 @@ var _event = require("./../../lib/event"),
                     _event.trigger("invoked", onInvokedInfo);
                 }
             }
+        },
+        onCardResize: {
+            context: require("./invocationEvents"),
+            event: "onCardResize",
+            trigger: function (info) {
+                _event.trigger("onCardResize", info);
+            }
+        },
+        onCardClosed: {
+            context: require("./invocationEvents"),
+            event: "onCardClosed",
+            trigger: function (info) {
+                _event.trigger("onCardClosed", info);
+            }
         }
     };
 
 module.exports = {
+    cardResizeDone: function (success, fail, args) {
+        try {
+            window.qnx.webplatform.getApplication().invocation.cardResized();
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
+    cardStartPeek: function (success, fail, args) {
+        var cardPeek;
+
+        try {
+            cardPeek = decodeURIComponent(args["peekType"]);
+            window.qnx.webplatform.getApplication().invocation.cardPeek(cardPeek);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
+    cardRequestClosure: function (success, fail, args) {
+        var request;
+
+        try {
+            request = JSON.parse(decodeURIComponent(args["request"]));
+            window.qnx.webplatform.getApplication().invocation.sendCardDone(request);
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
     registerEvents: function (success, fail, args, env) {
         try {
-            var _eventExt = _utils.loadExtensionModule("event", "index");
-            _eventExt.registerEvents(_actionMap);
+            var utils = require("./../../lib/utils"),
+                eventExt = utils.loadExtensionModule("event", "index");
+
+            eventExt.registerEvents(_actionMap);
             success();
         } catch (e) {
             fail(-1, e);

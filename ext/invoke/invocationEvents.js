@@ -13,28 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _application = window.qnx.webplatform.getApplication(),
-    _startupMode = _application.invocation.getStartupMode();
+var _application = window.qnx.webplatform.getApplication();
 
 module.exports = {
     addEventListener: function (event, trigger) {
-        if (event === "invoked") {
-            if (_startupMode !== _application.invocation.LAUNCH) {
-                trigger();
-                _startupMode = _application.invocation.LAUNCH;
-            }
-            window.qnx.webplatform.getApplication().invocation.addEventListener("Invoked", trigger);
-        }
-        else {
+        switch (event) {
+        case "onChildCardStartPeek":
+            window.qnx.webplatform.getApplication().invocation.addEventListener("cardPeekStarted", trigger);
+            break;
+        case "onChildCardEndPeek":
+            window.qnx.webplatform.getApplication().invocation.addEventListener("cardPeekEnded", trigger);
+            break;
+        case "onChildCardClosed":
+            window.qnx.webplatform.getApplication().invocation.addEventListener("childCardClosed", trigger);
+            break;
+        default:
             console.log("Ignore registration for unknown event: " + event);
+            break;
         }
     },
     removeEventListener: function (event, trigger) {
-        if (event === "invoked") {
-            window.qnx.webplatform.getApplication().invocation.removeEventListener("Invoked", trigger);
-        }
-        else {
+        switch (event) {
+        case "onChildCardStartPeek":
+            window.qnx.webplatform.getApplication().invocation.removeEventListener("cardPeekStarted", trigger);
+            break;
+        case "onChildCardEndPeek":
+            window.qnx.webplatform.getApplication().invocation.removeEventListener("cardPeekEnded", trigger);
+            break;
+        case "onChildCardClosed":
+            window.qnx.webplatform.getApplication().invocation.removeEventListener("childCardClosed", trigger);
+            break;
+        default:
             console.log("Ignore un-registration for unknown event: " + event);
+            break;
         }
     }
 };

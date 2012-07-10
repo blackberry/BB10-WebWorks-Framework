@@ -19,7 +19,7 @@ var _extDir = __dirname + "./../../../../ext",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
     mockedWebworks = {
-        execSync: jasmine.createSpy()
+        execSync: jasmine.createSpy("webworks.execSync")
     };
 
 describe("invoked client", function () {
@@ -32,6 +32,38 @@ describe("invoked client", function () {
     afterEach(function () {
         delete GLOBAL.window;
         client = null;
+    });
+
+    describe("cardResizeDone", function () {
+        it("should call execSync for cardResizeDone", function () {
+            expect(client.cardResizeDone).toBeDefined();
+            client.cardResizeDone();
+            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "cardResizeDone");
+        });
+    });
+
+    describe("cardStartPeek", function () {
+        var peekType = "root";
+
+        it("should call execSync for cardStartPeek", function () {
+            expect(client.cardStartPeek).toBeDefined();
+            client.cardStartPeek(peekType);
+            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "cardStartPeek", {'peekType': peekType});
+        });
+    });
+
+    describe("cardRequestClosure", function () {
+        var request = {
+            reason: "Request Reason",
+            type: "mime/type",
+            data: "Request data"
+        };
+
+        it("should call execSync for cardRequestClosure", function () {
+            expect(client.cardRequestClosure).toBeDefined();
+            client.cardRequestClosure(request);
+            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "cardRequestClosure", {'request': request});
+        });
     });
 
     it("should register for events by calling registerEvents method", function () {

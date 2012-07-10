@@ -18,7 +18,8 @@ var _apiDir = __dirname + "./../../../../ext/invoked/",
     _libDir = __dirname + "./../../../../lib/",
     invocationEvents,
     startupMode,
-    mockedInvocation;
+    mockedInvocation,
+    trigger;
 
 describe("invoked invocationEvents", function () {
     beforeEach(function () {
@@ -46,6 +47,7 @@ describe("invoked invocationEvents", function () {
         var name = require.resolve(_apiDir + "invocationEvents");
         delete require.cache[name];
         invocationEvents = require(_apiDir + "invocationEvents");
+        trigger = function () {};
     });
 
     afterEach(function () {
@@ -69,11 +71,33 @@ describe("invoked invocationEvents", function () {
     });
 
     describe("removeEventListener", function () {
-        var trigger = function () {};
-
         it("calls framework setOnInvoked for 'invoked' event", function () {
             invocationEvents.removeEventListener("invoked", trigger);
             expect(mockedInvocation.removeEventListener).toHaveBeenCalledWith("Invoked", trigger);
+        });
+    });
+
+    describe("onCardResize", function () {
+        it("add proper event to invocation for 'onCardResize'", function () {
+            invocationEvents.addEventListener("onCardResize", trigger);
+            expect(mockedInvocation.addEventListener).toHaveBeenCalledWith("cardResize", trigger);
+        });
+
+        it("remove proper event from invocation for 'onCardResize", function () {
+            invocationEvents.removeEventListener("onCardResize", trigger);
+            expect(mockedInvocation.removeEventListener).toHaveBeenCalledWith("cardResize", trigger);
+        });
+    });
+
+    describe("onCardClosed", function () {
+        it("add proper event to invocation for 'onCardClosed'", function () {
+            invocationEvents.addEventListener("onCardClosed", trigger);
+            expect(mockedInvocation.addEventListener).toHaveBeenCalledWith("cardClosed", trigger);
+        });
+
+        it("remove proper event from invocation for 'onCardClosed", function () {
+            invocationEvents.removeEventListener("onCardClosed", trigger);
+            expect(mockedInvocation.removeEventListener).toHaveBeenCalledWith("cardClosed", trigger);
         });
     });
 });

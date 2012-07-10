@@ -83,4 +83,10 @@ _self.query = function (request, onSuccess, onError) {
     window.webworks.execAsync(_ID, "query", {request: request});
 };
 
+_self.closeChildCard = function () {
+    window.webworks.execSync(_ID, "closeChildCard");
+};
+
+window.webworks.execSync(_ID, "registerEvents", null);
+
 module.exports = _self;
