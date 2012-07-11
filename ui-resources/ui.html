@@ -26,13 +26,12 @@
         <script type="text/javascript">
             function showMenu(args) {
                 var menu = require('contextmenu'),
-                    itemNames = eval(args.menuItems),
-                    menuItems,
+                    items = eval(args.menuItems),
                     currentContext = args.currentContext;
                 menu.init();
                 menu.setCurrentContext(currentContext);
-                menuItems = menu.generateContextMenuItems(itemNames),
-                menu.setMenuOptions(menuItems);
+                console.log(items);
+                menu.setMenuOptions(items);
                 menu.peekContextMenu(true);
             } 
         </script>

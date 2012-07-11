@@ -63,13 +63,13 @@ contextmenu = {
                 continue;
             }
             menuItem = document.createElement('div');
-            callback = options[i].function;
+            //callback = options[i].function;
             menuImage = document.createElement('img');
             menuImage.src = options[i].imageUrl ? options[i].imageUrl : 'assets/generic_81_81_placeholder.png';
             menuItem.appendChild(menuImage);
             menuItem.appendChild(document.createTextNode(options[i].name));
             menuItem.setAttribute("class", "menuItem");
-            menuItem.ontouchend = callback.bind(this, menuItem);
+            //menuItem.ontouchend = callback.bind(this, menuItem);
             menuItem.addEventListener('mousedown', contextmenu.handleMouseDown, false);
             menu.appendChild(menuItem);
         }
@@ -208,82 +208,6 @@ contextmenu = {
             return;
         }
         window.qnx.webplatform.getController().remoteExec(1, 'webview.handleContextMenuResponse', [menuAction]);
-    },
-
-    generateContextMenuItems: function (value) {
-        var items = [],
-            i;
-
-        for (i = 0; i < value.length; i++) {
-            switch (value[i]) {
-            case 'ClearField':
-                items.push({'name': 'Clear Field', 'function': contextmenu.responseHandler.bind(this, 'ClearField'), 'imageUrl': 'assets/Browser_Cancel_Selection.png'});
-                break;
-            case 'SendLink':
-                break;
-            case 'SendImageLink':
-                break;
-            case 'FullMenu':
-                break;
-            case 'Delete':
-                break;
-            case 'Cancel':
-                items.push({'name': 'Cancel', 'function': contextmenu.responseHandler.bind(this, 'Cancel'), 'imageUrl': 'assets/Browser_Cancel_Selection.png'});
-                break;
-            case 'Cut':
-                items.push({'name': 'Cut', 'function': contextmenu.responseHandler.bind(this, 'Cut'), 'imageUrl': 'assets/Browser_Cut.png'});
-                break;
-            case 'Copy':
-                items.push({'name': 'Copy', 'function': contextmenu.responseHandler.bind(this, 'Copy'), 'imageUrl': 'assets/Browser_Copy.png'});
-                break;
-            case 'Paste':
-                items.push({'name': 'Paste', 'function': contextmenu.responseHandler.bind(this, 'Paste'), 'imageUrl': 'assets/crosscutmenu_paste.png'});
-                break;
-            case 'Select':
-                items.push({'name': 'Select', 'function': contextmenu.responseHandler.bind(this, 'Select'), 'imageUrl': 'assets/crosscutmenu_paste.png'});
-                break;
-            case 'AddLinkToBookmarks':
-                break;
-            case 'CopyLink':
-                items.push({'name': 'Copy Link', 'function': contextmenu.responseHandler.bind(this, 'CopyLink'), 'imageUrl': 'assets/Browser_CopyLink.png'});
-                break;
-            case 'OpenLinkInNewTab':
-                break;
-            case 'OpenLink':
-                items.push({'name': 'Open', 'function': contextmenu.openLink, 'imageUrl': 'assets/Browser_OpenLink.png'});
-                break;
-            case 'SaveLinkAs':
-                items.push({'name': 'Save Link as', 'function': contextmenu.saveLink, 'imageUrl': 'assets/Browser_SaveLink.png'});
-                break;
-            case 'SaveImage':
-                items.push({'name': 'Save Image', 'function': contextmenu.saveImage, 'imageUrl': 'assets/Browser_SaveImage.png'});
-                break;
-            case 'CopyImageLink':
-                items.push({'name': 'Copy Image Link', 'function': contextmenu.responseHandler.bind(this, 'CopyImageLink'), 'imageUrl': 'assets/Browser_CopyImageLink.png'});
-                break;
-            case 'ViewImage':
-                break;
-            case 'Search':
-                break;
-            case 'ShareLink':
-                // local and file protocol won't have sharelink menuitem
-                if (!/^local|^file/.test(currentContext.url)) {
-                    items.push({'name': 'Share Link', 'function': contextmenu.shareLink, 'imageUrl': 'assets/Browser_ShareLink.png'});
-                }
-                break;
-            case 'ShareImage':
-                break;
-            case 'InspectElement':
-                items.push({'name': 'Inspect Element', 'function': contextmenu.responseHandler.bind(this, 'InspectElement'), 'imageUrl': 'assets/generic_81_81_placeholder.png'});
-                break;
-            }
-        }
-
-        if (currentContext && currentContext.url && currentContext.text) {
-            items.push({'headText': currentContext.text, 'subheadText': currentContext.url});
-        }
-
-        return items;
     },
 
     setCurrentContext: function (context) {
