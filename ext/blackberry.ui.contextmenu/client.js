@@ -37,4 +37,8 @@ Object.defineProperty(contextmenu, "enabled", {
     }
 });
 
+contextmenu.init = function () {
+    window.webworks.execSync(ID, 'init', null);
+};
+
 module.exports = contextmenu;

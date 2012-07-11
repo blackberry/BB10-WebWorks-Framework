@@ -14,11 +14,30 @@
  * limitations under the License.
  */
 
-var _webview = require('./../../lib/webview');
+var contextmenu,
+    _webview = require('./../../lib/webview'),
+    _overlayWebView = require('../../lib/overlayWebView'),
+    _menuItems,
+    _headText,
+    _subheadText,
+    _currentContext;
 
-module.exports = {
-    enabled: function (success, fail, args, env) {
+function init() {
+    console.log('running init');
+    _overlayWebView.onPropertyCurrentContextEvent = function (value) {
+        _currentContext = JSON.parse(value);
+    };
+    _overlayWebView.onContextMenuRequestEvent = function (value) {
+        var menu = JSON.parse(value),
+        args = JSON.stringify({'menuItems': menu.menuItems, 
+                              'currentContext': _currentContext});
+        _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+        return '{"setPreventDefault":true}';
+    };
 
+}
+
+function enabled(success, fail, args, env) {
         if (args) {
             var enabled = JSON.parse(decodeURIComponent(args["enabled"]));
             _webview.setContextMenuEnabled(enabled);
@@ -27,5 +46,46 @@ module.exports = {
         } else {
             fail('ContextMenuEnabled property can only be set with true false.');
         }
-    }
+}
+
+function setMenuOptions(options) {
+    _menuItems = options;
+}
+
+function peekContextMenu() {
+    //rpc to set head text
+    //rpc to set subhead text
+    //rpc to set the items
+    //rpc to peek menu
+}
+
+function isMenuVisible() {
+    // rpc to overlay to determine visibility
+}
+
+function setHeadText(text) {
+    _headText = text;
+}
+
+function setSubheadText(text) {
+    _subheadText = text;
+}
+
+function setCurrentContext(context) {
+    _currentContext = context;
+}
+
+contextmenu = {
+    init: init,
+    setHeadText: setHeadText,
+    setSubheadText: setSubheadText,
+    setMenuOptions: setMenuOptions,
+    peek: peekContextMenu
 };
+
+// Listen for the init event
+qnx.webplatform.getController().addEventListener('ui.init', function () {
+    init();
+});
+
+module.exports = contextmenu;
