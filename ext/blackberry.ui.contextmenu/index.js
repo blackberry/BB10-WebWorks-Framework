@@ -94,7 +94,7 @@ function generateMenuItems(menuItems) {
             items.push({'name': 'Open', 'actionId': 'OpenLink', 'imageUrl': 'assets/Browser_OpenLink.png'});
             break;
         case 'SaveLinkAs':
-            items.push({'name': 'Save Link as', 'actionId': 'SaveLinkAs','imageUrl': 'assets/Browser_SaveLink.png'});
+            items.push({'name': 'Save Link as', 'actionId': 'SaveLinkAs', 'imageUrl': 'assets/Browser_SaveLink.png'});
             break;
         case 'SaveImage':
             items.push({'name': 'Save Image', 'actionId': 'SaveImage', 'imageUrl': 'assets/Browser_SaveImage.png'});
@@ -139,10 +139,12 @@ function init() {
                               'currentContext': _currentContext});
         // generate menu items
         // set menu items
-       console.log(menuItems); 
-                              _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+        _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
         return '{"setPreventDefault":true}';
     };
+    qnx.webplatform.getController().publishRemoteFunction('ccm.run', function (args) {
+        console.log('got ' + args[0]);
+    });
 }
 
 contextmenu = {
