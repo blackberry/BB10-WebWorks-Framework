@@ -59,7 +59,7 @@ std::string FileTransferCurl::parseDomain(const std::string &url)
 void FileTransferCurl::loadVerifyList()
 {
     std::string fname = std::getenv("HOME");
-    fname.append("/../app/native/verifiedDomainList");
+    fname.append("/verifiedDomainList");
 
     std::string line;
     std::ifstream domainList(fname.c_str());
@@ -90,7 +90,7 @@ void FileTransferCurl::saveVerifyList()
 {
     DomainVerifyMap::iterator it;
     std::string fname = std::getenv("HOME");
-    fname.append("/../app/native/verifiedDomainList");
+    fname.append("/verifiedDomainList");
 
     if (m_pVerifyMap->size() > 0)
     {
