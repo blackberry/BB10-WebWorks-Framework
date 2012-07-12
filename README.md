@@ -1,7 +1,7 @@
 #BB10-WebWorks-Framework
 
 ##Prerequisites
-1. Install node and npm and add to path. [Download Here](http://nodejs.org/dist/v0.6.10/)
+1. Install node and npm and add to path. [Download Here](http://nodejs.org/#download)
 2. Install BlackBerry Native SDK. [Download Here](https://bdsc.webapps.blackberry.com/native/)
 3. Install CMake. [Download Here](http://www.cmake.org/cmake/resources/software.html)
 4. Add BlackBerry Native SDK bin directory to path. i.e. *Installation Directory*\host\win32\x86\usr\bin
@@ -12,15 +12,15 @@
 1. git clone https://github.com/blackberry-webworks/BB10-WebWorks-Framework.git
 2. cd BB10-WebWorks-Framework
 3. git checkout next
-4. Setup bbndk environment variable
-    - For Mac:
-        Add "source *installation directory here*/bbndk-env.sh" to your bash profile
-    - For Windows:
-        Run *BBNDK Installation Directory*\bbndk-env.bat before configuring (step5).
-5. Configuration:
+4. Configuration:
     - For Mac:
         ./configure (do a sudo ./configure if you get permission errors)
     - For Windows:
         bash configure
-6. Run 'jake test' and check that jake runs and completes
+5. Run 'jake test' and check that jake runs and completes
+6. Setup bbndk environment variable
+    - For Mac:
+        Add "source *installation directory here*/bbndk-env.sh" to your bash profile
+    - For Windows:
+        Run *BBNDK Installation Directory*\bbndk-env.bat.
 7. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder
