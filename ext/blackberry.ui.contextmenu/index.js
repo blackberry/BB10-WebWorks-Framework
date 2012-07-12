@@ -16,15 +16,20 @@
 
 var contextmenu,
     _webview = require('./../../lib/webview'),
-    _overlayWebView = require('../../lib/overlayWebView'),
+    _overlayWebView = require('./../../lib/overlayWebView'),
+    _utils = require('./../../lib/utils'),
+    _config = require('./../../lib/config.js'),
     _menuItems,
-    _currentContext;
+    _currentContext,
+    _controller = window.qnx.webplatform.getController(),
+    _application = window.qnx.webplatform.getApplication(),
+    menuActions;
 
 
 function enabled(success, fail, args, env) {
     if (args) {
-        var enabled = JSON.parse(decodeURIComponent(args["enabled"]));
-        _webview.setContextMenuEnabled(enabled);
+        var enable = JSON.parse(decodeURIComponent(args["enabled"]));
+        _webview.setContextMenuEnabled(enable);
 
         success('return value goes here for success');
     } else {
@@ -51,7 +56,7 @@ function setCurrentContext(context) {
     _currentContext = context;
 }
 
-function generateMenuItems(menuItems) { 
+function generateMenuItems(menuItems) {
     var items = [],
     i;
 
@@ -94,7 +99,7 @@ function generateMenuItems(menuItems) {
             items.push({'name': 'Open', 'actionId': 'OpenLink', 'imageUrl': 'assets/Browser_OpenLink.png'});
             break;
         case 'SaveLinkAs':
-            items.push({'name': 'Save Link as', 'actionId': 'SaveLinkAs','imageUrl': 'assets/Browser_SaveLink.png'});
+            items.push({'name': 'Save Link as', 'actionId': 'SaveLinkAs', 'imageUrl': 'assets/Browser_SaveLink.png'});
             break;
         case 'SaveImage':
             items.push({'name': 'Save Image', 'actionId': 'SaveImage', 'imageUrl': 'assets/Browser_SaveImage.png'});
@@ -134,16 +139,138 @@ function init() {
     _overlayWebView.onContextMenuRequestEvent = function (value) {
         console.log('menu requested');
         var menu = JSON.parse(value),
-            menuItems = generateMenuItems(eval(menu.menuItems)), 
-        args = JSON.stringify({'menuItems': menuItems, 
-                              'currentContext': _currentContext});
+            menuItems = generateMenuItems(eval(menu.menuItems)),
+        args = JSON.stringify({'menuItems': menuItems,
+                              '_currentContext': _currentContext});
+
+        _controller.publishRemoteFunction('executeMenuAction', function (args, callback) {
+            var action = args[0];
+            if (action) {
+                console.log("Executing action: " + args[0]);
+                //Call the items[action] function //
+                menuActions[action]();
+            } else {
+                console.log("No action item was set");
+            }
+        });
+
         // generate menu items
         // set menu items
-       console.log(menuItems); 
-                              _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+        console.log(menuItems);
+        _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+
         return '{"setPreventDefault":true}';
     };
 }
+
+function generateInvocationList(request, errorMessage) {
+    var args = [request, errorMessage];
+    qnx.webplatform.getController().remoteExec(1, "invocation.queryTargets", args, function (results) {
+        if (results.length > 0) {
+            var list = require('listBuilder');
+            list.init();
+            list.setHeader(results[0].label);
+            list.populateList(results[0].targets, request);
+            list.show();
+        } else {
+            alert(errorMessage);
+        }
+    });
+}
+
+function saveLink() {
+    if (!_currentContext || !_currentContext.url) {
+        return;
+    }
+    var title = '';
+    _controller.downloadURL([_currentContext.url, title]);
+}
+
+function openLink() {
+    if (!_currentContext || !_currentContext.url) {
+        return;
+    }
+    //Update the content web view with the new URL
+    _controller.loadClientURL([_currentContext.url]);
+}
+
+function shareLink() {
+
+    if (!_currentContext || !_currentContext.url) {
+        return;
+    }
+
+    var request = {
+        action: 'bb.action.SHARE',
+        type : 'text/plain',
+        data : _currentContext.url,
+        action_type: _application.invocation.ACTION_TYPE_ALL,
+        target_type: _application.invocation.TARGET_TYPE_APPLICATION
+    };
+
+    generateInvocationList(request, 'No link sharing applications installed');
+}
+
+
+function saveImage() {
+
+    // Ensure we have a proper context of the image to save
+    if (!_currentContext || !_currentContext.isImage || !_currentContext.src) {
+        return;
+    }
+
+    // Check that the proper access permissions have been enabled
+    if (!_config.permissions || _config.permissions.indexOf("access_shared") === -1) {
+        alert("Access shared permissions are not enabled");
+        return;
+    }
+
+    var source     = _currentContext.src,
+        target     = "photos";
+
+    function onSaved(target) {
+
+        if (target) {
+            var request = {
+                action: 'bb.action.VIEW',
+                type: _utils.fileNameToImageMIME(target),
+                uri : "file:/" + target, //target comes back with double slash, change to triple
+                action_type: _application.invocation.ACTION_TYPE_ALL,
+                target_type: _application.invocation.TARGET_TYPE_ALL
+            };
+
+            generateInvocationList(request, 'No image viewing applications installed');
+        }
+    }
+    // Download the file over an RPC call to the controller, it will call our onSaved method to see if we succeeded
+    _controller.downloadSharedFile([source, target], onSaved);
+}
+
+function responseHandler(menuAction) {
+    if (!menuAction) {
+        return;
+    }
+    _controller.handleContextMenuResponse([menuAction]);
+}
+
+
+menuActions = {
+
+    'SaveLink'       : saveLink,
+    'Cancel'         : responseHandler,
+    'Cut'            : responseHandler,
+    'Copy'           : responseHandler,
+    'Paste'          : responseHandler,
+    'Select'         : responseHandler,
+    'CopyLink'       : responseHandler,
+    'OpenLink'       : openLink,
+    'SaveLinkAs'     : responseHandler,
+    'CopyImageLink'  : responseHandler,
+    'SaveImage'      : saveImage,
+    'ShareLink'      : shareLink,
+    'InspectElement' : responseHandler,
+};
+
 
 contextmenu = {
     init: init,
