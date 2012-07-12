@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-function testInvokeValue(field, value) {
-    expect(blackberry.invoke[field]).toBeDefined();
-    expect(blackberry.invoke[field]).toEqual(value);
-}
-
-function testInvokeReadOnly(field) {
-    var before = blackberry.invoke[field];
-    blackberry.invoke[field] = "MODIFIED";
-    expect(blackberry.invoke[field]).toEqual(before);
-}
-
 describe("blackberry.invoke", function () {
     it('blackberry.invoke should exist', function () {
         expect(blackberry.invoke).toBeDefined();
     });
 
-    it('BrowserArguments should exist', function () {
-        expect(blackberry.invoke.BrowserArguments).toBeDefined();
-    });
-
-    it('invoke should invoke google.com', function () {
-        var args = new blackberry.invoke.BrowserArguments("http://www.google.com"),
+    it('invoke should invoke google.com with unbound invocation', function () {
+        var request = {
+                uri: "http://www.google.com"
+            },
+            onSuccess = jasmine.createSpy("client onSuccess"),
+            onError = jasmine.createSpy("client onError"),
             confirm;
 
         try {
-            blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+            blackberry.invoke.invoke(request, onSuccess, onError);
         } catch (e) {
             console.log(e);
         }
@@ -47,15 +36,21 @@ describe("blackberry.invoke", function () {
         confirm = window.confirm("Did it invoke?");
 
         expect(confirm).toEqual(true);
+        expect(onSuccess).toHaveBeenCalled();
+        expect(onError).not.toHaveBeenCalled();
     });
 
-    it('invoke should invoke user specified link', function () {
-        var url = window.prompt("Please enter a URL"),
-            args = new blackberry.invoke.BrowserArguments(url),
+    it('invoke should invoke blackberry.com with bound invocation', function () {
+        var request = {
+                target: "sys.browser",
+                uri: "http://www.blackberry.com"
+            },
+            onSuccess = jasmine.createSpy("client onSuccess"),
+            onError = jasmine.createSpy("client onError"),
             confirm;
 
         try {
-            blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+            blackberry.invoke.invoke(request, onSuccess);
         } catch (e) {
             console.log(e);
         }
@@ -63,25 +58,77 @@ describe("blackberry.invoke", function () {
         confirm = window.confirm("Did it invoke?");
 
         expect(confirm).toEqual(true);
+        expect(onSuccess).toHaveBeenCalled();
+        expect(onError).not.toHaveBeenCalled();
     });
 
-    it('blackberry.invoke.APP_* should be defined', function () {
-        testInvokeValue("APP_APPWORLD", 16);
-        testInvokeValue("APP_BROWSER", 11);
-        testInvokeValue("APP_CAMERA", 4);
-        testInvokeValue("APP_MAPS", 5);
-        testInvokeValue("APP_MUSIC", 13);
-        testInvokeValue("APP_PHOTOS", 14);
-        testInvokeValue("APP_VIDEOS", 15);
-    });
+    it('query should be able to perform a query on the device', function () {
+        var query = {
+                "action": "bb.action.VIEW",
+                "uri": "file://",
+                "type": "application/pdf",
+                "target_type": ["VIEWER", "APPLICATION"],
+                "action_type": "ALL"
+            },
+            onSuccessFlag = false,
+            onErrorFlag = false,
+            onSuccess = function (responseArray) {
+                var defaultExists = true;
 
-    it('blackberry.invoke.APP_* should be read-only', function () {
-        testInvokeReadOnly("APP_APPWORLD");
-        testInvokeReadOnly("APP_BROWSER");
-        testInvokeReadOnly("APP_CAMERA");
-        testInvokeReadOnly("APP_MAPS");
-        testInvokeReadOnly("APP_MUSIC");
-        testInvokeReadOnly("APP_PHOTOS");
-        testInvokeReadOnly("APP_VIDEOS");
-    }); 
+                onSuccessFlag = true;
+
+                if (confirm) {
+                    expect(responseArray).toBeDefined();
+                    responseArray.forEach(function (response) {
+                        expect(response.action).toBeDefined();
+                        expect(response.action).toEqual("bb.action.VIEW");
+                        expect(response.icon).toBeDefined();
+                        expect(response.label).toBeDefined();
+                        expect(response.default).toBeDefined();
+                        expect(response.default).toEqual("com.adobe.AdobeReader.viewer");
+                        expect(response.targets).toBeDefined();
+                        response.targets.forEach(function (target) {
+                            expect(target.key).toBeDefined();
+                            expect(target.icon).toBeDefined();
+                            expect(target.label).toBeDefined();
+
+                            if (target.label === "VIEWER") {
+                                expect(target.splash).toBeDefined();
+                            }
+
+                            if (target.key === "com.adobe.AdobeReader.viewer") {
+                                defaultExists = true;
+                                expect(target.type).toEqual("VIEWER");
+                            }
+                        });
+                        expect(defaultExists).toBeTruthy();
+                    });
+                }
+            },
+            onError = function (error) {
+                onErrorFlag = true;
+            },
+            message = "This test assumes that the default pdf viewer application is" +
+                    " com.adobe.AdobeReader.viewer. You can skip the test by clicking \"No\".",
+            confirm;
+
+        runs(function () {
+            confirm = window.confirm(message);
+
+            if (confirm) {
+                blackberry.invoke.query(query, onSuccess, onError);
+            }
+        });
+
+        waitsFor(function () {
+            return onSuccessFlag || onErrorFlag;
+        }, "The callback flag should be set to true", 750);
+
+        runs(function () {
+            if (confirm) {
+                expect(onSuccessFlag).toBeTruthy();
+                expect(onErrorFlag).toBeFalsy();
+            }
+        });
+    });
 });

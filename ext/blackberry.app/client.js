@@ -16,6 +16,10 @@
 var _self = {},
     ID = "blackberry.app";
 
+_self.exit = function () {
+    return window.webworks.execSync(ID, "exit");
+};
+
 function defineReadOnlyField(field) {
     var value = window.webworks.execSync(ID, field, null);
     Object.defineProperty(_self, field, {"value": value, "writable": false});

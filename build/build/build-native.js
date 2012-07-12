@@ -36,7 +36,7 @@ function _getCmd(ext) {
         //Command constants
         AND_CMD = " && ",
         CD_CMD = "cd ",
-        MAKE_CMD = "make",
+        MAKE_CMD = "make -j" + _c.COMPILER_THREADS,
         CP_CMD = "cp ",
         SH_CMD = "bash ";
 

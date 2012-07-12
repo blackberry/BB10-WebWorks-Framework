@@ -160,4 +160,30 @@ describe("blackberry.app", function () {
             });
         });
     });
+    
+    describe("swipedown", function () {
+        var onSwipeDown;
+
+        beforeEach(function () {
+            onSwipeDown = jasmine.createSpy();
+            blackberry.event.addEventListener("swipedown", onSwipeDown);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("swipedown", onSwipeDown);
+            onSwipeDown = null;
+        });
+
+        it("should invoke callback when user swipes down from within application", function () {
+            window.confirm("Swipe down from the top of the application");
+
+            waitsFor(function () {
+                return onSwipeDown.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onSwipeDown).toHaveBeenCalled();
+            });
+        });
+    });
 });

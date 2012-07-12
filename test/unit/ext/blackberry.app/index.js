@@ -18,18 +18,52 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.app/",
     events = require(_libDir + "event"),
     eventExt = require(__dirname + "./../../../../ext/blackberry.event/index"),
     index,
+    mockedExit,
     config;
 
-describe("blackberr.app index", function () {
+function testRegisterEvent(e) {
+    var args = {eventName : encodeURIComponent(e)},
+        success = jasmine.createSpy();
+        
+    index.registerEvents(success);
+    eventExt.add(null, null, args);
+    expect(success).toHaveBeenCalled();
+    expect(events.add).toHaveBeenCalled();
+    expect(events.add.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+}
+
+function testUnRegisterEvent(e) {
+    var args = {eventName : encodeURIComponent(e)};
+    
+    eventExt.remove(null, null, args);
+    expect(events.remove).toHaveBeenCalled();
+    expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+}
+    
+describe("blackberry.app index", function () {
 
     beforeEach(function () {
         config = require(_libDir + "config");
         index = require(_apiDir + "index");
+        mockedExit = jasmine.createSpy("exit");
+        GLOBAL.window = {};
+        GLOBAL.window.qnx = {
+            webplatform: {
+                getApplication: function () {
+                    return {
+                        exit: mockedExit
+                    };
+                }
+            }
+        };
     });
 
     afterEach(function () {
         config = null;
         index = null;
+        mockedExit = null;
     });
 
     describe("author", function () {
@@ -112,37 +146,42 @@ describe("blackberr.app index", function () {
         });
     });
 
-    describe("pause/resume", function () {
-        it("can register 'pause' and 'resume' event", function () {
-            var evts = ["pause", "resume"],
-                args,
-                success = jasmine.createSpy();
-
+    describe("exit", function () {
+        it("can call exit on the qnx.weblplatform Application", function () {
+            var success = jasmine.createSpy();
+            index.exit(success, null, null, null);
+            expect(mockedExit).toHaveBeenCalled();
+        });
+    });
+    
+    describe("events", function () {
+        beforeEach(function () {
             spyOn(events, "add");
-
-            evts.forEach(function (e) {
-                args = {eventName : encodeURIComponent(e)}; 
-                index.registerEvents(success);
-                eventExt.add(null, null, args);
-                expect(success).toHaveBeenCalled();
-                expect(events.add).toHaveBeenCalled();
-                expect(events.add.mostRecentCall.args[0].event).toEqual(e);
-                expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));                
-            });
+            spyOn(events, "remove");
+        });
+        
+        it("can register 'pause' event", function () {
+            testRegisterEvent("pause");
+        });
+        
+        it("can register 'resume' event", function () {
+            testRegisterEvent("resume");
+        });
+        
+        it("can register 'swipedown' event", function () {
+            testRegisterEvent("swipedown");
         });
 
-        it("can un-register 'pause' and 'resume' event", function () {
-            var evts = ["pause", "resume"],
-                args;
-            spyOn(events, "remove");
-
-            evts.forEach(function (e) {
-                args = {eventName : encodeURIComponent(e)}; 
-                eventExt.remove(null, null, args);
-                expect(events.remove).toHaveBeenCalled();
-                expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
-                expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-            });
+        it("can un-register 'pause' event", function () {
+            testUnRegisterEvent("pause");
+        });
+        
+        it("can un-register 'resume' event", function () {
+            testUnRegisterEvent("resume");
+        });
+        
+        it("can un-register 'swipedown' event", function () {
+            testUnRegisterEvent("swipedown");
         });
     });
 });

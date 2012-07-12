@@ -18,15 +18,20 @@ var path = require("path");
 module.exports = {
     ROOT: path.normalize(__dirname + "/../../"),
     DEPLOY: path.normalize(__dirname + "/../../target/zip/"),
+    DEPLOY_UI: path.normalize(__dirname + "/../../target/zip/ui-resources/"),
+    DEPLOY_STYLES: path.normalize(__dirname + "/../../target/zip/ui-resources/styles/"),
     TARGET: path.normalize(__dirname + "/../../target/"),
     BUILD: path.normalize(__dirname + "/.."),
     CLIENTFILES: path.normalize(__dirname + "/../../clientFiles"),
     LIB: path.normalize(__dirname + "/../../lib"),
     EXT: path.normalize(__dirname + "/../../ext"),
+    UI: path.normalize(__dirname + "/../../ui-resources"),
+    UI_PLUGINS: path.normalize(__dirname + "/../../ui-resources/plugins"),
     DEPENDENCIES: path.normalize(__dirname + "/../../dependencies"),
     DEPENDENCIES_BOOTSTRAP: path.normalize(__dirname + "/../../dependencies/bootstrap"),
     DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB: path.normalize(__dirname + "/../../dependencies/webplatform/framework/clientFiles/webplatform.js"),
     DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE: path.normalize(__dirname + "/../../dependencies/require/require.js"),
     DEPENDENCIES_CONFIGURE_QSK: path.normalize(__dirname + "/../../dependencies/configure-qsk/configure-qsk"),
-    NODE_MOD: path.normalize(__dirname + "/../../node_modules")
+    NODE_MOD: path.normalize(__dirname + "/../../node_modules"),
+    COMPILER_THREADS: "4"
 };

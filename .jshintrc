@@ -1,19 +1,25 @@
 {
     "predef": [
+        "escape", "unescape",
         //Jasmine
         "jasmine", "it", "describe",
         "xit", "xdescribe",
         "beforeEach", "afterEach",
         "runs", "waits", "waitsFor",
+        "DOMElement",
         "spyOn", "expect", "global",
         //Webworks
         "qnx", "chrome",
         "blackberry", "JNEXT",
+        "frameworkModules",
         //Node
         "__dirname", "GLOBAL",
         "process", "exports",
         "module", "NamedNodeMap",
-        "require", "Node"
+        "require", "Node",
+        //UI Components
+        "x$",
+        "iris"
     ],
 
     "node" : false,
@@ -22,7 +28,7 @@
 
     "boss" : false,
     "curly": false,
-    "bitwise" : true,
+    "bitwise" : false,
     "white": true,
     "indent": 4,
     "evil": false,

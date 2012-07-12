@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
     _whitelist = new Whitelist(),
     _event = require("../../lib/event"),
     _eventExt = require("../blackberry.event/index"),
+    _ppsUtils = require("../../lib/pps/ppsUtils"),
     _ppsEvents = require("../../lib/pps/ppsEvents"),
     // This object is used by action map and contains links between pps object fields monitored for change in that object helper methods
     // to analyze if the value is the one callback should be invoked and fields name and value format as would appear on return.
@@ -148,7 +149,35 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
                 _event.trigger("batterystatus", args);
             }
         }
-    };
+    },
+    _deviceprops;
+
+/*
+ * Read the PPS object once and cache it for future calls
+ */
+function readDeviceProperties() {
+    var PPSUtils = _ppsUtils.createObject();
+
+    PPSUtils.init();
+
+    if (PPSUtils.open("/pps/services/deviceproperties", "0")) {
+        _deviceprops = PPSUtils.read();
+    }
+
+    PPSUtils.close();
+}
+
+function getDeviceProperty(prop, success, fail) {
+    if (!_deviceprops) {
+        readDeviceProperties();
+    }
+
+    if (_deviceprops) {
+        success(_deviceprops[prop]);
+    } else {
+        fail(-1, "Cannot open PPS object");
+    }
+}
 
 module.exports = {
     registerEvents: function (success, fail, args, env) {
@@ -185,5 +214,13 @@ module.exports = {
             capability = args.capability.replace(/[^a-zA-Z.]+/g, "");
 
         success(SUPPORTED_CAPABILITIES.indexOf(capability) >= 0);
+    },
+
+    hardwareId: function (success, fail, args, env) {
+        getDeviceProperty("hardwareid", success, fail);
+    },
+
+    softwareVersion: function (success, fail, args, env) {
+        getDeviceProperty("scmbundle", success, fail);
     }
 };

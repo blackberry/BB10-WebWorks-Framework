@@ -51,6 +51,17 @@ describe("extensions", function () {
             extensions.get(req, succ, fail);
             expect(succ).toHaveBeenCalledWith(["MyFeatureId"]);
         });
+        
+        it("returns 412 when the client webworks.js is incompatible with the framework", function () {
+            var reqWithHash = {
+                params: {
+                    ext: "?hash=2af67c1a4739f6f3f307dcc7601d35fc&version=1.0.0.7"//random hash/version for client webworks.js
+                }
+            };
+            
+            extensions.get(reqWithHash, succ, fail);
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 412);
+        });
     });
 
     describe("load client", function () {

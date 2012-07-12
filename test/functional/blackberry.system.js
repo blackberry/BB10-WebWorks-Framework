@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -347,6 +347,24 @@ describe("blackberry.system", function () {
             runs(function () {
                 expect(onBatteryCritical).not.toHaveBeenCalled();
             });
+        });
+    });
+
+    describe("device properties", function () {
+        it('blackberry.system.hardwareId should exist', function () {
+            testSystemValue("hardwareId");
+        });
+
+        it('blackberry.system.hardwareId should be read-only', function () {
+            testSystemReadOnly("hardwareId");
+        });
+
+        it('blackberry.system.softwareVersion should exist', function () {
+            testSystemValue("softwareVersion");
+        });
+
+        it('blackberry.system.softwareVersion should be read-only', function () {
+            testSystemReadOnly("softwareVersion");
         });
     });
 });

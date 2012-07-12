@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-var root = __dirname + "/../../../../",
+var ID = "blackberry.system",
+    extDir = __dirname + "./../../../../ext",
+    apiDir = extDir + "/" + ID,
     sysClient = null,
     mockedWebworks = {
         exec : function () {},
@@ -29,7 +31,7 @@ describe("blackberry.system client", function () {
 
         //Set up mocking, no need to "spyOn" since spies are included in mock
         GLOBAL.window.webworks = mockedWebworks;
-        sysClient = require(root + "ext/blackberry.system/client");
+        sysClient = require(apiDir + "/client");
     });
 
     it("hasPermission", function () {
@@ -60,5 +62,54 @@ describe("blackberry.system client", function () {
 
     it("DENY", function () {
         expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "DENY", 1);
+    });
+
+    describe("device properties and registerEvents", function () {
+        var fields = [
+                "hardwareId",
+                "softwareVersion"
+            ],
+            execSyncArgs = [];
+
+        beforeEach(function () {
+            delete require.cache[require.resolve(apiDir + "/client")];
+            sysClient = null;
+
+            GLOBAL.window = GLOBAL;
+            fields.forEach(function (field) {
+                execSyncArgs.push([ID, field, null]);
+            });
+            mockedWebworks.execSync = jasmine.createSpy().andReturn(null);
+            mockedWebworks.defineReadOnlyField = jasmine.createSpy();
+            GLOBAL.window.webworks = mockedWebworks;
+            // client needs to be required for each test
+            sysClient = require(apiDir + "/client");
+        });
+
+        afterEach(function () {
+            execSyncArgs = [];
+            delete GLOBAL.window;
+        });
+
+        it("execSync should have been called once for each blackberry.device field", function () {
+            expect(mockedWebworks.execSync.callCount).toEqual(fields.length + 1); // the extra call is for registerEvents
+        });
+
+        it("registerEvents", function () {
+            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "registerEvents", null]);
+        });
+
+        it("hardwareId", function () {
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("hardwareId")]);
+        });
+
+        it("softwareVersion", function () {
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("softwareVersion")]);
+        });
+
+        it("readonly fields set", function () {
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", null);
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", null);
+        });
     });
 });

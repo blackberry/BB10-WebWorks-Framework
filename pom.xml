@@ -133,23 +133,6 @@
                 <version>1.1.1</version>
                 <executions>
                     <execution>
-                        <id>jake-test</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
-                            <arguments>
-                                <argument>test</argument>
-                            </arguments>
-                            <successCodes>
-                                <successCode>0</successCode>
-                            </successCodes>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>jake-lint</id>
                         <phase>package</phase>
                         <goals>
@@ -157,7 +140,7 @@
                         </goals>
                         <configuration>
                             <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
+                            <workingDirectory></workingDirectory>
                             <arguments>
                                 <argument>lint</argument>
                             </arguments>
@@ -174,7 +157,7 @@
                         </goals>
                         <configuration>
                             <executable>jake</executable>
-                            <workingDirectory></workingDirectory>            
+                            <workingDirectory></workingDirectory>
                             <arguments>
                                 <argument>build</argument>
                             </arguments>
@@ -183,7 +166,24 @@
                             </successCodes>
                         </configuration>
                     </execution>
-                </executions>
+                    <execution>
+                        <id>jake-test</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>jake</executable>
+                            <workingDirectory></workingDirectory>
+                            <arguments>
+                                <argument>test</argument>
+                            </arguments>
+                            <successCodes>
+                                <successCode>0</successCode>
+                            </successCodes>
+                        </configuration>
+                    </execution>
+               </executions>
             </plugin>
 
             <plugin>
@@ -197,15 +197,15 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
-                        <configuration>          
+                        <configuration>
                             <descriptors>
                                 <descriptor>dist.xml</descriptor>
                             </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId> 
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>   
+            </plugin>
         </plugins>
     </build>
 </project>

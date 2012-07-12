@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,18 @@
 var _self = {},
     ID = "blackberry.system";
 
+function getFieldValue(field) {
+    var value = null;
+
+    try {
+        value = window.webworks.execSync(ID, field, null);
+    } catch (e) {
+        console.error(e);
+    }
+
+    return value;
+}
+
 _self.hasPermission = function (module) {
     return window.webworks.execSync(ID, "hasPermission", {"module": module});
 };
@@ -27,6 +39,8 @@ _self.hasCapability = function (capability) {
 
 window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
 window.webworks.defineReadOnlyField(_self, "DENY", 1);
+window.webworks.defineReadOnlyField(_self, "hardwareId", getFieldValue("hardwareId"));
+window.webworks.defineReadOnlyField(_self, "softwareVersion", getFieldValue("softwareVersion"));
 window.webworks.execSync(ID, "registerEvents", null);
 
 module.exports = _self;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,106 +15,302 @@
  */
 
 var _apiDir = __dirname + "./../../../../ext/blackberry.invoke/",
-    _libDir = __dirname + "./../../../../lib/",
+    mockedInvocation,
     index;
 
 describe("blackberry.invoke index", function () {
 
     beforeEach(function () {
-        GLOBAL.qnx = {callExtensionMethod : function () {}};
+        mockedInvocation = {
+            invoke: jasmine.createSpy("invocation.invoke"),
+            queryTargets: jasmine.createSpy("invocation.queryTargets"),
+        };
+        GLOBAL.window = {};
+        GLOBAL.window.qnx = {
+            callExtensionMethod : function () {},
+            webplatform: {
+                getApplication: function () {
+                    return {
+                        invocation: mockedInvocation
+                    };
+                }
+            }
+        };
+
         index = require(_apiDir + "index");
     });
 
     afterEach(function () {
-        GLOBAL.qnx = null;
+        mockedInvocation = null;
+        GLOBAL.window.qnx = null;
         index = null;
     });
 
-    describe("Browser Invoke", function () {
-        var appType_Browser = 11,
-            httpUrl = 'http://www.rim.com',
-            noProtocolUrl = 'www.rim.com',
-            wrongAppType = -1,
-            successCB,
-            failCB,
-            mockValidArgs = {
-                appType: appType_Browser,
-                args: encodeURIComponent(JSON.stringify({
-                    url: httpUrl
-                }))
-            },
-            mockValidArgsNoProtocolUrl = {
-                appType: appType_Browser,
-                args: encodeURIComponent(JSON.stringify({
-                    url: noProtocolUrl
-                }))
-            },
-            mockWrongArgsForAppType = {
-                appType: wrongAppType,
-                args: encodeURIComponent(JSON.stringify({
-                    url: httpUrl
-                }))
-            },
-            mockWrongArgsForProtocol1 = {
-                appType: appType_Browser,
-                args: encodeURIComponent(JSON.stringify({
-                    url: 'wrong://www.rim.com'
-                }))
-            },
-            mockWrongArgsForProtocol2 = {
-                appType: appType_Browser,
-                args: encodeURIComponent(JSON.stringify({
-                    url: 'httpx://www.rim.com'
-                }))
-            };
+    describe("invoke", function () {
 
-        beforeEach(function () {
-            successCB = jasmine.createSpy("Success Callback");
-            failCB = jasmine.createSpy("Fail Callback");
-        });
-        
-        afterEach(function () {
-            successCB = null;
-            failCB = null;
+        it("can invoke with target", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    "request": encodeURIComponent(JSON.stringify({target: "abc.xyz"}))
+                };
+
+            index.invoke(successCB, null, mockedArgs);
+            expect(mockedInvocation.invoke).toHaveBeenCalledWith({
+                target: "abc.xyz"
+            }, jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
         });
 
-        // Positive test cases
-        it("should call success callback when invoked with valid args", function () {
-            index.invoke(successCB, failCB, mockValidArgs);
-            index.invoke(successCB, failCB, mockValidArgsNoProtocolUrl);
-            expect(successCB.callCount).toEqual(2);            
+        it("can invoke with uri", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    "request": encodeURIComponent(JSON.stringify({uri: "http://www.rim.com"}))
+                };
+
+            index.invoke(successCB, null, mockedArgs);
+            expect(mockedInvocation.invoke).toHaveBeenCalledWith({
+                uri: "http://www.rim.com"
+            }, jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+    });
+
+    describe("query", function () {
+
+        it("will whitelist properties of the request object", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "myProperty": "myValue",
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                whitelistRequest = JSON.parse(JSON.stringify(request)),
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            delete whitelistRequest.myProperty;
+            whitelistRequest["target_type"] = "ALL";
+
+            index.query(success, fail, args);
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(whitelistRequest, jasmine.any(Function));
         });
 
-        it("should call qnx.callExtensionMethod when invoked with valid args", function () {
-            spyOn(qnx, "callExtensionMethod");
-            index.invoke(successCB, failCB, mockValidArgs);            
-            expect(qnx.callExtensionMethod).toHaveBeenCalledWith("navigator.invoke", "http://www.rim.com");
+        it("can query the invocation framework", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
         });
 
-        //Negative test cases
-        it("should call fail callback when passed wrong appType", function () {
-            index.invoke(successCB, failCB, mockWrongArgsForAppType);
-            expect(failCB).toHaveBeenCalledWith(wrongAppType, "The application specified to invoke is not supported.");
+        it("can perform a query for application targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "APPLICATION";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
         });
 
-        it("should call fail callback when passed wrong protocol", function () {
-            index.invoke(successCB, failCB, mockWrongArgsForProtocol1);
-            index.invoke(successCB, failCB, mockWrongArgsForProtocol2);
-            expect(failCB.callCount).toEqual(2); 
-            expect(failCB).toHaveBeenCalledWith(wrongAppType, "Please specify a fully qualified URL that starts with either the 'http://' or 'https://' protocol.");
+        it("can perform a query for viewer targets", function  () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "VIEWER";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
         });
 
-        it("should not call qnx.callExtensionMethod when passed wrong appType", function () {
-            spyOn(qnx, "callExtensionMethod");
-            index.invoke(successCB, failCB, mockWrongArgsForAppType);
-            expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
+        it("can perform a query for all targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
         });
 
-        it("should not call any of qnx.callExtensionMethod methods when passed wrong protocol", function () {
-            spyOn(qnx, "callExtensionMethod");
-            index.invoke(successCB, failCB, mockWrongArgsForProtocol1);
-            index.invoke(successCB, failCB, mockWrongArgsForProtocol2);
-            expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
+        it("will not generate a target_type property in the request if it is not an array", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": "APPLICATION"
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            delete request["target_type"];
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("query", function () {
+
+        it("will whitelist properties of the request object", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "myProperty": "myValue",
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                whitelistRequest = JSON.parse(JSON.stringify(request)),
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            delete whitelistRequest.myProperty;
+            whitelistRequest["target_type"] = "ALL";
+
+            index.query(success, fail, args);
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(whitelistRequest, jasmine.any(Function));
+        });
+
+        it("can query the invocation framework", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for application targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "APPLICATION";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for viewer targets", function  () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "VIEWER";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("can perform a query for all targets", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = "ALL";
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("will not generate a target_type property in the request if it is not an array", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": "APPLICATION"
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            delete request["target_type"];
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
         });
     });
 });
+

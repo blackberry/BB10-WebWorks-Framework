@@ -27,6 +27,10 @@ module.exports = {
             case "resume":
                 framework.setOnResume(trigger);
                 break;
+                
+            case "swipedown":
+                framework.setOnSwipeDown(trigger);
+                break;
 
             default:
                 console.log("Ignore registration for unknown event: " + event);
@@ -43,6 +47,10 @@ module.exports = {
 
             case "resume":
                 framework.setOnResume(null);
+                break;
+                
+            case "swipedown":
+                framework.setOnSwipeDown(null);
                 break;
 
             default:

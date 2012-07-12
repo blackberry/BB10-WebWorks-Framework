@@ -16,9 +16,11 @@
 
 describe("server", function () {
     var server = require('../../../lib/server'),
-        plugin = require("../../../lib/plugins/extensions"),
+        plugin = require("../../../lib/plugins/default"),
+        extensionPlugin = require("../../../lib/plugins/extensions"),
         Whitelist = require("../../../lib/policy/whitelist").Whitelist,
-        applicationAPIServer = require("../../../ext/blackberry.app/index");
+        applicationAPIServer = require("../../../ext/blackberry.app/index"),
+        DEFAULT_SERVICE = "exec";
 
     beforeEach(function () {
         spyOn(console, "log");
@@ -38,18 +40,24 @@ describe("server", function () {
             res = {
                 send: jasmine.createSpy()
             };
+            GLOBAL.frameworkModules = ['ext/blackberry.app/index.js', 'lib/plugins/extensions.js', 'lib/plugins/default.js'];
         });
 
-        it("returns 404 if the plugin doesn't exist", function () {
+        afterEach(function () {
+            delete GLOBAL.frameworkModules;
+        });
+
+        it("calls the default plugin if the service doesn't exist", function () {
+            spyOn(plugin, DEFAULT_SERVICE);
             req.params.service = "not";
             req.params.action = "here";
 
             server.handle(req, res);
-            expect(res.send).toHaveBeenCalledWith(404, jasmine.any(String));
+            expect(plugin[DEFAULT_SERVICE]).toHaveBeenCalled();
         });
 
         it("returns 404 if the action doesn't exist", function () {
-            req.params.service = "extensions";
+            req.params.service = "default";
             req.params.action = "ThisActionDoesNotExist";
 
             server.handle(req, res);
@@ -57,22 +65,22 @@ describe("server", function () {
         });
         
         it("calls the action method on the plugin", function () {
-            spyOn(plugin, "get");
+            spyOn(extensionPlugin, "get");
 
             req.params.service = "extensions";
             req.params.action = "get";
 
             server.handle(req, res);
-            expect(plugin.get).toHaveBeenCalled();
+            expect(extensionPlugin.get).toHaveBeenCalled();
         });
 
         it("returns the result and code 1 when success callback called", function () {
-            spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
+            spyOn(plugin, "exec").andCallFake(function (request, succ, fail, body) {
                 succ(["MyFeatureId"]);
             });
 
-            req.params.service = "extensions";
-            req.params.action = "get";
+            req.params.service = "default";
+            req.params.action = "exec";
 
             server.handle(req, res);
             expect(res.send).toHaveBeenCalledWith(200, {
@@ -82,12 +90,12 @@ describe("server", function () {
         });
 
         it("returns the result and code -1 when fail callback called", function () {
-            spyOn(plugin, "get").andCallFake(function (request, succ, fail, body) {
+            spyOn(plugin, "exec").andCallFake(function (request, succ, fail, body) {
                 fail(-1, "ErrorMessage");
             });
 
-            req.params.service = "extensions";
-            req.params.action = "get";
+            req.params.service = "default";
+            req.params.action = "exec";
 
             server.handle(req, res);
             expect(res.send).toHaveBeenCalledWith(200, {
@@ -104,7 +112,7 @@ describe("server", function () {
         beforeEach(function () {
             req = {
                 params: {
-                    service: "bridge",
+                    service: "default",
                     action: "exec",
                     ext: "blackberry.app",
                     method: "author",
@@ -115,11 +123,17 @@ describe("server", function () {
                     host: ""
                 },
                 url: "",
-                body: "" 
+                body: "",
+                origin: "" 
             };
             res = {
                 send: jasmine.createSpy()
             };
+            GLOBAL.frameworkModules = ['ext/blackberry.app/index.js', 'lib/plugins/extensions.js', 'lib/plugins/default.js'];
+        });
+
+        afterEach(function () {
+            delete GLOBAL.frameworkModules;
         });
 
         it("checks if the feature is white listed", function () {

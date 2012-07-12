@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2011-2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-var root = __dirname + "/../../../../",
-    Whitelist = require(root + "lib/policy/whitelist").Whitelist,
-    events = require(root + "lib/event"),
-    eventExt = require(root + "ext/blackberry.event/index"),
+var libDir = __dirname + "./../../../../lib/",
+    extDir = __dirname + "./../../../../ext/",
+    apiDir = extDir + "blackberry.system/",
+    Whitelist = require(libDir + "policy/whitelist").Whitelist,
+    events = require(libDir + "event"),
+    eventExt = require(extDir + "blackberry.event/index"),
     sysIndex,
     successCB,
     failCB;
 
 beforeEach(function () {
     GLOBAL.JNEXT = {};
-    sysIndex = require(root + "ext/blackberry.system/index");
+    sysIndex = require(apiDir + "index");
 });
 
 afterEach(function () {
@@ -185,6 +187,91 @@ describe("blackberry.system index", function () {
             expect(events.remove).toHaveBeenCalled();
             expect(successCB).not.toHaveBeenCalled();            
             expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
+        });
+    });
+
+    describe("device properties", function () {
+        var ppsUtils,
+            mockedPPS,
+            path = "/pps/services/deviceproperties",
+            mode = "0";
+
+        beforeEach(function () {
+            GLOBAL.JNEXT = {};
+            ppsUtils = require(libDir + "pps/ppsUtils");
+            sysIndex = require(apiDir + "index");
+            mockedPPS = {
+                init: jasmine.createSpy(),
+                open: jasmine.createSpy().andReturn(true),
+                read: jasmine.createSpy().andReturn({"hardwareid" : "0x8500240a", "scmbundle" : "10.0.6.99"}),
+                close: jasmine.createSpy()
+            };
+        });
+
+        afterEach(function () {
+            GLOBAL.JNEXT = null;
+            ppsUtils = null;
+            sysIndex = null;
+            mockedPPS = null;
+        });
+
+        it("can call fail if failed to open PPS object for hardwareId", function () {
+            var fail = jasmine.createSpy();
+
+            mockedPPS.open = jasmine.createSpy().andReturn(false);
+            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+
+            sysIndex.hardwareId(null, fail, null, null);
+
+            expect(mockedPPS.init).toHaveBeenCalled();
+            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
+            expect(mockedPPS.read).not.toHaveBeenCalled();
+            expect(mockedPPS.close).toHaveBeenCalled();
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+        });
+
+        it("can call fail if failed to open PPS object for softwareVersion", function () {
+            var fail = jasmine.createSpy();
+
+            mockedPPS.open = jasmine.createSpy().andReturn(false);
+            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+
+            sysIndex.softwareVersion(null, fail, null, null);
+
+            expect(mockedPPS.init).toHaveBeenCalled();
+            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
+            expect(mockedPPS.read).not.toHaveBeenCalled();
+            expect(mockedPPS.close).toHaveBeenCalled();
+            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+        });
+
+        it("can call success with hardwareId", function () {
+            var success = jasmine.createSpy();
+
+            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+
+            sysIndex.hardwareId(success, null, null, null);
+
+            expect(mockedPPS.init).toHaveBeenCalled();
+            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
+            expect(mockedPPS.read).toHaveBeenCalled();
+            expect(mockedPPS.close).toHaveBeenCalled();
+            expect(success).toHaveBeenCalledWith("0x8500240a");
+        });
+
+        it("can call success with softwareVersion", function () {
+            var success = jasmine.createSpy();
+
+            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+
+            sysIndex.softwareVersion(success, null, null, null);
+
+            // The PPS objects should have been init in the test above; once the PPS has been read it is cached
+            expect(mockedPPS.init).not.toHaveBeenCalled();
+            expect(mockedPPS.open).not.toHaveBeenCalledWith(path, mode);
+            expect(mockedPPS.read).not.toHaveBeenCalled();
+            expect(mockedPPS.close).not.toHaveBeenCalled();
+            expect(success).toHaveBeenCalledWith("10.0.6.99");
         });
     });
 });

@@ -17,6 +17,13 @@ var _config = require("./../../lib/config"),
     _event = require("./../../lib/event"),
     _eventExt = require("./../blackberry.event/index"),
     _actionMap = {
+        swipedown: {
+            context: require("./navEvents"),
+            event: "swipedown",
+            trigger: function () {
+                _event.trigger("swipedown");
+            }
+        },
         pause: {
             context: require("./navEvents"),
             event: "pause",
@@ -81,5 +88,9 @@ module.exports = {
 
     version: function (success, fail, args, env) {
         success(_config.version);
+    },
+
+    exit: function () {
+        window.qnx.webplatform.getApplication().exit();
     }
 };
