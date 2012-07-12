@@ -21,6 +21,7 @@ var contextmenu,
     _config = require('./../../lib/config.js'),
     _menuItems,
     _currentContext,
+    _invocation = window.qnx.webplatform.getApplication().invocation,
     _controller = window.qnx.webplatform.getController(),
     _application = window.qnx.webplatform.getApplication(),
     menuActions;
@@ -163,14 +164,10 @@ function init() {
 }
 
 function generateInvocationList(request, errorMessage) {
-    var args = [request, errorMessage];
-    qnx.webplatform.getController().remoteExec(1, "invocation.queryTargets", args, function (results) {
+    _invocation.queryTargets(request, function (errorMessage, results){
         if (results.length > 0) {
-            var list = require('listBuilder');
-            list.init();
-            list.setHeader(results[0].label);
-            list.populateList(results[0].targets, request);
-            list.show();
+            var listArgs = JSON.stringify([results[0], request]);
+            _overlayWebView.executeJavaScript("window.showTargets(" + listArgs + ")");
         } else {
             alert(errorMessage);
         }
@@ -197,7 +194,6 @@ function downloadSharedFile(args, callback) {
         fileName    = args[0].replace(/^.*[\\\/]/, ''),
         xhr;
 
-    debugger;
     window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 
     // Check for a local file, if so, let's change it an absolute file path

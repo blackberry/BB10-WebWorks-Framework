@@ -1,5 +1,5 @@
 <!-- Copyright 2012 Research In Motion Limited.
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -33,7 +33,17 @@
                 console.log(items);
                 menu.setMenuOptions(items);
                 menu.peekContextMenu(true);
-            } 
+            }
+
+            function showTargets(args) {
+                var list    = require('listBuilder'),
+                    header  = args[0].label,
+                    targets = args[0].targets;
+                list.init();
+                list.setHeader(header);
+                list.populateList(targets, args[1]);
+                list.show();
+            }
         </script>
     </head>
     <body>
