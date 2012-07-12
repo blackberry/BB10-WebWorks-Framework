@@ -35,7 +35,7 @@ function init() {
 }
 
 function handleTouchEnd(actionId) {
-    window.qnx.webplatform.getController().remoteExec(1, 'ccm.run', [actionId]);
+    window.qnx.webplatform.getController().remoteExec(1, 'executeMenuAction', [actionId]);
 }
 
 contextmenu = {

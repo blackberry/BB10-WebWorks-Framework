@@ -148,7 +148,7 @@ function init() {
             if (action) {
                 console.log("Executing action: " + args[0]);
                 //Call the items[action] function //
-                menuActions[action]();
+                menuActions[action](action);
             } else {
                 console.log("No action item was set");
             }
@@ -160,10 +160,6 @@ function init() {
         _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
         return '{"setPreventDefault":true}';
     };
-
-    qnx.webplatform.getController().publishRemoteFunction('ccm.run', function (args) {
-        console.log('got ' + args[0]);
-    });
 }
 
 function generateInvocationList(request, errorMessage) {
@@ -181,12 +177,72 @@ function generateInvocationList(request, errorMessage) {
     });
 }
 
+// Default context menu response handler
+function handleContextMenuResponse(args) {
+    var menuAction = args[0];
+    qnx.callExtensionMethod('webview.handleContextMenuResponse', 2, menuAction);
+}
+
+function loadClientURL(args) {
+    console.log(args);
+    var url = args[0];
+    qnx.callExtensionMethod('webview.loadURL', 2, url);
+}
+
+function downloadSharedFile(args, callback) {
+
+    var directory   = window.qnx.webplatform.getApplication().getEnv("HOME"),
+        target      = directory + "/../shared/" + args[1] + "/",
+        source      = args[0],
+        fileName    = args[0].replace(/^.*[\\\/]/, ''),
+        xhr;
+
+    debugger;
+    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+
+    // Check for a local file, if so, let's change it an absolute file path
+    if (_utils.startsWith(source, "local:///")) {
+        source = "file:/" + directory + "/../app/native/" + source.replace(/local:\/\/\//, '');
+    }
+
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', source, true);
+    xhr.responseType = 'arraybuffer';
+
+    function onError(error) {
+        console.log(error);
+    }
+
+    xhr.onload = function (e) {
+        window.requestFileSystem(window.TEMPORARY, 1024 * 1024, function (fileSystem) {
+            fileSystem.root.getFile(target + fileName, {create: true}, function (fileEntry) {
+                fileEntry.createWriter(function (writer) {
+                    writer.onerror = function (e) {
+                        console.log("Could not properly write " + fileName);
+                        //pass
+                    };
+
+                    var bb = new window.WebKitBlobBuilder();
+                    bb.append(xhr.response);
+                    writer.write(bb.getBlob(_utils.fileNameToImageMIME(fileName)));
+
+                    // Call the callback sending back the filepath to the image so the Viewer can be invoked
+                    callback(target + fileEntry.name);
+                }, onError);
+            }, onError);
+        }, onError);
+    };
+
+    xhr.send();
+}
+
 function saveLink() {
     if (!_currentContext || !_currentContext.url) {
         return;
     }
     var title = '';
-    _controller.downloadURL([_currentContext.url, title]);
+    //TODO FIXME
+    //_controller.downloadURL([_currentContext.url, title]);
 }
 
 function openLink() {
@@ -194,7 +250,7 @@ function openLink() {
         return;
     }
     //Update the content web view with the new URL
-    _controller.loadClientURL([_currentContext.url]);
+    loadClientURL([_currentContext.url]);
 }
 
 function shareLink() {
@@ -245,15 +301,18 @@ function saveImage() {
             generateInvocationList(request, 'No image viewing applications installed');
         }
     }
+
     // Download the file over an RPC call to the controller, it will call our onSaved method to see if we succeeded
-    _controller.downloadSharedFile([source, target], onSaved);
+    downloadSharedFile([source, target], onSaved);
 }
 
 function responseHandler(menuAction) {
     if (!menuAction) {
+        console.log("Menu Action was null");
         return;
     }
-    _controller.handleContextMenuResponse([menuAction]);
+    console.log("Calling native with the action: " + menuAction + " on the client webview");
+    handleContextMenuResponse([menuAction]);
 }
 
 
