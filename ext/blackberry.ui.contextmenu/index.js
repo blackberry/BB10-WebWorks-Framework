@@ -58,7 +58,7 @@ function setCurrentContext(context) {
 
 function generateMenuItems(menuItems) {
     var items = [],
-    i;
+        i;
 
     for (i = 0; i < menuItems.length; i++) {
         switch (menuItems[i]) {
@@ -158,9 +158,12 @@ function init() {
         // set menu items
         console.log(menuItems);
         _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
-
         return '{"setPreventDefault":true}';
     };
+
+    qnx.webplatform.getController().publishRemoteFunction('ccm.run', function (args) {
+        console.log('got ' + args[0]);
+    });
 }
 
 function generateInvocationList(request, errorMessage) {

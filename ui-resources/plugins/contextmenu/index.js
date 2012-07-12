@@ -34,6 +34,10 @@ function init() {
     utils = requireLocal("../chrome/lib/utils");
 }
 
+function handleTouchEnd(actionId) {
+    window.qnx.webplatform.getController().remoteExec(1, 'ccm.run', [actionId]);
+}
+
 contextmenu = {
     init: init,
     setMenuOptions: function (options) {
@@ -41,7 +45,6 @@ contextmenu = {
             i,
             header,
             menuItem,
-            callback,
             menuImage;
 
         while (menu.childNodes.length >= 1) {
@@ -63,13 +66,12 @@ contextmenu = {
                 continue;
             }
             menuItem = document.createElement('div');
-            //callback = options[i].function;
             menuImage = document.createElement('img');
             menuImage.src = options[i].imageUrl ? options[i].imageUrl : 'assets/generic_81_81_placeholder.png';
             menuItem.appendChild(menuImage);
             menuItem.appendChild(document.createTextNode(options[i].name));
             menuItem.setAttribute("class", "menuItem");
-            //menuItem.ontouchend = callback.bind(this, menuItem);
+            menuItem.ontouchend = handleTouchEnd.bind(this, options[i].actionId);
             menuItem.addEventListener('mousedown', contextmenu.handleMouseDown, false);
             menu.appendChild(menuItem);
         }
