@@ -22,7 +22,6 @@ var contextmenu,
     utils,
     includePath;
 
-
 function requireLocal(id) {
     return require(!!require.resolve ? "../../" + id.replace(/\/chrome/, "") : id);
 }
@@ -106,9 +105,13 @@ contextmenu = {
         if (menuVisible) {
             return;
         }
-        var menu = document.getElementById('contextMenu');
+        var menu = document.getElementById('contextMenu'),
+            menuContent = document.getElementById('contextMenuContent');
         menu.className = 'showMenu';
         menuVisible = true;
+        menu.style.overflowY = 'scroll';
+        menuContent.style.height = '';
+        menuContent.style.overflowY = '';
         if (menuPeeked) {
             evt.cancelBubble = true;
             menuPeeked = false;
@@ -140,8 +143,17 @@ contextmenu = {
         }
         window.qnx.webplatform.getController().remoteExec(1, 'webview.setSensitivity', ['SensitivityNoFocus']);
         var menu = document.getElementById('contextMenu'),
-            handle = document.getElementById('contextMenuHandle');
-        handle.className = 'showContextMenuHandle';
+            handle = document.getElementById('contextMenuHandle'),
+            menuContent = document.getElementById('contextMenuContent'),
+            menuItems = document.getElementsByClassName('menuItem');
+        menu.style.overflowY = 'hidden';
+        menuContent.style.overflowY = 'hidden';
+        menuContent.style.height = '67%';
+        if (menuItems.length > 7) {
+            handle.className = 'showMoreActionsHandle';
+        } else {
+            handle.className = 'showContextMenuHandle';
+        }
         menuVisible = false;
         menuPeeked = true;
         menu.className = 'peekContextMenu';

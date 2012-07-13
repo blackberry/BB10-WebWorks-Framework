@@ -21,6 +21,8 @@ describe("ui-resources/contextmenu", function () {
     menu,
     menuHandle,
     menuContent,
+    menuItems,
+    numberOfMenuItems = 5,
     headText,
     subheadText,
     header,
@@ -71,13 +73,15 @@ describe("ui-resources/contextmenu", function () {
                         removeEventListener: jasmine.createSpy(),
                         showContextmenu: jasmine.createSpy(),
                         appendChild: jasmine.createSpy(),
-                        className: undefined
+                        className: undefined,
+                        style: {overflowY: '', height: ''},
                     };
                     returnElement = menu;
                 } else if (id === "contextMenuHandle") {
                     menuHandle = {
                         addEventListener: jasmine.createSpy(),
-                        removeEventListener: jasmine.createSpy()
+                        removeEventListener: jasmine.createSpy(),
+                        className: ''
                     };
                     returnElement = menuHandle;
                 } else if (id === "contextMenuHeadText") {
@@ -92,9 +96,20 @@ describe("ui-resources/contextmenu", function () {
                 } else if (id === "contextMenuContent") {
                     menuContent = {
                         childNodes: [],
-                        appendChild: jasmine.createSpy()
+                        appendChild: jasmine.createSpy(),
+                        style: {overflowY: '', height: ''}
                     };
                     returnElement = menuContent;
+                }
+                return returnElement;
+            },
+            getElementsByClassName: function (className) {
+                var returnElement;
+                if (className === 'menuItem') {
+                    menuItems = {
+                        length: numberOfMenuItems
+                    };
+                    returnElement = menuItems;
                 }
                 return returnElement;
             }
@@ -212,6 +227,18 @@ describe("ui-resources/contextmenu", function () {
             options = [itemA];
         contextmenu.setMenuOptions(options);
         expect(menuContent.appendChild).toHaveBeenCalledWith(jasmine.any(Object));
+    });
+
+    it("can set the classname of contextMenuHandle to showMoreActionHandle when less than 7 menu items", function () {
+        numberOfMenuItems = 9;
+        contextmenu.peekContextMenu(true);
+        expect(menuHandle.className).toEqual('showMoreActionsHandle');
+    });
+
+    it("can set the classname of contextMenuHandle to showContextMenuHandle when more than 7 menu items", function () {
+        numberOfMenuItems = 4;
+        contextmenu.peekContextMenu(true);
+        expect(menuHandle.className).toEqual('showContextMenuHandle');
     });
 
 });
