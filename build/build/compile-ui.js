@@ -101,8 +101,8 @@ module.exports = function (prev, baton) {
    
     outputCSS = include(cssFiles);
     outputJS += include([path.join(_c.BUILD, 'FILE_LICENSE'), ]);
-    outputJS += include(jsFiles, function (file, path) {
-        var pathSplit = path.split("\/");
+    outputJS += include(jsFiles, function (file, filepath) {
+        var pathSplit = path.normalize(filepath).split(/[\\\/]/);
         return "define('" + pathSplit[pathSplit.length - 2] +
                        "', function (require, exports, module) {\n" + file + "});\n";
     });
