@@ -15,7 +15,7 @@
  */
 describe("Overlay Webview", function () {
     var webview,
-        libPath = "./../../../", 
+        libPath = "./../../../",
         mockedController,
         mockedWebview,
         mockedApplication;
@@ -104,14 +104,14 @@ describe("Overlay Webview", function () {
             webview.destroy();
             expect(mockedWebview.destroy).toHaveBeenCalled();
         });
-        
+
         it("sets the url property", function () {
             var url = "http://AWESOMESAUCE.com";
             webview.create(mockedWebview);
             webview.setURL(url);
             expect(mockedWebview.url).toEqual(url);
         });
-        
+
         it("calls the underlying executeJavaScript", function () {
             var js = "var awesome='Jasmine BDD'";
             webview.create(mockedWebview);

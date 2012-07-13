@@ -15,13 +15,50 @@
  */
 var _apiDir = __dirname + "./../../../../ext/blackberry.ui.contextmenu/",
     _libDir = __dirname + "./../../../../lib/",
-    index = require(_apiDir + "/index"),
     webview = require(_libDir + 'webview'),
-    success;
-
+    index,
+    success,
+    mockedWebWorks = {
+        execAsync: jasmine.createSpy(),
+        event: { once : jasmine.createSpy(),
+                 isOn : jasmine.createSpy() }
+    },
+    mockedController = {
+        remoteExec: jasmine.createSpy(),
+        addEventListener : jasmine.createSpy()
+    },
+    mockedApplication = {
+        invocation : {
+            TARGET_TYPE_ALL : '',
+            ACTION_TYPE_MENU : ''
+        }
+    },
+    mockedWebPlatform = {
+        getController : function () {
+            return mockedController
+        },
+        getApplication : function () {
+            return mockedApplication;
+        }
+    };
 describe("blackberry.ui.contextmenu index", function () {
 
     beforeEach(function () {
+        GLOBAL.window.qnx.webplatform = mockedWebPlatform;
+        GLOBAL.window.webworks = mockedWebWorks;
+        GLOBAL.qnx = {
+            callExtensionMethod: jasmine.createSpy("bond"),
+            webplatform : {
+                getController : function () {
+                    return mockedController;
+                },
+                getApplication : function () {
+                    return mockedApplication;
+                }
+            }
+        };
+
+        index = require(_apiDir + "/index");
         success = jasmine.createSpy("success");
         spyOn(webview, 'setContextMenuEnabled');
     });
@@ -45,4 +82,8 @@ describe("blackberry.ui.contextmenu index", function () {
         expect(success).toHaveBeenCalled();
     });
 
+
+
+
 });
+

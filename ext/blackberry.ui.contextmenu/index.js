@@ -26,7 +26,6 @@ var contextmenu,
     _application = window.qnx.webplatform.getApplication(),
     menuActions;
 
-
 function enabled(success, fail, args, env) {
     if (args) {
         var enable = JSON.parse(decodeURIComponent(args["enabled"]));
