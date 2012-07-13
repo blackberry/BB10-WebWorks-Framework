@@ -333,7 +333,8 @@ menuActions = {
 contextmenu = {
     init: init,
     setMenuOptions: setMenuOptions,
-    peek: peekContextMenu
+    peek: peekContextMenu,
+    enabled : enabled
 };
 
 // Listen for the init event
