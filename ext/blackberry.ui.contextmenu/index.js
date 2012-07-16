@@ -163,7 +163,7 @@ function init() {
 }
 
 function generateInvocationList(request, errorMessage) {
-    _invocation.queryTargets(request, function (errorMessage, results){
+    _invocation.queryTargets(request, function (errorMessage, results) {
         if (results.length > 0) {
             var listArgs = JSON.stringify([results[0], request]);
             _overlayWebView.executeJavaScript("window.showTargets(" + listArgs + ")");
@@ -235,7 +235,7 @@ function saveLink() {
     if (!_currentContext || !_currentContext.url) {
         return;
     }
-    var title = '';
+    //var title = '';
     //TODO FIXME
     //_controller.downloadURL([_currentContext.url, title]);
 }

@@ -26,8 +26,7 @@ describe("ui-resources/contextmenu", function () {
     header,
     mockedController,
     mockedApplication,
-    invocation,
-    config = require(srcPath + './lib/config.js');
+    invocation;
 
     beforeEach(function () {
         invocation = {

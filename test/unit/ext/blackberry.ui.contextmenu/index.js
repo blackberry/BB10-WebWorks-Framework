@@ -35,7 +35,7 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.ui.contextmenu/",
     },
     mockedWebPlatform = {
         getController : function () {
-            return mockedController
+            return mockedController;
         },
         getApplication : function () {
             return mockedApplication;
