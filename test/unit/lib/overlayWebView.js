@@ -79,8 +79,6 @@ describe("Overlay Webview", function () {
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
 
                 expect(mockedApplication.windowVisible).toEqual(true);
-
-                expect(mockedWebview.onContextMenuRequestEvent).toEqual(jasmine.any(Function));
                 expect(mockedWebview.backgroundColor).toEqual("0x00FFFFFF");
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
             });
@@ -115,7 +113,7 @@ describe("Overlay Webview", function () {
         it("calls the underlying executeJavaScript", function () {
             var js = "var awesome='Jasmine BDD'";
             webview.create(mockedWebview);
-            webview.executeJavascript(js);
+            webview.executeJavaScript(js);
             expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith(js);
         });
         it("calls the underlying windowGroup property", function () {
