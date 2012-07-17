@@ -15,6 +15,7 @@
  */
 var childProcess = require('child_process'),
     util = require('util'),
+    os = require('os'),
     jWorkflow = require("jWorkflow"),
     fs = require('fs');
 
@@ -52,9 +53,12 @@ function _lintCSS(prev, baton) {
 }
 
 function _lintCPP(prev, baton) {
-    var options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels,-readability/streams"],
-        files = ["ext"];
-    _exec('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '), prev, baton);
+    //Only cpplint on unix. Windows currently has an issue with cpplinting
+    if (os.type().toLowerCase().indexOf("windows") === -1) {
+        var options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels,-readability/streams"],
+            files = ["ext"];
+        _exec('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '), prev, baton);
+    }
 }
 
 module.exports = function (files) {
