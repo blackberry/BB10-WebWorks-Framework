@@ -35,14 +35,14 @@ function init() {
 }
 
 function handleTouchEnd(actionId, menuItem) {
-    if(menuItem) {
+    if (menuItem) {
         menuItem.className = 'menuItem peekItem';
     }
     window.qnx.webplatform.getController().remoteExec(1, 'executeMenuAction', [actionId]);
 }
 
 function handleTouchStart(menuItem) {
-    if(!menuItem || !menuPeeked) {
+    if (!menuItem || !menuPeeked) {
         return;
     }
     menuItem.className = 'menuItem showItem';
