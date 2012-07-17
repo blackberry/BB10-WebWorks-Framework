@@ -16,7 +16,9 @@
 
 function testSystemValue(field, value) {
     expect(blackberry.system[field]).toBeDefined();
-    expect(blackberry.system[field]).toEqual(value);
+    if (value) {
+        expect(blackberry.system[field]).toEqual(value);
+    }
 }
 
 function testSystemReadOnly(field) {
@@ -26,7 +28,7 @@ function testSystemReadOnly(field) {
 }
 
 describe("blackberry.system", function () {
-    
+
     it("blackberry.system should exist", function () {
         expect(blackberry.system).toBeDefined();
     });
@@ -65,5 +67,29 @@ describe("blackberry.system", function () {
         expect(blackberry.system.hasCapability("bake.cookies")).toBeFalsy();
     });
 
-    
+    describe("device properties", function () {
+        it('blackberry.system.hardwareId should exist', function () {
+            testSystemValue("hardwareId");
+        });
+
+        it('blackberry.system.hardwareId should be read-only', function () {
+            testSystemReadOnly("hardwareId");
+        });
+
+        it('blackberry.system.softwareVersion should exist', function () {
+            testSystemValue("softwareVersion");
+        });
+
+        it('blackberry.system.softwareVersion should be read-only', function () {
+            testSystemReadOnly("softwareVersion");
+        });
+
+        it('blackberry.system.region should exist', function () {
+            testSystemValue("region");
+        });
+
+        it('blackberry.system.language should exist', function () {
+            testSystemValue("language");
+        });
+    });
 });
