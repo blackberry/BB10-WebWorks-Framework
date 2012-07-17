@@ -29,6 +29,14 @@ function getFieldValue(field) {
     return value;
 }
 
+function defineGetter(field) {
+    Object.defineProperty(_self, field, {
+        get: function () {
+            return getFieldValue(field);
+        }
+    });
+}
+
 _self.hasPermission = function (module) {
     return window.webworks.execSync(ID, "hasPermission", {"module": module});
 };
@@ -37,10 +45,14 @@ _self.hasCapability = function (capability) {
     return window.webworks.execSync(ID, "hasCapability", {"capability": capability});
 };
 
+defineGetter("language");
+defineGetter("region");
+
 window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
 window.webworks.defineReadOnlyField(_self, "DENY", 1);
 window.webworks.defineReadOnlyField(_self, "hardwareId", getFieldValue("hardwareId"));
 window.webworks.defineReadOnlyField(_self, "softwareVersion", getFieldValue("softwareVersion"));
+
 window.webworks.execSync(ID, "registerEvents", null);
 
 module.exports = _self;

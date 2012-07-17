@@ -125,6 +125,34 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
                 }]
             }],
             mode: 0
+        },
+        languagechanged: {
+            eventName: "languagechanged",
+            eventDetailsArr: [{
+                path: "/pps/services/confstr/_CS_LOCALE?wait,delta",
+                fieldNameArr: [{
+                    eventName: "_CS_LOCALE",
+                    paramName: "language",
+                    formatValue: function (str) {
+                        return str;
+                    }
+                }]
+            }],
+            mode: 0
+        },
+        regionchanged: {
+            eventName: "regionchanged",
+            eventDetailsArr: [{
+                path: "/pps/services/locale/settings?wait,delta",
+                fieldNameArr: [{
+                    eventName: "region",
+                    paramName: "region",
+                    formatValue: function (str) {
+                        return str;
+                    }
+                }]
+            }],
+            mode: 0
         }
     },
     _actionMap = {
@@ -147,6 +175,20 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
             event: _eventsMap.batterystatus,
             trigger: function (args) {
                 _event.trigger("batterystatus", args);
+            }
+        },
+        languagechanged: {
+            context: _ppsEvents,
+            event: _eventsMap.languagechanged,
+            trigger: function (args) {
+                _event.trigger("languagechanged", args.language);
+            }
+        },
+        regionchanged: {
+            context: _ppsEvents,
+            event: _eventsMap.regionchanged,
+            trigger: function (args) {
+                _event.trigger("regionchanged", args.region);
             }
         }
     },
@@ -176,6 +218,46 @@ function getDeviceProperty(prop, success, fail) {
         success(_deviceprops[prop]);
     } else {
         fail(-1, "Cannot open PPS object");
+    }
+}
+
+// Get device language object from /pps/services/confstr/_CS_LOCALE
+function readDeviceLanguage(success, fail) {
+    var PPSUtils = _ppsUtils.createObject(),
+        language = "";
+
+    PPSUtils.init();
+
+    if (PPSUtils.open("/pps/services/confstr/_CS_LOCALE", "0")) {
+        language = PPSUtils.read()._CS_LOCALE;
+    }
+
+    PPSUtils.close();
+
+    if (language !== "") {
+        success(language);
+    } else {
+        fail(-1, "Cannot read the device language");
+    }
+}
+
+// Get device region setting from /pps/services/locale/settings object
+function readDeviceRegion(success, fail) {
+    var PPSUtils = _ppsUtils.createObject(),
+        region = "";
+
+    PPSUtils.init();
+
+    if (PPSUtils.open("/pps/services/locale/settings", "0")) {
+        region = PPSUtils.read().region;
+    }
+
+    PPSUtils.close();
+
+    if (region !== "") {
+        success(region);
+    } else {
+        fail(-1, "Cannot read the device region setting");
     }
 }
 
@@ -223,5 +305,13 @@ module.exports = {
 
     softwareVersion: function (success, fail, args, env) {
         getDeviceProperty("scmbundle", success, fail);
+    },
+
+    language: function (success, fail, args, env) {
+        readDeviceLanguage(success, fail);
+    },
+
+    region: function (success, fail, args, env) {
+        readDeviceRegion(success, fail);
     }
 };

@@ -79,7 +79,7 @@ describe("system client", function () {
             fields.forEach(function (field) {
                 execSyncArgs.push([ID, field, null]);
             });
-            mockedWebworks.execSync = jasmine.createSpy().andReturn(null);
+            mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(null);
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
             GLOBAL.window.webworks = mockedWebworks;
             // client needs to be required for each test
@@ -110,6 +110,41 @@ describe("system client", function () {
         it("readonly fields set", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", null);
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", null);
+        });
+    });
+
+    describe("language and region", function () {
+
+        beforeEach(function () {
+            delete require.cache[require.resolve(apiDir + "/client")];
+            sysClient = null;
+
+            GLOBAL.window = GLOBAL;
+            mockedWebworks.execSync = jasmine.createSpy("execSync").andCallFake(function (namespace, field, args) {
+                if (field === "language") {
+                    return "fr_CA";
+                } else if (field === "region") {
+                    return "en_US";
+                }
+            });
+            mockedWebworks.defineReadOnlyField = jasmine.createSpy();
+            GLOBAL.window.webworks = mockedWebworks;
+            // client needs to be required for each test
+            sysClient = require(apiDir + "/client");
+        });
+
+        afterEach(function () {
+            delete GLOBAL.window;
+        });
+
+        it("language", function () {
+            expect(sysClient.language).toEqual("fr_CA");
+            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "language", null]);
+        });
+
+        it("region", function () {
+            expect(sysClient.region).toEqual("en_US");
+            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "region", null]);
         });
     });
 });
