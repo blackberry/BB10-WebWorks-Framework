@@ -13,6 +13,13 @@
 
 namespace Json {
 
+// QNX is strict about declaring C symbols in the std namespace.
+#ifdef __QNXNTO__
+using std::memcpy;
+using std::sprintf;
+using std::sscanf;
+#endif
+
 // Implementation of class Features
 // ////////////////////////////////
 
