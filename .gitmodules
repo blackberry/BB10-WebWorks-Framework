@@ -4,9 +4,6 @@
 [submodule "dependencies/JsonCpp"]
 	path = dependencies/JsonCpp
 	url = http://github.rim.net/webworks/JsonCpp.git
-[submodule "dependencies/gtest"]
-	path = dependencies/gtest
-	url = http://github.rim.net/webworks/gtest.git
 [submodule "dependencies/webplatform"]
 	path = dependencies/webplatform
 	url = http://github.rim.net/webworks/webplatform.git
