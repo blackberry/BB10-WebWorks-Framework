@@ -64,15 +64,15 @@ describe("blackberry.ui.actions.index", function () {
         GLOBAL.alert = jasmine.createSpy();
         GLOBAL.XMLHttpRequest = function () {
             return {
-                        open            : jasmine.createSpy(),
-                        responseType    : jasmine.createSpy(),
-                        onload          : jasmine.createSpy(),
-                        send            : jasmine.createSpy()
-                    };
+                open            : jasmine.createSpy(),
+                responseType    : jasmine.createSpy(),
+                onload          : jasmine.createSpy(),
+                send            : jasmine.createSpy()
+            };
         };
         GLOBAL.downloadSharedFile = jasmine.createSpy();
-        actions = require(_apiDir + '/actions'),
-        invocation = window.qnx.webplatform.getApplication().invocation
+        actions = require(_apiDir + '/actions');
+        invocation = window.qnx.webplatform.getApplication().invocation;
     });
 
 
