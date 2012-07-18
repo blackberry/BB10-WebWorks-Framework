@@ -7,11 +7,11 @@ set(srcs
     test_main.cpp
     ../filetransfer_curl.cpp
     ../../../ui.dialog/native/dialog_bps.cpp
-    ../../../../dependencies/gtest/src/gmock-gtest-all.cc
+    ../../../../dependencies/gmock-1.5.0/fused-src/gmock-gtest-all.cc
 )
 
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/../../../dependencies/gtest/src/public/)
+include_directories(${CMAKE_SOURCE_DIR}/../../../dependencies/gmock-1.5.0/fused-src/)
 
 add_definitions(-DXP_UNIX)
 add_executable(test ${srcs})
