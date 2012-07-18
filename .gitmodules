@@ -1,9 +1,6 @@
 [submodule "dependencies/test-server/public/lib/jasmine"]
 	path = dependencies/test-server/public/lib/jasmine
 	url = https://github.com/pivotal/jasmine.git
-[submodule "dependencies/jnext_1_0_8_3"]
-	path = dependencies/jnext_1_0_8_3
-	url = http://github.rim.net/webworks/jnext_1_0_8_3.git
 [submodule "dependencies/JsonCpp"]
 	path = dependencies/JsonCpp
 	url = http://github.rim.net/webworks/JsonCpp.git
