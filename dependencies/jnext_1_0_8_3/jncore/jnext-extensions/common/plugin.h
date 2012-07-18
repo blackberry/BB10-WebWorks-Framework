@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <unistd.h>
 //#include "tokenizer.h"
 
 using namespace std;
@@ -29,12 +30,12 @@ extern SendPluginEv SendPluginEvent;
 /////////////////////////////////////////////////////////////////////////
 // Constants and methods common to all JNEXT extensions types
 /////////////////////////////////////////////////////////////////////////
-#define szERROR			"Error "
-#define szOK			"Ok "
+#define szERROR         "Error "
+#define szOK            "Ok "
 
-#define szDISPOSE		"Dispose"
-#define szINVOKE		"InvokeMethod"
-#define szCREATE		"CreateObj"
+#define szDISPOSE       "Dispose"
+#define szINVOKE        "InvokeMethod"
+#define szCREATE        "CreateObj"
 
 /////////////////////////////////////////////////////////////////////////
 // Utility functions
@@ -52,6 +53,7 @@ bool g_unregisterObject( const string& strObjId, void* pContext );
 class JSExt
 {
 public:
+    virtual ~JSExt() {};
     virtual string InvokeMethod( const string& strCommand ) = 0;
     virtual bool CanDelete( void ) = 0;
     virtual void TryDelete( void ) {}
