@@ -19,6 +19,14 @@
 
 namespace Json {
 
+// QNX is strict about declaring C symbols in the std namespace.
+#ifdef __QNXNTO__
+using std::memcpy;
+using std::strchr;
+using std::strcmp;
+using std::strlen;
+#endif
+
 const Value Value::null;
 const Int Value::minInt = Int( ~(UInt(-1)/2) );
 const Int Value::maxInt = Int( UInt(-1)/2 );
