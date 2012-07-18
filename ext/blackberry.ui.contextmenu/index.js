@@ -19,6 +19,7 @@ var contextmenu,
     _overlayWebView = require('./../../lib/overlayWebView'),
     _utils = require('./../../lib/utils'),
     _config = require('./../../lib/config.js'),
+    _actions = require('./actions'),
     _menuItems,
     _currentContext,
     _invocation = window.qnx.webplatform.getApplication().invocation,
@@ -50,10 +51,6 @@ function peekContextMenu() {
 
 function isMenuVisible() {
     // rpc to overlay to determine visibility
-}
-
-function setCurrentContext(context) {
-    _currentContext = context;
 }
 
 function generateMenuItems(menuItems) {
@@ -135,6 +132,7 @@ function generateMenuItems(menuItems) {
 function init() {
     _overlayWebView.onPropertyCurrentContextEvent = function (value) {
         _currentContext = JSON.parse(value);
+        _actions.setCurrentContext(_currentContext);
     };
     _overlayWebView.onContextMenuRequestEvent = function (value) {
         console.log('menu requested');
@@ -148,7 +146,7 @@ function init() {
             if (action) {
                 console.log("Executing action: " + args[0]);
                 //Call the items[action] function //
-                menuActions[action](action);
+                _actions[action](action);
             } else {
                 console.log("No action item was set");
             }
@@ -161,173 +159,6 @@ function init() {
         return '{"setPreventDefault":true}';
     };
 }
-
-function generateInvocationList(request, errorMessage) {
-    _invocation.queryTargets(request, function (errorMessage, results) {
-        if (results.length > 0) {
-            var listArgs = JSON.stringify([results[0], request]);
-            _overlayWebView.executeJavaScript("window.showTargets(" + listArgs + ")");
-        } else {
-            alert(errorMessage);
-        }
-    });
-}
-
-// Default context menu response handler
-function handleContextMenuResponse(args) {
-    var menuAction = args[0];
-    qnx.callExtensionMethod('webview.handleContextMenuResponse', 2, menuAction);
-}
-
-function loadClientURL(args) {
-    console.log(args);
-    var url = args[0];
-    qnx.callExtensionMethod('webview.loadURL', 2, url);
-}
-
-function downloadSharedFile(args, callback) {
-
-    var directory   = window.qnx.webplatform.getApplication().getEnv("HOME"),
-        target      = directory + "/../shared/" + args[1] + "/",
-        source      = args[0],
-        fileName    = args[0].replace(/^.*[\\\/]/, ''),
-        xhr;
-
-    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
-
-    // Check for a local file, if so, let's change it an absolute file path
-    if (_utils.startsWith(source, "local:///")) {
-        source = "file:/" + directory + "/../app/native/" + source.replace(/local:\/\/\//, '');
-    }
-
-    xhr = new XMLHttpRequest();
-    xhr.open('GET', source, true);
-    xhr.responseType = 'arraybuffer';
-
-    function onError(error) {
-        console.log(error);
-    }
-
-    xhr.onload = function (e) {
-        window.requestFileSystem(window.TEMPORARY, 1024 * 1024, function (fileSystem) {
-            fileSystem.root.getFile(target + fileName, {create: true}, function (fileEntry) {
-                fileEntry.createWriter(function (writer) {
-                    writer.onerror = function (e) {
-                        console.log("Could not properly write " + fileName);
-                        //pass
-                    };
-
-                    var bb = new window.WebKitBlobBuilder();
-                    bb.append(xhr.response);
-                    writer.write(bb.getBlob(_utils.fileNameToImageMIME(fileName)));
-
-                    // Call the callback sending back the filepath to the image so the Viewer can be invoked
-                    callback(target + fileEntry.name);
-                }, onError);
-            }, onError);
-        }, onError);
-    };
-
-    xhr.send();
-}
-
-function saveLink() {
-    if (!_currentContext || !_currentContext.url) {
-        return;
-    }
-    //var title = '';
-    //TODO FIXME
-    //_controller.downloadURL([_currentContext.url, title]);
-}
-
-function openLink() {
-    if (!_currentContext || !_currentContext.url) {
-        return;
-    }
-    //Update the content web view with the new URL
-    loadClientURL([_currentContext.url]);
-}
-
-function shareLink() {
-
-    if (!_currentContext || !_currentContext.url) {
-        return;
-    }
-
-    var request = {
-        action: 'bb.action.SHARE',
-        type : 'text/plain',
-        data : _currentContext.url,
-        action_type: _application.invocation.ACTION_TYPE_ALL,
-        target_type: _application.invocation.TARGET_TYPE_APPLICATION
-    };
-
-    generateInvocationList(request, 'No link sharing applications installed');
-}
-
-
-function saveImage() {
-
-    // Ensure we have a proper context of the image to save
-    if (!_currentContext || !_currentContext.isImage || !_currentContext.src) {
-        return;
-    }
-
-    // Check that the proper access permissions have been enabled
-    if (!_config.permissions || _config.permissions.indexOf("access_shared") === -1) {
-        alert("Access shared permissions are not enabled");
-        return;
-    }
-
-    var source     = _currentContext.src,
-        target     = "photos";
-
-    function onSaved(target) {
-
-        if (target) {
-            var request = {
-                action: 'bb.action.VIEW',
-                type: _utils.fileNameToImageMIME(target),
-                uri : "file:/" + target, //target comes back with double slash, change to triple
-                action_type: _application.invocation.ACTION_TYPE_ALL,
-                target_type: _application.invocation.TARGET_TYPE_ALL
-            };
-
-            generateInvocationList(request, 'No image viewing applications installed');
-        }
-    }
-
-    // Download the file over an RPC call to the controller, it will call our onSaved method to see if we succeeded
-    downloadSharedFile([source, target], onSaved);
-}
-
-function responseHandler(menuAction) {
-    if (!menuAction) {
-        console.log("Menu Action was null");
-        return;
-    }
-    console.log("Calling native with the action: " + menuAction + " on the client webview");
-    handleContextMenuResponse([menuAction]);
-}
-
-
-menuActions = {
-
-    'SaveLink'       : saveLink,
-    'Cancel'         : responseHandler,
-    'Cut'            : responseHandler,
-    'Copy'           : responseHandler,
-    'Paste'          : responseHandler,
-    'Select'         : responseHandler,
-    'CopyLink'       : responseHandler,
-    'OpenLink'       : openLink,
-    'SaveLinkAs'     : responseHandler,
-    'CopyImageLink'  : responseHandler,
-    'SaveImage'      : saveImage,
-    'ShareLink'      : shareLink,
-    'InspectElement' : responseHandler,
-};
-
 
 contextmenu = {
     init: init,
