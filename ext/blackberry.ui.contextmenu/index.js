@@ -126,7 +126,7 @@ function init() {
     };
     _overlayWebView.onContextMenuRequestEvent = function (value) {
         var menu = JSON.parse(value),
-            menuItems = generateMenuItems(eval(menu.menuItems)),
+            menuItems = generateMenuItems(menu.menuItems),
         args = JSON.stringify({'menuItems': menuItems,
                               '_currentContext': _currentContext});
         if (contextMenuEnabled) {
