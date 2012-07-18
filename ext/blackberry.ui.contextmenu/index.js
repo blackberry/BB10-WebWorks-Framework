@@ -130,7 +130,7 @@ function init() {
         args = JSON.stringify({'menuItems': menuItems,
                               '_currentContext': _currentContext});
         if (contextMenuEnabled) {
-            _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+            _overlayWebView.executeJavascript("window.showMenu(" + args + ")");
         } else {
             console.log("Context Menu is disabled");
         }

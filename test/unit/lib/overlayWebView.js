@@ -110,10 +110,10 @@ describe("Overlay Webview", function () {
             expect(mockedWebview.url).toEqual(url);
         });
 
-        it("calls the underlying executeJavaScript", function () {
+        it("calls the underlying executeJavascript", function () {
             var js = "var awesome='Jasmine BDD'";
             webview.create(mockedWebview);
-            webview.executeJavaScript(js);
+            webview.executeJavascript(js);
             expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith(js);
         });
         it("calls the underlying windowGroup property", function () {

@@ -33,7 +33,7 @@ function generateInvocationList(request, errorMessage) {
     _invocation.queryTargets(request, function (errorMessage, results) {
         if (results.length > 0) {
             var listArgs = JSON.stringify([results[0], request]);
-            _overlayWebView.executeJavaScript("window.showTargets(" + listArgs + ")");
+            _overlayWebView.executeJavascript("window.showTargets(" + listArgs + ")");
         } else {
             console.log(errorMessage);
         }
