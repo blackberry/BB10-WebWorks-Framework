@@ -25,32 +25,21 @@ var contextmenu,
     _invocation = window.qnx.webplatform.getApplication().invocation,
     _controller = window.qnx.webplatform.getController(),
     _application = window.qnx.webplatform.getApplication(),
-    menuActions;
+    menuActions,
+    contextMenuEnabled = true;
 
 function enabled(success, fail, args, env) {
     if (args) {
         var enable = JSON.parse(decodeURIComponent(args["enabled"]));
-        _webview.setContextMenuEnabled(enable);
-
-        success('return value goes here for success');
+        contextMenuEnabled = enable;
+        success('ContextMenuEnabled has been set to ' + contextMenuEnabled);
     } else {
-        fail('ContextMenuEnabled property can only be set with true false.');
+        fail('ContextMenuEnabled property can only be set with true or false.');
     }
 }
 
 function setMenuOptions(options) {
     _menuItems = options;
-}
-
-function peekContextMenu() {
-    //rpc to set head text
-    //rpc to set subhead text
-    //rpc to set the items
-    //rpc to peek menu
-}
-
-function isMenuVisible() {
-    // rpc to overlay to determine visibility
 }
 
 function generateMenuItems(menuItems) {
@@ -130,34 +119,36 @@ function generateMenuItems(menuItems) {
 }
 
 function init() {
+
     _overlayWebView.onPropertyCurrentContextEvent = function (value) {
         _currentContext = JSON.parse(value);
         _actions.setCurrentContext(_currentContext);
     };
     _overlayWebView.onContextMenuRequestEvent = function (value) {
-        console.log('menu requested');
         var menu = JSON.parse(value),
             menuItems = generateMenuItems(eval(menu.menuItems)),
         args = JSON.stringify({'menuItems': menuItems,
                               '_currentContext': _currentContext});
-
-        _controller.publishRemoteFunction('executeMenuAction', function (args, callback) {
-            var action = args[0];
-            if (action) {
-                console.log("Executing action: " + args[0]);
-                //Call the items[action] function //
-                _actions[action](action);
-            } else {
-                console.log("No action item was set");
-            }
-        });
-
-        // generate menu items
-        // set menu items
-        console.log(menuItems);
-        _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+        if (contextMenuEnabled) {
+            _overlayWebView.executeJavaScript("window.showMenu(" + args + ")");
+        } else {
+            console.log("Context Menu is disabled");
+        }
         return '{"setPreventDefault":true}';
     };
+
+    _controller.publishRemoteFunction('executeMenuAction', function (args, callback) {
+        var action = args[0];
+        if (action) {
+            console.log("Executing action: " + args[0]);
+            //Call the items[action] function //
+            _actions[action](action);
+        } else {
+            console.log("No action item was set");
+        }
+    });
+
+
 }
 
 contextmenu = {

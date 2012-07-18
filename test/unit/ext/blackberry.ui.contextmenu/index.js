@@ -60,7 +60,6 @@ describe("blackberry.ui.contextmenu index", function () {
 
         index = require(_apiDir + "/index");
         success = jasmine.createSpy("success");
-        spyOn(webview, 'setContextMenuEnabled');
     });
 
 
@@ -69,8 +68,7 @@ describe("blackberry.ui.contextmenu index", function () {
             "enabled": encodeURIComponent(JSON.stringify(false))
         }, null);
 
-        expect(webview.setContextMenuEnabled).toHaveBeenCalledWith(false);
-        expect(success).toHaveBeenCalled();
+        expect(success).toHaveBeenCalledWith('ContextMenuEnabled has been set to ' + false);
     });
 
     it("enabled is called with true on the webview.setContextMenuEnabled", function () {
@@ -78,8 +76,7 @@ describe("blackberry.ui.contextmenu index", function () {
             "enabled": encodeURIComponent(JSON.stringify(true))
         }, null);
 
-        expect(webview.setContextMenuEnabled).toHaveBeenCalledWith(true);
-        expect(success).toHaveBeenCalled();
+        expect(success).toHaveBeenCalledWith('ContextMenuEnabled has been set to ' + true);
     });
 
 
