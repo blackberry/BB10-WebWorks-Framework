@@ -154,7 +154,6 @@ function init() {
 contextmenu = {
     init: init,
     setMenuOptions: setMenuOptions,
-    peek: peekContextMenu,
     enabled : enabled
 };
 
