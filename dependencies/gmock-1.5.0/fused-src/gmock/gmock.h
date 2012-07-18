@@ -889,9 +889,12 @@ class ImplicitlyConvertible {
   // size of Helper(x), which can be done at compile time, we can tell
   // which version of Helper() is used, and hence whether x can be
   // implicitly converted to type To.
+
+#if !defined(_MSC_VER) || _MSC_VER < 1600
+  // Compiler fix for VS2010
   static char Helper(To);
   static char (&Helper(...))[2];  // NOLINT
-
+#endif
   // We have to put the 'public' section after the 'private' section,
   // or MSVC refuses to compile the code.
  public:
@@ -899,11 +902,16 @@ class ImplicitlyConvertible {
   // possible loss of data, so we need to temporarily disable the
   // warning.
 #ifdef _MSC_VER
+  // Compiler fix for VS2010
+#if _MSC_VER >= 1600
+  static const bool value = std::is_convertible<From, To>::value;
+#else
 #pragma warning(push)          // Saves the current warning state.
 #pragma warning(disable:4244)  // Temporarily disables warning 4244.
   static const bool value =
       sizeof(Helper(ImplicitlyConvertible::MakeFrom())) == 1;
 #pragma warning(pop)           // Restores the warning state.
+#endif // _MSC_VER >= 1600
 #else
   static const bool value =
       sizeof(Helper(ImplicitlyConvertible::MakeFrom())) == 1;
