@@ -314,10 +314,16 @@
 #define GTEST_OS_SOLARIS 1
 #elif defined(_AIX)
 #define GTEST_OS_AIX 1
+#elif defined __QNXNTO__
+#define GTEST_OS_QNXNTO 1
 #endif  // __CYGWIN__
 
+#ifdef GTEST_OS_QNXNTO
+#define GTEST_USE_OWN_TR1_TUPLE 1
+#endif
+
 #if GTEST_OS_CYGWIN || GTEST_OS_LINUX || GTEST_OS_MAC || GTEST_OS_SYMBIAN || \
-    GTEST_OS_SOLARIS || GTEST_OS_AIX
+    GTEST_OS_SOLARIS || GTEST_OS_AIX || GTEST_OS_QNXNTO
 
 // On some platforms, <regex.h> needs someone to define size_t, and
 // won't compile otherwise.  We can #include it here as we already
