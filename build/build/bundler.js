@@ -39,27 +39,25 @@ module.exports = {
                 return "define('" + path.replace(/lib\/public\//, "").replace(/\.js$/, "") +
                        "', function (require, exports, module) {\n" + file + "});\n";
             },
-            
+
             output = "",//webworks.js output
             clientFilesPath,
             wwVersion = fs.readFileSync("version", "utf-8").trim(),
             wwHash,
             wwInfoModule,
-            
+
             //output sections
             pre_injection,
             hash_injection,
             post_injection;
-            
+
 
         //include LICENSE
-        pre_injection = include("LICENSE", function (file) {
-            return "/*\n" + file + "\n*/\n";
-        });
+        pre_injection = include("build/FILE_LICENSE");
 
         //Open closure
         pre_injection += "(function () { \n";
-        
+
         //include require
         pre_injection += include("dependencies/require/require.js");
 
@@ -71,32 +69,32 @@ module.exports = {
 
         //Close closure
         post_injection += "\n}());";
-        
+
         //Hash the sections
         shasum.update((pre_injection + post_injection).replace(/\\r\\n/g, "\\n"));//convert CRLF to LF
         wwHash = shasum.digest('hex');
-        
+
         wwInfoModule = "module.exports = {\n" +
             "\thash: \"" + wwHash + "\",\n" +
             "\tversion: \"" + wwVersion + "\"\n" +
             "};";
-        
+
         //Create webworks-info to be placed in bar and respresent the framework version[hash].
         //This is neccessary to determine if the apps webworks.js is compatible with the framework.
         fs.writeFileSync(__dirname.replace(/\\/g, '/') + "/../../lib/webworks-info.js", wwInfoModule);
-        
+
         //Inject a define into the webworks.js that will represent its version[hash]
         hash_injection = include(["lib/webworks-info.js"], transformCallback);
-        
+
         //output
         output = pre_injection + hash_injection + post_injection;
-        
+
         //create output folder if it doesn't exist
         clientFilesPath = __dirname.replace(/\\/g, '/') + "/../../clientFiles";
         if (!path.existsSync(clientFilesPath)) {
             fs.mkdirSync(clientFilesPath, "0777"); //full permissions
         }
-        
+
         //Create webworks.js file
         fs.writeFileSync(clientFilesPath + "/webworks-" + wwVersion + ".js", output);
     }
