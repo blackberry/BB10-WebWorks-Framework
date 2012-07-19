@@ -33,7 +33,7 @@ module.exports = {
 
         _webview = _util.requireWebview();
 
-        if (args) {
+        if (args && args["sandbox"]) {
             value = JSON.parse(decodeURIComponent(args["sandbox"]));
             _webview.setSandbox(JSON.parse(value));
 
