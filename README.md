@@ -27,3 +27,7 @@
 
 ##Dependencies
 1. cpplint is used for linting Cpp code. Source code is located under dependencies/cpplint
+2. JNEXT 1.0.8.3 is used to build extensions.
+Original source of JNEXT was downloaded from here - http://jnext.googlecode.com/files/jnext-src-1.0.8.3.zip
+Modifications are available in source code and located udner dependencies/jnext_1_0_8_3
+
