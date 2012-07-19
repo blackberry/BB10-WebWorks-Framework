@@ -22,7 +22,7 @@ Object.defineProperty(contextmenu, "enabled", {
     get : function () {
         var enabled;
         try {
-            enabled = window.webworks.execSync(ID, "enabled");
+            enabled = window.webworks.execAsync(ID, "enabled");
         } catch (error) {
             console.log(error);
         }
@@ -30,15 +30,11 @@ Object.defineProperty(contextmenu, "enabled", {
     },
     set: function (value) {
         try {
-            window.webworks.execSync(ID, "enabled", {"enabled": value});
+            window.webworks.execAsync(ID, "enabled", {"enabled": value});
         } catch (error) {
             console.error(error);
         }
     }
 });
-
-contextmenu.init = function () {
-    window.webworks.execSync(ID, 'init', null);
-};
 
 module.exports = contextmenu;

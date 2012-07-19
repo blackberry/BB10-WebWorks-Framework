@@ -120,6 +120,19 @@ describe("Overlay Webview", function () {
             webview.create(mockedWebview);
             expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
+
+        it("sets the onPropertyCurrentContextEvent on the underlying overlay obj", function () {
+            webview.create(mockedWebview);
+            webview.onPropertyCurrentContextEvent = 'Marco';
+            expect(mockedWebview.onPropertyCurrentContextEvent).toEqual('Marco');
+        });
+
+        it("sets the onContextMenuRequestEvent on the underlying overlay obj", function () {
+            webview.create(mockedWebview);
+            webview.onContextMenuRequestEvent = 'Polo';
+            expect(mockedWebview.onContextMenuRequestEvent).toEqual('Polo');
+        });
+
     });
 
 });

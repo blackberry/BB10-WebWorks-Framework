@@ -167,7 +167,6 @@ function saveImage() {
         }
     }
 
-    // Download the file over an RPC call to the controller, it will call our onSaved method to see if we succeeded
     downloadSharedFile([source, target], onSaved);
 }
 

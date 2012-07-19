@@ -45,8 +45,8 @@ var _apiDir = __dirname + "./../../../../ext/blackberry.ui.contextmenu",
             return mockedApplication;
         }
     };
-describe("blackberry.ui.actions.index", function () {
 
+describe("blackberry.ui.actions.index", function () {
     beforeEach(function () {
         GLOBAL.window.qnx.webplatform = mockedWebPlatform;
         GLOBAL.window.webworks = mockedWebWorks;

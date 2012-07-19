@@ -67,7 +67,7 @@ body {
     background-image: url('../assets/drag_bar.png');
 }
 
-/* Show and hid the menu items themselves */
+/* Show and hide the menu items themselves */
 .showItem {
     -webkit-transform:translate(-462px,0);
     z-index:101;
