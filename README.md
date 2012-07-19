@@ -24,3 +24,6 @@
     - For Windows:
         Run *BBNDK Installation Directory*\bbndk-env.bat.
 7. Run 'jake' or 'jake build' and check that the output folder is created under the "target/zip" subfolder. If on windows, run jake from command prompt.
+
+##Dependencies
+1. cpplint is used for linting Cpp code. Source code is located under dependencies/cpplint
