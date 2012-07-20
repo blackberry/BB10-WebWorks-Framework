@@ -31,6 +31,9 @@
     <feature id="blackberry.notification" required="true" version="1.0.0.0" />
     <feature id="enable-flash" />
 
+    <access uri="http://www.rim.com">
+        <feature id="blackberry.app"/>
+    </access>
     <access uri="http://atg05-yyz.labyyz.testnet.rim.net" />
     <access uri="http://10.137.251.215/" />
     <access uri="http://html5demos.com/" />
@@ -40,12 +43,34 @@
     <access uri="http://www.google-analytics.com/" subdomains="true"/>
     <access uri="http://www.rim.com" />
     <access uri="http://www.w3.org" subdomains="true" />
+    <access uri="http://open-stand.org" subdomains="true" />
     <access uri="http://benwerd.com/" />
     <access uri="http://www.youtube.com/" subdomains="true" />
     <access uri="http://ytimg.com/" subdomains="true" />
     <access uri="http://www.homestarrunner.com/" />
     <access uri="http://cachemanifest.heroku.com/" />
     <access uri="http://jquery.com/" subdomains="true"/>
+    <access uri="http://www.wikipedia.org//" subdomains="true"/>
+    <access uri="http://wikimedia.org//" subdomains="true"/>
+    <access uri="http://Smoketest8-vmyyz.labyyz.testnet.rim.net/" subdomains="true">
+        <feature id="blackberry.app"/>
+    </access>
+    <access uri="http://Smoketest1-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
+    <access uri="http://Smoketest3-vmyyz.labyyz.testnet.rim.net/index.html?*" subdomains="false"/>
+    <access uri="http://Smoketest4-vmyyz.labyyz.testnet.rim.net/a/index.html" subdomains="false"/>
+    <access uri="http://Smoketest5-vmyyz.labyyz.testnet.rim.net/"/>
+    <access uri="http://Smoketest6-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
+    <access uri="http://www.Smoketest6-vmyyz.labyyz.testnet.rim.net/"/>
+    <access uri="http://Smoketest7-vmyyz.labyyz.testnet.rim.net">
+        <feature id="blackberry.identity"/>
+    </access>
+    <access uri="http://www.Smoketest7-vmyyz.labyyz.testnet.rim.net">
+        <feature id="blackberry.app"/>
+    </access>
+    <access uri="http://Smoketest8-vmyyz.labyyz.testnet.rim.net/a/">
+        <feature id="blackberry.app"/>
+    </access>
+    <access uri="file:///accounts/1000/shared/photos"></access>
 
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
         Licensed under the Apache License, Version 2.0 (the "License");

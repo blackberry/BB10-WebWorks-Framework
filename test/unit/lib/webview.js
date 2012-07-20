@@ -1,10 +1,11 @@
 describe("webview", function () {
-    var webview,
-        libPath = "./../../../",
+    var libPath = "./../../../",
+        request = require(libPath + "lib/request"),
+        utils = require(libPath + "lib/utils"),
+        webview,
         mockedController,
         mockedWebview,
-        mockedApplication,
-        request = require(libPath + "lib/request");
+        mockedApplication;
 
     beforeEach(function () {
         webview = require(libPath + "lib/webview");
@@ -77,7 +78,6 @@ describe("webview", function () {
             webview.create();
             waits(1);
             runs(function () {
-                expect(mockedWebview.enableCrossSiteXHR).toEqual(true);
                 expect(mockedWebview.visible).toEqual(true);
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(0);
@@ -87,6 +87,12 @@ describe("webview", function () {
                 expect(mockedWebview.enableWebEventRedirect.argsForCall[2]).toEqual(['PropertyCurrentContextEvent', 3]);
                 expect(request.init).toHaveBeenCalledWith(mockedWebview);
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
+
+                //The default config.xml only has access to WIDGET_LOCAL
+                //and has permission for two apis
+                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'local://', false);
+                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
+                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
             });
         });
 
