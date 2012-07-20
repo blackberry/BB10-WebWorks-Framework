@@ -91,7 +91,35 @@ describe("extensions", function () {
             expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
             expect(XMLHttpRequest.prototype.open).toHaveBeenCalledWith("GET", "ext/blackberry.app/client.js", false);
             expect(XMLHttpRequest.prototype.send).toHaveBeenCalled();
-            expect(res.send).toHaveBeenCalledWith(200, "blah");
+            expect(res.send).toHaveBeenCalledWith(200, JSON.stringify({client: "blah", dependencies: []}));
+        });
+
+
+        xit("sends xhr respones text that includes client dependencies", function () {
+            GLOBAL.XMLHttpRequest.prototype.open = jasmine.createSpy().andCallFake(function (method, url, async) {
+                if (url.match("blackberry.app")) {
+                    GLOBAL.XMLHttpRequest.prototype.responseText = "module.exports = { id: require('./manifest.json').namespace };";
+                } else {
+                    GLOBAL.XMLHttpRequest.prototype.responseText = "{\"namespace\": \"blackberry.app\"}";
+                }
+            });
+            //TODO trouble mocking require.toUrl, had to comment out test case for now
+            //require.toUrl = jasmine.createSpy("");
+
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+
+            extensions.load(req, succ, fail, undefined, {request: req, response: res});
+
+            expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
+            expect(XMLHttpRequest.prototype.open).toHaveBeenCalledWith("GET", "ext/blackberry.app/client.js", false);
+            expect(XMLHttpRequest.prototype.send).toHaveBeenCalled();
+            expect(res.send).toHaveBeenCalledWith(200, JSON.stringify({
+                client: "module.exports = { id: require('./manifest.json').namespace };",
+                dependencies: [{
+                    moduleName: "ext/blackberry.app/manifest.json",
+                    body: "{\"namespace\": \"blackberry.app\"}"
+                }]
+            }));
         });
 
         it("calls fail callback with HTTP 404 if whitelisted feature does not exist", function () {
