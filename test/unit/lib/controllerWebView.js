@@ -27,7 +27,8 @@ describe("controllerWebView", function () {
             visible: null,
             active: null,
             setGeometry: jasmine.createSpy(),
-            publishRemoteFunction: jasmine.createSpy()
+            publishRemoteFunction: jasmine.createSpy(),
+            dispatchEvent : jasmine.createSpy()
         };
         mockedInvocation = {
             queryTargets: function (request, callback) {
@@ -63,6 +64,12 @@ describe("controllerWebView", function () {
             expect(mockedController.visible).toEqual(false);
             expect(mockedController.active).toEqual(false);
             expect(mockedController.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
+        });
+
+        it("tests that the dispatch function is called properly", function () {
+            controllerWebView.init({debugEnabled: true});
+            controllerWebView.dispatchEvent('Awesome Event', ['these are agruments', 'another argument']);
+            expect(mockedController.dispatchEvent).toHaveBeenCalledWith('Awesome Event', ['these are agruments', 'another argument']);
         });
     });
 });
