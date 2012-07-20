@@ -100,9 +100,14 @@ describe("webworks require", function () {
 
         it("will go across the bridge when the module name starts with local:// and ends with .js", function () {
             var moduleURI = "local://ext/blackberry.system/client.js",
-                url = "http://localhost:8472/blackberry/extensions/load/blackberry.system",
+                url = "http://localhost:8472/extensions/load/blackberry.system",
                 appClient;
-            mockRequest.responseText = "module.exports = { test: 'TEST'}";
+            /*jshint multistr:true */
+            mockRequest.responseText = "{\
+                \"client\": \"module.exports = { test: 'TEST'};\",\
+                \"dependencies\": []\
+            }";
+            /*jshint multistr:false */
             //spyOn(webworksRequire, "define").andCallThrough();
             appClient = webworksRequire.require(moduleURI);
             expect(mockRequest.open).toHaveBeenCalledWith("GET", url, false);
@@ -110,6 +115,26 @@ describe("webworks require", function () {
             //TODO: Figure out how to catch the define call
             //expect(webworksRequire.define).toHaveBeenCalled();
             expect(appClient.test).toEqual("TEST");
+        });
+
+        it("will load dependencies in client js", function () {
+            var moduleURI = "local://ext/blackberry.xyz/client.js",
+                url = "http://localhost:8472/extensions/load/blackberry.xyz",
+                appClient;
+            /*jshint multistr:true */
+            mockRequest.responseText = "{\
+                \"client\": \"module.exports = { id: require('./manifest.json').namespace };\",\
+                \"dependencies\": [{\
+                    \"moduleName\": \"ext/blackberry.xyz/manifest.json\",\
+                    \"body\": \"{namespace: \\\"blackberry.xyz\\\" }\"\
+                }]\
+            }";
+            /*jshint multistr:false */
+
+            appClient = webworksRequire.require(moduleURI);
+            expect(mockRequest.open).toHaveBeenCalledWith("GET", url, false);
+            expect(mockRequest.send).toHaveBeenCalled();
+            expect(appClient.id).toEqual("blackberry.xyz");
         });
     });
 });

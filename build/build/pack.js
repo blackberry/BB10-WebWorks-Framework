@@ -38,9 +38,10 @@ function copyExtensions(extPath, extDest) {
                 apiNativeDir,
                 jsFiles, soFiles;
             
-            //find all .js files
+            //find all .js files or .json files
             jsFiles = utils.listFiles(apiDir, function (file) {
-                return path.extname(file) === ".js";
+                var extName = path.extname(file);
+                return extName === ".js" || extName === ".json";
             });
             
             //Copy each .js file to its extensions folder
