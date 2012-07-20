@@ -38,18 +38,6 @@ function upload_failure(error) {
         "\nupload error target " + error.target);
 }
 
-describe("blackberry.io.filetransfer", function () {
-    it('blackberry.io.filetransfer should exist', function () {
-        expect(blackberry.io.filetransfer).toBeDefined();
-    });
-
-    it('blackberry.io.filetransfer.* should be defined', function () {
-        testConstantValue("FILE_NOT_FOUND_ERR", 1);
-        testConstantValue("INVALID_URL_ERR", 2);
-        testConstantValue("CONNECTION_ERR", 3);
-    });
-});
-
 describe("blackberry.io.filetransfer upload", function () {
     var confirm,
         options;

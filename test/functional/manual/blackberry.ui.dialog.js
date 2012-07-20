@@ -47,13 +47,6 @@ function testDialogReadOnly(field) {
 }
 
 describe("blackberry.ui.dialog", function () {
-    it('blackberry.ui.dialog should exist', function () {
-        expect(blackberry.ui.dialog).toBeDefined();
-    });
-
-    it('blackberry.ui.dialog.customAskAsync should exist', function () {
-        expect(blackberry.ui.dialog.customAskAsync).toBeDefined();
-    });
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a dialog', function () {
 		var buttons = ["Ok"],
@@ -65,14 +58,6 @@ describe("blackberry.ui.dialog", function () {
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
-    });
-
-    it('blackberry.ui.dialog should exist', function () {
-        expect(blackberry.ui.dialog).toBeDefined();
-    });
-
-    it('blackberry.ui.dialog.customAskAsync should exist', function () {
-        expect(blackberry.ui.dialog.customAskAsync).toBeDefined();
     });
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a dialog with two buttons and a title', function () {
@@ -98,27 +83,7 @@ describe("blackberry.ui.dialog", function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
     });
-
-    it('blackberry.ui.dialog.standardAskAsync should exist', function () {
-        expect(blackberry.ui.dialog.standardAskAsync).toBeDefined();
-    });
-
-    it('blackberry.ui.* should be defined', function () {
-        testDialogValue("D_OK", 0);
-        testDialogValue("D_SAVE", 1);
-        testDialogValue("D_DELETE", 2);
-        testDialogValue("D_YES_NO", 3);
-        testDialogValue("D_OK_CANCEL", 4);
-    });
     
-    it('blackberry.ui.* should be read-only', function () {
-        testDialogReadOnly("D_OK");
-        testDialogReadOnly("D_SAVE");
-        testDialogReadOnly("D_DELETE");
-        testDialogReadOnly("D_YES_NO");
-        testDialogReadOnly("D_OK_CANCEL");
-    });
-
     it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok dialog', function () {
         var type = blackberry.ui.dialog.D_OK,
             settings = {title : "Ok Dialog", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
@@ -196,4 +161,5 @@ describe("blackberry.ui.dialog", function () {
             expect(option).toEqual('1');
         });
     });
+    
 });
