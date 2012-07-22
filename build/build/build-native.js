@@ -26,7 +26,7 @@ function _getCmd(ext) {
         simDir,
         deviceDir,
         configurePrefix,
-        configureX86, 
+        configureX86,
         configureARM,
 
         //strip binary commands
@@ -59,24 +59,24 @@ function _getCmd(ext) {
         if (!path.existsSync(deviceDir)) {
             fs.mkdirSync(deviceDir);
         }
-        
+
         cmd += CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK + " " +
             simDir + AND_CMD + CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK +
             " " + deviceDir + AND_CMD +
-            CD_CMD + simDir + AND_CMD + 
+            CD_CMD + simDir + AND_CMD +
             configureX86 + AND_CMD +
             MAKE_CMD + AND_CMD + stripX86 + AND_CMD +
-            CD_CMD + deviceDir + AND_CMD + 
+            CD_CMD + deviceDir + AND_CMD +
             configureARM + AND_CMD +
             MAKE_CMD + AND_CMD + stripARM;
 
     }
-    
+
     return cmd;
 }
 
 function createCmd(ext) {
-    return function (prev, baton) { 
+    return function (prev, baton) {
         baton.take();
         childProcess.exec(_getCmd(ext), function (error, stdout, stderr) {
             if (stdout !== "") {
@@ -97,7 +97,7 @@ function createCmd(ext) {
 
 module.exports = function (prev, baton) {
     var build = jWorkflow.order(),
-        i, 
+        i,
         thisBaton = baton,
         exts = fs.readdirSync(_c.EXT);
 
@@ -109,7 +109,7 @@ module.exports = function (prev, baton) {
 
     //catch the success case
     build = build.andThen(function () {
-        thisBaton.pass();
+        thisBaton.pass(prev);
     });
 
     //catch the error case
