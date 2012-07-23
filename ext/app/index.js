@@ -18,24 +18,60 @@ var _config = require("./../../lib/config"),
     _utils = require("./../../lib/utils"),
     _actionMap = {
         swipedown: {
-            context: require("./navEvents"),
+            context: require("./appEvents"),
             event: "swipedown",
             trigger: function () {
                 _event.trigger("swipedown");
             }
         },
         pause: {
-            context: require("./navEvents"),
+            context: require("./appEvents"),
             event: "pause",
             trigger: function () {
                 _event.trigger("pause");
             }
         },
         resume: {
-            context: require("./navEvents"),
+            context: require("./appEvents"),
             event: "resume",
             trigger: function () {
                 _event.trigger("resume");
+            }
+        },
+        keyboardOpening: {
+            context: require("./appEvents"),
+            event: "keyboardOpening",
+            trigger: function () {
+                _event.trigger("keyboardOpening");
+            }
+        },
+        keyboardOpened: {
+            context: require("./appEvents"),
+            event: "keyboardOpened",
+            trigger: function () {
+                _event.trigger("keyboardOpened");
+            }
+        },
+        keyboardClosing: {
+            context: require("./appEvents"),
+            event: "keyboardClosing",
+            trigger: function () {
+                _event.trigger("keyboardClosing");
+            }
+        },
+        keyboardClosed: {
+            context: require("./appEvents"),
+            event: "keyboardClosed",
+            trigger: function () {
+                _event.trigger("keyboardClosed");
+            }
+        },
+        keyboardPosition: {
+            context: require("./appEvents"),
+            event: "keyboardPosition",
+            trigger: function (yPosition) {
+                var _yPosition = JSON.parse(yPosition);
+                _event.trigger("keyboardPosition", _yPosition);
             }
         }
     };
