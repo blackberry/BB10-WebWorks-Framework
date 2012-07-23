@@ -35,5 +35,10 @@ module.exports = {
     NODE_MOD: path.normalize(__dirname + "/../../node_modules"),
     COMPILER_THREADS: "4",
     USB_IP: "169.254.0.1",
-    DEFAULT_SSH_KEY: "~/.ssh/id_rsa.pub"
+    DEFAULT_SSH_KEY: "~/.ssh/id_rsa.pub",
+    BACKUP_PACKAGER_FRAMEWORK: "FrameworkBackup.zip",
+    PACKAGE_COMMAND_DEFAULT_PACKAGER: "/Users/jheifetz/Downloads/BB10webworks-next-34",
+    PACKAGE_COMMAND_DEFAULT_APP: "/Users/jheifetz/Coding/WebWorks/Apps/WebWorks-SmokeTest/wwtest.zip",
+    PACKAGE_COMMAND_DEFAULT_OPTIONS: "-d -s",
+    PACKAGE_COMMAND_DEFAULT_WEBWORKS_JS_PATH: "webworks.js"
 };
