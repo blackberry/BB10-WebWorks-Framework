@@ -38,7 +38,8 @@ describe("Overlay Webview", function () {
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
             addEventListener: jasmine.createSpy(),
-            enableWebEventRedirect: jasmine.createSpy()
+            enableWebEventRedirect: jasmine.createSpy(),
+            notifyContextMenuCancelled: jasmine.createSpy()
         };
         mockedApplication = {
             windowVisible: undefined
@@ -157,6 +158,12 @@ describe("Overlay Webview", function () {
             webview.create();
             webview.notifyApplicationOrientationDone();
             expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
+        });
+
+        it("can notifyContextMenuCancelled", function () {
+            webview.create();
+            webview.notifyContextMenuCancelled();
+            expect(mockedWebview.notifyContextMenuCancelled).toHaveBeenCalled();
         });
 
     });

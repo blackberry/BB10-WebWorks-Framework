@@ -21,13 +21,15 @@ describe("ui-resources/contextmenu", function () {
     menu,
     menuHandle,
     menuContent,
-    menuItems,
+    menuDelete,
     numberOfMenuItems = 5,
     headText,
     subheadText,
     header,
     mockedController,
     mockedApplication,
+    elements,
+    elementsLength,
     invocation;
 
     beforeEach(function () {
@@ -45,6 +47,11 @@ describe("ui-resources/contextmenu", function () {
             }
         };
 
+        elements = {
+                length : 5
+            };
+        elementsLength = 5;
+
         GLOBAL.alert = jasmine.createSpy();
         GLOBAL.window = {
             qnx : {
@@ -56,17 +63,55 @@ describe("ui-resources/contextmenu", function () {
                         return mockedApplication;
                     }
                 }
-            }
+            },
+
+            screen : {
+                avalHeight : "1280"
+            },
+
+            document: GLOBAL.document,
+
+            addEventListener: jasmine.createSpy()
         };
         GLOBAL.document = {
+            staticElements: {},
+
             createTextNode: jasmine.createSpy(),
             createElement: jasmine.createSpy().andReturn({
                 appendChild: jasmine.createSpy(),
                 setAttribute: jasmine.createSpy(),
-                addEventListener: jasmine.createSpy()
+                addEventListener: jasmine.createSpy(),
+                style: {}
             }),
+            body: {
+                addEventListener: jasmine.createSpy(),
+                removeEventListener: jasmine.createSpy()
+            },
+
+            getElementsByClassName: function (id) {
+                var returnElements = [],
+                    i;
+                if (id === "menuItem") {
+                    for (i = 0; i < numberOfMenuItems; i++) {
+                        returnElements[i] = {
+                            ontouchmove : jasmine.any(Function),
+                            className : "menuItem",
+                            clientHeight : 108
+                        };
+                    }
+                }
+                return returnElements;
+            },
+
             getElementById: function (id) {
                 var returnElement;
+
+                // Used if we want to use a mock object in our test and want to reference its changes from
+                // the context menu later
+                if (GLOBAL.document.staticElements[id]) {
+                    return GLOBAL.document.staticElements[id];
+                }
+
                 if (id === "contextMenu") {
                     menu = {
                         addEventListener: jasmine.createSpy(),
@@ -74,21 +119,30 @@ describe("ui-resources/contextmenu", function () {
                         showContextmenu: jasmine.createSpy(),
                         appendChild: jasmine.createSpy(),
                         className: undefined,
-                        style: {overflowY: '', height: ''},
+                        style: {overflowY: '', height: ''}
                     };
                     returnElement = menu;
+                } else if (id === 'contextMenuDelete') {
+                    menuDelete = {
+                        firstChild: jasmine.createSpy(),
+                        removeChild: jasmine.createSpy(),
+                        style: {}
+                    };
+                    returnElement = menuDelete;
                 } else if (id === "contextMenuHandle") {
                     menuHandle = {
                         addEventListener: jasmine.createSpy(),
                         removeEventListener: jasmine.createSpy(),
-                        className: ''
+                        className: '',
+                        style: {},
+                        removeChild: jasmine.createSpy()
                     };
                     returnElement = menuHandle;
                 } else if (id === "contextMenuHeadText") {
-                    headText = { innerText: undefined };
+                    headText = { innerText: undefined, style: {} };
                     returnElement = headText;
                 } else if (id === "contextMenuSubheadText") {
-                    subheadText = { innerText: undefined };
+                    subheadText = { innerText: undefined, style: {}};
                     returnElement = subheadText;
                 } else if (id === "contextMenuHeader") {
                     header = { className: undefined };
@@ -97,19 +151,17 @@ describe("ui-resources/contextmenu", function () {
                     menuContent = {
                         childNodes: [],
                         appendChild: jasmine.createSpy(),
-                        style: {overflowY: '', height: ''}
+                        style: {overflowY: '', height: ''},
+                        className: '',
+                        removeChild: jasmine.createSpy()
                     };
                     returnElement = menuContent;
-                }
-                return returnElement;
-            },
-            getElementsByClassName: function (className) {
-                var returnElement;
-                if (className === 'menuItem') {
-                    menuItems = {
-                        length: numberOfMenuItems
+                } else if (id === "moreHandleIcon") {
+                    returnElement = null;
+                } else if (id === "contextMenuModal") {
+                    returnElement = {
+                        style: {}
                     };
-                    returnElement = menuItems;
                 }
                 return returnElement;
             }
@@ -126,6 +178,9 @@ describe("ui-resources/contextmenu", function () {
 
     afterEach(function () {
         contextmenu.hideContextMenu();
+
+        // Clear static elements
+        GLOBAL.document.staticElements = {};
     });
 
     it("has an init function", function () {
@@ -137,15 +192,19 @@ describe("ui-resources/contextmenu", function () {
         expect(menu.addEventListener).toHaveBeenCalledWith("webkitTransitionEnd", jasmine.any(Function));
     });
 
-    it("has a handleMouseDown function", function () {
-        expect(contextmenu.handleMouseDown).toBeDefined();
+    it("has a mouseDownHandler function", function () {
+        expect(contextmenu.mouseDownHandler).toBeDefined();
     });
 
-    it("has a handleMouseDown function that accepts an event", function () {
-        var spyFunction = jasmine.createSpy(),
-            evt = { preventDefault : spyFunction };
-        contextmenu.handleMouseDown(evt);
+    it("has a mouseDownHandler function that accepts an event", function () {
+        var evt = {
+            preventDefault : jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
+        };
+
+        contextmenu.mouseDownHandler(evt);
         expect(evt.preventDefault).toHaveBeenCalled();
+        expect(evt.stopPropagation).toHaveBeenCalled();
     });
 
     it("has a showContextMenu function", function () {
@@ -154,23 +213,26 @@ describe("ui-resources/contextmenu", function () {
 
     it("allows showContextMenu to set menuVisible to true", function () {
         var evt = {
-            cancelBubble : false
+            cancelBubble : false,
+            preventDefault: jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
         };
+        contextmenu.hideContextMenu();
+        contextmenu.peekContextMenu(true);
         contextmenu.showContextMenu(evt);
         expect(contextmenu.isMenuVisible()).toEqual(true);
     });
 
     it("allows showContextMenu to set peeked mode to false when already peeked", function () {
         var evt = {
-            cancelBubble : false
+            preventDefault: jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
         };
         contextmenu.hideContextMenu();
         contextmenu.peekContextMenu(true);
         contextmenu.showContextMenu(evt);
-        expect(evt.cancelBubble).toEqual(true);
         expect(contextmenu.isMenuVisible()).toEqual(true);
     });
-
 
     it("can set the header text of the context menu", function () {
         var text = "So Awesome Header";
@@ -187,8 +249,6 @@ describe("ui-resources/contextmenu", function () {
     it("can hide the context menu", function () {
         contextmenu.showContextMenu();
         contextmenu.hideContextMenu();
-        expect(menu.removeEventListener).toHaveBeenCalledWith('touchend', contextmenu.hideContextMenu, false);
-        expect(menuHandle.removeEventListener).toHaveBeenCalledWith('touchend', contextmenu.showContextMenu, false);
         expect(contextmenu.isMenuVisible()).toEqual(false);
         expect(menu.className).toEqual('hideMenu');
         expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.setSensitivity', ['SensitivityTest']);
@@ -197,17 +257,10 @@ describe("ui-resources/contextmenu", function () {
     it("can set transitionEnd logic when the context menu is hidden", function () {
         spyOn(contextmenu, 'setHeadText');
         spyOn(contextmenu, 'setSubheadText');
+        contextmenu.hideContextMenu();
         contextmenu.transitionEnd();
-        expect(header.className).toEqual('contextMenuHeaderEmpty');
         expect(contextmenu.setHeadText).toHaveBeenCalledWith('');
         expect(contextmenu.setSubheadText).toHaveBeenCalledWith('');
-    });
-
-    it("can set transitionEnd logic when the context menu is peeked", function () {
-        contextmenu.peekContextMenu(true);
-        contextmenu.transitionEnd();
-        expect(menu.addEventListener).toHaveBeenCalledWith('touchend', contextmenu.hideContextMenu, false);
-        expect(menuHandle.addEventListener).toHaveBeenCalledWith('touchend', contextmenu.showContextMenu, false);
     });
 
     it("can peek the context menu", function () {
@@ -220,7 +273,6 @@ describe("ui-resources/contextmenu", function () {
 
     it("can set the context menu items", function () {
         var itemA = {
-                function: jasmine.createSpy(),
                 imageUrl: 'http://image.com/a.png',
                 name: 'OptionA'
             },
@@ -229,16 +281,171 @@ describe("ui-resources/contextmenu", function () {
         expect(menuContent.appendChild).toHaveBeenCalledWith(jasmine.any(Object));
     });
 
-    it("can set the classname of contextMenuHandle to showMoreActionHandle when less than 7 menu items", function () {
-        numberOfMenuItems = 9;
-        contextmenu.peekContextMenu(true);
-        expect(menuHandle.className).toEqual('showMoreActionsHandle');
-    });
-
-    it("can set the classname of contextMenuHandle to showContextMenuHandle when more than 7 menu items", function () {
+    it("can set the classname of contextMenuHandle to showContextMenuHandle when less than 7 menu items", function () {
         numberOfMenuItems = 4;
         contextmenu.peekContextMenu(true);
         expect(menuHandle.className).toEqual('showContextMenuHandle');
     });
 
+    it("can layout the header title correctly when there is no sub header text", function () {
+        // Override the getElementById to refer to the same object so we can spy on the context menu's changes
+        // to the headers
+        document.staticElements.contextMenuHeadText = { innerText: undefined, style: {}};
+        document.staticElements.contextMenuSubheadText = { innerText: undefined, style: {}};
+
+        contextmenu.setMenuOptions([
+            {
+                headText: 'head text'
+            }
+        ]);
+        contextmenu.peekContextMenu(true);
+        contextmenu.showContextMenu();
+
+        expect(document.staticElements.contextMenuHeadText.style.height).toEqual('105px');
+        expect(document.staticElements.contextMenuHeadText.style.lineHeight).toEqual('105px');
+    });
+
+    it("can layout the sub header text when there is no header text", function () {
+        document.staticElements.contextMenuHeadText = { innerText: undefined, style: {}};
+        document.staticElements.contextMenuSubheadText = { innerText: undefined, style: {}};
+
+        contextmenu.setMenuOptions([
+            {
+                headText: '',
+                subheadText: 'sub head text'
+            }
+        ]);
+        contextmenu.peekContextMenu(true);
+        contextmenu.showContextMenu();
+
+        expect(document.staticElements.contextMenuSubheadText.style.height).toEqual('105px');
+        expect(document.staticElements.contextMenuSubheadText.style.lineHeight).toEqual('105px');
+    });
+
+    it("can animate the header down when it exists", function () {
+        document.staticElements.contextMenuHeader = { className: 'undefined' };
+        contextmenu.setMenuOptions([
+            {
+                headText: 'head text',
+                subheadText: 'sub head text'
+            }
+        ]);
+
+        contextmenu.peekContextMenu(true);
+        contextmenu.showContextMenu();
+
+        expect(document.staticElements.contextMenuHeader.className).toEqual('showMenuHeader');
+    });
+
+    it("will show the more handle icon when there are > max num of items while in peeked landscape mode", function () {
+        var items = [],
+            i;
+
+        for (i = 0; i < 4; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
+
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
+        };
+
+        window.orientation = 90;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
+
+        expect(document.staticElements.contextMenuHandle.appendChild).toHaveBeenCalled();
+    });
+
+    it("will not show the more handle icon when there are < max num of items while in peeked landscape mode", function () {
+        var items = [],
+            i;
+
+        for (i = 0; i < 3; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
+
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
+        };
+
+        window.orientation = 90;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
+
+        expect(document.staticElements.contextMenuHandle.appendChild).not.toHaveBeenCalled();
+    });
+
+    it("will show the more handle icon when there are > max num of items while in peeked portrait mode", function () {
+        var items = [],
+            i;
+
+        for (i = 0; i < 8; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
+
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
+        };
+
+        window.orientation = 0;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
+
+        expect(document.staticElements.contextMenuHandle.appendChild).toHaveBeenCalled();
+    });
+
+    it("will not show the more handle icon when there are < max num of items while in peeked portrait mode", function () {
+        var items = [],
+            i;
+
+        for (i = 0; i < 4; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
+
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
+        };
+
+        window.orientation = 0;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
+
+        expect(document.staticElements.contextMenuHandle.appendChild).not.toHaveBeenCalled();
+    });
 });

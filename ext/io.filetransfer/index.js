@@ -42,6 +42,7 @@ module.exports = {
 
 
         // decodeURI and check for null value params
+        /*jshint forin: false */
         for (key in args) {
             args[key] = JSON.parse(decodeURIComponent(args[key]));
             if (!args[key]) {
@@ -87,6 +88,7 @@ module.exports = {
         var key,
             undefined_params = [];
 
+        /*jshint forin: false */
         for (key in args) {
             args[key] = JSON.parse(decodeURIComponent(args[key]));
             if (!args[key]) {
@@ -106,7 +108,7 @@ module.exports = {
             return;
         }
 
-        args["windowGroup"] = _webview.windowGroup();
+        args.windowGroup = _webview.windowGroup();
 
         filetransfer.download(args);
         success();

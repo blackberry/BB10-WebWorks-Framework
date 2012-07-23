@@ -51,6 +51,7 @@ var _apiDir = __dirname + "./../../../../../ext/ui.contextmenu",
 describe("blackberry.ui.actions.handlers index", function () {
     beforeEach(function () {
         GLOBAL.window.qnx.webplatform = mockedWebPlatform;
+        GLOBAL.window.webworks = mockedWebWorks;
         GLOBAL.qnx = {
             callExtensionMethod: jasmine.createSpy("bond"),
             webplatform : {
@@ -76,42 +77,43 @@ describe("blackberry.ui.actions.handlers index", function () {
         dialog = require(_libDir + './ui/dialog/index');
         invocation = window.qnx.webplatform.getApplication().invocation;
         actions.clearCustomHandlers();
+        spyOn(webview, "handleContextMenuResponse");
     });
 
 
     it("Cause the Copy function to get called properly", function () {
         actions.handlers.Copy('Copy');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Copy');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('Copy');
     });
 
     it("Cause the ClearField function to get called properly", function () {
         actions.handlers.ClearField('ClearField');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'ClearField');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('ClearField');
     });
 
     it("Cause the Paste function to get called properly", function () {
         actions.handlers.Paste('Paste');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Paste');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('Paste');
     });
 
     it("Cause the Cut function to get called properly", function () {
         actions.handlers.Cut('Cut');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Cut');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('Cut');
     });
 
     it("Cause the Select function to get called properly", function () {
         actions.handlers.Select('Select');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'Select');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('Select');
     });
 
     it("Cause the CopyLink function to get called properly", function () {
         actions.handlers.CopyLink('CopyLink');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'CopyLink');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('CopyLink');
     });
 
     it("Cause the CopyImageLink function to get called properly", function () {
         actions.handlers.CopyImageLink('CopyImageLink');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'CopyImageLink');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('CopyImageLink');
     });
 
     it("Cause the OpenLink function to get called properly", function () {
@@ -119,9 +121,10 @@ describe("blackberry.ui.actions.handlers index", function () {
             url : 'testUrl',
             src : 'testSrc'
         };
+        spyOn(webview, "setURL");
         actions.setCurrentContext(currentContext);
         actions.handlers.OpenLink('OpenLink');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.loadURL', 2, 'testUrl');
+        expect(webview.setURL).toHaveBeenCalledWith('testUrl');
     });
 
     it("Cause the SaveLinkAs function to get called properly", function () {
@@ -129,15 +132,16 @@ describe("blackberry.ui.actions.handlers index", function () {
             url : 'testUrl',
             src : 'testSrc'
         };
+        spyOn(webview, "downloadURL");
         actions.setCurrentContext(currentContext);
         actions.handlers.SaveLinkAs('SaveLink');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.downloadURL', 2, 'testUrl');
+        expect(webview.downloadURL).toHaveBeenCalledWith('testUrl');
     });
 
 
     it("Cause the InspectElement function to get called properly", function () {
         actions.handlers.InspectElement('InspectElement');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.handleContextMenuResponse', 2, 'InspectElement');
+        expect(webview.handleContextMenuResponse).toHaveBeenCalledWith('InspectElement');
     });
 
 
@@ -149,7 +153,7 @@ describe("blackberry.ui.actions.handlers index", function () {
         var currentContext = {};
         actions.setCurrentContext(currentContext);
         actions.handlers.SaveImage('SaveImage');
-        expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
+        expect(webview.handleContextMenuResponse).not.toHaveBeenCalled();
     });
 
     it("Cause the SaveImage to not be called, since access_shared is undefined", function () {
@@ -162,7 +166,7 @@ describe("blackberry.ui.actions.handlers index", function () {
         spyOn(dialog, 'show');
         actions.setCurrentContext(currentContext);
         actions.handlers.SaveImage('SaveImage');
-        expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
+        expect(webview.handleContextMenuResponse).not.toHaveBeenCalled();
     });
 
     it("has a ShareLink function", function () {
