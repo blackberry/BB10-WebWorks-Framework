@@ -14,45 +14,29 @@
  * limitations under the License.
  */
 
-var upload_source,
-    upload_target;
 
-window.confirm("[blackberry.io.transfer][upload] A JPEG image is recommended for this test");
-upload_source = window.prompt("Please enter a upload source file on the device");
-upload_target = window.prompt("Please enter a the target url for file to be uploaded");
 
-function testConstantValue(field, value) {
-    expect(blackberry.io.filetransfer[field]).toBeDefined();
-    expect(blackberry.io.filetransfer[field]).toEqual(value);
-}
-
-function upload_success(r) {
-    alert("Code = " + r.responseCode +
-        "\nResponse = " + r.response +
-        "\nSent = " + r.bytesSent);
-}
-
-function upload_failure(error) {
-    alert("An error has occurred: Code = " + error.code +
-        "\nupload error source " + error.source +
-        "\nupload error target " + error.target);
-}
-
-describe("blackberry.io.filetransfer", function () {
-    it('blackberry.io.filetransfer should exist', function () {
-        expect(blackberry.io.filetransfer).toBeDefined();
-    });
-
-    it('blackberry.io.filetransfer.* should be defined', function () {
-        testConstantValue("FILE_NOT_FOUND_ERR", 1);
-        testConstantValue("INVALID_URL_ERR", 2);
-        testConstantValue("CONNECTION_ERR", 3);
-    });
-});
-
-describe("blackberry.io.filetransfer upload", function () {
-    var confirm,
+xdescribe("blackberry.io.filetransfer upload", function () {
+    var upload_source,
+        upload_target,
+        confirm,
         options;
+
+    window.confirm("[blackberry.io.transfer][upload] A JPEG image is recommended for this test");
+    //upload_source = window.prompt("Please enter a upload source file on the device");
+    //upload_target = window.prompt("Please enter a the target url for file to be uploaded");
+
+    function upload_success(r) {
+        alert("Code = " + r.responseCode +
+            "\nResponse = " + r.response +
+            "\nSent = " + r.bytesSent);
+    }
+
+    function upload_failure(error) {
+        alert("An error has occurred: Code = " + error.code +
+            "\nupload error source " + error.source +
+            "\nupload error target " + error.target);
+    }
 
     beforeEach(function () {
         confirm = false;

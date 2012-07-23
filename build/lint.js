@@ -48,7 +48,7 @@ function _lintJS(prev, baton) {
 function _lintCSS(prev, baton) {
     var rules = JSON.parse(fs.readFileSync(__dirname + "/../.csslintrc", "utf-8")),
         options = ["--rules=" + rules, "--format=compact"],
-        files = ["lib", "test"];
+        files = ["lib"];
     _exec('csslint ' + files.concat(options).join(' '), prev, baton);
 }
 

@@ -25,7 +25,7 @@ describe("blackberry.push.PushService", function () {
                       "DEVICE_PIN_NOT_FOUND" : 10007,
                       "EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG" : 10008,
                       "INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG" : 10009,
-                      "TOO_MANY_DEVICES_WITH_ACTIVE_CREATE_CHANNELS" : 10010,
+                      "PPG_SUBSCRIBER_LIMIT_REACHED" : 10010,
                       "INVALID_OS_VERSION_OR_DEVICE_MODEL_NUMBER" : 10011,
                       "CHANNEL_SUSPENDED_BY_PROVIDER" : 10012,
                       "CREATE_SESSION_NOT_DONE" : 10100,
@@ -37,7 +37,6 @@ describe("blackberry.push.PushService", function () {
                       "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG" : 10108,
                       "PPG_CURRENTLY_NOT_AVAILABLE" : 10110,
                       "MISSING_INVOKE_TARGET_ID" : 10111 },
-        invokedArgs,
         pushService;
 
 
@@ -45,7 +44,7 @@ describe("blackberry.push.PushService", function () {
         expect(blackberry.push).toBeDefined();
         expect(blackberry.push.PushService).toBeDefined();
     });
-
+    
     it("blackberry.push.PushService.* should be defined", function () {
         var field;
 
@@ -54,7 +53,7 @@ describe("blackberry.push.PushService", function () {
             expect(blackberry.push.PushService[field]).toEqual(constants[field]);
         }
     });
-
+    
     it("blackberry.push.PushService.* should be read-only", function () {
         var field,
             old_value;
@@ -65,7 +64,7 @@ describe("blackberry.push.PushService", function () {
             expect(blackberry.push.PushService[field]).toEqual(old_value);
         }
     });
-
+    
     it("should fail to create a session and call the fail callback", function () {
         var onSuccess,
             onFail,
@@ -99,7 +98,7 @@ describe("blackberry.push.PushService", function () {
             onSimChange;
 
         runs(function () {
-            var options = { invokeTargetId : "net.rim.blackberry.pushtest.target1", 
+            var options = { invokeTargetId : "com.webworks.test.functional.push.target",
                             appId : "1-RDce63it6363", 
                             ppgUrl : "http://pushapi.eval.blackberry.com" };
 
@@ -137,75 +136,7 @@ describe("blackberry.push.PushService", function () {
             expect(onCreateChannel).toHaveBeenCalledWith(blackberry.push.PushService.SUCCESS, jasmine.any(String));
         });
     });
-
-    it("should be invoked on a push notification", function () {
-        var onInvoked;
-
-        runs(function () {
-            onInvoked = jasmine.createSpy();
-            invokedArgs = null;
-            blackberry.event.addEventListener("invoked", onInvoked);
-            window.confirm("Please send a push notification with text data.");
-        });
-
-        waitsFor(function () {
-            return onInvoked.callCount;
-        }, "invoke callback was never called", 25000);
-        
-        runs(function () {
-            invokedArgs = onInvoked.mostRecentCall.args[0];
-            expect(invokedArgs).not.toBeNull();
-
-            blackberry.event.removeEventListener("invoked", onInvoked);
-        });
-    });
-
-    it("should extract the push payload from an invoked object", function () {
-        var pushPayload,
-            data = null,
-            reader;
-
-        runs(function () {
-            var idConfirm = false,
-                ackConfirm = false,
-                headerConfirm = false;
     
-            expect(invokedArgs.data).toBeDefined();
-            pushPayload = pushService.extractPushPayload(invokedArgs);
-           
-            idConfirm = window.confirm("The push ID was:\n" + pushPayload.id + "\n\n" +
-                                       "Click OK if this is correct.  If not, click Cancel.");
-            expect(idConfirm).toEqual(true);
-
-            ackConfirm = window.confirm("The push isAcknowledgeRequired was:\n" + pushPayload.isAcknowledgeRequired + "\n\n" +
-                                        "Click OK if this is correct.  If not, click Cancel.");
-            expect(ackConfirm).toEqual(true);
-            
-            headerConfirm = window.confirm("The push headers were:\n" + JSON.stringify(pushPayload.headers) + "\n\n" +
-                                           "Click OK if this is correct.  If not, click Cancel.");
-            expect(headerConfirm).toEqual(true);
-            
-            reader = new FileReader();
-            reader.onloadend = function (evt) {
-                if (evt.target.readyState === FileReader.DONE) {
-                    data = evt.target.result;
-                }
-            };
-
-            reader.readAsText(pushPayload.data);
-        });
-
-        waitsFor(function () {
-            return (data !== null);
-        }, "FileReader callback was never called", 10000);
-
-        runs(function () {
-            var dataConfirm = window.confirm("The push data was:\n" + data + "\n\n" +
-                                             "Click OK if this is correct.  If not, click Cancel.");
-            expect(dataConfirm).toEqual(true);
-        });
-    });
-   
     it("should call the launchApplicationOnPush callback", function () {
         var onLaunchOnPush;
 
@@ -239,5 +170,7 @@ describe("blackberry.push.PushService", function () {
             expect(onDestroyChannel).toHaveBeenCalledWith(blackberry.push.PushService.SUCCESS);
         });
     });
+
+    
 });
 
