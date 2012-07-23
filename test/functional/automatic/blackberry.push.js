@@ -47,7 +47,7 @@ describe("blackberry.push.PushService", function () {
     
     it("blackberry.push.PushService.* should be defined", function () {
         var field;
-
+        /*jshint forin: false */
         for (field in constants) {
             expect(blackberry.push.PushService[field]).toBeDefined();
             expect(blackberry.push.PushService[field]).toEqual(constants[field]);
@@ -58,6 +58,7 @@ describe("blackberry.push.PushService", function () {
         var field,
             old_value;
 
+        /*jshint forin: false */
         for (field in constants) {
             old_value = blackberry.push.PushService[field];
             blackberry.push.PushService[field] = "MODIFIED";

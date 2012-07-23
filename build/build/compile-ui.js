@@ -27,7 +27,6 @@ var wrench = require("../../node_modules/wrench"),
 
 module.exports = function (prev, baton) {
     var allPlugins,
-        plugin,
         pluginsToLoad = [],
         pluginHTML,
         pluginHTMLPath,
@@ -49,7 +48,6 @@ module.exports = function (prev, baton) {
         outputJS = "",
         thirdParty = [],
         assets = [],
-        asset,
         template = { locals: {} },
         setupTemplate,
         uiFolderDest = path.join(_c.DEPLOY, 'ui-resources'),
@@ -59,7 +57,6 @@ module.exports = function (prev, baton) {
         jsDest = path.join(_c.DEPLOY_UI, 'index.js'),
         thirdPartyDest = path.join(_c.DEPLOY_UI, 'thirdparty'),
         assetsDest = path.join(_c.DEPLOY_UI, 'assets'),
-        easset,
         eassets;
 
     //Push on the thirdparty modules
@@ -79,14 +76,13 @@ module.exports = function (prev, baton) {
         };
     };
 
-    for (plugin in allPlugins) {
-        plugin = allPlugins[plugin];
+    allPlugins.forEach(function (plugin) {
         pluginHTMLPath = (path.normalize(_c.UI_PLUGINS + "/" + plugin + HTML_FILE));
         if (path.existsSync(pluginHTMLPath)) {
             pluginHTML = fs.readFileSync(pluginHTMLPath, "utf-8");
             template.locals[plugin] = setupTemplate(plugin, pluginHTML);
         }
-    }
+    });
 
     // Compile the ui.html with the template
     // This will also generate the list of plugins to load
@@ -104,7 +100,7 @@ module.exports = function (prev, baton) {
     });
 
     outputCSS = include(cssFiles);
-    outputJS += include([path.join(_c.BUILD, 'FILE_LICENSE'), ]);
+    outputJS += include([path.join(_c.BUILD, 'FILE_LICENSE') ]);
     outputJS += include(jsFiles, function (file, filepath) {
         var pathSplit = path.normalize(filepath).split(/[\\\/]/);
         return "define('" + pathSplit[pathSplit.length - 2] +
@@ -115,16 +111,16 @@ module.exports = function (prev, baton) {
     wrench.mkdirSyncRecursive(cssFolderDest, "0755");
     wrench.mkdirSyncRecursive(assetsDest, "0755");
     wrench.mkdirSyncRecursive(thirdPartyDest, "0755");
-    for (plugin in thirdParty) {
-        util.copyFile(thirdParty[plugin], thirdPartyDest);
-    }
+    thirdParty.forEach(function (plugin) {
+        util.copyFile(plugin, thirdPartyDest);
+    });
 
-    for (asset in assets) {
-        eassets = fs.readdirSync(assets[asset]);
-        for (easset in eassets) {
-            util.copyFile(path.normalize(assets[asset] + "/" + eassets[easset]), assetsDest);
-        }
-    }
+    assets.forEach(function (asset) {
+        eassets = fs.readdirSync(asset);
+        eassets.forEach(function (easset) {
+            util.copyFile(path.normalize(asset + "/" + easset), assetsDest);
+        });
+    });
 
     fs.writeFileSync(cssDest, outputCSS);
     fs.writeFileSync(jsDest, outputJS);

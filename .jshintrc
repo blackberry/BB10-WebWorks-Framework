@@ -53,7 +53,7 @@
     "devel": true,
     "debug": false,
     "eqeqeq": true,
-    "forin": false,
+    "forin": true,
     "immed": true,
     "laxbreak": false,
     "newcap": true,
