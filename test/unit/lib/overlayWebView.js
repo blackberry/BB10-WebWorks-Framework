@@ -15,7 +15,7 @@
  */
 describe("Overlay Webview", function () {
     var webview,
-        libPath = "./../../../", 
+        libPath = "./../../../",
         mockedController,
         mockedWebview,
         mockedApplication;
@@ -79,8 +79,6 @@ describe("Overlay Webview", function () {
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
 
                 expect(mockedApplication.windowVisible).toEqual(true);
-
-                expect(mockedWebview.onContextMenuRequestEvent).toEqual(jasmine.any(Function));
                 expect(mockedWebview.backgroundColor).toEqual("0x00FFFFFF");
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
             });
@@ -104,15 +102,15 @@ describe("Overlay Webview", function () {
             webview.destroy();
             expect(mockedWebview.destroy).toHaveBeenCalled();
         });
-        
+
         it("sets the url property", function () {
             var url = "http://AWESOMESAUCE.com";
             webview.create(mockedWebview);
             webview.setURL(url);
             expect(mockedWebview.url).toEqual(url);
         });
-        
-        it("calls the underlying executeJavaScript", function () {
+
+        it("calls the underlying executeJavascript", function () {
             var js = "var awesome='Jasmine BDD'";
             webview.create(mockedWebview);
             webview.executeJavascript(js);
@@ -122,6 +120,19 @@ describe("Overlay Webview", function () {
             webview.create(mockedWebview);
             expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
+
+        it("sets the onPropertyCurrentContextEvent on the underlying overlay obj", function () {
+            webview.create(mockedWebview);
+            webview.onPropertyCurrentContextEvent = 'Marco';
+            expect(mockedWebview.onPropertyCurrentContextEvent).toEqual('Marco');
+        });
+
+        it("sets the onContextMenuRequestEvent on the underlying overlay obj", function () {
+            webview.create(mockedWebview);
+            webview.onContextMenuRequestEvent = 'Polo';
+            expect(mockedWebview.onContextMenuRequestEvent).toEqual('Polo');
+        });
+
     });
 
 });
