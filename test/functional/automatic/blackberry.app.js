@@ -25,7 +25,6 @@ function testAppReadOnly(field) {
 }
 
 describe("blackberry.app", function () {
-    var waitForTimeout = 15000;
 
     it('blackberry.app.author should exist', function () {
         testAppValue("author", "Research In Motion Ltd.");
@@ -60,7 +59,7 @@ describe("blackberry.app", function () {
     });
 
     it('blackberry.app.description should exist', function () {
-        testAppValue("description", "This application points to a the functional test server.");
+        testAppValue("description", "This application tests a wide range of WebWorks functionalities.");
     });
 
     it('blackberry.app.description should be read-only', function () {
@@ -68,7 +67,7 @@ describe("blackberry.app", function () {
     });
 
     it('blackberry.app.id should exist', function () {
-        testAppValue("id", "jasmine");
+        testAppValue("id", "WebWorksTest");
     });
 
     it('blackberry.app.id should be read-only', function () {
@@ -94,7 +93,7 @@ describe("blackberry.app", function () {
     });
 
     it('blackberry.app.name should exist', function () {
-        testAppValue("name", "Jasmine");
+        testAppValue("name", "WebWorks Test Application");
     });
 
     it('blackberry.app.name should be read-only', function () {
@@ -109,81 +108,4 @@ describe("blackberry.app", function () {
         testAppReadOnly("version");
     });
 
-    describe("pause", function () {
-        var onPause;
-
-        beforeEach(function () {
-            onPause = jasmine.createSpy();
-            blackberry.event.addEventListener("pause", onPause);
-        });
-
-        afterEach(function () {
-            blackberry.event.removeEventListener("pause", onPause);
-            onPause = null;
-        });
-
-        it("should invoke callback when application is thumbnailed when Application Behavior is 'Paused'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Paused', then thumbnail this app");
-
-            waitsFor(function () {
-                return onPause.callCount;
-            }, "event never fired", waitForTimeout);
-
-            runs(function () {
-                expect(onPause).toHaveBeenCalled();
-            });
-        });
-    });
-
-    describe("resume", function () {
-        var onResume;
-
-        beforeEach(function () {
-            onResume = jasmine.createSpy();
-            blackberry.event.addEventListener("resume", onResume);
-        });
-
-        afterEach(function () {
-            blackberry.event.removeEventListener("resume", onResume);
-            onResume = null;
-        });
-
-        it("should invoke callback when application is fullscreened when Application Behavior is 'Paused'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Paused', thumbnail this app, then tap it to make it fullscreen");
-
-            waitsFor(function () {
-                return onResume.callCount;
-            }, "event never fired", waitForTimeout);
-
-            runs(function () {
-                expect(onResume).toHaveBeenCalled();
-            });
-        });
-    });
-    
-    describe("swipedown", function () {
-        var onSwipeDown;
-
-        beforeEach(function () {
-            onSwipeDown = jasmine.createSpy();
-            blackberry.event.addEventListener("swipedown", onSwipeDown);
-        });
-
-        afterEach(function () {
-            blackberry.event.removeEventListener("swipedown", onSwipeDown);
-            onSwipeDown = null;
-        });
-
-        it("should invoke callback when user swipes down from within application", function () {
-            window.confirm("Swipe down from the top of the application");
-
-            waitsFor(function () {
-                return onSwipeDown.callCount;
-            }, "event never fired", waitForTimeout);
-
-            runs(function () {
-                expect(onSwipeDown).toHaveBeenCalled();
-            });
-        });
-    });
 });

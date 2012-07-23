@@ -23,20 +23,25 @@ module.exports = {
         return os.type().toLowerCase().indexOf("windows") >= 0;
     },
 
-    copyFile: function (srcFile, destDir, baseDir) {
+    copyFile: function (srcFile, destDir, baseDir, shouldNotOverwrite) {
         var filename = path.basename(srcFile),
-            fileBuffer = fs.readFileSync(srcFile),
-            fileLocation;
+            fileBuffer,
+            fileLocation = path.join(destDir, filename);
 
         //if a base directory was provided, determine
         //folder structure from the relative path of the base folder
         if (baseDir && srcFile.indexOf(baseDir) === 0) {
             fileLocation = srcFile.replace(baseDir, destDir);
             wrench.mkdirSyncRecursive(path.dirname(fileLocation), "0755");
-            fs.writeFileSync(fileLocation, fileBuffer);
-        } else {
-            fs.writeFileSync(path.join(destDir, filename), fileBuffer);
         }
+        
+        //By default we should copy
+        //ONLY if we should NOT overwrite && the file exists will we skip copying
+        if (!shouldNotOverwrite || !path.existsSync(fileLocation)) {
+            fileBuffer = fs.readFileSync(srcFile);
+            fs.writeFileSync(fileLocation, fileBuffer);
+        }
+
     },
 
     listFiles: function (directory, filter) {

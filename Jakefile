@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+var DESC_NEW_LINE = "\n\t\t      #";
+
 desc("runs jake build");
 task('default', [], require('./build/build'));
 
@@ -50,7 +52,7 @@ task('test', [], function () {
  * jake native-test
  *
  */
-desc("run all native tests on device or sim - jake test [path,path2]");
+desc("run all native tests on device or sim - jake native-test [<device|simulator,<ip address>,<comma seperated filter list>]");
 task('native-test', [], function () {
     require('./build/native-test')(Array.prototype.slice.call(arguments));
 });
@@ -66,7 +68,7 @@ task('native-test', [], function () {
  * To run with default params use-
  * jake upload-ssh-key
  */
-desc("upload ssh key to device or sim - jake test [path,path2]");
+desc("upload ssh key to device or sim - jake upload-ssh-key[<ip address>,<path to ssh key>]");
 task('upload-ssh-key', [], function () {
     require('./build/upload-ssh-key')(Array.prototype.slice.call(arguments));
 });
@@ -78,3 +80,23 @@ task('lint', [], function () {
 
 desc("show various codebase stats");
 task('stats', [], require('./build/stats'));
+
+desc("Packages an app using the framework produced by this repo." + DESC_NEW_LINE + 
+     " This will replace the framework folder in the packager specified." + DESC_NEW_LINE + 
+     " This will replace webworks.js in the zip if you specify the path." + DESC_NEW_LINE + 
+     " The packager path MUST be absolute (ie no ~)" + DESC_NEW_LINE +
+     " Expected usage - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>,<{OPTIONAL}pathToWebWorks.js>]" + DESC_NEW_LINE +
+     " Example - jake package[/Users/jheifets/Downloads/BB10webworks-next-42/,test/test-app/wwTest.zip,-d,js/webworks.js]");
+task('package', [], require('./build/package'));
+
+desc("Deploys a bar file to the given device/sim - jake deploy[<pathToBar>,<deviceIP>,<devicePassword>]");
+task('deploy', [], require('./build/deploy'));
+
+desc("Creates a zip of the test app - jake test-app");
+task('test-app', [], require('./build/test-app'));
+
+desc("Builds the framework, creates the test-app, packages it and deploys it" + DESC_NEW_LINE +
+     " The packager path MUST be absolute (ie no ~)" + DESC_NEW_LINE +
+     " Expected usage - jake deploy-tests[<pathToPackager>,<packageroptions>,<device|simulator>,<device ip>,<device password>]" + DESC_NEW_LINE +
+     " Example - jake deploy-tests[/Users/jheifetz/Downloads/BB10webworks-next-42/,-d,device,169.254.0.1,qaqa]");
+task("deploy-tests", [], require("./build/deploy-tests"));

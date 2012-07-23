@@ -4,8 +4,10 @@ target
 dependencies/test-server
 dependencies/webplatform
 dependencies/jnext_1_0_8_3
+dependencies/jasmine
 ui-resources/thirdparty
 clientFiles
 ext/blackberry.example.test
 lib/pps/ppsUtils.js
 lib/jnext.js
+test/test-app

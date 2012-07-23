@@ -35,5 +35,11 @@ module.exports = {
     NODE_MOD: path.normalize(__dirname + "/../../node_modules"),
     COMPILER_THREADS: "4",
     USB_IP: "169.254.0.1",
-    DEFAULT_SSH_KEY: "~/.ssh/id_rsa.pub"
+    DEFAULT_SSH_KEY: "~/.ssh/id_rsa.pub",
+    PACKAGE_COMMAND_DEFAULT_PACKAGER: "../target/zip/",
+    PACKAGE_COMMAND_DEFAULT_APP: "test/test-app/wwtest.zip",
+    PACKAGE_COMMAND_DEFAULT_OPTIONS: "-d",
+    DEPLOY_COMMAND_DEFAULT_IP: "169.254.0.1",
+    DEPLOY_COMMAND_DEFAULT_PW: "qaqa",
+    DEPLOY_TESTS_DEFAULT_TARGET: "device"
 };
