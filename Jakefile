@@ -82,3 +82,5 @@ task('stats', [], require('./build/stats'));
 desc("packages an app (replaces the framework folder in the packager specified) (will replace webworks.js too if you specify) - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>,[pathToWebWorks.js]]");
 task('package', [], require('./build/package'));
 
+desc("Deploys a bar file to the given device/sim - jake deploy[<pathToBar>,<deviceIP>,<devicePassword>,[pathToBlackberryDeploy]]");
+task('deploy', [], require('./build/deploy'));

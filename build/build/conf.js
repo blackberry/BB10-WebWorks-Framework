@@ -40,5 +40,8 @@ module.exports = {
     PACKAGE_COMMAND_DEFAULT_PACKAGER: "/Users/jheifetz/Downloads/BB10webworks-next-34",
     PACKAGE_COMMAND_DEFAULT_APP: "/Users/jheifetz/Coding/WebWorks/Apps/WebWorks-SmokeTest/wwtest.zip",
     PACKAGE_COMMAND_DEFAULT_OPTIONS: "-d -s",
-    PACKAGE_COMMAND_DEFAULT_WEBWORKS_JS_PATH: "webworks.js"
+    PACKAGE_COMMAND_DEFAULT_WEBWORKS_JS_PATH: "webworks.js",
+    DEPLOY_COMMAND_DEFAULT_BB_DEPLOY: "blackberry-deploy",
+    DEPLOY_COMMAND_DEFAULT_IP: "169.254.0.1",
+    DEPLOY_COMMAND_DEFAULT_PW: "qaqa"
 };
