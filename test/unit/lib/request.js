@@ -1,6 +1,6 @@
 describe("requestination ", function () {
     var request,
-        libPath = "./../../../", 
+        libPath = "./../../../",
         Whitelist = require(libPath + 'lib/policy/whitelist').Whitelist,
         server = require(libPath + 'lib/server'),
         mockedWebview;
@@ -12,11 +12,12 @@ describe("requestination ", function () {
             executeJavaScript : jasmine.createSpy()
         };
     });
-    
+
     it("creates a callback for yous", function () {
         var requestObj = request.init();
         expect(requestObj.networkResourceRequestedHandler).toBeDefined();
     });
+
 
     it("can access the whitelist", function () {
         spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(true);
@@ -59,10 +60,10 @@ describe("requestination ", function () {
                     args: "blargs=yes"
                 },
                 body: undefined,
-                origin: "http://www.origin.com" 
+                origin: "http://www.origin.com"
             },
             expectedResponse = {
-                send: jasmine.any(Function)    
+                send: jasmine.any(Function)
             };
         expect(JSON.parse(returnValue).setAction).toEqual("SUBSTITUTE");
         expect(server.handle).toHaveBeenCalledWith(expectedRequest, expectedResponse);
@@ -89,5 +90,37 @@ describe("requestination ", function () {
             };
         expect(JSON.parse(returnValue).setAction).toEqual("SUBSTITUTE");
         expect(server.handle).toHaveBeenCalledWith(expectedRequest, expectedResponse);
+    });
+
+    it("unknown protocol handler is valid", function () {
+        var requestObj = request.init();
+        expect(requestObj.unknownProtocolHandler).toBeDefined();
+    });
+
+    it("prevents default for unknownProtocol", function () {
+        var requestObj = request.init(),
+            invoke = jasmine.createSpy(),
+            returnValue,
+            mockedInvocation = {
+                invoke: jasmine.createSpy("invoke")
+            };
+        GLOBAL.window = {};
+        GLOBAL.window.qnx = {
+            webplatform: {
+                getApplication: function () {
+                    return {
+                        invocation: mockedInvocation
+                    };
+                }
+            }
+        };
+        returnValue = requestObj.unknownProtocolHandler(JSON.stringify({
+            url : "tel:647-123-1234"
+        }));
+        expect(JSON.parse(returnValue).setPreventDefault).toEqual(true);
+        expect(mockedInvocation.invoke).toHaveBeenCalledWith({
+            action: 'bb.action.OPEN',
+            uri: "tel:647-123-1234"
+        }, jasmine.any(Function));
     });
 });
