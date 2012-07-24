@@ -84,3 +84,6 @@ task('package', [], require('./build/package'));
 
 desc("Deploys a bar file to the given device/sim - jake deploy[<pathToBar>,<deviceIP>,<devicePassword>,[pathToBlackberryDeploy]]");
 task('deploy', [], require('./build/deploy'));
+
+desc("Creates the testApp");
+task('testApp', [], require('./build/testApp'));

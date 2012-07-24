@@ -1,6 +1,12 @@
-[submodule "dependencies/test-server/public/lib/jasmine"]
-	path = dependencies/test-server/public/lib/jasmine
-	url = https://github.com/pivotal/jasmine.git
 [submodule "dependencies/webplatform"]
 	path = dependencies/webplatform
 	url = http://github.rim.net/webworks/webplatform.git
+[submodule "dependencies/jquery"]
+	path = dependencies/jquery
+	url = https://github.com/jquery/jquery.git
+[submodule "dependencies/jasmine"]
+	path = dependencies/jasmine
+	url = https://github.com/pivotal/jasmine.git
+[submodule "dependencies/jquery-mobile"]
+	path = dependencies/jquery-mobile
+	url = https://github.com/jquery/jquery-mobile.git
