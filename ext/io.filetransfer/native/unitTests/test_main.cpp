@@ -43,7 +43,7 @@ TEST(FileTransfer, DetectsIncorrectUploadFilePath)
     std::string source_escaped(curl_easy_escape(curl, curl_easy_escape(curl, source_file.c_str(), 0), 0));
     std::string target_escaped(curl_easy_escape(curl, curl_easy_escape(curl, target_url.c_str(), 0), 0));
 
-    std::string expected = "upload error 1 " + source_escaped + " " + target_escaped + " -1";
+    std::string expected = "upload error 1 " + source_escaped + " " + target_escaped + " 0";
 
     webworks::FileUploadInfo upload_info;
     upload_info.sourceFile = source_file;
@@ -99,7 +99,7 @@ TEST(FileTransfer, DetectsUploadConnectionError)
     std::string source_escaped(curl_easy_escape(curl, curl_easy_escape(curl, source_file.c_str(), 0), 0));
     std::string target_escaped(curl_easy_escape(curl, curl_easy_escape(curl, target_url.c_str(), 0), 0));
 
-    std::string expected = "upload error 3 " + source_escaped + " " + target_escaped + " -1";
+    std::string expected = "upload error 3 " + source_escaped + " " + target_escaped + " 0";
 
     int file_result = createTestFile(source_file.c_str());
     EXPECT_EQ(0, file_result);
@@ -183,7 +183,7 @@ TEST(FileTransfer, DetectsInvalidDownloadSource)
     std::string source_escaped(curl_easy_escape(curl, curl_easy_escape(curl, source.c_str(), 0), 0));
     std::string target_escaped(curl_easy_escape(curl, curl_easy_escape(curl, target.c_str(), 0), 0));
 
-    std::string expected = "download error 2 " + source_escaped + " " + target_escaped + " -1";
+    std::string expected = "download error 2 " + source_escaped + " " + target_escaped + " 0";
 
     webworks::FileDownloadInfo download_info;
     download_info.source = source;
@@ -206,7 +206,7 @@ TEST(FileTransfer, DetectsIncorrectDownloadSource)
     std::string source_escaped(curl_easy_escape(curl, curl_easy_escape(curl, source.c_str(), 0), 0));
     std::string target_escaped(curl_easy_escape(curl, curl_easy_escape(curl, target.c_str(), 0), 0));
 
-    std::string expected = "download error 3 " + source_escaped + " " + target_escaped + " -1";
+    std::string expected = "download error 3 " + source_escaped + " " + target_escaped + " 0";
 
     webworks::FileDownloadInfo download_info;
     download_info.source = source;
@@ -229,7 +229,7 @@ TEST(FileTransfer, DetectsInvalidDownloadTargetPermissions)
     std::string source_escaped(curl_easy_escape(curl, curl_easy_escape(curl, source.c_str(), 0), 0));
     std::string target_escaped(curl_easy_escape(curl, curl_easy_escape(curl, target.c_str(), 0), 0));
 
-    std::string expected = "download error 4 " + source_escaped + " " + target_escaped + " -1";
+    std::string expected = "download error 4 " + source_escaped + " " + target_escaped + " 0";
 
     webworks::FileDownloadInfo download_info;
     download_info.source = source;
