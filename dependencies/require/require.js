@@ -1,9 +1,33 @@
+/*
+ *  Copyright 2012 Research In Motion Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var define,
     require;
 
 (function () {
     var unpreparedModules = {},
-        readyModules = {};
+        readyModules = {},
+        ACCEPTABLE_EXTENSIONS = [".js", ".json"],
+        DEFAULT_EXTENSION = ".js";
+
+    function hasValidExtension(moduleName) {
+        return ACCEPTABLE_EXTENSIONS.some(function (element, index, array) {
+            return moduleName.match("\\" + element + "$");
+        });
+    }
 
 
     function normalizeName(originalName, baseName) {
@@ -11,7 +35,7 @@ var define,
             name = originalName.slice(0);
         //remove ^local:// (if it exists) and .js$
         //This will not work for local:// without a trailing js
-        name = name.replace(/(?:^local:\/\/)?(.+?)(?:\.js$)/, "$1");
+        name = name.replace(/(?:^local:\/\/)/, "");
         if (name.charAt(0) === '.' && baseName) {
             //Split the baseName and remove the final part (the module name)
             nameParts = baseName.split('/');
@@ -50,6 +74,12 @@ var define,
             });
 
         }
+        
+        //If there is no acceptable extension tack on a .js
+        if (!hasValidExtension(name)) {
+            name = name + DEFAULT_EXTENSION;
+        }
+
         return name;
     }
 
@@ -59,7 +89,9 @@ var define,
                 return require(moduleName, name);
             },
             args = [];
-
+        localRequire.toUrl = function (moduleName, baseName) {
+            return require.toUrl(moduleName, baseName || name);
+        };
         dependencies.forEach(function (dependency) {
             if (dependency === 'require') {
                 args.push(localRequire);
@@ -83,11 +115,23 @@ var define,
 
     }
 
+    function getDefineString(moduleName, body) {
+        var evalString = 'define("' + moduleName + '", function (require, exports, module) {',
+            isJson = /\.json$/.test(moduleName);
+
+        evalString += isJson ? ' module.exports = ' : '';
+        evalString += body.replace(/^\s+|\s+$/g, '');
+        evalString += isJson ? ' ;' : '';
+        evalString += '});';
+
+        return evalString;
+    }
+
     function loadModule(name, baseName) {
         var normalizedName = normalizeName(name, baseName),
             url,
             xhr,
-            evalString;
+            loadResult;
         //Always check undefined first, this allows the user to redefine modules
         //(Not used in WebWorks, although it is used in our unit tests)
         if (unpreparedModules[normalizedName]) {
@@ -100,30 +144,49 @@ var define,
         if (!readyModules[normalizedName]) {
             //If the module to be loaded ends in .js then we will define it
             //Also if baseName exists than we have a local require situation
-            if (/\.js$/.test(name) || baseName) {
+            if (hasValidExtension(name) || baseName) {
                 xhr = new XMLHttpRequest();
                 url = name;
                 //If the module to be loaded starts with local:// go over the bridge
                 //Else If the module to be loaded is a relative load it may not have .js extension which is needed
                 if (/^local:\/\//.test(name)) {
-                    url = "http://localhost:8472/blackberry/extensions/load/" + normalizedName.replace(/(?:^ext\/)(.+)(?:\/client$)/, "$1");
-                } else if (baseName) {
-                    url = normalizedName;
-                    if (!/\.js$/.test(url)) {
-                        url += ".js";
+                    url = "http://localhost:8472/extensions/load/" + normalizedName.replace(/(?:^ext\/)(.+)(?:\/client.js$)/, "$1");
+
+                    xhr.open("GET", url, false);
+                    xhr.send(null);
+                    try {
+                        loadResult = JSON.parse(xhr.responseText);
+
+                        loadResult.dependencies.forEach(function (dep) {
+                            /*jshint evil:true */
+                            eval(getDefineString(dep.moduleName, dep.body));
+                            /*jshint evil:false */
+                        });
+
+                        //Trimming responseText to remove EOF chars
+                        /*jshint evil:true */
+                        eval(getDefineString(normalizedName, loadResult.client));
+                        /*jshint evil:false */
+                    } catch (err1) {
+                        err1.message += ' in ' + url;
+                        throw err1;
                     }
-                }
-                xhr.open("GET", url, false);
-                xhr.send(null);
-                try {
-                    //Trimming responseText to remove EOF chars
-                    evalString = 'define("' + normalizedName + '", function (require, exports, module) {' + xhr.responseText.replace(/^\s+|\s+$/g, '') + '});';
-                    /*jshint evil:true */
-                    eval(evalString);
-                    /*jshint evil:false */
-                } catch (err) {
-                    err.message += ' in ' + url;
-                    throw err;
+                } else {
+                    if (baseName) {
+                        url = normalizedName;
+                    }
+
+                    xhr.open("GET", url, false);
+                    xhr.send(null);
+                    try {
+                        //Trimming responseText to remove EOF chars
+                        /*jshint evil:true */
+                        eval(getDefineString(normalizedName, xhr.responseText));
+                        /*jshint evil:false */
+                    } catch (err) {
+                        err.message += ' in ' + url;
+                        throw err;
+                    }
                 }
 
                 if (unpreparedModules[normalizedName]) {
@@ -155,6 +218,9 @@ var define,
         }
     }; 
 
+    require.toUrl = function (originalName, baseName) {
+        return normalizeName(originalName, baseName);
+    };
 
     //Use the AMD signature incase we ever want to change.
     //For now webworks will only be using (name, factory) signature.

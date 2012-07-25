@@ -16,7 +16,7 @@
         "__dirname", "GLOBAL",
         "process", "exports",
         "module", "NamedNodeMap",
-        "require", "Node",
+        "require", "Node", "JSZip",
         //UI Components
         "x$",
         "iris"

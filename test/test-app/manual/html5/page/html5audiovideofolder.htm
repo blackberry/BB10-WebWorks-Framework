@@ -1,0 +1,153 @@
+<html>
+	<head>
+	    <meta name="viewport" id="viewport" content="initial-scale=1.0,user-scalable=yes" />
+		<title>local html5 audio and video test Page in a subfolder</title>
+		<script type="text/javascript">
+		function init_page(){
+			alert("This is a call back function!");
+		}
+		function inline_page(){
+			alert("This is a inline function!");
+		}
+		</script>
+	</head>
+	<body>
+	
+		<p><a href="..\index.htm">Go back index</a></p>
+	  
+        <p>1a. Using HTML5 audio element with local protocal(subfolder to subfolder):</p>
+
+        <audio src="local:///manual/page/Enchantment.mp3" controls="controls" >
+                Your browser does not support the <code>Audio</code> element
+        </audio>
+		
+        <p>1b. Using HTML5 audio element with relative path(subfolder to subfolder):</p>
+
+        <audio src="Enchantment.mp3" controls="controls" >
+                Your browser does not support the <code>Audio</code> element
+        </audio>
+		
+        <p>1c. Using HTML5 audio element with local protocal(subfolder to root):</p>
+
+        <audio src="local:///manual/Enchantment.mp3" controls="controls" >
+                Your browser does not support the <code>Audio</code> element
+        </audio>
+		
+        <p>1d. Using HTML5 audio element with relative path(subfolder to root):</p>
+
+        <audio src="../Enchantment.mp3" controls="controls" >
+                Your browser does not support the <code>Audio</code> element
+        </audio>
+
+        <p>2a. Using HTML5 video element with local protocal(subfolder to subfolder):</p>
+
+        <video src="local:///manual/page/sample3GP.3gp" controls="controls">
+
+                Your browser does not support the <code>Video</code> element
+
+        </video>
+		
+        <p>2b. Using HTML5 video element with relative path(subfolder to subfolder):</p>
+
+        <video src="sample3GP.3gp" controls="controls">
+
+                Your browser does not support the <code>Video</code> element
+
+        </video>
+		
+        <p>2c. Using HTML5 video element with local protocal(subfolder to root):</p>
+
+        <video src="local:///manual/sample3GP.3gp" controls="controls">
+
+                Your browser does not support the <code>Video</code> element
+
+        </video>
+		
+        <p>2d. Using HTML5 video element with relative path(subfolder to root):</p>
+
+        <video src="../sample3GP.3gp" controls="controls">
+
+                Your browser does not support the <code>Video</code> element
+
+        </video>
+		
+        <p>3. HTML5 audio with source element:</p>
+
+        <audio autoplay="autoplay" loop="loop" controls="controls" width="100" height="50">
+
+                <source src="local:///manual/page/Enchantment.mp3" />
+
+                Your browser does not support the <code>Audio</code> element
+        </audio>
+
+
+        <p>4. HTML5 video with source element:</p>
+
+        <video controls="controls"  width="320" height="180">
+				<source src="local:///manual/page/sample3GP.3gp" />
+                Your browser does not support the <code>Video</code> element
+
+        </video>
+
+        <p>5a. test local flash with local:/// (subfolder to subfolder):</p>
+		
+        <object width="400" height="267">
+
+            <param name="movie" value="local:///manual/page/helloworld.swf"/>
+
+            <embed src="local:///manual/page/helloworld.swf" width="400" height="267"></embed>
+
+        </object>
+		
+        <p>5b. test local flash with relative folder(sunfolder to subfolder):</p>
+		
+        <object width="400" height="267">
+
+            <param name="movie" value="helloworld.swf"/>
+
+            <embed src="helloworld.swf" width="400" height="267"></embed>
+
+        </object>
+		
+        <p>5c. test local flash with local:///(subfolder to root):</p>
+		
+        <object width="400" height="267">
+
+            <param name="movie" value="local:///manual/helloworld.swf"/>
+
+            <embed src="local:///manual/helloworld.swf" width="400" height="267"></embed>
+
+        </object>
+		
+        <p>5d. test local flash with relative path(subfolder to root):</p>
+		
+        <object width="400" height="267">
+
+            <param name="movie" value="../helloworld.swf"/>
+
+            <embed src="../helloworld.swf" width="400" height="267"></embed>
+
+        </object>
+		
+		<p>6a. test local img with local:/// (subfolder to subfolder):</p>
+        <img src="local:///manual/page/large.jpg" alt="Angry face" width="320" height="240" />
+		
+		<p>6b. test local img with relative path (subfolder to subfolder):</p>
+        <img src="large.jpg" alt="Angry face" width="320" height="240" />
+		
+		<p>6c. test local img with local:/// (subfolder to root):</p>
+        <img src="local:///manual/large.jpg" alt="Angry face" width="320" height="240" />
+		
+		<p>6d. test local img with relative path (subfolder to root):</p>
+        <img src="../large.jpg" alt="Angry face" width="320" height="240" />
+		
+		<p>7. test embedded youtube:</p>
+		<iframe title="YouTube video player" width="640" height="390" src="http://www.youtube.com/embed/APS9tso1G9k" frameborder="0" allowfullscreen></iframe>
+
+    <p>
+    <input id="Button2" type="button" value="Back" onclick="history.back()" />
+     </p>
+
+
+	</body>
+</html>

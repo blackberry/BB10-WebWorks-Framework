@@ -39,6 +39,38 @@ task('test', [], function () {
     require('./build/test')(null, process.argv.length >= 4 ? process.argv[3] : null);
 });
 
+/**
+ * Expected syntax is
+ * jake native-test[<device|simulator>,<IP Address of device>,<comma seperated extensions to ignore>..]
+ * eg.
+ * To run tests on device with ip 192.10.235.20 and ignoring io.filetransfer extension use
+ * jake native-test[device,192.10.235.20,io.filetransfer]
+ * The default params are [device,169.254.0.1]
+ * To run with default params use-
+ * jake native-test
+ *
+ */
+desc("run all native tests on device or sim - jake test [path,path2]");
+task('native-test', [], function () {
+    require('./build/native-test')(Array.prototype.slice.call(arguments));
+});
+
+/**
+ * Required jake native-test to avoid continous prompt of the password.
+ * Expected syntax is
+ * jake upload-ssh-key[<IP Address of device/simulator>, <Path to SSH Public key>
+ * eg.
+ * To upload ssh public key to device run 192.10.235.20 stored at ~/.ssh/id_rsa.pub use
+ * jake upload-ssh-key[192.10.235.20,~/.ssh/id_rsa.pub]
+ * default params are [169.254.0.1,~/.ssh/id_rsa.pub]
+ * To run with default params use-
+ * jake upload-ssh-key
+ */
+desc("upload ssh key to device or sim - jake test [path,path2]");
+task('upload-ssh-key', [], function () {
+    require('./build/upload-ssh-key')(Array.prototype.slice.call(arguments));
+});
+
 desc("runs jshint + csslint - jake lint [path1] [path2]");
 task('lint', [], function () {
     require('./build/lint')(Array.prototype.slice.call(arguments));
@@ -46,3 +78,12 @@ task('lint', [], function () {
 
 desc("show various codebase stats");
 task('stats', [], require('./build/stats'));
+
+desc("packages an app (replaces the framework folder in the packager specified) (will replace webworks.js too if you specify) - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>,[pathToWebWorks.js]]");
+task('package', [], require('./build/package'));
+
+desc("Deploys a bar file to the given device/sim - jake deploy[<pathToBar>,<deviceIP>,<devicePassword>,[pathToBlackberryDeploy]]");
+task('deploy', [], require('./build/deploy'));
+
+desc("Creates the testApp");
+task('testApp', [], require('./build/testApp'));

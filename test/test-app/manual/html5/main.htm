@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html>
+	<head>
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>WebWorks Smoke Test for BB10</title>
+		<script src="local:///webworks-1.0.1.5.js" type="text/javascript"></script>
+        <script src="local:///jquery.mobile-1.1.1/jquery-1.7.1.min.js"></script>
+        <script src="local:///jquery.mobile-1.1.1/jquery.mobile-1.1.1.min.js"></script>
+        <link rel="stylesheet" href="local:///jquery.mobile-1.1.1/jquery.mobile-1.1.1.min.css" />
+		<script language="javascript" type="text/javascript">
+            function do_LocalImageTest() {
+                document.location.href = "local_Image_Testing.htm";
+            }
+			
+			function do_LocalCSSTest() {
+                document.location.href = "local:///manual/html5/local_CSS_Testing.htm";
+            }
+			
+			function do_LocalJSFileTest() {
+				document.location.href = "local_JSFile_Testing.htm";
+			}
+			
+			function do_AjaxTest() {
+                document.location.href = "local:///manual/html5/local_Ajax_Testing.htm";
+            }
+			
+			function do_WebDataBaseTest() {
+                document.location.href = "local:///manual/html5/html5db.htm";
+            }
+			
+			function do_WebWorkerTest() {
+                document.location.href = "local:///manual/html5/webworker_Testing.htm";
+            }
+	
+			function do_LocalStorageTest() {
+                document.location.href = "local:///manual/html5/localStorage.htm";
+            }
+			
+			function do_ManifestCacheTest() {
+                document.location.href = "local:///manual/html5/iframeManifestCache.htm";
+            }
+			
+			function do_GeolocationTest() {
+                document.location.href = "local:///manual/html5/geolocation_testing.htm";
+            }
+			
+			function do_LocalMediaTest_root() {
+                document.location.href = "local:///manual/html5/html5audiovideo.htm";
+            }
+			
+			function do_LocalMediaTest_subfolder() {
+                document.location.href = "local:///manual/html5/page/html5audiovideofolder.htm";
+            }
+			
+		    function do_onload_Test() {
+				document.location.href = "local:///manual/html5/onload_Testing.htm";
+			}
+			
+			function do_flash_video_audio_Test() {
+				document.location.href = "http://www.homestarrunner.com/sbemail103.html";
+			}
+			function do_web_inspector_Test() {
+				document.location.href = "local:///manual/html5/webinspector.htm";
+			}
+			
+        </script>
+	</head>
+	<body>
+        
+        <input id="backButton" type="button" value="Back" onclick="document.location.href = 'local:///index.htm';" /> 
+
+	    <p> This WebWorks Smoke Test includes the following tests: </p>
+		<ol>
+		<li> Local CSS, Local JS file, Local Image, Local Html</li>
+		<li> AJAX call on local page</li>
+		<li> Web DataBase Test</li>
+		<li> WebWorker Test</li>
+		<li> Local Storage Test</li>
+		<li> Manifest Cache Test</li>
+		<li> Geolocation Test</li>
+		<li> Local Audio, Video, Flash Test</li>
+		<li> onload() Test </li>
+		<li> Flash Player Audio Test </li>
+		<li> Web Inspector Test </li>
+		</ol>
+        <p>
+            <input id="Button2" type="button" value="Local Image Test" onclick="return do_LocalImageTest()" /></p>
+		<p>
+            <input id="Button3" type="button" value="Local CSS Test" onclick="return do_LocalCSSTest()" /></p>	
+		<p>
+            <input id="Button4" type="button" value="Local JS File Test" onclick="return do_LocalJSFileTest()" /></p>
+	    <p>
+            <input id="Button6" type="button" value="AJAX call on local page" onclick="return do_AjaxTest()" /></p>
+		<p>
+            <input id="Button7" type="button" value="Web DataBase Test" onclick="return do_WebDataBaseTest()" /></p>
+		<p>
+            <input id="Button7" type="button" value="WebWorker Test" onclick="return do_WebWorkerTest()" /></p>
+		<p>
+            <input id="Button8" type="button" value="Local Storage Test" onclick="return do_LocalStorageTest()" /></p>
+        <p>
+            <input id="Button9" type="button" value="Manifest Cache Test" onclick="return do_ManifestCacheTest()" /></p>
+        <p>
+            <input id="Button10" type="button" value="Geolocation Test" onclick="return do_GeolocationTest()" /></p>						
+		<p>
+            <input id="Button11" type="button" value="Local html5 Audio & Video tests in root" onclick="return do_LocalMediaTest_root()" /></p>	
+	    <p>
+            <input id="Button12" type="button" value="Local html5 Audio & Video tests in sub folder" onclick="return do_LocalMediaTest_subfolder()" /></p>	
+		<p>
+            <input id="Button14" type="button" value="onload Testing" onclick="return do_onload_Test()" /></p>
+		<p>
+            <input id="Button15" type="button" value="Flash Player Audio & Video Test" onclick="return do_flash_video_audio_Test()" /></p>				
+		<p>
+            <input id="Button16" type="button" value="Web Inspector Test" onclick="return do_web_inspector_Test()" /></p>					
+
+    </ol>
+	
+	</body>
+</html>

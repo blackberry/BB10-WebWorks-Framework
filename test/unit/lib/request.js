@@ -47,7 +47,7 @@ describe("requestination ", function () {
 
     it("can call the server handler when certain urls are detected", function () {
         spyOn(server, "handle");
-        var url = "http://localhost:8472/blackberry/roomService/kungfuAction/customExt/crystalMethod?blargs=yes",
+        var url = "http://localhost:8472/roomService/kungfuAction/customExt/crystalMethod?blargs=yes",
             requestObj = request.init(mockedWebview),
             returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url})),
             expectedRequest = {
@@ -63,6 +63,29 @@ describe("requestination ", function () {
             },
             expectedResponse = {
                 send: jasmine.any(Function)    
+            };
+        expect(JSON.parse(returnValue).setAction).toEqual("SUBSTITUTE");
+        expect(server.handle).toHaveBeenCalledWith(expectedRequest, expectedResponse);
+    });
+
+    it("can call the server handler correctly with a multi-level method", function () {
+        spyOn(server, "handle");
+        var url = "http://localhost:8472/roomService/kungfuAction/customExt/crystal/Method?blargs=yes",
+            requestObj = request.init(mockedWebview),
+            returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url})),
+            expectedRequest = {
+                params: {
+                    service: "roomService",
+                    action: "kungfuAction",
+                    ext: "customExt",
+                    method: "crystal/Method",
+                    args: "blargs=yes"
+                },
+                body: undefined,
+                origin: "http://www.origin.com"
+            },
+            expectedResponse = {
+                send: jasmine.any(Function)
             };
         expect(JSON.parse(returnValue).setAction).toEqual("SUBSTITUTE");
         expect(server.handle).toHaveBeenCalledWith(expectedRequest, expectedResponse);
