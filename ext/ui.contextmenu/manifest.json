@@ -1,5 +1,5 @@
 {
-    "global" : false,
+    "global" : true,
     "namespace" : "blackberry.ui.contextmenu",
     "dependencies" : []
 }
