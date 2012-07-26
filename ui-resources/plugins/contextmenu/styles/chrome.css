@@ -26,11 +26,23 @@ body {
     -webkit-box-orient: vertical;
     -webkit-box-pack: center;
     z-index: 100;
+    overflow-y:hidden;
 }
 
 #contextMenuContent {
     font-size: 1.35em;
     color: #fafafa;
+}
+
+.contentPeeked {
+    overflow-y:hidden;
+    max-height: 67%;
+}
+
+.contentShown {
+    max-height: 80%;
+    margin-top: 125px;;
+    overflow-y:scroll;
 }
 
 .contextMenuHeader {
@@ -43,6 +55,13 @@ body {
     -webkit-box-orient: vertical;
     -webkit-box-pack: center;
     text-overflow: -blackberry-fade;
+}
+
+.contextMenuHeaderEmpty {
+    position: absolute;
+    top: 0;
+    height: 120px;
+    width: 100%;
 }
 
 #contextMenuHeadText {
@@ -67,7 +86,14 @@ body {
     background-image: url('../assets/drag_bar.png');
 }
 
-/* Show and hide the menu items themselves */
+.showMoreActionsHandle {
+    height: 119px;
+    width: 121px;
+    background-image: url('../assets/ActionOverflowMenu.png');
+    background-repeat: no-repeat;
+}
+
+/* Show and hid the menu items themselves */
 .showItem {
     -webkit-transform:translate(-462px,0);
     z-index:101;
@@ -104,10 +130,10 @@ body {
     border-top: 2px solid #414141;
 }
 
-    .menuItem img {
-        margin: 20px 19px;
-        vertical-align: middle;
-    }
+.menuItem img {
+    margin: 20px 19px;
+    vertical-align: middle;
+}
 
 .menuItem:active {
     border-image: url('../assets/core_crosscutmenu_selected.png') 2 1 2 13 / 1 1 1 1;

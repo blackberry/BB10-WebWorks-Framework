@@ -22,7 +22,6 @@ var contextmenu,
     utils,
     includePath;
 
-
 function requireLocal(id) {
     return require(!!require.resolve ? "../../" + id.replace(/\/chrome/, "") : id);
 }
@@ -34,18 +33,8 @@ function init() {
     utils = requireLocal("../chrome/lib/utils");
 }
 
-function handleTouchEnd(actionId, menuItem) {
-    if (menuItem) {
-        menuItem.className = 'menuItem peekItem';
-    }
+function handleTouchEnd(actionId) {
     window.qnx.webplatform.getController().remoteExec(1, 'executeMenuAction', [actionId]);
-}
-
-function handleTouchStart(menuItem) {
-    if (!menuItem || !menuPeeked) {
-        return;
-    }
-    menuItem.className = 'menuItem showItem';
 }
 
 contextmenu = {
@@ -81,8 +70,7 @@ contextmenu = {
             menuItem.appendChild(menuImage);
             menuItem.appendChild(document.createTextNode(options[i].label));
             menuItem.setAttribute("class", "menuItem");
-            menuItem.ontouchstart = handleTouchStart.bind(this, menuItem);
-            menuItem.ontouchend = handleTouchEnd.bind(this, options[i].actionId, menuItem);
+            menuItem.ontouchend = handleTouchEnd.bind(this, options[i].actionId);
             menuItem.addEventListener('mousedown', contextmenu.handleMouseDown, false);
             menu.appendChild(menuItem);
         }
@@ -106,8 +94,14 @@ contextmenu = {
         if (menuVisible) {
             return;
         }
-        var menu = document.getElementById('contextMenu');
+        var menu = document.getElementById('contextMenu'),
+            menuContent = document.getElementById('contextMenuContent'),
+            handle = document.getElementById('contextMenuHandle');
+
         menu.className = 'showMenu';
+        menuContent.className = 'contentShown';
+        handle.className = 'showContextMenuHandle';
+
         menuVisible = true;
         if (menuPeeked) {
             evt.cancelBubble = true;
@@ -123,13 +117,20 @@ contextmenu = {
         if (!menuVisible && !menuPeeked) {
             return;
         }
+
         var menu = document.getElementById('contextMenu'),
+            contextMenuContent = document.getElementById('contextMenuContent'),
             handle = document.getElementById('contextMenuHandle');
+
         menu.removeEventListener('touchend', contextmenu.hideContextMenu, false);
         handle.removeEventListener('touchend', contextmenu.showContextMenu, false);
+
         menuVisible = false;
         menuPeeked = false;
         menu.className = 'hideMenu';
+
+        // Reset the scrolling of any divs in the menu, since it will save the scroll
+        contextMenuContent.scrollTop = 0;
 
         // Reset sensitivity
         window.qnx.webplatform.getController().remoteExec(1, 'webview.setSensitivity', ['SensitivityTest']);
@@ -139,13 +140,24 @@ contextmenu = {
         if (menuVisible || menuPeeked) {
             return;
         }
-        window.qnx.webplatform.getController().remoteExec(1, 'webview.setSensitivity', ['SensitivityNoFocus']);
+
         var menu = document.getElementById('contextMenu'),
-            handle = document.getElementById('contextMenuHandle');
-        handle.className = 'showContextMenuHandle';
+            handle = document.getElementById('contextMenuHandle'),
+            menuContent = document.getElementById('contextMenuContent'),
+            menuItems = document.getElementsByClassName('menuItem');
+
+        if (menuItems.length > 7) {
+            handle.className = 'showMoreActionsHandle';
+        } else {
+            handle.className = 'showContextMenuHandle';
+        }
+
         menuVisible = false;
         menuPeeked = true;
+        menuContent.className = 'contentPeeked';
         menu.className = 'peekContextMenu';
+
+        window.qnx.webplatform.getController().remoteExec(1, 'webview.setSensitivity', ['SensitivityNoFocus']);
     },
 
     transitionEnd: function () {
@@ -160,7 +172,7 @@ contextmenu = {
             menu.addEventListener('touchend', contextmenu.hideContextMenu, false);
         } else {
             header = document.getElementById('contextMenuHeader');
-            header.className = '';
+            header.className = 'contextMenuHeaderEmpty';
             contextmenu.setHeadText('');
             contextmenu.setSubheadText('');
         }
