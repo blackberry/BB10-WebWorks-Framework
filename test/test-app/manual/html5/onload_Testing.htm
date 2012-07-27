@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>onload Testing</title>
+    <script src="local:///js/webworks.js"></script>
+	<script type="text/javascript">
+	function displaySmokeTestDetails()
+	{
+		try
+		{
+			alert("webworksready Test");
+			alert(blackberry.app.author);
+			alert(blackberry.app.version);
+		} 
+		catch(e) {
+			alert("Exception in displayDetails: " + e);
+		}
+	}
+
+
+    window.addEventListener("load", function () {
+        document.addEventListener("webworksready", displaySmokeTestDetails);
+    }, false);
+	</script>
+</head>
+<body>
+    <p>
+        You should be able to see three dialogs.
+	</p>
+	<p>
+	<input id="Button2" type="button" value="Back" onclick="history.back()" />
+	</p>
+</body>
+</html>

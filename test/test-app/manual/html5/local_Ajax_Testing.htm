@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Local Ajax Testing</title>
+	<script type="text/javascript" src = "ajaxUtility.js"></script>
+</head>
+<body>
+    <p>
+        <input id="Button1" type="button" value="Async Ajax Call GET" onclick="return doAjaxCall_Async_GET()" />
+	</p>
+	<p>
+        <input id="Button2" type="button" value="Sync Ajax Call GET" onclick="return doAjaxCall_Sync_GET()" />
+	</p>
+	 <p>
+        <input id="Button1" type="button" value="Async Ajax Call POST" onclick="return doAjaxCall_Async_POST()" />
+	</p>
+	<p>
+        <input id="Button2" type="button" value="Sync Ajax Call POST" onclick="return doAjaxCall_Sync_POST()" />
+	</p>
+	<p>
+        <input id="Button3" type="button" value="Back" onclick="history.back()" />
+	</p>
+</body>
+</html>
