@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>feature and access Testing page</title>
+<script type = "text/javascript">
+	function bb_system_model(){
+		try{
+		alert(blackberry.system.model);
+		}catch(err){
+			alert(err);
+		}
+	}
+</script>
+</head>
+
+<body>
+<p>
+You should NOT have the permission to the link below, since www.sina.com.cn is not whitelisted in the config.xml<br/>
+<a href= "http://www.sina.com.cn" > http://www.sina.com.cn </a> <br/>
+</p>
+
+<p>
+You should NOT get the value of blackberry.system.model, since blackberry.system is Not whitelisted locally!<br/>
+<input id="Button1" type="button" value="blackberry.system.model" onclick="return bb_system_model()" /><br/>
+</p>
+
+<p>
+You should be able to go to the link below, but you should NOT be able to get the expected result, since blackberry.app is Not whitelisted on atg05-yyz.rim.net!<br/>
+<a href= "http://atg05-yyz.labyyz.testnet.rim.net/WebWork_Playbook/blackberry/app/app_default.htm" > http://atg05-yyz.labyyz.testnet.rim.net/WebWork_Playbook/blackberry/app/app_default.htm </a>
+<br/>
+</p>
+
+<p>
+  <input id="Button2" type="button" value="Back" onclick="history.back()" />
+</p>
+
+</body>
+</html>
