@@ -215,4 +215,17 @@ describe("ui-resources/dialog", function () {
         expect(x$().on).toHaveBeenCalledWith('click', jasmine.any(Function));
     });
 
+    it("can take an SSLCertificateException object", function () {
+        var url = 'https://bojaps.com',
+            msgObj = {
+                dialogType : 'SSLCertificateException',
+                htmlmessage : "The certificate for this site can't be trusted. " +
+                              "Another site may be impersonating the site you are trying to visit. " +
+                              "If you add an exception, you will continue to the site and not be " +
+                              " warned next time you view " + url + " .",
+                url : url
+            };
+        dialog.showDialog(msgObj);
+        expect(x$().on).toHaveBeenCalledWith('click', jasmine.any(Function));
+    });
 });

@@ -62,6 +62,26 @@ function show(desc) {
                 .bottom(button));
         res.ok = button[0];
         break;
+    case 'SSLCertificateException':
+        header.bottom(x$(document.createTextNode(desc.title ? desc.title : "SSL Certificate Exception")));
+        content.bottom(desc.htmlmessage ? desc.htmlmessage : x$(document.createTextNode(desc.message)));
+        button.bottom(x$(document.createTextNode(desc.savelabel ? desc.savelabel : "Add Exception")))
+            .on('click', hide);
+        divider = x$(document.createElement('div'))
+            .addClass('dialog-button-divider');
+        button2 = x$(document.createElement('button'))
+            .addClass('dialog-button')
+            .bottom(x$(document.createTextNode(desc.cancellabel ? desc.cancellabel : "Don't Trust")))
+            .on('click', hide);
+        panel.bottom(header)
+            .bottom(content)
+            .bottom(buttons
+                .bottom(button)
+                .bottom(divider)
+                .bottom(button2));
+        res.save = button[0];
+        res.cancel = button2[0];
+        break;
     case 'InsecureSubresourceLoadPolicyConfirm':
         desc.title = "Insecure Contents Confirm";
         desc.oklabel = "Yes";
