@@ -47,7 +47,7 @@ module.exports = function (prev, baton) {
         outputHTML = "",
         outputCSS = "",
         outputJS = "",
-        thirdParty = [path.join(_c.DEPENDENCIES, 'require/require.js')],
+        thirdParty = [],
         assets = [],
         asset,
         template = { locals: {} },
@@ -61,6 +61,10 @@ module.exports = function (prev, baton) {
         assetsDest = path.join(_c.DEPLOY_UI, 'assets'),
         easset,
         eassets;
+
+    //Push on the thirdparty modules
+    thirdParty.push(path.join(_c.DEPENDENCIES, 'require/require.js'));
+    thirdParty.push(path.join(_c.DEPENDENCIES, 'xui/xui.js'));
 
     // Read in all the possible ui plugins and set up templating for each
     allPlugins = fs.readdirSync(_c.UI_PLUGINS);
@@ -80,15 +84,15 @@ module.exports = function (prev, baton) {
         pluginHTMLPath = (path.normalize(_c.UI_PLUGINS + "/" + plugin + HTML_FILE));
         if (path.existsSync(pluginHTMLPath)) {
             pluginHTML = fs.readFileSync(pluginHTMLPath, "utf-8");
-            template.locals[plugin] = setupTemplate(plugin, pluginHTML);    
+            template.locals[plugin] = setupTemplate(plugin, pluginHTML);
         }
     }
-   
+
     // Compile the ui.html with the template
     // This will also generate the list of plugins to load
-    outputHTML = tmpl.render(fs.readFileSync(_c.UI + HTML_UI, "utf-8"), template); 
-  
-    // Prepare list of files needed for each plugin in use 
+    outputHTML = tmpl.render(fs.readFileSync(_c.UI + HTML_UI, "utf-8"), template);
+
+    // Prepare list of files needed for each plugin in use
     pluginsToLoad.forEach(function (plugin) {
         // JS/CSS files are each compiled into a single file
         cssFiles.push(path.normalize(_c.UI_PLUGINS + "/" + plugin + CSS_FILE));
@@ -98,7 +102,7 @@ module.exports = function (prev, baton) {
             assets.push(assetPath);
         }
     });
-   
+
     outputCSS = include(cssFiles);
     outputJS += include([path.join(_c.BUILD, 'FILE_LICENSE'), ]);
     outputJS += include(jsFiles, function (file, filepath) {
@@ -106,7 +110,7 @@ module.exports = function (prev, baton) {
         return "define('" + pathSplit[pathSplit.length - 2] +
                        "', function (require, exports, module) {\n" + file + "});\n";
     });
-    
+
     wrench.mkdirSyncRecursive(uiFolderDest, "0755");
     wrench.mkdirSyncRecursive(cssFolderDest, "0755");
     wrench.mkdirSyncRecursive(assetsDest, "0755");
@@ -120,9 +124,9 @@ module.exports = function (prev, baton) {
         for (easset in eassets) {
             util.copyFile(path.normalize(assets[asset] + "/" + eassets[easset]), assetsDest);
         }
-    } 
-    
-    fs.writeFileSync(cssDest, outputCSS); 
-    fs.writeFileSync(jsDest, outputJS); 
-    fs.writeFileSync(htmlDest, outputHTML); 
+    }
+
+    fs.writeFileSync(cssDest, outputCSS);
+    fs.writeFileSync(jsDest, outputJS);
+    fs.writeFileSync(htmlDest, outputHTML);
 };

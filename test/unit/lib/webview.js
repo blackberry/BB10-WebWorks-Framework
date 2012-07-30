@@ -51,7 +51,6 @@ describe("webview", function () {
                     else {
                         runs(createFunction);
                     }
-
                     return mockedWebview;
                 },
                 getApplication: function () {
