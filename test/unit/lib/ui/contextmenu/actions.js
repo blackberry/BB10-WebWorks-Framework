@@ -21,6 +21,12 @@ var _apiDir = __dirname + "./../../../../../ext/ui.contextmenu",
     invocation,
     actions,
     success,
+    dialog,
+    mockedWebWorks = {
+        execAsync: jasmine.createSpy(),
+        event: { once : jasmine.createSpy(),
+                 isOn : jasmine.createSpy() }
+    },
     mockedController = {
         remoteExec: jasmine.createSpy(),
         addEventListener : jasmine.createSpy()
@@ -67,6 +73,7 @@ describe("blackberry.ui.actions.handlers index", function () {
         };
         GLOBAL.downloadSharedFile = jasmine.createSpy();
         actions = require(_libDir + '/ui/contextmenu/actions');
+        dialog = require(_libDir + './ui/dialog/index');
         invocation = window.qnx.webplatform.getApplication().invocation;
         actions.clearCustomHandlers();
     });
@@ -152,6 +159,7 @@ describe("blackberry.ui.actions.handlers index", function () {
             isImage : true
         };
 
+        spyOn(dialog, 'show');
         actions.setCurrentContext(currentContext);
         actions.handlers.SaveImage('SaveImage');
         expect(qnx.callExtensionMethod).not.toHaveBeenCalled();
@@ -160,7 +168,7 @@ describe("blackberry.ui.actions.handlers index", function () {
     it("has a ShareLink function", function () {
         expect(actions.handlers.ShareLink).toBeDefined();
     });
-    
+
     it("can add and execute custom menu items", function () {
         var actionId = 'awesomeCity';
         spyOn(libEvent, 'trigger');
@@ -168,13 +176,13 @@ describe("blackberry.ui.actions.handlers index", function () {
         actions.runHandler(actionId);
         expect(libEvent.trigger).toHaveBeenCalledWith('contextmenu.executeMenuAction', actionId);
     });
-    
+
     it("cannot add duplicate custom menu items", function () {
         var actionId = 'awesomeCity';
         expect(actions.addCustomItem(actionId)).toEqual(true);
         expect(actions.addCustomItem(actionId)).toEqual(false);
     });
-    
+
     it("can remove a custom menu item", function () {
         var actionId = 'awesomeCity';
         spyOn(libEvent, 'trigger');
