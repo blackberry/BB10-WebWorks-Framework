@@ -34,7 +34,7 @@ Object.defineProperty(contextmenu, "enabled", {
     get : function () {
         var enabled;
         try {
-            enabled = window.webworks.execAsync(_ID, "enabled");
+            enabled = window.webworks.execSync(_ID, "enabled");
         } catch (error) {
             console.log(error);
         }
@@ -42,7 +42,7 @@ Object.defineProperty(contextmenu, "enabled", {
     },
     set: function (value) {
         try {
-            window.webworks.execAsync(_ID, "enabled", {"enabled": value});
+            window.webworks.execSync(_ID, "enabled", {"enabled": value});
         } catch (error) {
             console.error(error);
         }

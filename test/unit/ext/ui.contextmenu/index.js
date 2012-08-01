@@ -85,7 +85,7 @@ describe("blackberry.ui.contextmenu index", function () {
             "enabled": encodeURIComponent(JSON.stringify(false))
         }, null);
 
-        expect(success).toHaveBeenCalledWith('ContextMenuEnabled has been set to ' + false);
+        expect(success).toHaveBeenCalled();
     });
 
     it("enabled is called with true on the webview.setContextMenuEnabled", function () {
@@ -93,7 +93,7 @@ describe("blackberry.ui.contextmenu index", function () {
             "enabled": encodeURIComponent(JSON.stringify(true))
         }, null);
 
-        expect(success).toHaveBeenCalledWith('ContextMenuEnabled has been set to ' + true);
+        expect(success).toHaveBeenCalledWith();
     });
 
     it("can add a custom menu item", function () {
@@ -104,7 +104,7 @@ describe("blackberry.ui.contextmenu index", function () {
 
         expect(success).toHaveBeenCalled();
     });
-    
+
     it("cannot add custom items without an actionId", function () {
         var fail = jasmine.createSpy();
         contextmenu.addItem(null, fail, {
@@ -114,7 +114,7 @@ describe("blackberry.ui.contextmenu index", function () {
 
         expect(fail).toHaveBeenCalled();
     });
-    
+
     it("cannot add custom items with actionId as an empty string", function () {
         var fail = jasmine.createSpy();
         contextmenu.addItem(null, fail, {
@@ -124,7 +124,7 @@ describe("blackberry.ui.contextmenu index", function () {
 
         expect(fail).toHaveBeenCalled();
     });
-    
+
     it("cannot add multiple custom menu items with the same actionId", function () {
         var fail = jasmine.createSpy();
         contextmenu.addItem(success, null, {
@@ -154,5 +154,22 @@ describe("blackberry.ui.contextmenu index", function () {
         expect(success).toHaveBeenCalled();
     });
 
+    it("enabled property can be set to true, then read properly", function () {
+        contextmenu.enabled(success, null, {
+            "enabled": encodeURIComponent(JSON.stringify(true))
+        }, null);
+
+        contextmenu.enabled(success, null, null, null);
+        expect(success).toHaveBeenCalledWith(true);
+    });
+
+    it("enabled property can be set to false, then read properly", function () {
+        contextmenu.enabled(success, null, {
+            "enabled": encodeURIComponent(JSON.stringify(false))
+        }, null);
+
+        contextmenu.enabled(success, null, null, null);
+        expect(success).toHaveBeenCalledWith(false);
+    });
 });
 
