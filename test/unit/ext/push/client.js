@@ -40,7 +40,8 @@ var _extDir = __dirname + "./../../../../ext",
         "MISSING_PORT_FROM_PPG" : 10107,
         "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG" : 10108,
         "PPG_CURRENTLY_NOT_AVAILABLE" : 10110,
-        "MISSING_INVOKE_TARGET_ID" : 10111
+        "MISSING_INVOKE_TARGET_ID" : 10111,
+        "SESSION_ALREADY_EXISTS" : 10112		
     },
     constantsLength = 0,
     defineROFieldArgs = [];
@@ -108,6 +109,7 @@ describe("push", function () {
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("PPG_CURRENTLY_NOT_AVAILABLE")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_INVOKE_TARGET_ID")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SESSION_ALREADY_EXISTS")]);
         });
     });
 
