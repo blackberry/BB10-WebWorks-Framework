@@ -44,15 +44,6 @@ _self.standardAskAsync = function (message, type, callback, settings) {
     return window.webworks.execAsync(_ID, "standardAskAsync", args);
 };
 
-window.webworks.defineReadOnlyField(_self, "SIZE_FULL", "full");
-window.webworks.defineReadOnlyField(_self, "SIZE_LARGE", "large");
-window.webworks.defineReadOnlyField(_self, "SIZE_MEDIUM", "medium");
-window.webworks.defineReadOnlyField(_self, "SIZE_SMALL", "small");
-window.webworks.defineReadOnlyField(_self, "SIZE_TALL", "tall");
-window.webworks.defineReadOnlyField(_self, "BOTTOM", "bottomCenter");
-window.webworks.defineReadOnlyField(_self, "CENTER", "middleCenter");
-window.webworks.defineReadOnlyField(_self, "TOP", "topCenter");
-
 window.webworks.defineReadOnlyField(_self, "D_OK", 0);
 window.webworks.defineReadOnlyField(_self, "D_SAVE", 1);
 window.webworks.defineReadOnlyField(_self, "D_DELETE", 2);

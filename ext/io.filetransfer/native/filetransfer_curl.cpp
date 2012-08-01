@@ -109,7 +109,6 @@ CURLcode FileTransferCurl::openDialog(CURL *curl, const std::string &windowGroup
 {
     DialogConfig *dialogConfig = new DialogConfig();
     DialogBPS *dialog = new DialogBPS();
-    dialogConfig->size = "large";
     dialogConfig->windowGroup = windowGroup;
     dialogConfig->message = "The certificate for the domain " + parsedDomain + " could not be verified.\n\nDo you want to continue connecting to this server?";
     dialogConfig->buttons.push_back("Allow");

@@ -50,7 +50,7 @@ describe("blackberry.ui.dialog", function () {
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a dialog', function () {
 		var buttons = ["Ok"],
-            settings = {title : "Dialog", size : blackberry.ui.dialog.SIZE_FULL, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.customAskAsync("Click the button, this dialog is not a global dialog and should have one button", buttons, dialogCallback, settings);
@@ -62,7 +62,7 @@ describe("blackberry.ui.dialog", function () {
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a dialog with two buttons and a title', function () {
 		var buttons = ["Hello", "World"],
-            settings = {title : "Dialog", size : blackberry.ui.dialog.SIZE_LARGE, position : blackberry.ui.dialog.CENTER},
+            settings = {title : "Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.customAskAsync("Click the button, this dialog is not a global dialog and should have two buttons, click the pass button to proceed", buttons, dialogCallback, settings);
@@ -74,7 +74,7 @@ describe("blackberry.ui.dialog", function () {
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a global dialog with three buttons and a title', function () {
 		var buttons = ["OK", "Hello", "World"],
-            settings = {title : "Dialog", size : blackberry.ui.dialog.SIZE_LARGE, position : blackberry.ui.dialog.CENTER, global: true},
+            settings = {title : "Dialog", global: true},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.customAskAsync("Click the button, this dialog is not a global dialog and should have three buttons and should be a global dialog, click the pass button to proceed", buttons, dialogCallback, settings);
@@ -86,7 +86,7 @@ describe("blackberry.ui.dialog", function () {
     
     it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok dialog', function () {
         var type = blackberry.ui.dialog.D_OK,
-            settings = {title : "Ok Dialog", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Ok Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have an OK button", type, dialogCallback, settings);
@@ -98,7 +98,7 @@ describe("blackberry.ui.dialog", function () {
 
     it('blackberry.ui.dialog.standardAskAsync should be able to create a Save dialog', function () {
         var type = blackberry.ui.dialog.D_SAVE,
-            settings = {title : "Save Dialog", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Save Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Save/Discard)", type, dialogCallback, settings);
@@ -110,7 +110,7 @@ describe("blackberry.ui.dialog", function () {
 
     it('blackberry.ui.dialog.standardAskAsync should be able to create a Delete dialog', function () {
         var type = blackberry.ui.dialog.D_DELETE,
-            settings = {title : "Delete Dialog", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Delete Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Delete/Cancel)", type, dialogCallback, settings);
@@ -122,7 +122,7 @@ describe("blackberry.ui.dialog", function () {
 
     it('blackberry.ui.dialog.standardAskAsync should be able to create a Yes/No dialog', function () {
         var type = blackberry.ui.dialog.D_YES_NO,
-            settings = {title : "Yes/No Dialog", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Yes/No Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Yes/No)", type, dialogCallback, settings);
@@ -134,7 +134,7 @@ describe("blackberry.ui.dialog", function () {
     
     it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok/Cancel dialog', function () {
         var type = blackberry.ui.dialog.D_OK_CANCEL,
-            settings = {title : "Ok/Cancel Dialog", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Ok/Cancel Dialog"},
             callback = jasmine.createSpy();
 
         blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Ok/Cancel)", type, dialogCallback, settings);
@@ -146,7 +146,7 @@ describe("blackberry.ui.dialog", function () {
 
     it('blackberry.ui.dialog.standardAskAsync should return the correct option index', function () {
         var type = blackberry.ui.dialog.D_SAVE,
-            settings = {title : "Save Dialog, Click Discard", size : blackberry.ui.dialog.SIZE_MEDIUM, position : blackberry.ui.dialog.TOP},
+            settings = {title : "Save Dialog, Click Discard"},
             callback = jasmine.createSpy();
 
         runs(function () {

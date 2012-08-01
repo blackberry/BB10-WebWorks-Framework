@@ -19,7 +19,7 @@ function validateIdMessageSettings(args) {
     if (args.settings) {
         args.settings = JSON.parse(decodeURIComponent(args.settings));
     } else {
-        args.settings = { title : "", size: "medium", position: "middleCenter" };
+        args.settings = { title : "" };
     }
 
     if (args.message) {

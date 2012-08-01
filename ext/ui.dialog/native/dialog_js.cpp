@@ -101,8 +101,6 @@ std::string Dialog::InvokeMethod(const std::string& command)
             dialogConfig = new webworks::DialogConfig;
             dialogConfig->title = obj["title"].asString();
             dialogConfig->message = obj["message"].asString();
-            dialogConfig->size = obj["size"].asString();
-            dialogConfig->position = obj["position"].asString();
             dialogConfig->windowGroup = obj["windowGroup"].asString();
             dialogConfig->global = obj["global"].asBool();
             const Json::Value buttonsArray = obj["buttons"];

@@ -25,14 +25,6 @@ var root = __dirname + "/../../../../",
                  isOn : jasmine.createSpy() }
     },
     constants = {
-        "SIZE_FULL": "full",
-        "SIZE_LARGE": "large",
-        "SIZE_MEDIUM": "medium",
-        "SIZE_SMALL": "small",
-        "SIZE_TALL": "tall",
-        "BOTTOM": "bottomCenter",
-        "CENTER": "middleCenter",
-        "TOP": "topCenter",
         "D_OK": 0,
         "D_SAVE": 1,
         "D_DELETE": 2,
@@ -55,14 +47,6 @@ describe("ui.dialog", function () {
             defineROFieldArgs.push([client, c, constants[c]]);
         });
             
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SIZE_FULL")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SIZE_LARGE")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SIZE_MEDIUM")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SIZE_SMALL")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SIZE_TALL")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("BOTTOM")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CENTER")]);
-        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("TOP")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_OK")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_SAVE")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_DELETE")]);
