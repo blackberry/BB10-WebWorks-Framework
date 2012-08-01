@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns=" http://www.w3.org/ns/widgets"
+        xmlns:rim="http://www.blackberry.com/ns/widgets"
+        version="1.0.0"
+        id="WebWorksTest">
+    
+    <name>WebWorks Test Application</name>
+
+    <description>This application tests a wide range of WebWorks functionalities.</description>
+	
+    <content src="index.htm"/>
+    
+    <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
+	
+    <feature id="blackberry.app" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.system" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.connection" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.identity" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.event" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.ui.dialog" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.io" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.io.filetransfer" required="true" version="1.0.0.0" />
+    <feature id="blackberry.push" required="true" version="1.0.0.0" />
+
+    <access uri="http://atg05-yyz.labyyz.testnet.rim.net" />
+    <access uri="http://10.137.251.215/" />
+    <access uri="http://html5demos.com/" />
+    <access uri="http://maps.google.com/" subdomains="true"/>
+    <access uri="http://googleapis.com/" subdomains="true" />
+    <access uri="http://gstatic.com/" subdomains="true"/>
+    <access uri="http://www.google-analytics.com/" subdomains="true"/>
+    <access uri="http://www.rim.com" />
+    <access uri="http://www.w3.org" subdomains="true" />
+    <access uri="http://benwerd.com/" />
+    <access uri="http://www.youtube.com/" subdomains="true" />
+    <access uri="http://ytimg.com/" subdomains="true" />
+    <access uri="http://www.homestarrunner.com/" />
+    <access uri="http://cachemanifest.heroku.com/" />
+    <access uri="http://jquery.com/" subdomains="true"/>
+  	
+    <license href="http://www.apache.org/licenses/LICENSE-2.0">
+        Licensed under the Apache License, Version 2.0 (the "License");
+        #you may not use this file except in compliance with the License.
+        #You may obtain a copy of the License at
+        #
+        #http://www.apache.org/licenses/LICENSE-2.0
+        #
+        #Unless required by applicable law or agreed to in writing, software
+        #distributed under the License is distributed on an "AS IS" BASIS,
+        #WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        #See the License for the specific language governing permissions and limitations under the License.
+    </license>
+
+    <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
+    <feature id="blackberry.invoke" required="true" version="1.0.0.0" />
+    
+    <rim:invoke-target id="net.rim.webworks.SmokeTest">
+        <type>APPLICATION</type>
+        <filter>
+            <action>bb.action.OPEN</action>
+            <mime-type>text/plain</mime-type>
+        </filter>
+    </rim:invoke-target>
+
+    <rim:permissions>
+        <rim:permit>access_shared</rim:permit>
+        <rim:permit>read_geolocation</rim:permit>
+        <rim:permit>access_internet</rim:permit>
+        <rim:permit>use_camera</rim:permit>
+        <rim:permit>read_device_identifying_information</rim:permit>
+    </rim:permissions>
+</widget>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
+  <script type="text/javascript" src="../js/jasmine.js"></script>
+  <script type="text/javascript" src="../js/jasmine-html.js"></script>
+  <script type="text/javascript" src="../js/webworks.js"></script>
+
+  <!-- include spec files here... -->
+  <script type="text/javascript" src="spec/blackberry.app.js"></script>
+  <script type="text/javascript" src="spec/blackberry.connection.js"></script>
+  <script type="text/javascript" src="spec/blackberry.event.js"></script>
+  <script type="text/javascript" src="spec/blackberry.identity.js"></script>
+  <script type="text/javascript" src="spec/blackberry.invoke.js"></script>
+  <script type="text/javascript" src="spec/blackberry.invoked.js"></script>
+  <script type="text/javascript" src="spec/blackberry.io.filetransfer.js"></script>
+  <script type="text/javascript" src="spec/blackberry.io.js"></script>
+  <script type="text/javascript" src="spec/blackberry.js"></script>
+  <script type="text/javascript" src="spec/blackberry.push.js"></script>
+  <script type="text/javascript" src="spec/blackberry.system.js"></script>
+  <script type="text/javascript" src="spec/blackberry.ui.dialog.js"></script>
+  <script type="text/javascript" src="spec/crossOrigin.js"></script>
+  
+
+  <script type="text/javascript">
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        //execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+      document.addEventListener("webworksready", function () {
+        execJasmine();
+      });
+
+  </script>
+
+</head>
+
+<body>
+    <input id="backButton "type="button" value="Back" onclick="history.back();" />
+</body>
+</html>

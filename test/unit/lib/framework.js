@@ -71,6 +71,7 @@ describe("framework", function () {
             done();
         });
         spyOn(controllerWebView, "init");
+        spyOn(controllerWebView, "dispatchEvent");
         spyOn(webview, "destroy");
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");

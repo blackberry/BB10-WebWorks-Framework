@@ -11,3 +11,11 @@ target/
 clientFiles/
 ext/*/native/unitTests/build/*
 lib/webworks-info.js
+test/test-app/wwTest.zip
+test/test-app/device
+test/test-app/simulator
+test/test-app/automatic/spec/
+test/test-app/manual/framework/spec/
+test/test-app/js/jasmine.js
+test/test-app/css/jasmine.css
+test/test-app/js/jasmine-html.js

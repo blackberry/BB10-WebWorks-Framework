@@ -24,7 +24,13 @@ describe("event", function () {
         it("can invoke the webview execute javascript", function () {
             spyOn(webview, "executeJavascript");
             event.trigger("foo", {"id": 123});
-            expect(webview.executeJavascript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + JSON.stringify({"id": 123}) + "')");
+            expect(webview.executeJavascript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + JSON.stringify([{"id": 123}]) + "')");
+        });
+
+        it("sends multiple arguments passed in across as a JSONified array", function () {
+            spyOn(webview, "executeJavascript");
+            event.trigger("foo", {"id": 123}, "Grrrrrrr", "Arrrrg");
+            expect(webview.executeJavascript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + JSON.stringify([{"id": 123}, "Grrrrrrr", 'Arrrrg']) + "')");
         });
     });
 
