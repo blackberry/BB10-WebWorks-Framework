@@ -18,7 +18,7 @@ var _ID = "blackberry.ui.contextmenu",
     _apiDir = _extDir + "/" + "ui.contextmenu",
     client = null,
     mockedWebworks = {
-        execAsync: jasmine.createSpy("execAsync").andCallFake(function (service, action, args) {
+        execSync: jasmine.createSpy("execSync").andCallFake(function (service, action, args) {
             return true;
         })
     };
@@ -30,14 +30,14 @@ describe("blackberry.ui.contextmenu client", function () {
         client = require(_apiDir + "/client");
     });
 
-    it("enabled context menu calls execAsync", function () {
+    it("enabled context menu calls execSync", function () {
         client.enabled = true;
-        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "enabled", {"enabled": true});
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "enabled", {"enabled": true});
     });
 
-    it("disabled context menu calls execAsync", function () {
+    it("disabled context menu calls execSync", function () {
         client.enabled = false;
-        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "enabled", {"enabled": false});
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "enabled", {"enabled": false});
     });
 
 });
