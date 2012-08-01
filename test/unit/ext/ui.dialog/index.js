@@ -43,7 +43,7 @@ describe("ui.dialog index", function () {
         args.eventId = "12345";
         args.message = "Hello World";
         args.buttons = [ "Yes", "No" ];
-        args.settings = { title: "Hi", size: "large", position: "stuff" };
+        args.settings = { title: "Hi" };
         args.message = encodeURIComponent(args.message);
         args.buttons = encodeURIComponent(JSON.stringify(args.buttons));
         args.settings = encodeURIComponent(JSON.stringify(args.settings));
@@ -87,7 +87,7 @@ describe("ui.dialog index", function () {
         args.eventId = "12345";
         args.message = "Hello World";
         args.type = 0;
-        args.settings = { title: "Hi", size: "large", position: "stuff" };
+        args.settings = { title: "Hi" };
         args.message = encodeURIComponent(args.message);
         args.type = encodeURIComponent(args.type);
         args.settings = encodeURIComponent(JSON.stringify(args.settings));

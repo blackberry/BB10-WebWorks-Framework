@@ -23,16 +23,11 @@
 #include <string>
 #include <vector>
 
-
 namespace webworks {
-
-typedef std::map<std::string, int> StringToIntMap;
 
 struct DialogConfig {
     std::string title;
     std::string message;
-    std::string size;
-    std::string position;
     std::string windowGroup;
     std::vector<std::string> buttons;
     bool global;
@@ -45,8 +40,6 @@ public:
     int Show(DialogConfig *dialogInfo);
 private:
     dialog_instance_t m_dialog;
-    StringToIntMap *m_pSizeMap;
-    StringToIntMap *m_pPositionMap;
 };
 
 } // namespace webworks
