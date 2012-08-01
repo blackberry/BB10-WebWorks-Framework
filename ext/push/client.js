@@ -45,7 +45,8 @@ var _self = {},
     MISSING_PORT_FROM_PPG = 10107,
     MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG = 10108,
     PPG_CURRENTLY_NOT_AVAILABLE = 10110,
-    MISSING_INVOKE_TARGET_ID = 10111;
+    MISSING_INVOKE_TARGET_ID = 10111,
+    SESSION_ALREADY_EXISTS = 10112;
 
 function webworksCreateCallback(result) {
     if (result === SUCCESS) {
@@ -206,6 +207,7 @@ window.webworks.defineReadOnlyField(PushService, "MISSING_PORT_FROM_PPG", MISSIN
 window.webworks.defineReadOnlyField(PushService, "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG", MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG);
 window.webworks.defineReadOnlyField(PushService, "PPG_CURRENTLY_NOT_AVAILABLE", PPG_CURRENTLY_NOT_AVAILABLE);
 window.webworks.defineReadOnlyField(PushService, "MISSING_INVOKE_TARGET_ID", MISSING_INVOKE_TARGET_ID);
+window.webworks.defineReadOnlyField(PushService, "SESSION_ALREADY_EXISTS", SESSION_ALREADY_EXISTS);
 
 /*
  * Define push.PushPayload
