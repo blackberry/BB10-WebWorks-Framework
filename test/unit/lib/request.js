@@ -99,7 +99,6 @@ describe("requestination ", function () {
 
     it("prevents default for unknownProtocol", function () {
         var requestObj = request.init(),
-            invoke = jasmine.createSpy(),
             returnValue,
             mockedInvocation = {
                 invoke: jasmine.createSpy("invoke")
