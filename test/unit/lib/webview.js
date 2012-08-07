@@ -40,10 +40,16 @@ describe("webview", function () {
                 getController: function () {
                     return mockedController;
                 },
-                createWebView: function (createFunction) {
+                createWebView: function (options, createFunction) {
                     //process.nextTick(createFunction);
                     //setTimeout(createFunction,0);
-                    runs(createFunction);
+                    if (typeof options === 'function') {
+                        runs(options);
+                    }
+                    else {
+                        runs(createFunction);
+                    }
+
                     return mockedWebview;
                 },
                 getApplication: function () {
