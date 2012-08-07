@@ -41,7 +41,7 @@ describe("public/event", function () {
             expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "blackberry.system.event", "add", {"eventName": "foo"});
             event.remove("blackberry.system.event", "foo", callback);
         });
-        
+
         it("it will not call webworks.exec for multiple callbacks", function () {
             var callback = jasmine.createSpy(),
                 callback2 = jasmine.createSpy();
@@ -53,7 +53,7 @@ describe("public/event", function () {
             event.remove("blackberry.system.event", "foo", callback2);
         });
 
-        it("will not register duplicate callbacks", function () {
+        it("will not register duplicate callbacks if it is the only registered callback for the event", function () {
             var callback = jasmine.createSpy();
             event.add("blackberry.system.event", "foo", callback);
             event.add("blackberry.system.event", "foo", callback);
@@ -61,6 +61,22 @@ describe("public/event", function () {
             expect(callback).toHaveBeenCalledWith({"id": 1});
             expect(callback.callCount).toEqual(1);
             event.remove("blackberry.system.event", "foo", callback);
+        });
+
+        it("will not register duplicate callbacks if it is not the only registered callback for the event", function () {
+            var firstCallback = jasmine.createSpy(),
+                secondCallback = jasmine.createSpy(),
+                thirdCallback = jasmine.createSpy();
+
+            event.add("blackberry.system.event", "foo", firstCallback);
+            event.add("blackberry.system.event", "foo", secondCallback);
+            event.add("blackberry.system.event", "foo", thirdCallback);
+            event.add("blackberry.system.event", "foo", firstCallback);
+            event.trigger("foo", null);
+            expect(firstCallback.callCount).toEqual(1);
+            event.remove("blackberry.system.event", "foo", firstCallback);
+            event.remove("blackberry.system.event", "foo", secondCallback);
+            event.remove("blackberry.system.event", "foo", thirdCallback);
         });
 
         it("will register two distinct callbacks", function () {
