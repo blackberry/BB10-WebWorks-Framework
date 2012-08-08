@@ -14,21 +14,6 @@ else
   BUSUFFIX="$1"
 fi
 
-if [ "$QCONF_OVERRIDE" != "" ]; then
-  cp -p $QCONF_OVERRIDE /tmp/owbqsk$$.mk
-  echo "all:" >>/tmp/owbqsk$$.mk
-  echo '	echo $(INSTALL_ROOT_nto)' >>/tmp/owbqsk$$.mk
-  STAGE_DIR=`make -s -f /tmp/owbqsk$$.mk`
-  rm /tmp/owbqsk$$.mk
-fi
-
-if [ "$STAGE_DIR" == "" ]; then
-  STAGE_DIR="$HOME/stage/nto"
-  echo Staging directory could not be determined. Using: $STAGE_DIR
-else
-  echo Using staging directory: $STAGE_DIR
-fi
-
 if [ ! -z "$USE_ICECC" -a "$USE_ICECC" = "Yes" ] ; then
     CC_COMMAND=`which icecc`
     echo "Using icecream for distributed compiling"
@@ -55,12 +40,8 @@ QNX_USR_LIB="$QNX_TARGET/$CPUDIR/usr/lib"
 QNX_LIB="$QNX_TARGET/$CPUDIR/lib"
 
 COMP_PATHS=" \
-    -Wl,-rpath-link,$STAGE_LIB \
-    -Wl,-rpath-link,$STAGE_USR_LIB \
     -Wl,-rpath-link,$QNX_LIB \
     -Wl,-rpath-link,$QNX_USR_LIB \
-    -L$STAGE_LIB \
-    -L$STAGE_USR_LIB \
     -L$QNX_LIB \
     -L$QNX_USR_LIB \
     -I$QNX_INCLUDE"
@@ -70,12 +51,6 @@ if [ "$CCWRAP" ] ; then
         -DCMAKE_C_COMPILER_ARG1=qcc \
         -DCMAKE_CXX_COMPILER_ARG1=qcc"
     CC_COMMAND="$CCWRAP"
-fi
-
-if [ "$CPUGEN" == "a9" ] ; then
-    CMAKE_EXTRA_OPTIONS=" \
-        -DTARGET_IS_WINCHESTER=1 \
-        $CMAKE_EXTRA_OPTIONS"
 fi
 
 if [ "`uname`" == "Darwin" ] ; then
@@ -96,7 +71,6 @@ fi
 if [[ "$OS" == *Windows* ]] ; then
     CC_COMMAND="$CC_COMMAND.exe"
     echo cmake \
-        -DCPU=$CPU \
         -DCMAKE_SYSTEM_PROCESSOR="$CPUDIR" \
         -DCMAKE_SYSTEM_NAME="QNX" \
         -DCMAKE_SYSTEM_VERSION="1" \
@@ -105,14 +79,10 @@ if [[ "$OS" == *Windows* ]] ; then
         -DCMAKE_CXX_COMPILER="$CC_COMMAND" \
         -DCMAKE_C_FLAGS="-Vgcc_nto$CPU -g $COMP_PATHS $PROFILER_FLAGS" \
         -DCMAKE_CXX_FLAGS="-Vgcc_nto${CPU}_cpp-ne -g -lang-c++ $COMP_PATHS $PROFILER_FLAGS" \
-        -DCMAKE_INCLUDE_PATH="$STAGE_INC" \
-        -DCMAKE_LIBRARY_PATH="$STAGE_LIB;$STAGE_USR_LIB" \
-        -DCMAKE_INSTALL_PREFIX="$STAGE_DIR" \
         -DCMAKE_AR="$QNX_HOST/usr/bin/nto$BUSUFFIX-ar" \
         -DCMAKE_RANLIB="$QNX_HOST/usr/bin/nto$BUSUFFIX-ranlib" \
-        -DCMAKE_LD="$QNX_HOST/usr/bin/nto$BUSUFFIX-ld" \
         -DCMAKE_LINKER="$QNX_HOST/usr/bin/nto$BUSUFFIX-ld" \
-        -DECLIPSE_CDT4_GENERATE_SOURCE_PROJECT=TRUE \
+        -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE \
         -G\"Eclipse CDT4 - Unix Makefiles\" \
         $CMAKE_EXTRA_OPTIONS \
         $3 ../native > cmd.bat
@@ -120,7 +90,6 @@ if [[ "$OS" == *Windows* ]] ; then
     rm cmd.bat
 else
     cmake \
-        -DCPU=$CPU \
         -DCMAKE_SYSTEM_PROCESSOR="$CPUDIR" \
         -DCMAKE_SYSTEM_NAME="QNX" \
         -DCMAKE_SYSTEM_VERSION="1" \
@@ -129,14 +98,10 @@ else
         -DCMAKE_CXX_COMPILER="$CC_COMMAND" \
         -DCMAKE_C_FLAGS="-Vgcc_nto$CPU -g $COMP_PATHS $PROFILER_FLAGS" \
         -DCMAKE_CXX_FLAGS="-Vgcc_nto${CPU}_cpp-ne -g -lang-c++ $COMP_PATHS $PROFILER_FLAGS" \
-        -DCMAKE_INCLUDE_PATH="$STAGE_INC" \
-        -DCMAKE_LIBRARY_PATH="$STAGE_LIB;$STAGE_USR_LIB" \
-        -DCMAKE_INSTALL_PREFIX="$STAGE_DIR" \
         -DCMAKE_AR="$QNX_HOST/usr/bin/nto$BUSUFFIX-ar" \
         -DCMAKE_RANLIB="$QNX_HOST/usr/bin/nto$BUSUFFIX-ranlib" \
-        -DCMAKE_LD="$QNX_HOST/usr/bin/nto$BUSUFFIX-ld" \
         -DCMAKE_LINKER="$QNX_HOST/usr/bin/nto$BUSUFFIX-ld" \
-        -DECLIPSE_CDT4_GENERATE_SOURCE_PROJECT=TRUE \
+        -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE \
         -G"Eclipse CDT4 - Unix Makefiles" \
         $CMAKE_EXTRA_OPTIONS \
         $3 ../native

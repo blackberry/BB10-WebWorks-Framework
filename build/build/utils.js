@@ -34,7 +34,7 @@ module.exports = {
             fileLocation = srcFile.replace(baseDir, destDir);
             wrench.mkdirSyncRecursive(path.dirname(fileLocation), "0755");
         }
-        
+
         //By default we should copy
         //ONLY if we should NOT overwrite && the file exists will we skip copying
         if (!shouldNotOverwrite || !path.existsSync(fileLocation)) {
@@ -77,5 +77,16 @@ module.exports = {
     isValidIPAddress: function (ip) {
         var regex = new RegExp("^(?:[0-9]{1,3}\/.){3}[0-9]{1,3}$");
         return regex.test(ip);
+    },
+
+    trim: function (str) {
+        return str.replace(/^\s+|\s+$/g, "");
+    },
+
+    displayOutput: function (data) {
+        data = this.trim(data);
+        if (data !== "") {
+            console.log(data);
+        }
     }
 };

@@ -15,6 +15,7 @@
 */
 var jWorkflow = require("jWorkflow"),
     util = require("util"),
+    utils = require("./build/utils"),
     childProcess = require('child_process'),
     conf = require("./build/conf"),
     build;
@@ -26,8 +27,14 @@ function _exec(cmdExpr, options) {
         }
         console.log("Calling " + cmdExpr);
         var proc = childProcess.exec(cmdExpr, options, function (error, stdout, stderr) {
-            util.print(stdout);
-            util.print(stderr);
+        });
+
+        proc.stdout.on('data', function (data) {
+            utils.displayOutput(data);
+        });
+
+        proc.stderr.on('data', function (data) {
+            utils.displayOutput(data);
         });
 
         proc.on("exit", function (code) {
@@ -50,8 +57,8 @@ module.exports = function (pathToPackager, packagerOptions, target, deviceIp, pa
     var jakeDir = __dirname + "/../",
         barPath,
         deployTests;
-       
-       
+
+
     if (!pathToPackager) {
         pathToPackager = conf.PACKAGE_COMMAND_DEFAULT_PACKAGER;
         util.puts("No packager specified, using default from build/conf.js - " + pathToPackager);
