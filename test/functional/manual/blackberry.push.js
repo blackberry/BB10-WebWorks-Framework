@@ -18,6 +18,51 @@ describe("blackberry.push.PushService", function () {
     var invokedArgs,
         pushService;
 
+    it("should create a session and call the success callback", function () {
+        var onSuccess,
+            onFail,
+            onSimChange;
+
+        runs(function () {
+            var options = { invokeTargetId : "com.webworks.test.functional.push.target",
+                            appId : "1-RDce63it6363",
+                            ppgUrl : "http://pushapi.eval.blackberry.com" };
+
+            onSuccess = jasmine.createSpy();
+            onFail = jasmine.createSpy();
+            onSimChange = jasmine.createSpy();
+
+            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange);
+        });
+
+        waitsFor(function () {
+            return onSuccess.callCount;
+        }, "success callback never fired", 10000);
+
+        runs(function () {
+            expect(onSuccess).toHaveBeenCalledWith(jasmine.any(blackberry.push.PushService));
+            expect(onFail).not.toHaveBeenCalled();
+            pushService = onSuccess.mostRecentCall.args[0];
+        });
+    });
+
+    it("should create a channel and call the createChannel callback", function () {
+        var onCreateChannel;
+
+        runs(function () {
+            onCreateChannel = jasmine.createSpy();
+            pushService.createChannel(onCreateChannel);
+        });
+
+        waitsFor(function () {
+            return onCreateChannel.callCount;
+        }, "createChannel callback never fired", 20000);
+
+        runs(function () {
+            expect(onCreateChannel).toHaveBeenCalledWith(blackberry.push.PushService.SUCCESS, jasmine.any(String));
+        });
+    });
+
     it("should be invoked on a push notification", function () {
         var onInvoked;
 
@@ -85,7 +130,23 @@ describe("blackberry.push.PushService", function () {
             expect(dataConfirm).toEqual(true);
         });
     });
-    
-    
+
+    it("should destroy the channel and call the destroyChannel callback", function () {
+        var onDestroyChannel;
+
+        runs(function () {
+            onDestroyChannel = jasmine.createSpy();
+            pushService.destroyChannel(onDestroyChannel);
+        });
+
+        waitsFor(function () {
+            return onDestroyChannel.callCount;
+        }, "destroyChannel callback never fired", 10000);
+
+        runs(function () {
+            expect(onDestroyChannel).toHaveBeenCalledWith(blackberry.push.PushService.SUCCESS);
+        });
+    });
+
 });
 
