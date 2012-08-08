@@ -46,19 +46,20 @@ function _getCmd(ext, device, ip) {
 function createCmd(ext, device, ip) {
     return function (prev, baton) {
         baton.take();
-        childProcess.exec(_getCmd(ext, device, ip), function (error, stdout, stderr) {
-            if (stdout !== "") {
-                console.log(stdout);
-            }
-            if (stderr !== "") {
-                console.log(stderr);
-            }
-
+        var c = childProcess.exec(_getCmd(ext, device, ip), function (error, stdout, stderr) {
             if (error) {
                 baton.drop(error.code);
             } else {
                 baton.pass(prev);
             }
+        });
+
+        c.stdout.on('data', function (data) {
+            utils.displayOutput(data);
+        });
+
+        c.stderr.on('data', function (data) {
+            utils.displayOutput(data);
         });
     };
 }

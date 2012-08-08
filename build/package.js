@@ -17,6 +17,7 @@ var wrench = require("wrench"),
     zip = require("node-zip"),
     childProcess = require('child_process'),
     util = require("util"),
+    utils = require("./build/utils"),
     conf = require("./build/conf"),
     path = require("path"),
     fs = require('fs');
@@ -26,8 +27,14 @@ function _exec(cmdExpr, prev, baton) {
         baton.take();
     }
     var proc = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
-        util.print(stdout);
-        util.print(stderr);
+    });
+
+    proc.stdout.on('data', function (data) {
+        utils.displayOutput(data);
+    });
+
+    proc.stderr.on('data', function (data) {
+        utils.displayOutput(data);
     });
 
     proc.on("exit", function (code) {
@@ -61,7 +68,7 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions, pathToWeb
         appJsZip,
         frameworkPath,
         cmd;
-        
+
 
     if (!pathToPackager) {
         pathToPackager = conf.PACKAGE_COMMAND_DEFAULT_PACKAGER;
@@ -91,17 +98,17 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions, pathToWeb
         appJsZip.remove(pathToWebWorksJs);
         appJsZip.file(pathToWebWorksJs, webworksJsData, {base64: true});
         fs.writeFileSync(pathToApp, appJsZip.generate({base64: true, compression: 'DEFLATE'}), "base64");
-    } 
+    }
 
     //First delete the old directory
     if (path.existsSync(frameworkPath)) {
         wrench.rmdirSyncRecursive(frameworkPath);
     }
-    //Now replace with current framework  
+    //Now replace with current framework
     wrench.copyDirSyncRecursive(conf.DEPLOY, frameworkPath);
 
     //Call bbwp using node
     cmd = "node " + path.join(pathToPackager, "lib/bbwp.js") + " " + pathToApp + " " + packagerOptions;
-    _exec(cmd);       
+    _exec(cmd);
 
 };

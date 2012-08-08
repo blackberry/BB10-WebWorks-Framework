@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.8)
 if (CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_CXX_FLAGS "-Werror -fexceptions -fPIC ${CMAKE_CXX_FLAGS}")
     set(CMAKE_C_FLAGS "-Werror -fPIC ${CMAKE_C_FLAGS}")
