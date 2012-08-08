@@ -62,6 +62,14 @@
         </filter>
     </rim:invoke-target>
 
+    <rim:invoke-target id="com.webworks.test.functional.push.target">
+        <type>APPLICATION</type>
+        <filter>
+            <action>bb.action.PUSH</action>
+            <mime-type>application/vnd.push</mime-type>
+        </filter>
+    </rim:invoke-target>
+
     <rim:permissions>
         <rim:permit>access_shared</rim:permit>
         <rim:permit>read_geolocation</rim:permit>
