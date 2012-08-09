@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _apiDir = __dirname + "./../../../../ext/ui.contextmenu/",
-    _libDir = __dirname + "./../../../../lib/",
+var _apiDir = __dirname + "./../../../../../ext/ui.contextmenu/",
+    _libDir = __dirname + "./../../../../../lib/",
     webview = require(_libDir + 'webview'),
     overlayWebView = require(_libDir + 'overlayWebView'),
     controller = require(_libDir + 'controllerWebView'),

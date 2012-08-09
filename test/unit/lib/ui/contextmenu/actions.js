@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _apiDir = __dirname + "./../../../../ext/ui.contextmenu",
-    _libDir = __dirname + "./../../../../lib/",
+var _apiDir = __dirname + "./../../../../../ext/ui.contextmenu",
+    _libDir = __dirname + "./../../../../../lib/",
     libEvent = require(_libDir + 'event'),
     config = require(_libDir + './config.js'),
     webview = require(_libDir + 'webview'),
@@ -66,7 +66,7 @@ describe("blackberry.ui.actions.handlers index", function () {
             };
         };
         GLOBAL.downloadSharedFile = jasmine.createSpy();
-        actions = require(_apiDir + '/actions');
+        actions = require(_libDir + '/ui/contextmenu/actions');
         invocation = window.qnx.webplatform.getApplication().invocation;
         actions.clearCustomHandlers();
     });
