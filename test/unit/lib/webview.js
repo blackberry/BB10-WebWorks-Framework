@@ -24,6 +24,8 @@ describe("webview", function () {
             url: undefined,
             setFileSystemSandbox: undefined,
             setGeometry: jasmine.createSpy(),
+            setApplicationOrientation: jasmine.createSpy(),
+            notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
@@ -108,6 +110,36 @@ describe("webview", function () {
             webview.create();
             webview.setSandbox(false);
             expect(webview.getSandbox()).toBeFalsy();
+        });
+    });
+
+    describe("id", function () {
+        it("can get the id for the webiew", function () {
+            webview.create();
+            webview.id();
+            expect(mockedWebview.id).toEqual(42);
+        });
+    });
+
+    describe("geometry", function () {
+        it("can set geometry", function () {
+            webview.create();
+            webview.setGeometry(0, 0, 100, 200);
+            expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
+        });
+    });
+
+    describe("application orientation", function () {
+        it("can set application orientation", function () {
+            webview.create();
+            webview.setApplicationOrientation(90);
+            expect(mockedWebview.setApplicationOrientation).toHaveBeenCalledWith(90);
+        });
+
+        it("can notifyApplicationOrientationDone", function () {
+            webview.create();
+            webview.notifyApplicationOrientationDone();
+            expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
         });
     });
 

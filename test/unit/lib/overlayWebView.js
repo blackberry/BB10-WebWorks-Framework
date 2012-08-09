@@ -30,6 +30,8 @@ describe("Overlay Webview", function () {
             zOrder: undefined,
             url: undefined,
             setGeometry: jasmine.createSpy(),
+            setApplicationOrientation: jasmine.createSpy(),
+            notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
@@ -133,6 +135,29 @@ describe("Overlay Webview", function () {
             expect(mockedWebview.onContextMenuRequestEvent).toEqual('Polo');
         });
 
-    });
+        it("can get the id for the webiew", function () {
+            webview.create();
+            webview.id();
+            expect(mockedWebview.id).toEqual(42);
+        });
 
+        it("can set geometry", function () {
+            webview.create();
+            webview.setGeometry(0, 0, 100, 200);
+            expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
+        });
+
+        it("can set application orientation", function () {
+            webview.create();
+            webview.setApplicationOrientation(90);
+            expect(mockedWebview.setApplicationOrientation).toHaveBeenCalledWith(90);
+        });
+
+        it("can notifyApplicationOrientationDone", function () {
+            webview.create();
+            webview.notifyApplicationOrientationDone();
+            expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
+        });
+
+    });
 });
