@@ -103,6 +103,10 @@ JNEXT.BBM = function ()
         }
     };
 
+    self.getgid = function () {
+        return JNEXT.invoke(self.m_id, "getgid");
+    };
+
     self.m_id = "";
     self.displayPictureEventId = "";
 

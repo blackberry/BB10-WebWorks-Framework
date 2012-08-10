@@ -19,6 +19,7 @@ var _self = {},
     _displayPictureEventId = "bbm.self.displayPicture";
 
 _self.self = {};
+_self.users = {};
 
 function getFieldValue(field) {
     var value;
@@ -79,6 +80,10 @@ _self.self.setPersonalMessage = function (personalMessage) {
 _self.self.setDisplayPicture = function (displayPicture) {
     var args = { "displayPicture" : displayPicture };
     return window.webworks.execAsync(_ID, "self/setDisplayPicture", args);
+};
+
+_self.users.inviteToDownload = function () {
+    return window.webworks.execAsync(_ID, "users/inviteToDownload");
 };
 
 window.webworks.execSync(_ID, "registerEvents", null);

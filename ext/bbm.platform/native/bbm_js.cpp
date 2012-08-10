@@ -118,6 +118,11 @@ std::string BBM::InvokeMethod(const std::string& command)
         m_pBBMController->SetPersonalMessage(strParam);
     } else if (strCommand == "setDisplayPicture") {
         m_pBBMController->SetDisplayPicture(strParam);
+    } else if (strCommand == "getgid") {
+        int gid = m_pBBMController->GetGid();
+        std::stringstream ss;
+        ss << gid;
+        return ss.str();
     }
 
     return "";

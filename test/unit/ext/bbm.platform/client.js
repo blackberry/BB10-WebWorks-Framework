@@ -62,5 +62,12 @@ describe("bbm.platform", function () {
         });
 
     });
+
+    describe("bbm.platform.users", function () {
+        it("inviteToDownload calls execAsync", function () {
+            client.users.inviteToDownload();
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "users/inviteToDownload");
+        });
+    });
 });
 

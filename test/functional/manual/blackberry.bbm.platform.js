@@ -92,3 +92,23 @@ describe("blackberry.bbm.platform.self", function () {
         });
     });
 });
+
+describe("blackberry.bbm.platform.users", function () {
+    it("inviteToDownload", function () {
+        var confirmation;
+        
+        runs(function () {
+            blackberry.bbm.platform.users.inviteToDownload();
+        });
+
+        waitsFor(function () {
+            confirmation = window.confirm("Did it invoke?");
+            return confirmation;
+        });
+
+        runs(function () {
+            expect(confirmation).toEqual(true);
+        });
+    });
+});
+

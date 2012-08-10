@@ -34,6 +34,7 @@ describe("bbm.platform index", function () {
             createObject: jasmine.createSpy().andReturn("1"),
             invoke: jasmine.createSpy().andReturn(2),
             registerEvents: jasmine.createSpy().andReturn(true),
+            getgid: jasmine.createSpy().andReturn(jasmine.any(String)) 
         };
         index = require(_apiDir + "index");
     });
@@ -217,6 +218,39 @@ describe("bbm.platform index", function () {
             });
         });
 
+    });
+
+    describe("bbm.platform.users", function () {
+        beforeEach(function () {
+            GLOBAL.window = {};
+            GLOBAL.qnx = {
+                webplatform: {
+                    getApplication: function () {
+                        return {
+                            cards: {
+                                bbm: {
+                                    inviteToDownload: {
+                                        open: function (details, done, cancel, callback) {
+                                            callback();
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                    }
+                }
+            };    
+        });
+        
+        it("calls users inviteToDownload", function () {
+            var success = jasmine.createSpy("success"),
+                fail = jasmine.createSpy("fail");
+            
+            index.users.inviteToDownload(success, fail, null);
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+            expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getgid");
+        });
     });
 
     describe("bbm.platform events", function () {

@@ -369,4 +369,9 @@ void BBMBPS::SetDisplayPicture(const std::string& imgPath)
     MUTEX_UNLOCK();
 }
 
+int BBMBPS::GetGid()
+{
+    return static_cast<int>(getgid());
+}
+
 } // namespace webworks
