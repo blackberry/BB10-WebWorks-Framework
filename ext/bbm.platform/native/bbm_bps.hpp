@@ -51,6 +51,8 @@ public:
     void SetStatus(int status, const std::string& personalMessage);
     void SetPersonalMessage(const std::string& personalMessage);
     void SetDisplayPicture(const std::string& imgPath);
+    int GetGid();
+
 private:
     BBM *m_pParent;
     void processAccessCode(int code);

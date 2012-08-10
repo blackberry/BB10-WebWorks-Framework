@@ -45,7 +45,7 @@ module.exports = {
             fail(-1, e);
         }
     },
-    
+
     register: function (success, fail, args, env) {
         if (args) {
             args.options = JSON.parse(decodeURIComponent(args.options));
@@ -54,7 +54,7 @@ module.exports = {
                 fail(-1, "options are not valid");
                 return;
             }
-        
+
             bbm.register(args.options);
             success();
         }
@@ -106,7 +106,7 @@ module.exports = {
             if (args) {
                 args.status = JSON.parse(decodeURIComponent(args.status));
                 args.statusMessage = JSON.parse(decodeURIComponent(args.statusMessage));
-            
+
                 if (args.status !== "available" && args.status !== "busy") {
                     fail(-1, "status is not valid");
                     return;
@@ -144,6 +144,26 @@ module.exports = {
             bbm.setDisplayPicture(args.displayPicture);
             success();
         }
+    },
+
+    users : {
+        inviteToDownload : function (success, fail, args) {
+            var gid,
+                done,
+                cancel,
+                details =  {},
+                callback = function (e) {
+                    if (e) {
+                        fail(-1, "invocation failure: " + e);
+                    }
+                    else {
+                        success();
+                    }
+                };
+
+            gid = bbm.getgid();
+            details.gid = gid;
+            qnx.webplatform.getApplication().cards.bbm.inviteToDownload.open(details, done, cancel, callback);
+        }
     }
 };
-
