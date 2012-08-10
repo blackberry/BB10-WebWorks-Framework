@@ -31,7 +31,7 @@ function _lintJS() {
 function _lintCSS() {
     var rules = JSON.parse(fs.readFileSync(__dirname + "/../.csslintrc", "utf-8")),
         options = ["--rules=" + rules, "--format=compact", "--quiet"],
-        files = ["ui-resources"];
+        files = [""];
     return utils.execCommandWithJWorkflow('node dependencies/csslint/release/npm/cli.js ' + files.concat(options).join(' '));
 }
 

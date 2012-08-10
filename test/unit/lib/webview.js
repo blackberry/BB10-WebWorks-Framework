@@ -41,7 +41,6 @@ describe("webview", function () {
             continueSSLHandshaking: jasmine.createSpy()
         };
         mockedApplication = {
-            windowVisible: undefined
         };
         GLOBAL.qnx = {
             callExtensionMethod: jasmine.createSpy(),
@@ -84,9 +83,6 @@ describe("webview", function () {
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(0);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-                expect(mockedWebview.enableWebEventRedirect.argsForCall[0]).toEqual(['ContextMenuRequestEvent', 3]);
-                expect(mockedWebview.enableWebEventRedirect.argsForCall[1]).toEqual(['ContextMenuCancelEvent', 3]);
-                expect(mockedWebview.enableWebEventRedirect.argsForCall[2]).toEqual(['PropertyCurrentContextEvent', 3]);
                 expect(request.init).toHaveBeenCalledWith(mockedWebview);
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
 
@@ -126,8 +122,7 @@ describe("webview", function () {
     describe("id", function () {
         it("can get the id for the webiew", function () {
             webview.create();
-            webview.id();
-            expect(mockedWebview.id).toEqual(42);
+            expect(webview.id).toEqual(mockedWebview.id);
         });
     });
 

@@ -16,7 +16,7 @@
 var contacts,
     ContactFindOptions,
     ContactPhoto;
- 
+
 describe("blackberry.pim.contacts", function () {
     beforeEach(function () {
         contacts = blackberry.pim.contacts;
@@ -27,7 +27,7 @@ describe("blackberry.pim.contacts", function () {
     describe("Find populates Contact properties", function () {
         it("should populate activities", function () {
             window.confirm("Please supply the name of a contact which has entries under their activities tab from the Contacts App. Activities entries can be call logs or emails between yourself and the contact.");
-            
+
             var given = prompt("Enter contact's given name:", "John"),
                 family = prompt("Enter contact's family name:", "Doe"),
                 called = false,

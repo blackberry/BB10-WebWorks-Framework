@@ -14,4 +14,47 @@
  * limitations under the License.
  */
 
-module.exports = require("./../../lib/ui/contextmenu/index");
+var LIB_FOLDER = "../../lib/",
+    contextmenu,
+    _overlayWebView,
+    _event = require(LIB_FOLDER + 'event'),
+    _utils = require(LIB_FOLDER + 'utils');
+
+function enabled(success, fail, args, env) {
+    var _enabled = JSON.parse(decodeURIComponent(args.enabled));
+    if (typeof(_enabled) === 'boolean') {
+        args.enabled = _enabled;
+        _overlayWebView.contextMenu.enabled(success, fail, args, env);
+    } else {
+        if (fail) {
+            fail();
+        }
+    }
+}
+
+function addItem(success, fail, args, env) {
+    args.contexts = JSON.parse(decodeURIComponent(args.contexts));
+    args.action = JSON.parse(decodeURIComponent(args.action));
+    args.handler = function (actionId) {
+        _event.trigger("contextmenu.executeMenuAction", actionId);
+    };
+    _overlayWebView.contextMenu.addItem(success, fail, args, env);
+}
+
+function removeItem(success, fail, args, env) {
+    args.contexts = JSON.parse(decodeURIComponent(args.contexts));
+    args.actionId = JSON.parse(decodeURIComponent(args.actionId));
+    _overlayWebView.contextMenu.removeItem(success, fail, args, env);
+}
+
+contextmenu = {
+    enabled: enabled,
+    addItem: addItem,
+    removeItem: removeItem
+};
+
+qnx.webplatform.getController().addEventListener('ui.init', function () {
+    _overlayWebView = require(LIB_FOLDER + 'overlayWebView');
+});
+
+module.exports = contextmenu;

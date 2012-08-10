@@ -88,6 +88,8 @@ describe("framework", function () {
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");
         spyOn(overlayWebView, "setURL");
+        spyOn(overlayWebView, "renderContextMenuFor");
+        spyOn(overlayWebView, "handleDialogFor");
         spyOn(console, "log");
     });
 
