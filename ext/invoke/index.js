@@ -42,89 +42,50 @@ module.exports = {
     invoke: function (success, fail, args) {
         // if request contains invalid args, the invocation framework will provide error in callback
         // no validation done here
-        var argReq = JSON.parse(decodeURIComponent(args["request"])),
-            expectedParams = [
-                "target",
-                "action",
-                "uri",
-                "type",
-                "data"
-            ],
-            request = {},
-            callback;
-
-        callback = function (error) {
-            _event.trigger("invoke.invokeEventId", error);
-        };
-
-        expectedParams.forEach(function (key) {
-            var val = argReq[key];
-
-            if (val) {
-                request[key] = val;
-            }
-        });
+        var request = JSON.parse(decodeURIComponent(args["request"])),
+            callback = function (error) {
+                _event.trigger("invoke.invokeEventId", error);
+            };
 
         window.qnx.webplatform.getApplication().invocation.invoke(request, callback);
         success();
     },
 
     query: function (success, fail, args) {
-        var argReq = JSON.parse(decodeURIComponent(args["request"])),
-            expectedParams = [
-                "action",
-                "uri",
-                "type",
-                "action_type",
-                "receiver_capabilities",
-                "perimeter",
-                "brokering_mod"
-            ],
-            expectedTypes = ["APPLICATION", "VIEWER", "CARD"],
-            request = {},
+        var request = JSON.parse(decodeURIComponent(args["request"])),
             callback = function (error, response) {
                 _event.trigger("invoke.queryEventId", {"error": error, "response": response});
-            };
+            },
+            invocation = window.qnx.webplatform.getApplication().invocation;
 
-        expectedParams.forEach(function (key) {
-            var val = argReq[key];
+        if (request["target_type"] && Array.isArray(request["target_type"])) {
 
-            if (val) {
-                request[key] = val;
-            }
-        });
-
-        // Validate target_type property in request if it exists
-        if (Array.isArray(argReq["target_type"])) {
-
-            request["target_type"] = argReq["target_type"].reduce(function (prev, current) {
-                var containsType = function (type) {
-                        return current === type;
-                    };
-
-                if (prev !== "ALL" && typeof current === "string" &&
-                        !prev.some(containsType) && expectedTypes.some(containsType)) {
-
-                    prev.push(current);
+            request["target_type"] = request["target_type"].filter(function (element) {
+                var result = false;
+                switch (element)
+                {
+                case "APPLICATION":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_APPLICATION;
+                    break;
+                case "CARD":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_CARD;
+                    break;
+                case "VIEWER":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_VIEWER;
+                    break;
+                default:
+                    result = true;
+                    break;
                 }
+                return result;
+            });
 
-                return prev;
-            }, []);
-
-            switch (request["target_type"].length)
-            {
-            case expectedTypes.length:
-                request["target_type"] = "ALL";
-                break;
-            case 1:
-                request["target_type"] = request["target_type"].pop();
-                break;
-            case 0:
+            if (request["target_type"].length === 0) {
                 delete request["target_type"];
             }
         }
 
-        window.qnx.webplatform.getApplication().invocation.queryTargets(request, callback);
+        invocation.queryTargets(request, callback);
         success();
     },
 

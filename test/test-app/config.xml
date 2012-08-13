@@ -72,6 +72,16 @@
         </filter>
     </rim:invoke-target>
 
+    <rim:invoke-target id="com.webworks.test.functional.query.target">
+        <type>APPLICATION</type>
+        <filter>
+            <action>bb.action.WWTEST</action>
+            <mime-type>text/plain</mime-type>
+            <property var="uris" value="file://" />
+        </filter>
+    </rim:invoke-target>
+
+
     <rim:permissions>
         <rim:permit>access_shared</rim:permit>
         <rim:permit>read_geolocation</rim:permit>
