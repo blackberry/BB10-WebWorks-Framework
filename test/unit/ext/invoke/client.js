@@ -155,7 +155,7 @@ describe("invoke client", function () {
             var request = {
                     "action": "bb.action.OPEN",
                     "type": "image/*",
-                    "target_type": "ALL"
+                    "target_type": ["APPLICATION"]
                 },
                 onSuccess = jasmine.createSpy("client onSuccess"),
                 onError = jasmine.createSpy("client onError");

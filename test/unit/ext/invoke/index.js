@@ -29,6 +29,9 @@ describe("invoke index", function () {
         mockedInvocation = {
             invoke: jasmine.createSpy("invocation.invoke"),
             queryTargets: jasmine.createSpy("invocation.queryTargets"),
+            TARGET_TYPE_MASK_APPLICATION: 1,
+            TARGET_TYPE_MASK_CARD: 2,
+            TARGET_TYPE_MASK_VIEWER: 4
         };
         GLOBAL.window = {};
         GLOBAL.window.qnx = {
@@ -85,27 +88,9 @@ describe("invoke index", function () {
     });
 
     describe("query", function () {
-
-        it("will whitelist properties of the request object", function () {
-            var success = jasmine.createSpy(),
-                fail = jasmine.createSpy(),
-                request = {
-                    "myProperty": "myValue",
-                    "action": "bb.action.OPEN",
-                    "type": "image/*",
-                    "target_type": ["APPLICATION", "VIEWER", "CARD"]
-                },
-                whitelistRequest = JSON.parse(JSON.stringify(request)),
-                args = {
-                    "request": encodeURIComponent(JSON.stringify(request))
-                };
-
-            delete whitelistRequest.myProperty;
-            whitelistRequest["target_type"] = "ALL";
-
-            index.query(success, fail, args);
-            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(whitelistRequest, jasmine.any(Function));
-        });
+        var APPLICATION = 1,
+            CARD = 2,
+            VIEWER = 4;
 
         it("can query the invocation framework", function () {
             var success = jasmine.createSpy(),
@@ -120,7 +105,8 @@ describe("invoke index", function () {
                 };
 
             index.query(success, fail, args);
-            request["target_type"] = "ALL";
+            delete request["target_type"];
+            request["target_type_mask"] = APPLICATION | VIEWER | CARD;
             expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
@@ -139,7 +125,8 @@ describe("invoke index", function () {
                 };
 
             index.query(success, fail, args);
-            request["target_type"] = "APPLICATION";
+            delete request["target_type"];
+            request["target_type_mask"] = APPLICATION;
             expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
@@ -158,7 +145,8 @@ describe("invoke index", function () {
                 };
 
             index.query(success, fail, args);
-            request["target_type"] = "VIEWER";
+            delete request["target_type"];
+            request["target_type_mask"] = VIEWER;
             expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
@@ -177,12 +165,12 @@ describe("invoke index", function () {
                 };
 
             index.query(success, fail, args);
-            request["target_type"] = "CARD";
+            delete request["target_type"];
+            request["target_type_mask"] = CARD;
             expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
         });
-
 
         it("can perform a query for all targets", function () {
             var success = jasmine.createSpy(),
@@ -197,7 +185,8 @@ describe("invoke index", function () {
                 };
 
             index.query(success, fail, args);
-            request["target_type"] = "ALL";
+            delete request["target_type"];
+            request["target_type_mask"] = APPLICATION | VIEWER | CARD;
             expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
@@ -216,7 +205,26 @@ describe("invoke index", function () {
                 };
 
             index.query(success, fail, args);
-            delete request["target_type"];
+            expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+        });
+
+        it("will only use valid entries in the target type array to generate the target type mask", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                request = {
+                    "action": "bb.action.OPEN",
+                    "type": "image/*",
+                    "target_type": ["APPLICATION", "VIEWER", "CARD", "INVALID_ENTRY"]
+                },
+                args = {
+                    "request": encodeURIComponent(JSON.stringify(request))
+                };
+
+            index.query(success, fail, args);
+            request["target_type"] = ["INVALID_ENTRY"];
+            request["target_type_mask"] = APPLICATION | VIEWER | CARD;
             expect(mockedInvocation.queryTargets).toHaveBeenCalledWith(request, jasmine.any(Function));
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
