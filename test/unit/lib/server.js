@@ -78,7 +78,7 @@ describe("server", function () {
 
             server.handle(req, res);
 
-            expect(plugin[DEFAULT_ACTION]).toHaveBeenCalledWith(rebuiltRequest, jasmine.any(Function), jasmine.any(Function), jasmine.any(Object), jasmine.any(Object));
+            expect(plugin[DEFAULT_ACTION]).toHaveBeenCalledWith(rebuiltRequest, jasmine.any(Function), jasmine.any(Function), null, jasmine.any(Object));
         });
 
         it("returns 404 if the action doesn't exist", function () {
