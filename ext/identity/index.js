@@ -13,25 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _ppsUtils = require("../../lib/pps/ppsUtils");
+var _ppsUtils = require("../../lib/pps/ppsUtils"),
+    ERROR_ID = -1,
+    ERRON_MSG_PPS = "Cannot open PPS object";
+
+function getPPSField(path, field) {
+    var ppsObj = _ppsUtils.createObject(),
+        ppsContent;
+
+    ppsObj.init();
+
+    if (ppsObj.open(path, "0")) {
+        ppsContent = ppsObj.read();
+    }
+
+    ppsObj.close();
+
+    if (ppsContent) {
+        return (ppsContent[field]);
+    } else {
+        return ppsContent;
+    }
+}
 
 module.exports = {
     uuid: function (success, fail, args, env) {
-        var PPSUtils = _ppsUtils.createObject(),
-            deviceprops;
+        var result = getPPSField("/pps/services/private/deviceproperties", "devicepin");
 
-        PPSUtils.init();
-
-        if (PPSUtils.open("/pps/services/private/deviceproperties", "0")) {
-            deviceprops = PPSUtils.read();
-        }
-
-        PPSUtils.close();
-
-        if (deviceprops) {
-            success(deviceprops.devicepin);
+        if (result) {
+            success(result);
         } else {
-            fail(-1, "Cannot open PPS object");
+            fail(ERROR_ID, ERRON_MSG_PPS);
+        }
+    },
+    IMSI: function (success, fail, args, env) {
+        var result = getPPSField("/pps/services/cellular/uicc/card0/status_restricted", "imsi");
+
+        if (result) {
+            success(result);
+        } else {
+            fail(ERROR_ID, ERRON_MSG_PPS);
+        }
+    },
+    IMEI: function (success, fail, args, env) {
+        var result = getPPSField("/pps/services/private/deviceproperties", "IMEI");
+
+        if (result) {
+            success(result);
+        } else {
+            fail(ERROR_ID, ERRON_MSG_PPS);
         }
     }
 };
