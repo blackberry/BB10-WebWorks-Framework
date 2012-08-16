@@ -1,17 +1,16 @@
 {
-  "name": "bbx-framework",
+  "name": "BB10-WebWorks-Framework",
   "version": "0.0.1",
-  "description": "The BBX Framework",
-  "repository": "git://github.com/blackberry-webworks/BBX-Framework.git",
+  "description": "The BB10 WebWorks Framework",
+  "repository": "git://github.com:blackberry/BB10-WebWorks-Framework.git",
   "author": {
     "name": "Research In Motion",
-    "url": "http://github.com/blackberry-webworks/BBX-Framework"
+    "url": "http://github.com/blackberry/BB10-WebWorks-Framework"
   },
   "licenses": [{
     "type": "Apache 2.0",
     "url": "http://www.apache.org/licenses/LICENSE-2.0"
   }],
-  "bin": { "bbx-framework": "./bin/bbx-framework" },
   "dependencies": {
     "connect": "1.7.x",
     "express": "2.5.0",
@@ -27,7 +26,6 @@
     "node_modules",
     "README.md",
     "LICENSE",
-    "lib",
-    "bin/bbx-framework"
+    "lib"
   ]
 }
