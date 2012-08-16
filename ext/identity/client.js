@@ -29,5 +29,7 @@ function getFieldValue(field) {
 }
 
 window.webworks.defineReadOnlyField(_self, "uuid", getFieldValue("uuid"));
+window.webworks.defineReadOnlyField(_self, "IMSI", getFieldValue("IMSI"));
+window.webworks.defineReadOnlyField(_self, "IMEI", getFieldValue("IMEI"));
 
 module.exports = _self;

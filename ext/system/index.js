@@ -307,6 +307,10 @@ module.exports = {
         getDeviceProperty("scmbundle", success, fail);
     },
 
+    name: function (success, fail, args, env) {
+        getDeviceProperty("devicename", success, fail);
+    },
+
     language: function (success, fail, args, env) {
         readDeviceLanguage(success, fail);
     },
