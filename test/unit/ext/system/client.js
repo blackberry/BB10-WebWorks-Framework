@@ -56,6 +56,17 @@ describe("system client", function () {
         expect(result).toBeTruthy();
     });
 
+    it("getFontInfo", function () {
+        var result;
+
+        spyOn(mockedWebworks, "execSync").andReturn(true);
+
+        result = sysClient.getFontInfo();
+
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "getFontInfo");
+        expect(result).toBeTruthy();
+    });
+
     it("ALLOW", function () {
         expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "ALLOW", 0);
     });

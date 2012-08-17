@@ -190,9 +190,17 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
             trigger: function (args) {
                 _event.trigger("regionchanged", args.region);
             }
+        },
+        fontchanged: {
+            context: require("./systemEvents"),
+            event: "fontchanged",
+            trigger: function (fontFamily, fontSize) {
+                _event.trigger("fontchanged", {'fontFamily': fontFamily, 'fontSize': fontSize});
+            }
         }
     },
-    _deviceprops;
+    _deviceprops,
+    ERROR_ID = -1;
 
 /*
  * Read the PPS object once and cache it for future calls
@@ -299,6 +307,20 @@ module.exports = {
         success(SUPPORTED_CAPABILITIES.indexOf(capability) >= 0);
     },
 
+    getFontInfo: function (success, fail, args, env) {
+        var fontFamily,
+            fontSize;
+
+        try {
+            fontFamily = window.qnx.webplatform.getApplication().getSystemFontFamily();
+            fontSize = window.qnx.webplatform.getApplication().getSystemFontSize();
+
+            success({'fontFamily': fontFamily, 'fontSize': fontSize});
+        } catch (e) {
+            fail(ERROR_ID, e);
+        }
+    },
+    
     hardwareId: function (success, fail, args, env) {
         getDeviceProperty("hardwareid", success, fail);
     },
