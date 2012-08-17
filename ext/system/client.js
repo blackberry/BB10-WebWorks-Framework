@@ -45,6 +45,10 @@ _self.hasCapability = function (capability) {
     return window.webworks.execSync(ID, "hasCapability", {"capability": capability});
 };
 
+_self.getFontInfo = function () {
+    return window.webworks.execSync(ID, "getFontInfo");
+};
+
 defineGetter("language");
 defineGetter("region");
 

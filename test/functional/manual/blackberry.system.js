@@ -407,4 +407,41 @@ describe("blackberry.system", function () {
             });
         });
     });
+    
+    describe("fontchanged event", function () {
+        it("should call fontchanged callback when it registered to listend for the event", function () {
+            var fontChangedCB = jasmine.createSpy("fontchanged");
+
+            blackberry.event.addEventListener('fontchanged', fontChangedCB);
+
+            window.confirm("Change the font event settings and press 'OK'");
+
+            waitsFor(function () {
+                return fontChangedCB.callCount;
+            }, "fontchanged even never fired", waitForTimeout);
+
+            runs(function () {
+                expect(fontChangedCB).toHaveBeenCalled();
+                blackberry.event.removeEventListener('fontchanged', fontChangedCB);
+            });
+        });
+        
+        it("should not call fontchanged callback when it was un-registered", function () {
+            var fontChangedCB = jasmine.createSpy("fontchanged");
+
+            blackberry.event.addEventListener('fontchanged', fontChangedCB);
+            blackberry.event.removeEventListener('fontchanged', fontChangedCB);
+
+            window.confirm("Change the font event settings and press 'OK'");
+
+            waitsFor(function () {
+                return fontChangedCB.callCount === 0;
+            }, "fontchanged even never fired", waitForTimeout);
+
+
+            runs(function () {
+                expect(fontChangedCB).not.toHaveBeenCalled();
+            });
+        });
+    });
 });
