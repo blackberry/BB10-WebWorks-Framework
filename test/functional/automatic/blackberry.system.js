@@ -84,6 +84,16 @@ describe("blackberry.system", function () {
             testSystemReadOnly("softwareVersion");
         });
 
+        describe("name", function () {
+            it("should exist", function () {
+                testSystemValue("name");
+            });
+
+            it("should be read only", function () {
+                testSystemReadOnly("name");
+            });
+        });
+
         it('blackberry.system.region should exist', function () {
             testSystemValue("region");
         });

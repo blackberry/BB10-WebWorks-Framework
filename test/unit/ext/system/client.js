@@ -67,7 +67,8 @@ describe("system client", function () {
     describe("device properties and registerEvents", function () {
         var fields = [
                 "hardwareId",
-                "softwareVersion"
+                "softwareVersion",
+                "name"
             ],
             execSyncArgs = [];
 
@@ -107,9 +108,14 @@ describe("system client", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("softwareVersion")]);
         });
 
+        it("name", function () {
+            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("name")]);
+        });
+
         it("readonly fields set", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", null);
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", null);
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "name", null);
         });
     });
 
