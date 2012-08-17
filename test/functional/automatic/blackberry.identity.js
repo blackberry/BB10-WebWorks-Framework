@@ -33,4 +33,26 @@ describe("blackberry.identity", function () {
     it('blackberry.identity.uuid should be read-only', function () {
         testIdentityReadOnly("uuid");
     });
+
+    describe("IMEI", function () {
+        it("should exist", function () {
+            testIdentityValue("IMEI");
+        });
+
+        it("should be read-only", function () {
+            testIdentityReadOnly("IMEI");
+        });
+    });
+
+    /* These tests have been disabled because the deviec and the application
+     * need to be configured in order for this spec to work.*/
+    xdescribe("IMSI", function () {
+        it("should exist", function () {
+            testIdentityValue("IMSI");
+        });
+
+        it("should be read-only", function () {
+            testIdentityReadOnly("IMSI");
+        });
+    });
 });

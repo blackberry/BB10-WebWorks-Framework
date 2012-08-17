@@ -19,7 +19,9 @@ var _extDir = __dirname + "./../../../../ext",
     client,
     mockedWebworks = {},
     fields = [
-        "uuid"
+        "uuid",
+        "IMEI",
+        "IMSI"
     ],
     execSyncArgs = [];
 
@@ -45,7 +47,22 @@ function unloadClient() {
 describe("identity client", function () {
     describe("when user has specified correct permission", function () {
         beforeEach(function () {
-            mockedWebworks.execSync = jasmine.createSpy().andReturn("0x12345678");
+            mockedWebworks.execSync = jasmine.createSpy().andCallFake(function (service, action, args) {
+                var result = "Unsupported action";
+
+                switch (action)
+                {
+                case "uuid":
+                    result =  "0x12345678";
+                    break;
+                case "IMSI":
+                    result = "310150123456789";
+                    break;
+                case "IMEI":
+                    result = "AA-BBBBBB-CCCCCC-D";
+                }
+                return result;
+            });
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
             GLOBAL.window.webworks = mockedWebworks;
             // client needs to be required for each test
@@ -62,12 +79,22 @@ describe("identity client", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("uuid")]);
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "uuid", "0x12345678");
         });
+
+        it("IMSI should call execSync", function () {
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "IMSI", "310150123456789");
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "IMSI", null);
+        });
+
+        it("IMSI should call execSync", function () {
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "IMEI", "AA-BBBBBB-CCCCCC-D");
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "IMEI", null);
+        });
     });
 
     describe("when user hasn't specified correct permission", function () {
         beforeEach(function () {
             spyOn(console, "error");
-            mockedWebworks.execSync = jasmine.createSpy().andThrow("Cannot read PPS object"); 
+            mockedWebworks.execSync = jasmine.createSpy().andThrow("Cannot read PPS object");
             GLOBAL.window.webworks = mockedWebworks;
             client = require(_apiDir + "/client");
         });
