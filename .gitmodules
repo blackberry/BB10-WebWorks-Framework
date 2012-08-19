@@ -4,3 +4,6 @@
 [submodule "dependencies/jasmine"]
 	path = dependencies/jasmine
 	url = https://github.com/pivotal/jasmine.git
+[submodule "dependencies/csslint"]
+	path = dependencies/csslint
+	url = https://github.com/blackberry-webworks/csslint.git

@@ -14,16 +14,13 @@
 * limitations under the License.
 */
 var wrench = require("../../node_modules/wrench"),
-    fs = require("fs"),
     path = require("path"),
     _c = require("./conf");
 
 module.exports = function (prev, baton) {
-    //cleanup simulator and device folders for all native extensions
-    fs.readdirSync(_c.EXT).forEach(function (ext) {
-        if (path.existsSync(path.join(_c.EXT, ext, "native"))) {
-            wrench.rmdirSyncRecursive(path.join(_c.EXT, ext, 'simulator'), true);
-            wrench.rmdirSyncRecursive(path.join(_c.EXT, ext, 'device'), true);
-        } 
+    [_c.SIM_BUILD, _c.DEVICE_BUILD, _c.UNIT_TEST_SIM_BUILD, _c.UNIT_TEST_DEVICE_BUILD].forEach(function (element, index, array) {
+        if (path.existsSync(element)) {
+            wrench.rmdirSyncRecursive(element, true);
+        }
     });
 };

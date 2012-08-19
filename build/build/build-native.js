@@ -13,45 +13,29 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var childProcess = require("child_process"),
-    utils = require("./utils"),
+var utils = require("./utils"),
     fs = require("fs"),
     path = require("path"),
     jWorkflow = require("jWorkflow"),
     _c = require("./conf");
 
-function _getCmd(ext) {
-    var cmd = "",
-        nativeDir,
-        simDir,
-        deviceDir,
-        configurePrefix,
-        configureX86,
-        configureARM,
+module.exports = function (isForUnitTest) {
+    var MAKE_CMD = "make " + "-j " + _c.COMPILER_THREADS,
+        simDir = (isForUnitTest ? _c.UNIT_TEST_SIM_BUILD : _c.SIM_BUILD),
+        deviceDir = (isForUnitTest ? _c.UNIT_TEST_DEVICE_BUILD : _c.DEVICE_BUILD),
+        buildEnv = process.env;
 
-        //strip binary commands
-        stripX86 = "ntox86-strip *.so",
-        stripARM = "ntoarmv7-strip *.so",
+    return function (prev, baton) {
+        var SH_CMD = "bash ",
+            build = jWorkflow.order(),
+            thisBaton = baton,
+            configurePrefix,
+            configureX86,
+            configureARM;
 
-        //Command constants
-        AND_CMD = " && ",
-        CD_CMD = "cd ",
-        MAKE_CMD = "make -j" + _c.COMPILER_THREADS,
-        CP_CMD = "cp ",
-        SH_CMD = "bash ";
+        thisBaton.take();
 
-    //Native build directories
-    nativeDir = path.join(_c.EXT, ext, "native");
-    simDir = path.join(_c.EXT, ext, "simulator");
-    deviceDir = path.join(_c.EXT, ext, "device");
-
-    //configure-qsk commands
-    configurePrefix = utils.isWindows() ? SH_CMD : "";
-    configureX86 = configurePrefix + path.join(simDir, "configure-qsk x86");
-    configureARM = configurePrefix + path.join(deviceDir, "configure-qsk arm a9");
-
-    //If native folder exists, Build
-    if (path.existsSync(nativeDir)) {
+        //Create build directories if necessary
         if (!path.existsSync(simDir)) {
             fs.mkdirSync(simDir);
         }
@@ -60,63 +44,29 @@ function _getCmd(ext) {
             fs.mkdirSync(deviceDir);
         }
 
-        cmd += CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK + " " +
-            simDir + AND_CMD + CP_CMD + _c.DEPENDENCIES_CONFIGURE_QSK +
-            " " + deviceDir + AND_CMD +
-            CD_CMD + simDir + AND_CMD +
-            configureX86 + AND_CMD +
-            MAKE_CMD + AND_CMD + stripX86 + AND_CMD +
-            CD_CMD + deviceDir + AND_CMD +
-            configureARM + AND_CMD +
-            MAKE_CMD + AND_CMD + stripARM;
+        //configure-qsk commands
+        configurePrefix = utils.isWindows() ? SH_CMD : "";
+        configureX86 = configurePrefix + _c.DEPENDENCIES_CONFIGURE_QSK + " x86";
+        configureARM = configurePrefix + _c.DEPENDENCIES_CONFIGURE_QSK + " arm a9";
 
-    }
+        if (isForUnitTest) {
+            buildEnv.UNIT_TESTS = "1";
+        }
 
-    return cmd;
-}
+        build = build.andThen(utils.execCommandWithJWorkflow(configureX86, {cwd: simDir, env: buildEnv}))
+        .andThen(utils.execCommandWithJWorkflow(MAKE_CMD, {cwd: simDir}))
+        .andThen(utils.execCommandWithJWorkflow(configureARM, {cwd: deviceDir, env: buildEnv}))
+        .andThen(utils.execCommandWithJWorkflow(MAKE_CMD, {cwd: deviceDir}))
+        .andThen(function () {
+            //catch the success case
+            thisBaton.pass(prev);
+        });
 
-function createCmd(ext) {
-    return function (prev, baton) {
-        baton.take();
-        var c = childProcess.exec(_getCmd(ext), function (error, stdout, stderr) {
+        //catch the error case
+        build.start(function (error) {
             if (error) {
-                baton.drop(error.code);
-            } else {
-                baton.pass(prev);
+                thisBaton.drop(error);
             }
         });
-
-        c.stdout.on('data', function (data) {
-            utils.displayOutput(data);
-        });
-
-        c.stderr.on('data', function (data) {
-            utils.displayOutput(data);
-        });
     };
-}
-
-module.exports = function (prev, baton) {
-    var build = jWorkflow.order(),
-        i,
-        thisBaton = baton,
-        exts = fs.readdirSync(_c.EXT);
-
-    thisBaton.take();
-
-    for (i = 0; i < exts.length; i++) {
-        build = build.andThen(createCmd(exts[i]));
-    }
-
-    //catch the success case
-    build = build.andThen(function () {
-        thisBaton.pass(prev);
-    });
-
-    //catch the error case
-    build.start(function (error) {
-        if (error) {
-            thisBaton.drop(error);
-        }
-    });
 };

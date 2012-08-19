@@ -16,7 +16,8 @@
 var os = require("os"),
     fs = require('fs'),
     wrench = require("../../node_modules/wrench"),
-    path = require('path');
+    path = require('path'),
+    childProcess = require("child_process");
 
 module.exports = {
     isWindows : function () {
@@ -84,9 +85,32 @@ module.exports = {
     },
 
     displayOutput: function (data) {
-        data = this.trim(data);
+        data = data.replace(/^\s+|\s+$/g, "");
         if (data !== "") {
             console.log(data);
         }
+    },
+
+    execCommandWithJWorkflow: function (command, options) {
+        var displayOutput = this.displayOutput;
+        return function (prev, baton) {
+            baton.take();
+            console.log("EXECUTING " + command);
+            var c = childProcess.exec(command, options, function (error, stdout, stderr) {
+                if (error) {
+                    baton.drop(error.code);
+                } else {
+                    baton.pass(prev);
+                }
+            });
+
+            c.stdout.on('data', function (data) {
+                displayOutput(data);
+            });
+
+            c.stderr.on('data', function (data) {
+                displayOutput(data);
+            });
+        };
     }
 };

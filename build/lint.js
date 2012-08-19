@@ -13,58 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var childProcess = require('child_process'),
-    util = require('util'),
-    os = require('os'),
+var utils = require('./build/utils'),
     jWorkflow = require("jWorkflow"),
     fs = require('fs');
 
-function _exec(cmdExpr, prev, baton) {
-    baton.take();
-    var proc = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
-        util.print(stdout);
-        util.print(stderr);
-    });
-
-    proc.on("exit", function (code) {
-        if (code) {
-            util.puts("Lint FAILED");
-            process.exit(code);
-        }
-        baton.pass(prev);
-    });
-}
 function _done() {
-    util.puts("Lint SUCCESS");
+    utils.displayOutput("Lint SUCCESS");
     process.exit();
 }
 
-function _lintJS(prev, baton) {
+function _lintJS() {
     var options = ["--reporter", "build/lint/reporter.js", "--show-non-errors"],
-        files = ["."];        
-    _exec('jshint ' + files.concat(options).join(' '), prev, baton);
+        files = ["."];
+    return utils.execCommandWithJWorkflow('jshint ' + files.concat(options).join(' '));
 }
 
-function _lintCSS(prev, baton) {
+function _lintCSS() {
     var rules = JSON.parse(fs.readFileSync(__dirname + "/../.csslintrc", "utf-8")),
-        options = ["--rules=" + rules, "--format=compact"],
-        files = ["lib"];
-    _exec('csslint ' + files.concat(options).join(' '), prev, baton);
+        options = ["--rules=" + rules, "--format=compact", "--quiet"],
+        files = ["ui-resources"];
+    return utils.execCommandWithJWorkflow('node dependencies/csslint/release/npm/cli.js ' + files.concat(options).join(' '));
 }
 
-function _lintCPP(prev, baton) {
+function _lintCPP() {
+    var returnValue = function (prev, baton) {},
+        options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels,-whitespace/braces,-readability/streams"],
+        files = ["ext"];
     //Only cpplint on unix. Windows currently has an issue with cpplinting
-    if (os.type().toLowerCase().indexOf("windows") === -1) {
-        var options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels,-whitespace/braces,-readability/streams"],
-            files = ["ext"];
-        _exec('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '), prev, baton);
+    if (!utils.isWindows()) {
+        returnValue = utils.execCommandWithJWorkflow('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '));
     }
+
+    return returnValue;
 }
 
 module.exports = function (files) {
-    var lint = jWorkflow.order(_lintJS)
-                    .andThen(_lintCSS)
-                    .andThen(_lintCPP);
+    var lint = jWorkflow.order(_lintJS())
+                    .andThen(_lintCSS())
+                    .andThen(_lintCPP());
 
     lint.start(function () {
         _done();

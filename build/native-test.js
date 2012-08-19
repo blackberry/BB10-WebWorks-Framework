@@ -29,25 +29,15 @@ function _done(error) {
     }
 }
 
-function _handle(func) {
-    return function () {
-        try {
-            func.apply(func, Array.prototype.slice.call(arguments));
-        } catch (e) {
-            _done(e.message + "\n" + e.stack);
-        }
-    };
-}
-
-module.exports = _handle(function () {
-    var build = jWorkflow.order(buildNative)
+module.exports = function (args) {
+    var build = jWorkflow.order(buildNative(true))
                          .andThen(test);
 
     build.start({
-        initialValue: Array.prototype.slice.call(arguments),
+        initialValue: args,
         callback: function (error) {
             _done(error);
         },
         context: build
     });
-});
+};
