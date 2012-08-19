@@ -1,6 +1,6 @@
 node_modules/
-ext/*/simulator/
-ext/*/device/
+build-*simulator/
+build-*device/
 .project
 .settings
 *.DS_Store

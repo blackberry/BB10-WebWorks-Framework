@@ -15,13 +15,14 @@ body {
     height: 100%;
     width: 563px;
     border-image: url('../assets/core_crosscutmenu_bg.png') 1 1 1 15 fill / 0 0 0 0 repeat;
-    -webkit-box-shadow: -10px 0px 25px #121212;
+    -webkit-box-shadow: -10px 0 25px #121212;
+    box-shadow: -10px 0 25px #121212;
     -webkit-transition-duration: 0.25s;
     -webkit-animation-timing-function: ease-out;
     position: absolute;
     right: -583px;
-    top: 0px;
-    bottom: 0px;
+    top: 0;
+    bottom: 0;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-box-pack: center;
@@ -78,6 +79,7 @@ body {
 
 .peekContextMenu {
     -webkit-transform: translate(-121px, 0);
+    transform: translate(-121px, 0);
 }
 
 .showContextMenuHandle {
@@ -96,20 +98,24 @@ body {
 /* Show and hid the menu items themselves */
 .showItem {
     -webkit-transform:translate(-462px,0);
+    transform:translate(-462px,0);
     z-index:101;
 }
 
 .peekItem {
     -webkit-transform:translate(0px,0);
+    transform:translate(0px,0);
 }
 /* Show and hide the menu */
 .showMenu {
     -webkit-transform:translate(-583px,0);
+    transform:translate(-583px,0);
 }
 
 .hideMenu {
     display: none;
     -webkit-transform:translate(0px,0);
+    transform:translate(0px,0);
 }
 
 #crosscutMenuContent {

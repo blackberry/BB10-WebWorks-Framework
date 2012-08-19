@@ -86,7 +86,7 @@ if [[ "$OS" == *Windows* ]] ; then
         -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE \
         -G\"Eclipse CDT4 - Unix Makefiles\" \
         $CMAKE_EXTRA_OPTIONS \
-        $3 ../native > cmd.bat
+        $3 ../ > cmd.bat
     cmd //c cmd.bat
     rm cmd.bat
 else
@@ -105,5 +105,5 @@ else
         -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE \
         -G"Eclipse CDT4 - Unix Makefiles" \
         $CMAKE_EXTRA_OPTIONS \
-        $3 ../native
+        $3 ../
 fi

@@ -27,8 +27,8 @@ function _getCmd(ext, device, ip) {
         testDir;
 
     //unit tests directories
-    deviceDir = path.join("ext", ext, "device/unitTests/test");
-    simDir = path.join("ext", ext, "simulator/unitTests/test");
+    deviceDir = path.join(_c.UNIT_TEST_DEVICE_BUILD, "ext", ext, "native/unitTests/test");
+    simDir = path.join(_c.UNIT_TEST_SIM_BUILD, "ext", ext, "native/unitTests/test");
 
     testDir = device === "device" ? deviceDir : simDir;
 
@@ -43,41 +43,21 @@ function _getCmd(ext, device, ip) {
     return cmd;
 }
 
-function createCmd(ext, device, ip) {
-    return function (prev, baton) {
-        baton.take();
-        var c = childProcess.exec(_getCmd(ext, device, ip), function (error, stdout, stderr) {
-            if (error) {
-                baton.drop(error.code);
-            } else {
-                baton.pass(prev);
-            }
-        });
-
-        c.stdout.on('data', function (data) {
-            utils.displayOutput(data);
-        });
-
-        c.stderr.on('data', function (data) {
-            utils.displayOutput(data);
-        });
-    };
-}
-
 module.exports = function (prev, baton) {
     var build = jWorkflow.order(),
-        i,
         thisBaton = baton,
-        exts = fs.readdirSync(_c.EXT),
-        args = Array.prototype.slice.call(prev)[0],
+        args = Array.prototype.slice.call(prev)[0] || [],
         device = args[0] === "simulator" ? "simulator" : "device",
         ip = utils.isValidIPAddress(args[1]) ? args[1] : _c.USB_IP,
-        omitList = args || [];
+        omitList = args.slice(2) || [],
+        buildFolder = (device === "device" ? _c.UNIT_TEST_DEVICE_BUILD : _c.UNIT_TEST_SIM_BUILD),
+        exts = fs.readdirSync(path.join(buildFolder, "ext")),
+        i;
 
     thisBaton.take();
     for (i = 0; i < exts.length; i++) {
         if (!utils.arrayContains(omitList, exts[i])) {
-            build = build.andThen(createCmd(exts[i], device, ip));
+            build = build.andThen(utils.execCommandWithJWorkflow(_getCmd(exts[i], device, ip)));
         }
     }
 

@@ -1,3 +1,11 @@
+cmake_minimum_required(VERSION 2.8)
+
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../ui.dialog/native/)
+include_directories(${CMAKE_SOURCE_DIR}/dependencies/jnext_1_0_8_3/jncore/jnext-extensions/common)
+include_directories(${CMAKE_SOURCE_DIR}/dependencies/JsonCpp/jsoncpp-src-0.5.0/include)
+include_directories(${CMAKE_SOURCE_DIR}/dependencies/gmock-1.5.0/fused-src/)
+
 if (CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_CXX_FLAGS "-Werror -fexceptions -lang-c++ ${CMAKE_CXX_FLAGS}")
     set(CMAKE_C_FLAGS "-Werror ${CMAKE_C_FLAGS}")
@@ -10,11 +18,7 @@ set(srcs
     ../../../../dependencies/gmock-1.5.0/fused-src/gmock-gtest-all.cc
 )
 
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/../../../dependencies/gmock-1.5.0/fused-src/)
+add_executable(filetransferTest ${srcs})
 
-add_definitions(-DXP_UNIX)
-add_executable(test ${srcs})
-
-target_link_libraries(test m curl bps)
-set_target_properties(test PROPERTIES PREFIX "")
+target_link_libraries(filetransferTest m curl bps)
+set_target_properties(filetransferTest PROPERTIES PREFIX "" OUTPUT_NAME "test")

@@ -34,38 +34,46 @@ function copyExtensions(extPath, extDest) {
         fs.readdirSync(extPath).forEach(function (extension) {
             var apiDir = path.normalize(path.resolve(extPath, extension)),
                 apiDest = path.join(extDest, extension),
-                soPath, soDest,
+                extensionStats = fs.lstatSync(apiDir),
+                soPath,
+                soDest,
                 apiNativeDir,
-                jsFiles, soFiles;
+                jsFiles,
+                soFiles;
 
-            //find all .js files or .json files
-            jsFiles = utils.listFiles(apiDir, function (file) {
-                var extName = path.extname(file);
-                return extName === ".js" || extName === ".json";
-            });
+            //In case there is a file in the ext directory
+            //check that we are dealing with a real extenion first
+            if (extensionStats.isDirectory()) {
 
-            //Copy each .js file to its extensions folder
-            jsFiles.forEach(function (jsFile) {
-                utils.copyFile(jsFile, apiDest, apiDir);
-            });
+                //find all .js files or .json files
+                jsFiles = utils.listFiles(apiDir, function (file) {
+                    var extName = path.extname(file);
+                    return extName === ".js" || extName === ".json";
+                });
 
-            //find and copy each .so file to the extension folder
-            ["device", "simulator"].forEach(function (target) {
-                soPath = path.normalize(path.join(apiDir, target));
-                soDest = path.join(apiDest, target);
-                apiNativeDir = path.normalize(path.join(apiDir, "native"));
+                //Copy each .js file to its extensions folder
+                jsFiles.forEach(function (jsFile) {
+                    utils.copyFile(jsFile, apiDest, apiDir);
+                });
 
-                //If this is a native extension, copy all .so files
-                if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
-                    soFiles = utils.listFiles(soPath, function (file) {
-                        return path.extname(file) === ".so";
-                    });
+                //find and copy each .so file to the extension folder
+                [{src: _c.DEVICE_BUILD, dst: "device"}, {src: _c.SIM_BUILD, dst: "simulator"}].forEach(function (target) {
+                    soPath = path.normalize(path.join(target.src, "ext", extension, "native"));
+                    soDest = path.join(apiDest, target.dst);
+                    apiNativeDir = path.normalize(path.join(apiDir, "native"));
 
-                    soFiles.forEach(function (soFile) {
-                        utils.copyFile(soFile, soDest, soPath);
-                    });
-                }
-            });
+                    //If this is a native extension, copy all .so files
+                    if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
+                        soFiles = utils.listFiles(soPath, function (file) {
+                            return path.extname(file) === ".so";
+                        });
+
+                        soFiles.forEach(function (soFile) {
+                            utils.copyFile(soFile, soDest, soPath);
+                        });
+                    }
+                });
+            }
         });
     }
 }
