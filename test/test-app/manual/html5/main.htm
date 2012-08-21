@@ -53,7 +53,11 @@
 			}
 			function do_web_inspector_Test() {
 				document.location.href = "local:///manual/html5/webinspector.htm";
-			}
+            }
+
+            function do_input_Test() {
+                document.location.href = "local:///manual/html5/input.html";
+            }
 			
         </script>
 	</head>
@@ -73,6 +77,7 @@
 		<li> onload() Test </li>
 		<li> Flash Player Audio Test </li>
 		<li> Web Inspector Test </li>
+		<li> Input Test </li>
 		</ol>
         <p>
             <input id="Button2" type="button" value="Local Image Test" onclick="return do_LocalImageTest()" /></p>
@@ -98,6 +103,8 @@
             <input id="Button15" type="button" value="Flash Player Audio & Video Test" onclick="return do_flash_video_audio_Test()" /></p>				
 		<p>
             <input id="Button16" type="button" value="Web Inspector Test" onclick="return do_web_inspector_Test()" /></p>					
+            <p>
+            <input id="Button17" type="button" value="Input Test" onclick="return do_input_Test()" /></p>					
 
     </ol>
 	
