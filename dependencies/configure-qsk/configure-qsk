@@ -72,17 +72,17 @@ fi
 if [[ "$OS" == *Windows* ]] ; then
     CC_COMMAND="$CC_COMMAND.exe"
     echo cmake \
-        -DCMAKE_SYSTEM_PROCESSOR="$CPUDIR" \
-        -DCMAKE_SYSTEM_NAME="QNX" \
-        -DCMAKE_SYSTEM_VERSION="1" \
-        -DCMAKE_BUILD_TYPE="$BUILDTYPE" \
-        -DCMAKE_C_COMPILER="$CC_COMMAND" \
-        -DCMAKE_CXX_COMPILER="$CC_COMMAND" \
-        -DCMAKE_C_FLAGS="-Vgcc_nto$CPU -g $COMP_PATHS $PROFILER_FLAGS" \
-        -DCMAKE_CXX_FLAGS="-Vgcc_nto${CPU}_cpp-ne -g -lang-c++ $COMP_PATHS $PROFILER_FLAGS" \
-        -DCMAKE_AR="$QNX_HOST/usr/bin/nto$BUSUFFIX-ar" \
-        -DCMAKE_RANLIB="$QNX_HOST/usr/bin/nto$BUSUFFIX-ranlib" \
-        -DCMAKE_LINKER="$QNX_HOST/usr/bin/nto$BUSUFFIX-ld" \
+        -DCMAKE_SYSTEM_PROCESSOR=\"$CPUDIR\" \
+        -DCMAKE_SYSTEM_NAME=\"QNX\" \
+        -DCMAKE_SYSTEM_VERSION=\"1\" \
+        -DCMAKE_BUILD_TYPE=\"$BUILDTYPE\" \
+        -DCMAKE_C_COMPILER=\"$CC_COMMAND\" \
+        -DCMAKE_CXX_COMPILER=\"$CC_COMMAND\" \
+        -DCMAKE_C_FLAGS=\"-Vgcc_nto$CPU -g $COMP_PATHS $PROFILER_FLAGS\" \
+        -DCMAKE_CXX_FLAGS=\"-Vgcc_nto${CPU}_cpp-ne -g -lang-c++ $COMP_PATHS $PROFILER_FLAGS\" \
+        -DCMAKE_AR=\"$QNX_HOST/usr/bin/nto$BUSUFFIX-ar\" \
+        -DCMAKE_RANLIB=\"$QNX_HOST/usr/bin/nto$BUSUFFIX-ranlib\" \
+        -DCMAKE_LINKER=\"$QNX_HOST/usr/bin/nto$BUSUFFIX-ld\" \
         -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE \
         -G\"Eclipse CDT4 - Unix Makefiles\" \
         $CMAKE_EXTRA_OPTIONS \
