@@ -23,3 +23,5 @@ target_link_libraries(bbm bbmsp bps socket QtCore)
 
 set_target_properties(bbm PROPERTIES PREFIX "")
 
+install(TARGETS bbm LIBRARY DESTINATION ".")
+
