@@ -81,7 +81,7 @@ void PushNDK::StartService(const std::string& invokeTargetId, const std::string&
         m_pPushService->createSession();
     } else {
         fprintf(stderr, "StartSession: Failed to create monitor thread.\n");
-        onCreateSessionComplete(bb::communications::push::PUSH_ERR_INTERNAL_ERROR);
+        onCreateSessionComplete(PushStatus(bb::communications::push::PUSH_ERR_INTERNAL_ERROR));
     }
 }
 
@@ -91,7 +91,7 @@ void PushNDK::CreateChannel()
         m_pPushService->createChannel(m_ppgUrl);
     } else {
         fprintf(stderr, "CreateChannel: Cannot find PushService object\n");
-        onCreateChannelComplete(bb::communications::push::PUSH_ERR_INTERNAL_ERROR, "");
+        onCreateChannelComplete(PushStatus(bb::communications::push::PUSH_ERR_INTERNAL_ERROR), "");
     }
 }
 
@@ -101,7 +101,7 @@ void PushNDK::DestroyChannel()
         m_pPushService->destroyChannel();
     } else {
         fprintf(stderr, "DestroyChannel: Cannot find PushService object\n");
-        onDestroyChannelComplete(bb::communications::push::PUSH_ERR_INTERNAL_ERROR);
+        onDestroyChannelComplete(PushStatus(bb::communications::push::PUSH_ERR_INTERNAL_ERROR));
     }
 }
 
@@ -153,7 +153,7 @@ void PushNDK::RegisterToLaunch()
         m_pPushService->registerToLaunch();
     } else {
         fprintf(stderr, "RegisterToLaunch: Cannot find PushService object\n");
-        onRegisterToLaunchComplete(bb::communications::push::PUSH_ERR_INTERNAL_ERROR);
+        onRegisterToLaunchComplete(PushStatus(bb::communications::push::PUSH_ERR_INTERNAL_ERROR));
     }
 }
 
@@ -163,7 +163,7 @@ void PushNDK::UnregisterFromLaunch()
         m_pPushService->unregisterFromLaunch();
     } else {
         fprintf(stderr, "UnregisterFromLaunch: Cannot find PushService object\n");
-        onUnregisterFromLaunchComplete(bb::communications::push::PUSH_ERR_INTERNAL_ERROR);
+        onUnregisterFromLaunchComplete(PushStatus(bb::communications::push::PUSH_ERR_INTERNAL_ERROR));
     }
 }
 
