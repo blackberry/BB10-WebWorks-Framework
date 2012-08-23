@@ -24,6 +24,13 @@ var bbm = require("./BBMJNEXT").bbm,
             trigger: function (allowed, reason) {
                 _event.trigger("onaccesschanged", allowed, reason);
             }
+        },
+        onupdate: {
+            context: require("./BBMEvents"),
+            event: "onupdate",
+            trigger: function (user, event) {
+                _event.trigger("onupdate", user, event);
+            }
         }
     },
     BBM_DISPLAY_NAME = 0,
@@ -62,42 +69,42 @@ module.exports = {
 
     self : {
         appVersion : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_APP_VERSION));
+            success(bbm.self.getProfile(BBM_APP_VERSION));
         },
 
         bbmsdkVersion : function (success, fail, args, env) {
-            success(parseInt(bbm.getProfile(BBM_SDK_VERSION), 10));
+            success(parseInt(bbm.self.getProfile(BBM_SDK_VERSION), 10));
         },
 
         displayName : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_DISPLAY_NAME));
+            success(bbm.self.getProfile(BBM_DISPLAY_NAME));
         },
 
         handle : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_HANDLE));
+            success(bbm.self.getProfile(BBM_HANDLE));
         },
 
         personalMessage : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_PERSONAL_MESSAGE));
+            success(bbm.self.getProfile(BBM_PERSONAL_MESSAGE));
         },
 
         ppid : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_PPID));
+            success(bbm.self.getProfile(BBM_PPID));
         },
 
         status : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_STATUS));
+            success(bbm.self.getProfile(BBM_STATUS));
         },
 
         statusMessage : function (success, fail, args, env) {
-            success(bbm.getProfile(BBM_STATUS_MESSAGE));
+            success(bbm.self.getProfile(BBM_STATUS_MESSAGE));
         },
 
         getDisplayPicture : function (success, fail, args, env) {
             if (args) {
                 args.eventId = JSON.parse(decodeURIComponent(args.eventId));
 
-                bbm.getDisplayPicture(args.eventId);
+                bbm.self.getDisplayPicture(args.eventId);
                 success();
             }
         },
@@ -113,7 +120,7 @@ module.exports = {
                 }
             }
 
-            bbm.setStatus(args);
+            bbm.self.setStatus(args);
             success();
         },
 
@@ -127,7 +134,7 @@ module.exports = {
                 }
             }
 
-            bbm.setPersonalMessage(args.personalMessage);
+            bbm.self.setPersonalMessage(args.personalMessage);
             success();
         },
 
@@ -141,7 +148,7 @@ module.exports = {
                 }
             }
 
-            bbm.setDisplayPicture(args.displayPicture);
+            bbm.self.setDisplayPicture(args.displayPicture);
             success();
         }
     },

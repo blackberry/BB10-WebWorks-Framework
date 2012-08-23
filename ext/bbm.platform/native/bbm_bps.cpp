@@ -17,10 +17,12 @@
 #include "bbm_bps.hpp"
 #include "bbm_js.hpp"
 #include <bbmsp/bbmsp.h>
-#include <bbmsp/bbmsp_events.h>
+#include <bbmsp/bbmsp_contactlist.h>
 #include <bbmsp/bbmsp_context.h>
+#include <bbmsp/bbmsp_events.h>
 #include <bbmsp/bbmsp_userprofile.h>
 #include <bbmsp/bbmsp_util.h>
+#include <json/writer.h>
 #include <fcntl.h>
 #include <resolv.h>
 #include <stdio.h>
@@ -29,14 +31,16 @@
 #include <string>
 #include <vector>
 
-#define MUTEX_LOCK() pthread_mutex_lock(&m_lock)
+#define MUTEX_LOCK() pthread_mutex_trylock(&m_lock)
 #define MUTEX_UNLOCK() pthread_mutex_unlock(&m_lock)
 
 namespace webworks {
 
+bool BBMBPS::contactEventsEnabled = false;
 pthread_mutex_t BBMBPS::m_lock = PTHREAD_MUTEX_INITIALIZER;
 int BBMBPS::m_eventChannel = -1;
-int BBMBPS::m_endEventDomain = -1;
+int BBMBPS::m_BBMInternalDomain = -1;
+bbmsp_contact_list_t *BBMBPS::m_pContactList;
 
 BBMBPS::BBMBPS(BBM *parent) : m_pParent(parent)
 {
@@ -56,9 +60,9 @@ void BBMBPS::SetActiveChannel(int channel)
 int BBMBPS::InitializeEvents()
 {
     m_eventChannel = bps_channel_get_active();
-    m_endEventDomain = bps_register_domain();
+    m_BBMInternalDomain = bps_register_domain();
 
-    return (m_endEventDomain >= 0) ? 0 : 1;
+    return (m_BBMInternalDomain >= 0) ? 0 : 1;
 }
 
 void BBMBPS::processAccessCode(int code)
@@ -112,7 +116,52 @@ void BBMBPS::processAccessCode(int code)
             accessString.append("unknown");
             break;
     }
-        m_pParent->NotifyEvent(accessString);
+    m_pParent->NotifyEvent(accessString);
+}
+
+void BBMBPS::processContactUpdate(bbmsp_event_t *event)
+{
+    int updateType = -1;
+    bbmsp_contact_t *contact;
+    std::string updateString = "onupdate ";
+    bbmsp_event_contact_changed_get_contact(event, &contact);
+    updateType = bbmsp_event_contact_changed_get_presence_update_type(event);
+
+    switch (updateType)
+    {
+        case BBMSP_DISPLAY_NAME:
+            updateString += "displayname " + getFullContact(contact);
+            break;
+        case BBMSP_DISPLAY_PICTURE:
+            updateString += "displaypicture " + getFullContact(contact);
+            break;
+        case BBMSP_PERSONAL_MESSAGE:
+            updateString += "personalmessage " + getFullContact(contact);
+            break;
+        case BBMSP_STATUS:
+            updateString += "status " + getFullContact(contact);
+            break;
+        default:
+            break;
+    }
+    m_pParent->NotifyEvent(updateString);
+}
+
+std::string BBMBPS::getFullContact(bbmsp_contact_t *contact)
+{
+    Json::FastWriter writer;
+    Json::Value root;
+
+    root["displayName"] = GetContact(contact, BBM_DISPLAY_NAME);
+    root["status"] = GetContact(contact, BBM_STATUS);
+    root["statusMessage"] = GetContact(contact, BBM_STATUS_MESSAGE);
+    root["personalMessage"] = GetContact(contact, BBM_PERSONAL_MESSAGE);
+    root["ppid"] = GetContact(contact, BBM_PPID);
+    root["handle"] = GetContact(contact, BBM_HANDLE);
+    root["appVersion"] = GetContact(contact, BBM_APP_VERSION);
+    root["bbmsdkVersion"] = GetContact(contact, BBM_SDK_VERSION);
+
+    return writer.write(root);
 }
 
 int BBMBPS::WaitForEvents()
@@ -135,7 +184,6 @@ int BBMBPS::WaitForEvents()
             if (event_domain == bbmsp_get_domain()) {
                 int eventCategory = 0;
                 int eventType = 0;
-                int code = 0;
 
                 bbmsp_event_get(event, &bbmEvent);
 
@@ -188,11 +236,29 @@ int BBMBPS::WaitForEvents()
                             }
                             break;
                         }
+                        case BBMSP_CONTACT_LIST:
+                        {
+                            if (bbmsp_event_get_type(event, &eventType) == BBMSP_SUCCESS) {
+                                switch (eventType) {
+                                    case BBMSP_SP_EVENT_CONTACT_CHANGED:
+                                    {
+                                        processContactUpdate(bbmEvent);
+                                    }
+                                }
+                            }
+                        }
                     }
+                    MUTEX_UNLOCK();
                 }
-                MUTEX_UNLOCK();
-            } else if (event_domain == m_endEventDomain) {
-                break;
+            } else if (event_domain == m_BBMInternalDomain) {
+                int code = bps_event_get_code(event);
+                if (code == INTERNAL_EVENT_STOP) {
+                    break;
+                } else if (code == INTERNAL_EVENT_CONTACT_EVENTS) {
+                    MUTEX_LOCK();
+                    bbmsp_event_contact_list_register_event();
+                    contactEventsEnabled = true;
+                }
             }
         }
     }
@@ -207,8 +273,27 @@ int BBMBPS::GetActiveChannel()
 void BBMBPS::SendEndEvent()
 {
     bps_event_t *end_event = NULL;
-    bps_event_create(&end_event, m_endEventDomain, 0, NULL, NULL);
+    bps_event_create(&end_event, m_BBMInternalDomain, INTERNAL_EVENT_STOP, NULL, NULL);
     bps_channel_push_event(m_eventChannel, end_event);
+}
+
+void BBMBPS::StartContactEvents()
+{
+    if (!contactEventsEnabled) {
+        bps_event_t *end_event = NULL;
+        bps_event_create(&end_event, m_BBMInternalDomain, INTERNAL_EVENT_CONTACT_EVENTS, NULL, NULL);
+        bps_channel_push_event(m_eventChannel, end_event);
+    }
+}
+
+void BBMBPS::StopContactEvents()
+{
+    contactEventsEnabled = false;
+}
+
+int BBMBPS::GetGid()
+{
+    return static_cast<int>(getgid());
 }
 
 void BBMBPS::Register(const std::string& uuid)
@@ -222,10 +307,11 @@ std::string BBMBPS::GetProfile(const BBMField field)
 {
     MUTEX_LOCK();
     bbmsp_profile_t *profile;
-    bbmsp_profile_create(&profile);
-    bbmsp_get_user_profile(profile);
     std::string value;
     char buffer[4096];
+
+    bbmsp_profile_create(&profile);
+    bbmsp_get_user_profile(profile);
 
     switch (field)
     {
@@ -238,8 +324,7 @@ std::string BBMBPS::GetProfile(const BBMField field)
         }
         case BBM_STATUS:
         {
-            int val;
-            val = bbmsp_profile_get_status(profile);
+            int val = bbmsp_profile_get_status(profile);
             if (val == 0) {
                 value = "available";
             }
@@ -285,8 +370,7 @@ std::string BBMBPS::GetProfile(const BBMField field)
         }
         case BBM_SDK_VERSION:
         {
-            int val;
-            val = bbmsp_profile_get_platform_version(profile);
+            int val = bbmsp_profile_get_platform_version(profile);
             std::stringstream ss;
             ss << val;
             value = ss.str();
@@ -369,9 +453,79 @@ void BBMBPS::SetDisplayPicture(const std::string& imgPath)
     MUTEX_UNLOCK();
 }
 
-int BBMBPS::GetGid()
+std::string BBMBPS::GetContact(bbmsp_contact_t *contact, BBMField field)
 {
-    return static_cast<int>(getgid());
+    MUTEX_LOCK();
+    std::string value;
+    unsigned int size;
+    char *buffer;
+
+    switch (field)
+    {
+        case BBM_DISPLAY_NAME:
+        {
+            if (bbmsp_contact_get_display_name(contact, &buffer, &size) == BBMSP_SUCCESS) {
+                value = buffer;
+            }
+            break;
+        }
+        case BBM_STATUS:
+        {
+            bbmsp_presence_status_t status = bbmsp_contact_get_status(contact);
+            if (status == BBMSP_PRESENCE_STATUS_AVAILABLE) {
+                value = "available";
+            }
+            else if (status == BBMSP_PRESENCE_STATUS_BUSY) {
+                value = "busy";
+            }
+            break;
+        }
+        case BBM_STATUS_MESSAGE:
+        {
+            if (bbmsp_contact_get_status_message(contact, &buffer, &size) == BBMSP_SUCCESS) {
+                value = buffer;
+            }
+            break;
+        }
+        case BBM_PERSONAL_MESSAGE:
+        {
+            if (bbmsp_contact_get_personal_message(contact, &buffer, &size) == BBMSP_SUCCESS) {
+                value = buffer;
+            }
+            break;
+        }
+        case BBM_PPID:
+        {
+            if (bbmsp_contact_get_ppid(contact, &buffer, &size) == BBMSP_SUCCESS) {
+                value = buffer;
+            }
+            break;
+        }
+        case BBM_HANDLE:
+        {
+            if (bbmsp_contact_get_handle(contact, &buffer, &size) == BBMSP_SUCCESS) {
+                value = buffer;
+            }
+            break;
+        }
+        case BBM_APP_VERSION:
+        {
+            if (bbmsp_contact_get_app_version(contact, &buffer, &size) == BBMSP_SUCCESS) {
+                value = buffer;
+            }
+            break;
+        }
+        case BBM_SDK_VERSION:
+        {
+            int val = bbmsp_contact_get_platform_version(contact);
+            std::stringstream ss;
+            ss << val;
+            value = ss.str();
+            break;
+        }
+    }
+    MUTEX_UNLOCK();
+    return value;
 }
 
 } // namespace webworks

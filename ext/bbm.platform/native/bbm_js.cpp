@@ -76,6 +76,16 @@ std::string BBM::InvokeMethod(const std::string& command)
         StartEvents();
     } else if (strCommand == "stopEvents") {
         StopEvents();
+    } else if (strCommand == "startContactEvents") {
+        StartEvents();
+        m_pBBMController->StartContactEvents();
+    } else if (strCommand == "stopContactEvents") {
+        m_pBBMController->StopContactEvents();
+    } else if (strCommand == "getgid") {
+        int gid = m_pBBMController->GetGid();
+        std::stringstream ss;
+        ss << gid;
+        return ss.str();
     } else if (strCommand == "register") {
         // parse the JSON
         bool parse = reader.parse(strParam, obj);
@@ -88,14 +98,13 @@ std::string BBM::InvokeMethod(const std::string& command)
         const std::string uuid = obj["uuid"].asString();
 
         m_pBBMController->Register(uuid);
-    } else if (strCommand == "getProfile") {
+    } else if (strCommand == "self.getProfile") {
         webworks::BBMField field = static_cast<webworks::BBMField>(atoi(strParam.c_str()));
-
         return m_pBBMController->GetProfile(field);
-    } else if (strCommand == "getDisplayPicture") {
+    } else if (strCommand == "self.getDisplayPicture") {
         m_pBBMController->GetDisplayPicture();
         return "";
-    } else if (strCommand == "setStatus") {
+    } else if (strCommand == "self.setStatus") {
         bool parse = reader.parse(strParam, obj);
 
         if (!parse) {
@@ -114,17 +123,11 @@ std::string BBM::InvokeMethod(const std::string& command)
         }
 
         m_pBBMController->SetStatus(status, strStatusMessage);
-    } else if (strCommand == "setPersonalMessage") {
+    } else if (strCommand == "self.setPersonalMessage") {
         m_pBBMController->SetPersonalMessage(strParam);
-    } else if (strCommand == "setDisplayPicture") {
+    } else if (strCommand == "self.setDisplayPicture") {
         m_pBBMController->SetDisplayPicture(strParam);
-    } else if (strCommand == "getgid") {
-        int gid = m_pBBMController->GetGid();
-        std::stringstream ss;
-        ss << gid;
-        return ss.str();
     }
-
     return "";
 }
 

@@ -39,19 +39,40 @@ describe("bbm.platform BBMEvents", function () {
         expect(JNEXT.createObject).toHaveBeenCalledWith("bbm.BBM");
     });
 
-    describe("addEventListener", function () {
-        var trigger = function () {};
+    describe("onaccesschanged event", function () {
+        describe("addEventListener", function () {
+            var trigger = function () {};
 
-        it("invokes JNEXT startEvents for 'onaccesschanged' event", function () {
-            BBMEvents.addEventListener("onaccesschanged", trigger);
-            expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "startEvents");
+            it("invokes JNEXT startEvents for 'onaccesschanged' event", function () {
+                BBMEvents.addEventListener("onaccesschanged", trigger);
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "startEvents");
+            });
+        });
+
+        describe("removeEventListener", function () {
+            it("invokes JNEXT stopEvents for 'onaccesschanged' event", function () {
+                BBMEvents.removeEventListener("onaccesschanged");
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "stopEvents");
+            });
         });
     });
 
-    describe("removeEventListener", function () {
-        it("invokes JNEXT stopEvents for 'onaccesschanged' event", function () {
-            BBMEvents.removeEventListener("onaccesschanged");
-            expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "stopEvents");
+    describe("onupdate event", function () {
+        describe("addEventListener", function () {
+            var trigger = function () {};
+
+            it("invokes JNEXT startContactEvents for 'onupdate' event", function () {
+                BBMEvents.addEventListener("onupdate", trigger);
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "startContactEvents");
+            });
+        });
+
+        describe("removeEventListener", function () {
+            it("invokes JNEXT stopContactEvents for 'onupdate' event", function () {
+                BBMEvents.removeEventListener("onupdate");
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "stopContactEvents");
+            });
         });
     });
 });
+

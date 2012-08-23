@@ -20,16 +20,18 @@ module.exports = {
     addEventListener: function (event, trigger) {
         if (event === "onaccesschanged") {
             bbm.startEvents(trigger);
-        }
-        else {
+        } else if (event === "onupdate") {
+            bbm.startContactEvents(trigger);
+        } else {
             console.log("Ignore registration for unknown event: " + event);
         }
     },
     removeEventListener: function (event) {
         if (event === "onaccesschanged") {
             bbm.stopEvents();
-        }
-        else {
+        } else if (event === "onupdate") {
+            bbm.stopContactEvents();
+        } else {
             console.log("Ignore un-registration for unknown event: " + event);
         }
     }

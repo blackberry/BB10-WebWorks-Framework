@@ -112,3 +112,27 @@ describe("blackberry.bbm.platform.users", function () {
     });
 });
 
+
+describe("blackberry.bbm.platform.users", function () {
+    describe("onupdate", function () {
+        var onUpdate,
+            waitForTimeout = 30000;
+
+        it("can receive updates from other users", function () {
+            runs(function () {
+                onUpdate = jasmine.createSpy();
+                blackberry.event.addEventListener("onupdate", onUpdate);
+                alert("Update the contact on the other device to continue");
+            });
+            
+            waitsFor(function () {
+                return onUpdate.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onUpdate.toBeCalled());
+            });
+        });
+    });
+});
+
