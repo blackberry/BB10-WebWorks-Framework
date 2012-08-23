@@ -1,18 +1,18 @@
 /*
-* Copyright 2012 Research In Motion Limited.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2012 Research In Motion Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 function requireLocal(id) {
     return !!require.resolve ? require("../../" + id) : window.require(id);
@@ -20,6 +20,7 @@ function requireLocal(id) {
 
 var bbm,
     accesschangedCallback = null,
+    updateCallback = null,
     _event = require("../../lib/event");
 
 ///////////////////////////////////////////////////////////////////
@@ -28,89 +29,106 @@ var bbm,
 
 JNEXT.BBM = function ()
 {
-    var self = this;
+    var _self = this;
+    _self.self = {};
+    _self.users = {};
 
-    self.startEvents = function (trigger) {
+    _self.startEvents = function (trigger) {
         if (accesschangedCallback === null) {
             accesschangedCallback = trigger;
-            JNEXT.invoke(self.m_id, "startEvents");
+            JNEXT.invoke(_self.m_id, "startEvents");
         }
     };
 
-    self.stopEvents = function () {
+    _self.stopEvents = function () {
         accesschangedCallback = null;
-        JNEXT.invoke(self.m_id, "stopEvents");
+        JNEXT.invoke(_self.m_id, "stopEvents");
     };
 
-    self.register = function (options) {
-        JNEXT.invoke(self.m_id, "register " + JSON.stringify(options));
+    _self.startContactEvents = function (trigger) {
+        if (updateCallback === null) {
+            updateCallback = trigger;
+            JNEXT.invoke(_self.m_id, "startContactEvents");
+        }
     };
 
-    self.getProfile = function (field) {
-        return JNEXT.invoke(self.m_id, "getProfile " + field);
+    _self.stopContactEvents = function () {
+        updateCallback = null;
+        JNEXT.invoke(_self.m_id, "stopContactEvents");
     };
 
-    self.getDisplayPicture = function (eventId) {
-        self.displayPictureEventId = eventId;
-        return JNEXT.invoke(self.m_id, "getDisplayPicture");
+    _self.register = function (options) {
+        JNEXT.invoke(_self.m_id, "register " + JSON.stringify(options));
     };
 
-    self.setStatus = function (statusArgs) {
-        JNEXT.invoke(self.m_id, "setStatus " + JSON.stringify(statusArgs));
+    _self.getgid = function () {
+        return JNEXT.invoke(_self.m_id, "getgid");
     };
 
-    self.setPersonalMessage = function (personalMessage) {
-        JNEXT.invoke(self.m_id, "setPersonalMessage " + personalMessage);
+    _self.self.getProfile = function (field) {
+        return JNEXT.invoke(_self.m_id, "self.getProfile " + field);
     };
 
-    self.setDisplayPicture = function (displayPicture) {
-        JNEXT.invoke(self.m_id, "setDisplayPicture " + displayPicture);
+    _self.self.getDisplayPicture = function (eventId) {
+        _self.displayPictureEventId = eventId;
+        return JNEXT.invoke(_self.m_id, "self.getDisplayPicture");
     };
 
-    self.getId = function () {
-        return self.m_id;
+    _self.self.setStatus = function (statusArgs) {
+        JNEXT.invoke(_self.m_id, "self.setStatus " + JSON.stringify(statusArgs));
     };
 
-    self.init = function () {
+    _self.self.setPersonalMessage = function (personalMessage) {
+        JNEXT.invoke(_self.m_id, "self.setPersonalMessage " + personalMessage);
+    };
+
+    _self.self.setDisplayPicture = function (displayPicture) {
+        JNEXT.invoke(_self.m_id, "self.setDisplayPicture " + displayPicture);
+    };
+
+    _self.getId = function () {
+        return _self.m_id;
+    };
+
+    _self.init = function () {
         if (!JNEXT.require("bbm")) {   
             return false;
         }
 
-        self.m_id = JNEXT.createObject("bbm.BBM");
-        
-        if (self.m_id === "") {   
+        _self.m_id = JNEXT.createObject("bbm.BBM");
+
+        if (_self.m_id === "") {   
             return false;
         }
 
-        JNEXT.registerEvents(self);
+        JNEXT.registerEvents(_self);
     };
-    
-    self.onEvent = function (strData) {
+
+    _self.onEvent = function (strData) {
         var arData = strData.split(" "),
             strEventDesc = arData[0],
-            allowed;
-        
+            allowed,
+            obj;
+
         if (strEventDesc === "onaccesschanged") {
             if (arData[1] === "allowed") {
                 allowed = true;
             } else {
                 allowed = false;
             }
-
             accesschangedCallback(allowed, arData[1]);
+        } else if (strEventDesc === "onupdate") {
+            obj = arData.slice(2, arData.length).join(" ");
+            updateCallback(JSON.parse(obj), arData[1]);
         } else if (strEventDesc === "self.getDisplayPicture") {
-            _event.trigger(self.displayPictureEventId, arData[1]);
+            _event.trigger(_self.displayPictureEventId, arData[1]);
         }
     };
+    
+    _self.m_id = "";
+    _self.displayPictureEventId = "";
 
-    self.getgid = function () {
-        return JNEXT.invoke(self.m_id, "getgid");
-    };
-
-    self.m_id = "";
-    self.displayPictureEventId = "";
-
-    self.init();
+    _self.init();
 };
 
 bbm = new JNEXT.BBM();

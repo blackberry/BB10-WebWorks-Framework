@@ -17,6 +17,7 @@
 #ifndef BBM_BPS_H_
 #define BBM_BPS_H_
 
+#include <bbmsp/bbmsp_contactlist.h>
 #include <pthread.h>
 #include <string>
 
@@ -35,30 +36,43 @@ enum BBMField {
     BBM_SDK_VERSION,
 };
 
+enum BBMInternalEvents {
+    INTERNAL_EVENT_STOP = 0,
+    INTERNAL_EVENT_CONTACT_EVENTS,
+};
+
 class BBMBPS {
 public:
     explicit BBMBPS(BBM *parent = NULL);
     ~BBMBPS();
     void SetActiveChannel(int channel);
+    // Events related functions
     int InitializeEvents();
     int WaitForEvents();
     static void SendEndEvent();
     static int GetActiveChannel();
+    void StartContactEvents();
+    void StopContactEvents();
     // BBM related functions
     void Register(const std::string& uuid);
+    int GetGid();
     std::string GetProfile(BBMField field);
     void GetDisplayPicture();
     void SetStatus(int status, const std::string& personalMessage);
     void SetPersonalMessage(const std::string& personalMessage);
     void SetDisplayPicture(const std::string& imgPath);
-    int GetGid();
+    std::string GetContact(bbmsp_contact_t *contact, BBMField field);
 
 private:
     BBM *m_pParent;
     void processAccessCode(int code);
+    void processContactUpdate(bbmsp_event_t *event);
+    std::string getFullContact(bbmsp_contact_t *contact);
+    static bool contactEventsEnabled;
     static pthread_mutex_t m_lock;
     static int m_eventChannel;
-    static int m_endEventDomain;
+    static int m_BBMInternalDomain;
+    static bbmsp_contact_list_t *m_pContactList;
 };
 
 } // namespace webworks
