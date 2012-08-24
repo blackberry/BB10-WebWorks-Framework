@@ -25,8 +25,11 @@
     <feature id="blackberry.push" required="true" version="1.0.0.0" />
     <feature id="blackberry.bbm.platform" required="true" version="1.0.0.0" />
     <feature id="blackberry.pim.contacts" required="true" version="1.0.0.0" />
-
     <feature id="blackberry.invoke.card" required="true" version="1.0.0.0" />
+    <feature id="blackberry.invoke" required="true" version="1.0.0.0" />
+    <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
+    <feature id="blackberry.notification" required="true" version="1.0.0.0" />
+    <feature id="enable-flash" />
 
     <access uri="http://atg05-yyz.labyyz.testnet.rim.net" />
     <access uri="http://10.137.251.215/" />
@@ -56,11 +59,6 @@
         #WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         #See the License for the specific language governing permissions and limitations under the License.
     </license>
-
-    <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
-    <feature id="blackberry.invoke" required="true" version="1.0.0.0" />
-
-    <feature id="enable-flash" />
 
     <rim:invoke-target id="net.rim.webworks.SmokeTest">
         <type>APPLICATION</type>
@@ -96,5 +94,6 @@
         <rim:permit>read_device_identifying_information</rim:permit>
         <rim:permit>bbm_connect</rim:permit>
         <rim:permit>access_pimdomain_contacts</rim:permit>
+        <rim:permit>post_notification</rim:permit>
     </rim:permissions>
 </widget>
