@@ -84,14 +84,14 @@ describe("blackberry.system", function () {
             testSystemReadOnly("softwareVersion");
         });
 
-        describe("name", function () {
-            it("should exist", function () {
-                testSystemValue("name");
-            });
+        it("blackberry.system.name should exist", function () {
+            testSystemValue("name");
+            expect(blackberry.system.name).toEqual(jasmine.any(String));
+            expect(blackberry.system.name).not.toEqual("");
+        });
 
-            it("should be read only", function () {
-                testSystemReadOnly("name");
-            });
+        it("blackberry.system.name should be read only", function () {
+            testSystemReadOnly("name");
         });
 
         it('blackberry.system.region should exist', function () {

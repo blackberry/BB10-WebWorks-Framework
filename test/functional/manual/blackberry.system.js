@@ -30,6 +30,14 @@ function testSystemReadOnly(field) {
 describe("blackberry.system", function () {
     var waitForTimeout = 15000;
 
+    it("name should have a valid value", function () {
+        var message = "Device Name: " + blackberry.system.name + "\n\n" +
+                "Is the device name valid?",
+            confirm = window.confirm(message);
+
+        expect(confirm).toBeTruthy();
+    });
+
     describe("EventListener", function () {
 
         afterEach(function () {
