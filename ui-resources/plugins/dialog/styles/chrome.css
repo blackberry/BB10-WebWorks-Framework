@@ -40,6 +40,7 @@
     -webkit-box-orient: vertical;
     -webkit-box-pack: justify;
     -webkit-box-align: stretch;
+    word-wrap: break-word;
 }
 
 .dialog-header {
