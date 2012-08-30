@@ -13,49 +13,35 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var wrench = require("wrench"),
-    zip = require("node-zip"),
-    childProcess = require('child_process'),
-    util = require("util"),
-    conf = require("./build/conf"),
+var jWorkflow = require("jWorkflow"),
     path = require("path"),
-    fs = require('fs');
-
-function _exec(cmdExpr, prev, baton) {
-    if (baton) {
-        baton.take();
-    }
-    var proc = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
-        util.print(stdout);
-        util.print(stderr);
-    });
-
-    proc.on("exit", function (code) {
-        if (code) {
-            process.exit(code);
-        }
-        if (baton) {
-            baton.pass(prev);
-        }
-    });
-}
+    conf = require("./build/conf"),
+    utils = require("./build/utils");
 
 module.exports = function (barFile, deviceIp, password) {
+    var deployBar = jWorkflow.order();
 
     if (!barFile || !path.existsSync(barFile)) { 
-        util.puts("Invalid bar file specified - " + barFile);
+        utils.displayOutput("Invalid bar file specified - " + barFile);
         process.exit();
     }
 
     if (!deviceIp) {
         deviceIp = conf.DEPLOY_COMMAND_DEFAULT_IP;
-        util.puts("Device IP not specified, using default from build/conf.js - " + deviceIp);
+        utils.displayOutput("Device IP not specified, using default from build/conf.js - " + deviceIp);
     }
 
     if (!password) {
         password = conf.DEPLOY_COMMAND_DEFAULT_PW;
-        util.puts("Device password not specified, using default from build/conf.js - " + password);
+        utils.displayOutput("Device password not specified, using default from build/conf.js - " + password);
     }
 
-    _exec("blackberry-deploy -installApp -launchApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password); 
+    deployBar.andThen(utils.execCommandWithJWorkflow("blackberry-deploy -terminateApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password, {}, true))
+             .andThen(utils.execCommandWithJWorkflow("blackberry-deploy -uninstallApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password, {}, true))
+             .andThen(utils.execCommandWithJWorkflow("blackberry-deploy -installApp -launchApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password))
+             .start(function () {
+                 utils.displayOutput("App Deployed successfully");
+                 process.exit();
+             });
+
 };
