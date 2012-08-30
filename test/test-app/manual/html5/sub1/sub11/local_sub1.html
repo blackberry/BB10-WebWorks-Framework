@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Web Test Harness (powered by Tumbler)</title>
+</head>
+<body>
+    local:///sub1/sub11/local_sub1.html<br>
+    <!--
+	<a href="../local_root.html">../index_sub.html</a><br>
+    <a href="local:///local_root.html">local:///index_root.html</a>-->
+	<br>
+	
+        <table border="1">
+        <tr>
+        <td>1.jpg</td>
+        <td><img src="1.jpg"/></td>
+        </tr>
+        <tr>
+        <td>../1.jpg</td>
+        <td><img src="../1.jpg"/></td>
+        </tr>
+        <tr>
+        <td>../../1.jpg</td>
+        <td><img src="../../1.jpg"/></td>
+        </tr>
+        <tr>
+        <td>/1.jpg</td>
+        <td><img src="/1.jpg"/></td>
+        </tr>    
+        <tr>
+        <td>\1.jpg</td>
+        <td><img src="\1.jpg"/></td>
+        </tr>  
+        <tr>
+        <td>local:///1.jpg</td>
+        <td><img src="local:///manual/html5/1.jpg"/></td>
+        </tr>
+        <tr>
+        <td>local:///sub1/1.jpg</td>
+        <td><img src="local:///manual/html5/sub1/1.jpg"/></td>
+        </tr>
+        <tr>
+        <td>local:///sub1/3.jpg</td>
+        <td><img src="local:///manual/html5/sub1/3.jpg"/></td>
+        </tr>
+        <tr>
+        <td>local:///2.jpg</td>
+        <td><img src="local:///manual/html5/2.jpg"/></td>
+        </tr>
+        <tr>
+        <td>../../2.jpg</td>
+        <td><img src="../../2.jpg"/></td>
+        </tr>
+        <tr>
+        <td>4.jpg</td>
+        <td><img src="4.jpg"/></td>
+        </tr>
+        </table>
+		<p>
+            <input id="Button2" type="button" value="Back" onclick="history.back()" />
+		</p>
+</body>
+</html>
