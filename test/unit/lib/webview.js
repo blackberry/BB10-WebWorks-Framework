@@ -25,6 +25,7 @@ describe("webview", function () {
             setFileSystemSandbox: undefined,
             setGeometry: jasmine.createSpy(),
             setApplicationOrientation: jasmine.createSpy(),
+            setExtraPluginDirectory: jasmine.createSpy(),
             notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
@@ -139,6 +140,14 @@ describe("webview", function () {
             webview.create();
             webview.notifyApplicationOrientationDone();
             expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
+        });
+    });
+
+    describe("plugin directory", function () {
+        it("can set an extra plugin directory", function () {
+            webview.create();
+            webview.setExtraPluginDirectory('/usr/lib/browser/plugins');
+            expect(mockedWebview.setExtraPluginDirectory).toHaveBeenCalledWith('/usr/lib/browser/plugins');
         });
     });
 
