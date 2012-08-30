@@ -3,15 +3,15 @@
         xmlns:rim="http://www.blackberry.com/ns/widgets"
         version="1.0.0"
         id="WebWorksTest">
-    
+
     <name>WebWorks Test Application</name>
 
     <description>This application tests a wide range of WebWorks functionalities.</description>
-	
+
     <content src="index.htm"/>
-    
+
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
-	
+
     <feature id="blackberry.app" required="true" version="1.0.0.0"/>
     <feature id="blackberry.system" required="true" version="1.0.0.0"/>
     <feature id="blackberry.connection" required="true" version="1.0.0.0"/>
@@ -23,6 +23,7 @@
     <feature id="blackberry.push" required="true" version="1.0.0.0" />
     <feature id="blackberry.bbm.platform" required="true" version="1.0.0.0" />
     <feature id="blackberry.pim.contacts" required="true" version="1.0.0.0" />
+    <feature id="enable-flash" />
 
     <access uri="http://atg05-yyz.labyyz.testnet.rim.net" />
     <access uri="http://10.137.251.215/" />
@@ -39,7 +40,7 @@
     <access uri="http://www.homestarrunner.com/" />
     <access uri="http://cachemanifest.heroku.com/" />
     <access uri="http://jquery.com/" subdomains="true"/>
-  	
+
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
         Licensed under the Apache License, Version 2.0 (the "License");
         #you may not use this file except in compliance with the License.
@@ -55,7 +56,7 @@
 
     <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
     <feature id="blackberry.invoke" required="true" version="1.0.0.0" />
-    
+
     <rim:invoke-target id="net.rim.webworks.SmokeTest">
         <type>APPLICATION</type>
         <filter>
