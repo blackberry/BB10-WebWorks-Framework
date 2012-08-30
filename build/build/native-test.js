@@ -37,7 +37,7 @@ function _getCmd(ext, device, ip) {
         console.log("Running Unit tests for " + ext);
         cmd += " " +
             "scp " + testDir  + " root@" + ip + ":/tmp/test && " +
-            "ssh root@" + ip + " 'cd ../tmp; chmod 755 test; ./test'";
+            "ssh root@" + ip + " '. /base/scripts/env.sh; cd ../tmp; chmod 755 test; ./test'";
     }
 
     return cmd;

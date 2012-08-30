@@ -1,0 +1,255 @@
+/*
+ * Copyright 2012 Research In Motion Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var _extDir = __dirname + "./../../../../ext",
+    _apiDir = _extDir + "/pim.contacts",
+    _ID = require(_apiDir + "/manifest").namespace,
+    client = require(_apiDir + "/client"),
+    ContactFindOptions = client.ContactFindOptions,
+    ContactAddress = client.ContactAddress,
+    ContactError = client.ContactError,
+    ContactField = client.ContactField,
+    ContactName = client.ContactName,
+    ContactOrganization = client.ContactOrganization,
+    ContactPhoto = client.ContactPhoto,
+    mockedWebworks = {
+        execAsync: jasmine.createSpy("webworks.execAsync"),
+        event: {
+            once: jasmine.createSpy("webworks.event.once").andCallFake(function (service, eventId, callback) {
+                callback({
+                    result: escape(JSON.stringify({
+                        _success: true,
+                        contacts: []
+                    }))
+                });
+            })
+        }
+    };
+
+describe("pim.contacts client", function () {
+    beforeEach(function () {
+        GLOBAL.window = GLOBAL;
+        GLOBAL.window.webworks = mockedWebworks;
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
+    });
+
+    describe("find", function () {
+        it("execAsync and once should have been called for pim.contacts.find() if correct arguments are passed", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find(["name"], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], // filter
+                null, // sort
+                5 // limit
+            ));
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "find", jasmine.any(Object));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), jasmine.any(Function));
+            expect(successCb).toHaveBeenCalledWith([]);
+            expect(errorCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if contactFields is missing or empty", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], // filter
+                null, // sort
+                5 // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if filter field name is missing", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldValue: "John"
+                }], // filter
+                null, // sort
+                5 // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if filter field name is invalid", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: 2343,
+                    fieldValue: "John"
+                }], // filter
+                null, // sort
+                5 // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if filter field value is missing", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME
+                }], // filter
+                null, // sort
+                5 // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if limit is not a number", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], // filter
+                null, // sort
+                "abc" // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if sort field name is missing", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], // filter
+                [{
+                    desc: true
+                }], // sort
+                5 // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+
+        it("error callback is invoked for pim.contacts.find() if sort desc property is missing", function () {
+            var successCb = jasmine.createSpy(),
+                errorCb = jasmine.createSpy();
+
+            client.find([], successCb, errorCb, new ContactFindOptions(
+                [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], // filter
+                [{
+                    fieldName: ContactFindOptions.SORT_FIELD_GIVEN_NAME
+                }], // sort
+                5 // limit
+            ));
+
+            expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            expect(successCb).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("create", function () {
+        it("pim.contacts.create() returns a Contact object with all specified properties set", function () {
+            var contact = client.create({
+                name: new ContactName({
+                    familyName: "Smith",
+                    givenName: "John",
+                    middleName: "Francis"
+                }),
+                addresses: [
+                    new ContactAddress({
+                        streetAddress: "200 University Ave W",
+                        locality: "Waterloo",
+                        country: "Canada",
+                        postalCode: "N2L3G1"
+                    })
+                ],
+                note: "This is a test",
+                emails: [
+                    new ContactField(ContactField.HOME, "jsmith@blah.com"),
+                    new ContactField(ContactField.WORK, "jsmith@work.com")
+                ],
+                organizations: [
+                    new ContactOrganization({
+                        name: "RIM",
+                        department: "R&D",
+                        title: "Software Developer"
+                    })
+                ],
+                favorite: true,
+                photos: [
+                    new ContactPhoto("path/to/pic", true),
+                    new ContactPhoto("path/to/anotherpic", false)
+                ],
+                random: "hahaha"
+            });
+
+            expect(contact.name.familyName).toBe("Smith");
+            expect(contact.name.givenName).toBe("John");
+            expect(contact.name.middleName).toBe("Francis");
+            expect(contact.note).toBe("This is a test");
+            expect(contact.emails.length).toBe(2);
+            expect(contact.emails[0].type).toBe(ContactField.HOME);
+            expect(contact.emails[0].value).toBe("jsmith@blah.com");
+            expect(contact.emails[1].type).toBe(ContactField.WORK);
+            expect(contact.emails[1].value).toBe("jsmith@work.com");
+            expect(contact.favorite).toBe(true);
+            expect(contact.addresses.length).toBe(1);
+            expect(contact.addresses[0].streetAddress).toBe("200 University Ave W");
+            expect(contact.addresses[0].locality).toBe("Waterloo");
+            expect(contact.addresses[0].country).toBe("Canada");
+            expect(contact.addresses[0].postalCode).toBe("N2L3G1");
+            expect(contact.organizations.length).toBe(1);
+            expect(contact.organizations[0].name).toBe("RIM");
+            expect(contact.organizations[0].department).toBe("R&D");
+            expect(contact.organizations[0].title).toBe("Software Developer");
+            expect(contact.photos.length).toBe(2);
+            expect(contact.photos[0].pref).toBe(true);
+            expect(contact.photos[0].originalFilePath).toBe("path/to/pic");
+            expect(contact.photos[1].pref).toBe(false);
+            expect(contact.photos[1].originalFilePath).toBe("path/to/anotherpic");
+            expect(contact.random).not.toBeDefined();
+        });
+    });
+});

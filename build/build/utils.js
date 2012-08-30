@@ -71,12 +71,8 @@ module.exports = {
         return false;
     },
 
-    /*
-     * This is not a complete test as it does not check for values between the dots less 255.
-     * If needed that can be added at a later point.
-     */
     isValidIPAddress: function (ip) {
-        var regex = new RegExp("^(?:[0-9]{1,3}\/.){3}[0-9]{1,3}$");
+        var regex = new RegExp("(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
         return regex.test(ip);
     },
 
