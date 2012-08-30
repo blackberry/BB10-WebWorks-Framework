@@ -91,15 +91,17 @@ module.exports = {
         }
     },
 
-    execCommandWithJWorkflow: function (command, options) {
+    execCommandWithJWorkflow: function (command, options, neverDrop) {
         var displayOutput = this.displayOutput;
         return function (prev, baton) {
             baton.take();
             console.log("EXECUTING " + command);
             var c = childProcess.exec(command, options, function (error, stdout, stderr) {
-                if (error) {
+                if (error && !neverDrop) {
+                    console.log("DROPPING BATON", error, "NeverDrop - " + neverDrop, "if result -" + (error && !neverDrop));
                     baton.drop(error.code);
                 } else {
+                    console.log("PASSING BATON");
                     baton.pass(prev);
                 }
             });
