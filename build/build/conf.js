@@ -33,6 +33,7 @@ module.exports = {
     UI_PLUGINS: path.normalize(__dirname + "/../../ui-resources/plugins"),
     DEPENDENCIES: path.normalize(__dirname + "/../../dependencies"),
     DEPENDENCIES_BOOTSTRAP: path.normalize(__dirname + "/../../dependencies/bootstrap"),
+    DEPENDENCIES_JNEXT: path.normalize(__dirname + "/../../dependencies/jnext"),
     DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB: path.normalize(__dirname + "/../../dependencies/webplatform/framework/clientFiles/webplatform.js"),
     DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE: path.normalize(__dirname + "/../../dependencies/require/require.js"),
     DEPENDENCIES_CONFIGURE_QSK: path.normalize(__dirname + "/../../dependencies/configure-qsk/configure-qsk"),
