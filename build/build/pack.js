@@ -83,6 +83,7 @@ module.exports = function (src, baton) {
         extDest = path.join(_c.DEPLOY, 'ext'),
         clientFilesDest = path.join(_c.DEPLOY, 'clientFiles'),
         bootstrapDest = path.join(_c.DEPLOY, 'dependencies/bootstrap'),
+        jnextDest = path.join(_c.DEPLOY, 'dependencies/jnext'),
         browserRequireDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
         webplatformDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
 
@@ -97,6 +98,7 @@ module.exports = function (src, baton) {
     copyExtensions(_c.EXT, extDest);
     copyFolder(_c.CLIENTFILES, clientFilesDest);
     copyFolder(_c.DEPENDENCIES_BOOTSTRAP, bootstrapDest);
+    copyFolder(_c.DEPENDENCIES_JNEXT, jnextDest);
 
     //Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
     utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
