@@ -7,8 +7,9 @@
     right: 0;
     bottom: 0;
     background-color: rgba(18, 18, 18, 0.5);
-    z-index: 100;
     font-size: 2.5em;
+    z-index: 120;
+
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-box-pack: center;
