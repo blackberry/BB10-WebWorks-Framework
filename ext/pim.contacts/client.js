@@ -24,6 +24,8 @@ var _self = {},
     ContactPhoto = require("./ContactPhoto"),
     ContactError = require("./ContactError"),
     ContactFindOptions = require("./ContactFindOptions"),
+    ContactNews = require("./ContactNews"),
+    ContactActivity = require("./ContactActivity"),
     contactUtils = require("./contactUtils"),
     utils = require("./../../lib/utils");
 
@@ -164,5 +166,7 @@ _self.ContactOrganization = ContactOrganization;
 _self.ContactPhoto = ContactPhoto;
 _self.ContactError = ContactError;
 _self.ContactFindOptions = ContactFindOptions;
+_self.ContactNews = ContactNews;
+_self.ContactActivity = ContactActivity;
 
 module.exports = _self;

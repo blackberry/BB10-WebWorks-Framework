@@ -160,6 +160,10 @@ function validateRemoveArguments(id, onSuccess, onError) {
  * @param properties
  */
 Contact = function (properties) {
+    var privateId,
+        privateNews,
+        privateActivities;
+
     this.displayName = properties && properties.displayName ? properties.displayName : null;
     this.name = properties && properties.name ? properties.name : null; // ContactName
     this.nickname = properties && properties.nickname ? properties.nickname : null;
@@ -181,8 +185,14 @@ Contact = function (properties) {
     this.ringtone = properties && properties.ringtone ? properties.ringtone : null;
     this.favorite = properties && properties.favorite ? properties.favorite : false;
 
-    var privateId = properties && properties.id ? properties.id : null;
+    privateId = properties && properties.id ? properties.id : null;
     Object.defineProperty(this, "id", { "value": privateId });
+
+    privateNews = properties && properties.news ? properties.news : null; // ContactNews[]
+    Object.defineProperty(this, "news", { "value": privateNews });
+
+    privateActivities = properties && properties.activities ? properties.activities : null; // ContactActivity[]
+    Object.defineProperty(this, "activities", { "value": privateActivities });
 };
 
 Contact.prototype.save = function (onSaveSuccess, onSaveError) {
