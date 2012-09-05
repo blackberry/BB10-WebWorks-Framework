@@ -28,6 +28,9 @@
 #include <bb/pim/contacts/ContactPostalAddressBuilder.hpp>
 #include <bb/pim/contacts/ContactPhoto.hpp>
 #include <bb/pim/contacts/ContactPhotoBuilder.hpp>
+#include <bb/pim/account/AccountService.hpp>
+#include <bb/pim/account/Account.hpp>
+
 #include <string>
 #include <utility>
 #include <map>
@@ -37,6 +40,7 @@ class PimContacts;
 namespace webworks {
 
 namespace bbpim = bb::pim::contacts;
+namespace bbpimacc = bb::pim::account;
 
 typedef std::map<std::string, bbpim::AttributeKind::Type> StringToKindMap;
 typedef std::map<std::string, bbpim::AttributeSubKind::Type> StringToSubKindMap;
@@ -81,6 +85,8 @@ private:
     void populateOrganizations(const bbpim::Contact& contact, Json::Value& contactOrgs);
     void populateAddresses(const bbpim::Contact& contact, Json::Value& contactAddrs);
     void populatePhotos(const bbpim::Contact& contact, Json::Value& contactPhotos);
+    void populateNews(const bbpim::Contact& contact, Json::Value& contactNews);
+    void populateActivity(const bbpim::Contact& contact, Json::Value& contactActivity);
 
     static QSet<bbpim::ContactId> singleFieldSearch(const Json::Value& searchFieldsJson, const Json::Value& contactFields, bool favorite);
     static QString getSortFieldValue(const bbpim::SortColumn::Type sortField, const bbpim::Contact& contact);
@@ -88,6 +94,7 @@ private:
     static void getSortSpecs(const Json::Value& sort);
     static QSet<bbpim::ContactId> getPartialSearchResults(const Json::Value& filter, const Json::Value& contactFields, const bool favorite);
     static bool lessThan(const bbpim::Contact& c1, const bbpim::Contact& c2);
+    static void replaceAll(std::string& str, const std::string& from, const std::string& to);
 
     // Helper functions for Save
     void addAttributeKind(bbpim::ContactBuilder& contactBuilder, const Json::Value& jsonObj, const std::string& field);

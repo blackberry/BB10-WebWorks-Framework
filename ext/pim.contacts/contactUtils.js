@@ -19,22 +19,31 @@ var self,
     ContactOrganization = require("./ContactOrganization"),
     ContactAddress = require("./ContactAddress"),
     ContactField = require("./ContactField"),
-    ContactPhoto = require("./ContactPhoto");
+    ContactPhoto = require("./ContactPhoto"),
+    ContactNews = require("./ContactNews"),
+    ContactActivity = require("./ContactActivity");
 
 function populateFieldArray(contactProps, field, ClassName) {
     if (contactProps[field]) {
         var list = [],
-            photo;
-        contactProps[field].forEach(function (obj) {
+            obj;
+
+        contactProps[field].forEach(function (args) {
             if (ClassName === ContactField) {
-                list.push(new ClassName(obj.type, obj.value));
+                list.push(new ClassName(args.type, args.value));
             } else if (ClassName === ContactPhoto) {
-                photo = new ContactPhoto(obj.originalFilePath, obj.pref);
-                photo.largeFilePath = obj.largeFilePath;
-                photo.smallFilePath = obj.smallFilePath;
-                list.push(photo);
+                obj = new ContactPhoto(args.originalFilePath, args.pref);
+                obj.largeFilePath = args.largeFilePath;
+                obj.smallFilePath = args.smallFilePath;
+                list.push(obj);
+            } else if (ClassName === ContactNews) {
+                obj = new ContactNews(args);
+                list.push(obj);
+            } else if (ClassName === ContactActivity) {
+                obj = new ContactActivity(args);
+                list.push(obj);
             } else {
-                list.push(new ClassName(obj));
+                list.push(new ClassName(args));
             }
         });
         contactProps[field] = list;
@@ -63,6 +72,8 @@ self = module.exports = {
         populateFieldArray(contact, "socialNetworks", ContactField);
         populateFieldArray(contact, "urls", ContactField);
         populateFieldArray(contact, "photos", ContactPhoto);
+        populateFieldArray(contact, "news", ContactNews);
+        populateFieldArray(contact, "activities", ContactActivity);
         // TODO categories
 
         populateDate(contact, "birthday");

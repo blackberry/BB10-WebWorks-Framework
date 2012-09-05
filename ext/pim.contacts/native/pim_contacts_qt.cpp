@@ -448,6 +448,14 @@ Json::Value PimContactsQt::assembleSearchResults(const QSet<bbpim::ContactId>& r
     return contactArray;
 }
 
+void PimContactsQt::replaceAll(std::string& s, const std::string& souce, const std::string& target) {
+    size_t start = 0;
+    while ((start = s.find(souce, start)) != std::string::npos) {
+        s.replace(start, souce.length(), target);
+        start += target.length();
+    }
+}
+
 /****************************************************************
  * Helper functions shared by Find and Save
  ****************************************************************/
@@ -507,6 +515,12 @@ Json::Value PimContactsQt::populateContact(bbpim::Contact& contact, const Json::
                     } else if (field == "photos") {
                         contactItem[field] = Json::Value();
                         populatePhotos(contact, contactItem[field]);
+                    } else if (field == "news") {
+                        contactItem[field] = Json::Value();
+                        populateNews(contact, contactItem[field]);
+                    } else if (field == "activities") {
+                        contactItem[field] = Json::Value();
+                        populateActivity(contact, contactItem[field]);
                     }
 
                     break;
@@ -543,11 +557,18 @@ void PimContactsQt::populateField(const bbpim::Contact& contact, bbpim::Attribut
         if (typeIter != _subKindAttributeMap.end()) {
             if (isContactField) {
                 val["type"] = Json::Value(typeIter->second);
-                val["value"] = Json::Value(currentAttr.value().toStdString());
+
+                std::string value = currentAttr.value().toStdString();
+                replaceAll(value, "\"", "\\\"");
+
+                val["value"] = Json::Value(value);
                 contactItem.append(val);
             } else {
                 if (isArray) {
-                    val = Json::Value(currentAttr.value().toStdString());
+                    std::string value = currentAttr.value().toStdString();
+                    replaceAll(value, "\"", "\\\"");
+
+                    val = Json::Value(value);
                     contactItem.append(val);
                 } else {
                     if (kind == bbpim::AttributeKind::Date) {
@@ -559,7 +580,9 @@ void PimContactsQt::populateField(const bbpim::Contact& contact, bbpim::Attribut
                 }
             }
         } else if (kind == bbpim::AttributeKind::Note) {
-            contactItem["note"] = Json::Value(currentAttr.value().toStdString());
+            std::string note = currentAttr.value().toStdString();
+            replaceAll(note, "\"", "\\\"");
+            contactItem["note"] = Json::Value(note);
             break;
         }
     }
@@ -577,7 +600,9 @@ void PimContactsQt::populateDisplayNameNickName(const bbpim::Contact& contact, J
             bbpim::ContactAttribute currentAttr = nameAttrs[i];
 
             if (currentAttr.subKind() == subkind) {
-                contactItem[field] = Json::Value(currentAttr.value().toStdString());
+                std::string value = currentAttr.value().toStdString();
+                replaceAll(value, "\"", "\\\"");
+                contactItem[field] = Json::Value(value);
                 break;
             }
         }
@@ -624,7 +649,9 @@ void PimContactsQt::populateOrganizations(const bbpim::Contact& contact, Json::V
             SubKindToStringMap::const_iterator typeIter = _subKindAttributeMap.find(attr.subKind());
 
             if (typeIter != _subKindAttributeMap.end()) {
-                org[typeIter->second] = Json::Value(attr.value().toStdString());
+                std::string value = attr.value().toStdString();
+                replaceAll(value, "\"", "\\\"");
+                org[typeIter->second] = Json::Value(value);
             }
         }
 
@@ -649,6 +676,68 @@ void PimContactsQt::populatePhotos(const bbpim::Contact& contact, Json::Value& c
         photo["pref"] = Json::Value((primaryPhoto.id() == currentPhoto.id()));
 
         contactPhotos.append(photo);
+    }
+}
+
+void PimContactsQt::populateNews(const bbpim::Contact& contact, Json::Value& contactNews)
+{
+    QList<bbpim::ContactNews> newsList = contact.news(5);
+    QList<bbpim::ContactNews>::const_iterator k = newsList.constBegin();
+
+    while (k != newsList.constEnd()) {
+        Json::Value news;
+        Json::Value companies;
+        QString format = "yyyy-MM-dd";
+
+        std::string body = k->body().toStdString();
+        replaceAll(body, "\"", "\\\"");
+        news["body"] = Json::Value(body);
+
+        std::string title = k->title().toStdString();
+        replaceAll(title, "\"", "\\\"");
+        news["title"] = Json::Value(title);
+
+        std::string articleSource = k->articleSource().toStdString();
+        replaceAll(articleSource, "\"", "\\\"");
+        news["articleSource"] = Json::Value(articleSource);
+
+        news["type"] = Json::Value(k->type().toStdString());
+        news["publishedAt"] = Json::Value(QString::number(k->publishedAt().toUTC().toMSecsSinceEpoch()).toStdString());
+        news["uri"] = Json::Value(k->uri().toString().toStdString());
+
+        QStringList companiesList = k->companies();
+        QStringList::const_iterator j = companiesList.constBegin();
+
+        while (j != companiesList.constEnd()) {
+            companies.append(j->toStdString());
+            ++j;
+        }
+
+        news["companies"] = companies;
+
+        contactNews.append(news);
+        ++k;
+    }
+}
+
+void PimContactsQt::populateActivity(const bbpim::Contact& contact, Json::Value& contactActivity)
+{
+    QList<bbpim::ContactActivity> activities = contact.activities();
+    QList<bbpim::ContactActivity>::const_iterator k = activities.constBegin();
+
+    while (k != activities.constEnd()) {
+        Json::Value activity;
+
+        std::string desc = k->description().toStdString();
+        replaceAll(desc, "\"", "\\\"");
+
+        activity["description"] = Json::Value(desc);
+        activity["direction"] = Json::Value(k->direction());
+        activity["mimeType"] = Json::Value(k->mimeType().toStdString());
+        activity["timestamp"] = Json::Value(QString::number(k->statusTimeStamp().toUTC().toMSecsSinceEpoch()).toStdString());
+
+        contactActivity.append(activity);
+        ++k;
     }
 }
 
@@ -1175,6 +1264,8 @@ void PimContactsQt::createAttributeKindMap()
     _attributeKindMap["addresses"] = bbpim::AttributeKind::Invalid;
     _attributeKindMap["favorite"] = bbpim::AttributeKind::Invalid;
     _attributeKindMap["photos"] = bbpim::AttributeKind::Invalid;
+    _attributeKindMap["news"] = bbpim::AttributeKind::Invalid;
+    _attributeKindMap["activities"] = bbpim::AttributeKind::Invalid;
 }
 
 void PimContactsQt::createAttributeSubKindMap()
