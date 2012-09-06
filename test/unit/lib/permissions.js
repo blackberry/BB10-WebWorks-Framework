@@ -32,6 +32,7 @@ describe("permissions", function () {
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
+            addEventListener: jasmine.createSpy(),
             enableWebEventRedirect: jasmine.createSpy(),
             allowGeolocation: jasmine.createSpy(),
             disallowGeolocation: jasmine.createSpy()
