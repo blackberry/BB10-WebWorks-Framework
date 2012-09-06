@@ -80,9 +80,7 @@ describe("Overlay Webview", function () {
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(1);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-
-                expect(mockedApplication.windowVisible).toEqual(true);
-                expect(mockedWebview.backgroundColor).toEqual("0x00FFFFFF");
+                expect(mockedWebview.backgroundColor).toEqual(0x00FFFFFF);
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
             });
         });
