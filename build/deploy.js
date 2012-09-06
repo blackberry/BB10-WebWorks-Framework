@@ -21,7 +21,7 @@ var jWorkflow = require("jWorkflow"),
 module.exports = function (barFile, deviceIp, password) {
     var deployBar = jWorkflow.order();
 
-    if (!barFile || !path.existsSync(barFile)) { 
+    if (!barFile || !path.existsSync(barFile)) {
         utils.displayOutput("Invalid bar file specified - " + barFile);
         process.exit();
     }
@@ -40,8 +40,8 @@ module.exports = function (barFile, deviceIp, password) {
              .andThen(utils.execCommandWithJWorkflow("blackberry-deploy -uninstallApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password, {}, true))
              .andThen(utils.execCommandWithJWorkflow("blackberry-deploy -installApp -launchApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password))
              .start(function () {
-                 utils.displayOutput("App Deployed successfully");
-                 process.exit();
-             });
+                    utils.displayOutput("App Deployed successfully");
+                    process.exit();
+                });
 
 };

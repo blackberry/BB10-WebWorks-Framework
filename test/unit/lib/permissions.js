@@ -4,7 +4,6 @@ describe("permissions", function () {
         mockedController,
         mockedWebview,
         mockedApplication,
-        request = require(libPath + "lib/request"),
         permissions = require(libPath + "lib/permissions"),
         config = require(libPath + "lib/config");
 
