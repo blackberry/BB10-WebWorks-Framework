@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html>
+	<head>
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>WebWorks Smoke Test for BB10</title>
+		<script src="local:///js/webworks.js" type="text/javascript"></script>
+        <script src="local:///js/jquery-1.7.2.min.js"></script>
+        <script src="local:///js/jquery.mobile-1.1.1.min.js"></script>
+        <link rel="stylesheet" href="local:///css/jquery.mobile-1.1.1.min.css" />
+		<script language="javascript" type="text/javascript">
+            function do_input_Test() {
+                document.location.href = "local:///manual/framework-split/cards.htm";
+            }
+        </script>
+	</head>
+	<body>
+        <input id="backButton" type="button" value="Back" onclick="document.location.href = 'local:///index.htm';" />
+        <p> This WebWorks Smoke Test includes the following tests: </p>
+		<li> blackberry.invoke.card </li>
+		</ol>
+            <p>
+            <input id="Button17" type="button" value="blackberry.invoke.card" onclick="return do_input_Test()" /></p>
+    </ol>
+	</body>
+</html>
