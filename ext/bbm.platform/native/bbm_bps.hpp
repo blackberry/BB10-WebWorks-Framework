@@ -37,8 +37,9 @@ enum BBMField {
 };
 
 enum BBMInternalEvents {
-    INTERNAL_EVENT_STOP = 0,
+    INTERNAL_EVENT_REGISTER = 0,
     INTERNAL_EVENT_CONTACT_EVENTS,
+    INTERNAL_EVENT_STOP,
 };
 
 class BBMBPS {
