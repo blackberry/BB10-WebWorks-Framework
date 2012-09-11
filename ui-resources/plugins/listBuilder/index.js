@@ -51,19 +51,21 @@ listBuilder = {
         listContent.innerHTML = "";
         // create a bunch of subdivs
         for (i in targets) {
-            listItem = document.createElement('div');
-            listItem.appendChild(document.createTextNode(targets[i].label));
-            listItem.setAttribute('class', 'listItem');
-            listItem.addEventListener('mousedown', handleMouseDown, false);
-            listItem.ontouchend = invokeApp.bind(this, targets[i].key);
-            listItems[targets[i].key] = {
-                target : targets[i].key,
-                action : request.action,
-                type: request.type,
-                uri : request.uri,
-                data : window.btoa(request.data)
-            };
-            listContent.appendChild(listItem);
+            if (targets.hasOwnProperty(i)) {
+                listItem = document.createElement('div');
+                listItem.appendChild(document.createTextNode(targets[i].label));
+                listItem.setAttribute('class', 'listItem');
+                listItem.addEventListener('mousedown', handleMouseDown, false);
+                listItem.ontouchend = invokeApp.bind(this, targets[i].key);
+                listItems[targets[i].key] = {
+                    target : targets[i].key,
+                    action : request.action,
+                    type: request.type,
+                    uri : request.uri,
+                    data : window.btoa(request.data)
+                };
+                listContent.appendChild(listItem);
+            }
         }
         // subdivs will have a click handler to run stuff
         // hide menu after handling a click

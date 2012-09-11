@@ -24,12 +24,18 @@ describe("webview", function () {
             url: undefined,
             setFileSystemSandbox: undefined,
             setGeometry: jasmine.createSpy(),
+            setApplicationOrientation: jasmine.createSpy(),
+            setExtraPluginDirectory: jasmine.createSpy(),
+            notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
-            enableWebEventRedirect: jasmine.createSpy()
+            addEventListener: jasmine.createSpy(),
+            enableWebEventRedirect: jasmine.createSpy(),
+            addKnownSSLCertificate: jasmine.createSpy(),
+            continueSSLHandshaking: jasmine.createSpy()
         };
         mockedApplication = {
             windowVisible: undefined
@@ -40,10 +46,15 @@ describe("webview", function () {
                 getController: function () {
                     return mockedController;
                 },
-                createWebView: function (createFunction) {
+                createWebView: function (options, createFunction) {
                     //process.nextTick(createFunction);
                     //setTimeout(createFunction,0);
-                    runs(createFunction);
+                    if (typeof options === 'function') {
+                        runs(options);
+                    }
+                    else {
+                        runs(createFunction);
+                    }
                     return mockedWebview;
                 },
                 getApplication: function () {
@@ -71,7 +82,6 @@ describe("webview", function () {
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(0);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-                expect(mockedApplication.windowVisible).toEqual(true);
                 expect(mockedWebview.enableWebEventRedirect.argsForCall[0]).toEqual(['ContextMenuRequestEvent', 3]);
                 expect(mockedWebview.enableWebEventRedirect.argsForCall[1]).toEqual(['ContextMenuCancelEvent', 3]);
                 expect(mockedWebview.enableWebEventRedirect.argsForCall[2]).toEqual(['PropertyCurrentContextEvent', 3]);
@@ -102,6 +112,65 @@ describe("webview", function () {
             webview.create();
             webview.setSandbox(false);
             expect(webview.getSandbox()).toBeFalsy();
+        });
+    });
+
+    describe("id", function () {
+        it("can get the id for the webiew", function () {
+            webview.create();
+            webview.id();
+            expect(mockedWebview.id).toEqual(42);
+        });
+    });
+
+    describe("geometry", function () {
+        it("can set geometry", function () {
+            webview.create();
+            webview.setGeometry(0, 0, 100, 200);
+            expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
+        });
+    });
+
+    describe("application orientation", function () {
+        it("can set application orientation", function () {
+            webview.create();
+            webview.setApplicationOrientation(90);
+            expect(mockedWebview.setApplicationOrientation).toHaveBeenCalledWith(90);
+        });
+
+        it("can notifyApplicationOrientationDone", function () {
+            webview.create();
+            webview.notifyApplicationOrientationDone();
+            expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
+        });
+    });
+
+    describe("plugin directory", function () {
+        it("can set an extra plugin directory", function () {
+            webview.create();
+            webview.setExtraPluginDirectory('/usr/lib/browser/plugins');
+            expect(mockedWebview.setExtraPluginDirectory).toHaveBeenCalledWith('/usr/lib/browser/plugins');
+
+        });
+    });
+
+    describe("SSL Exception Methods", function () {
+        it("addKnownSSLException", function () {
+            var url = 'https://bojaps.com',
+                certificateInfo = {
+                    test : 'test'
+                };
+            webview.create();
+            webview.addKnownSSLCertificate(url, certificateInfo);
+            expect(mockedWebview.addKnownSSLCertificate).toHaveBeenCalledWith(url, certificateInfo);
+        });
+
+        it("continue SSL Hanshaking", function () {
+            var streamId = 8,
+                SSLAction = 'SSLActionReject';
+            webview.create();
+            webview.continueSSLHandshaking(streamId, SSLAction);
+            expect(mockedWebview.continueSSLHandshaking).toHaveBeenCalledWith(streamId, SSLAction);
         });
     });
 

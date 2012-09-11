@@ -1,0 +1,22 @@
+﻿<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Worker terminate() testing</title>
+ </head>
+ <body>
+  <input id="Button1" type="button" value="Terminate" onclick="return terminate_worker()" />
+  <p>The highest prime number discovered so far is: <output id="result"></output></p>
+  <script>
+   var worker = new Worker('worker1.js');
+   worker.onmessage = function (event) {
+     document.getElementById('result').textContent = event.data;
+   };
+   function terminate_worker(){
+       alert('terminate');
+       worker.terminate();
+   }
+  </script>
+  <p><a href="main.htm">Go back to main page</a></p> 
+ </body>
+</html>

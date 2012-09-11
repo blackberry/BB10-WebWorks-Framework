@@ -1,5 +1,5 @@
 <project>
-    <groupId>net.rim.BBXwebworks</groupId>
+    <groupId>net.rim.BB10webworks</groupId>
     <artifactId>framework</artifactId>
     <version>1.0.0.0</version>
     <name>${project.artifactId}-${project.version}</name>
@@ -124,7 +124,7 @@
 
     <build>
         <directory>target</directory>
-        <finalName>BBXwebworks</finalName>
+        <finalName>BB10webworks</finalName>
 
         <plugins>
             <plugin>

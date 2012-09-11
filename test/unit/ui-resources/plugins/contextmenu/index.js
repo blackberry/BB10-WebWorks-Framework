@@ -21,13 +21,16 @@ describe("ui-resources/contextmenu", function () {
     menu,
     menuHandle,
     menuContent,
+    menuDelete,
+    numberOfMenuItems = 5,
     headText,
     subheadText,
     header,
     mockedController,
     mockedApplication,
-    invocation,
-    config = require(srcPath + './lib/config.js');
+    elements,
+    elementsLength,
+    invocation;
 
     beforeEach(function () {
         invocation = {
@@ -44,6 +47,11 @@ describe("ui-resources/contextmenu", function () {
             }
         };
 
+        elements = {
+                length : 5
+            };
+        elementsLength = 5;
+
         GLOBAL.alert = jasmine.createSpy();
         GLOBAL.window = {
             qnx : {
@@ -55,37 +63,86 @@ describe("ui-resources/contextmenu", function () {
                         return mockedApplication;
                     }
                 }
-            }
+            },
+
+            screen : {
+                avalHeight : "1280"
+            },
+
+            document: GLOBAL.document,
+
+            addEventListener: jasmine.createSpy()
         };
         GLOBAL.document = {
+            staticElements: {},
+
             createTextNode: jasmine.createSpy(),
             createElement: jasmine.createSpy().andReturn({
                 appendChild: jasmine.createSpy(),
                 setAttribute: jasmine.createSpy(),
-                addEventListener: jasmine.createSpy()
+                addEventListener: jasmine.createSpy(),
+                style: {}
             }),
+            body: {
+                addEventListener: jasmine.createSpy(),
+                removeEventListener: jasmine.createSpy()
+            },
+
+            getElementsByClassName: function (id) {
+                var returnElements = [],
+                    i;
+                if (id === "menuItem") {
+                    for (i = 0; i < numberOfMenuItems; i++) {
+                        returnElements[i] = {
+                            ontouchmove : jasmine.any(Function),
+                            className : "menuItem",
+                            clientHeight : 108
+                        };
+                    }
+                }
+                return returnElements;
+            },
+
             getElementById: function (id) {
                 var returnElement;
+
+                // Used if we want to use a mock object in our test and want to reference its changes from
+                // the context menu later
+                if (GLOBAL.document.staticElements[id]) {
+                    return GLOBAL.document.staticElements[id];
+                }
+
                 if (id === "contextMenu") {
                     menu = {
                         addEventListener: jasmine.createSpy(),
                         removeEventListener: jasmine.createSpy(),
                         showContextmenu: jasmine.createSpy(),
                         appendChild: jasmine.createSpy(),
-                        className: undefined
+                        className: undefined,
+                        style: {overflowY: '', height: ''}
                     };
                     returnElement = menu;
+                } else if (id === 'contextMenuDelete') {
+                    menuDelete = {
+                        firstChild: jasmine.createSpy(),
+                        removeChild: jasmine.createSpy(),
+                        style: {}
+                    };
+                    returnElement = menuDelete;
                 } else if (id === "contextMenuHandle") {
                     menuHandle = {
                         addEventListener: jasmine.createSpy(),
-                        removeEventListener: jasmine.createSpy()
+                        removeEventListener: jasmine.createSpy(),
+                        className: '',
+                        style: {},
+                        removeChild: jasmine.createSpy()
                     };
                     returnElement = menuHandle;
                 } else if (id === "contextMenuHeadText") {
-                    headText = { innerText: undefined };
+                    headText = { innerText: undefined, style: {} };
                     returnElement = headText;
                 } else if (id === "contextMenuSubheadText") {
-                    subheadText = { innerText: undefined };
+                    subheadText = { innerText: undefined, style: {}};
                     returnElement = subheadText;
                 } else if (id === "contextMenuHeader") {
                     header = { className: undefined };
@@ -93,9 +150,18 @@ describe("ui-resources/contextmenu", function () {
                 } else if (id === "contextMenuContent") {
                     menuContent = {
                         childNodes: [],
-                        appendChild: jasmine.createSpy()
+                        appendChild: jasmine.createSpy(),
+                        style: {overflowY: '', height: ''},
+                        className: '',
+                        removeChild: jasmine.createSpy()
                     };
                     returnElement = menuContent;
+                } else if (id === "moreHandleIcon") {
+                    returnElement = null;
+                } else if (id === "contextMenuModal") {
+                    returnElement = {
+                        style: {}
+                    };
                 }
                 return returnElement;
             }
@@ -112,6 +178,9 @@ describe("ui-resources/contextmenu", function () {
 
     afterEach(function () {
         contextmenu.hideContextMenu();
+
+        // Clear static elements
+        GLOBAL.document.staticElements = {};
     });
 
     it("has an init function", function () {
@@ -123,15 +192,19 @@ describe("ui-resources/contextmenu", function () {
         expect(menu.addEventListener).toHaveBeenCalledWith("webkitTransitionEnd", jasmine.any(Function));
     });
 
-    it("has a handleMouseDown function", function () {
-        expect(contextmenu.handleMouseDown).toBeDefined();
+    it("has a mouseDownHandler function", function () {
+        expect(contextmenu.mouseDownHandler).toBeDefined();
     });
 
-    it("has a handleMouseDown function that accepts an event", function () {
-        var spyFunction = jasmine.createSpy(),
-            evt = { preventDefault : spyFunction };
-        contextmenu.handleMouseDown(evt);
+    it("has a mouseDownHandler function that accepts an event", function () {
+        var evt = {
+            preventDefault : jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
+        };
+
+        contextmenu.mouseDownHandler(evt);
         expect(evt.preventDefault).toHaveBeenCalled();
+        expect(evt.stopPropagation).toHaveBeenCalled();
     });
 
     it("has a showContextMenu function", function () {
@@ -140,23 +213,26 @@ describe("ui-resources/contextmenu", function () {
 
     it("allows showContextMenu to set menuVisible to true", function () {
         var evt = {
-            cancelBubble : false
+            cancelBubble : false,
+            preventDefault: jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
         };
+        contextmenu.hideContextMenu();
+        contextmenu.peekContextMenu(true);
         contextmenu.showContextMenu(evt);
         expect(contextmenu.isMenuVisible()).toEqual(true);
     });
 
     it("allows showContextMenu to set peeked mode to false when already peeked", function () {
         var evt = {
-            cancelBubble : false
+            preventDefault: jasmine.createSpy(),
+            stopPropagation: jasmine.createSpy()
         };
         contextmenu.hideContextMenu();
         contextmenu.peekContextMenu(true);
         contextmenu.showContextMenu(evt);
-        expect(evt.cancelBubble).toEqual(true);
         expect(contextmenu.isMenuVisible()).toEqual(true);
     });
-
 
     it("can set the header text of the context menu", function () {
         var text = "So Awesome Header";
@@ -173,28 +249,18 @@ describe("ui-resources/contextmenu", function () {
     it("can hide the context menu", function () {
         contextmenu.showContextMenu();
         contextmenu.hideContextMenu();
-        expect(menu.removeEventListener).toHaveBeenCalledWith('touchend', contextmenu.hideContextMenu, false);
-        expect(menuHandle.removeEventListener).toHaveBeenCalledWith('touchend', contextmenu.showContextMenu, false);
         expect(contextmenu.isMenuVisible()).toEqual(false);
         expect(menu.className).toEqual('hideMenu');
-        expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.notifyContextMenuCancelled', 2);
         expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.setSensitivity', ['SensitivityTest']);
     });
 
     it("can set transitionEnd logic when the context menu is hidden", function () {
         spyOn(contextmenu, 'setHeadText');
         spyOn(contextmenu, 'setSubheadText');
+        contextmenu.hideContextMenu();
         contextmenu.transitionEnd();
-        expect(header.className).toEqual('');
         expect(contextmenu.setHeadText).toHaveBeenCalledWith('');
         expect(contextmenu.setSubheadText).toHaveBeenCalledWith('');
-    });
-
-    it("can set transitionEnd logic when the context menu is peeked", function () {
-        contextmenu.peekContextMenu(true);
-        contextmenu.transitionEnd();
-        expect(menu.addEventListener).toHaveBeenCalledWith('touchend', contextmenu.hideContextMenu, false);
-        expect(menuHandle.addEventListener).toHaveBeenCalledWith('touchend', contextmenu.showContextMenu, false);
     });
 
     it("can peek the context menu", function () {
@@ -207,7 +273,6 @@ describe("ui-resources/contextmenu", function () {
 
     it("can set the context menu items", function () {
         var itemA = {
-                function: jasmine.createSpy(),
                 imageUrl: 'http://image.com/a.png',
                 name: 'OptionA'
             },
@@ -216,376 +281,171 @@ describe("ui-resources/contextmenu", function () {
         expect(menuContent.appendChild).toHaveBeenCalledWith(jasmine.any(Object));
     });
 
-    it("Cause the Copy function to get called properly", function () {
-        contextmenu.responseHandler('Copy');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['Copy']);
+    it("can set the classname of contextMenuHandle to showContextMenuHandle when less than 7 menu items", function () {
+        numberOfMenuItems = 4;
+        contextmenu.peekContextMenu(true);
+        expect(menuHandle.className).toEqual('showContextMenuHandle');
     });
 
-    it("Cause the Clear function to get called properly", function () {
-        contextmenu.responseHandler('Clear');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['Clear']);
+    it("can layout the header title correctly when there is no sub header text", function () {
+        // Override the getElementById to refer to the same object so we can spy on the context menu's changes
+        // to the headers
+        document.staticElements.contextMenuHeadText = { innerText: undefined, style: {}};
+        document.staticElements.contextMenuSubheadText = { innerText: undefined, style: {}};
+
+        contextmenu.setMenuOptions([
+            {
+                headText: 'head text'
+            }
+        ]);
+        contextmenu.peekContextMenu(true);
+        contextmenu.showContextMenu();
+
+        expect(document.staticElements.contextMenuHeadText.style.height).toEqual('105px');
+        expect(document.staticElements.contextMenuHeadText.style.lineHeight).toEqual('105px');
     });
 
-    it("Cause the Paste function to get called properly", function () {
-        contextmenu.responseHandler('Paste');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['Paste']);
+    it("can layout the sub header text when there is no header text", function () {
+        document.staticElements.contextMenuHeadText = { innerText: undefined, style: {}};
+        document.staticElements.contextMenuSubheadText = { innerText: undefined, style: {}};
+
+        contextmenu.setMenuOptions([
+            {
+                headText: '',
+                subheadText: 'sub head text'
+            }
+        ]);
+        contextmenu.peekContextMenu(true);
+        contextmenu.showContextMenu();
+
+        expect(document.staticElements.contextMenuSubheadText.style.height).toEqual('105px');
+        expect(document.staticElements.contextMenuSubheadText.style.lineHeight).toEqual('105px');
     });
 
-    it("Cause the Cut function to get called properly", function () {
-        contextmenu.responseHandler('Cut');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['Cut']);
+    it("can animate the header down when it exists", function () {
+        document.staticElements.contextMenuHeader = { className: 'undefined' };
+        contextmenu.setMenuOptions([
+            {
+                headText: 'head text',
+                subheadText: 'sub head text'
+            }
+        ]);
+
+        contextmenu.peekContextMenu(true);
+        contextmenu.showContextMenu();
+
+        expect(document.staticElements.contextMenuHeader.className).toEqual('showMenuHeader');
     });
 
-    it("Cause the Select function to get called properly", function () {
-        contextmenu.responseHandler('Select');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['Select']);
-    });
+    it("will show the more handle icon when there are > max num of items while in peeked landscape mode", function () {
+        var items = [],
+            i;
 
-    it("Cause the CopyLink function to get called properly", function () {
-        contextmenu.responseHandler('CopyLink');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['CopyLink']);
-    });
+        for (i = 0; i < 4; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
 
-    it("Cause the CopyImageLink function to get called properly", function () {
-        contextmenu.responseHandler('CopyImageLink');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['CopyImageLink']);
-    });
-
-    it("Cause the OpenLink function to get called properly", function () {
-        var currentContext = {
-            url : 'testUrl',
-            src : 'testSrc'
-        };
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.openLink();
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.loadURL', ['testUrl']);
-    });
-
-    it("Cause the SaveLinkAs function to get called properly", function () {
-        var currentContext = {
-            url : 'testUrl',
-            src : 'testSrc'
-        };
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.saveLink();
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.downloadURL', ['testUrl', '']);
-    });
-
-
-    it("Cause the InspectElement function to get called properly", function () {
-        contextmenu.responseHandler('InspectElement');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.handleContextMenuResponse', ['InspectElement']);
-    });
-
-    it("has a generateInvocationList function", function () {
-        expect(contextmenu.generateInvocationList).toBeDefined();
-    });
-
-    it("Cause the generationInvocationList function to get called properly", function () {
-        var id = 1,
-            invokeFunction = "invocation.queryTargets",
-            currentContext = {
-                src : 'file://'
-            },
-
-            request = {
-                action: 'bb.action.SHARE',
-                uri : currentContext.src,
-                target_type: invocation.TARGET_TYPE_ALL,
-                action_type: invocation.ACTION_TYPE_MENU,
-                type : 'text/plain'
-            };
-
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.generateInvocationList(request, 'No link sharing applications installed');
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(id, invokeFunction, jasmine.any(Object), jasmine.any(Function));
-    });
-
-    it("has a SaveImage function", function () {
-        expect(contextmenu.saveImage).toBeDefined();
-    });
-
-    it("Causes the saveImage function to return", function () {
-        var currentContext = {};
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.saveImage();
-        expect(mockedController.remoteExec).not.toHaveBeenCalled();
-    });
-
-    it("Cause the SaveImage to not be called, since access_shared is undefined", function () {
-        var currentContext = {
-            url : 'testUrl',
-            src : 'testSrc',
-            isImage : true
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
         };
 
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.saveImage();
-        expect(mockedController.remoteExec).not.toHaveBeenCalled();
+        window.orientation = 90;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
+
+        expect(document.staticElements.contextMenuHandle.appendChild).toHaveBeenCalled();
     });
 
-    it("Cause the SaveImage function to get called properly", function () {
-        var currentContext = {
-            url : 'testUrl',
-            src : 'testSrc',
-            isImage : true
+    it("will not show the more handle icon when there are < max num of items while in peeked landscape mode", function () {
+        var items = [],
+            i;
+
+        for (i = 0; i < 3; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
+
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
         };
 
-        // Set the access_shared permissions in a mocked way ;) //
-        spyOn(config, "permissions").andReturn(['access_shared']);
-        config.permissions.indexOf = function () {
-                                                    return 1;
-                                                };
+        window.orientation = 90;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
 
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.saveImage();
-        expect(mockedController.remoteExec).toHaveBeenCalledWith(1, 'webview.downloadSharedFile', ['testSrc', 'photos'], jasmine.any(Function));
+        expect(document.staticElements.contextMenuHandle.appendChild).not.toHaveBeenCalled();
     });
 
-    it("has a ShareLink function", function () {
-        expect(contextmenu.shareLink).toBeDefined();
-    });
+    it("will show the more handle icon when there are > max num of items while in peeked portrait mode", function () {
+        var items = [],
+            i;
 
-    it("Cause the ShareLink function to return undefine", function () {
-        var currentContext = {};
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.shareLink();
-        contextmenu.generateInvocationList = jasmine.createSpy();
-        expect(contextmenu.generateInvocationList).not.toHaveBeenCalled();
-    });
+        for (i = 0; i < 8; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
 
-    it("Cause the ShareLink function to get called properly", function () {
-        var currentContext = {
-            text : true,
-            url : 'file://'
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
         };
 
-        contextmenu.setCurrentContext(currentContext);
-        contextmenu.shareLink();
-        expect(contextmenu.generateInvocationList).toHaveBeenCalledWith(jasmine.any(Object), 'No link sharing applications installed');
+        window.orientation = 0;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
+
+        expect(document.staticElements.contextMenuHandle.appendChild).toHaveBeenCalled();
     });
 
-    it("has a generateContextMenuItems function", function () {
-        expect(contextmenu.generateContextMenuItems).toBeDefined();
-    });
+    it("will not show the more handle icon when there are < max num of items while in peeked portrait mode", function () {
+        var items = [],
+            i;
 
-    it("Cause the generateContextMenuItems function to return Clear Field", function () {
-        var items = ['ClearField'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Clear Field', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
+        for (i = 0; i < 4; i += 1) {
+            items.push({
+                imageUrl: 'http://image.com/a.png',
+                name: 'OptionA'
+            });
+        }
 
-    it("Cause the generateContextMenuItems function to return empty array for SendLink", function () {
-        var items = ['SendLink'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
+        document.staticElements.contextMenuHandle = {
+            addEventListener: jasmine.createSpy(),
+            removeEventListener: jasmine.createSpy(),
+            className: '',
+            style: {},
+            removeChild: jasmine.createSpy(),
+            appendChild: jasmine.createSpy()
+        };
 
-    it("Cause the generateContextMenuItems function to return empty array for SendImageLink", function () {
-        var items = ['SendImageLink'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
+        window.orientation = 0;
+        contextmenu.init();
+        contextmenu.setMenuOptions(items);
+        contextmenu.peekContextMenu(true);
 
-    it("Cause the generateContextMenuItems function to empty array for FullMenu", function () {
-        var items = ['FullMenu'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function to empty array for Delete", function () {
-        var items = ['Delete'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Cancel", function () {
-        var items = ['Cancel'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Cancel', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Cut", function () {
-        var items = ['Cut'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Cut', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Copy", function () {
-        var items = ['Copy'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Copy', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Paste", function () {
-        var items = ['Paste'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Paste', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Select", function () {
-        var items = ['Select'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Select', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to empty array for AddLinkToBookmarks", function () {
-        var items = ['AddLinkToBookmarks'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Copy Link", function () {
-        var items = ['CopyLink'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Copy Link', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to empty array for OpenLinkInNewTab", function () {
-        var items = ['OpenLinkInNewTab'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Open Link", function () {
-        var items = ['OpenLink'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Open', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Save Link as", function () {
-        var items = ['SaveLinkAs'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Save Link as', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Save Image", function () {
-        var items = ['SaveImage'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Save Image', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to return Copy Image Link", function () {
-        var items = ['CopyImageLink'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Copy Image Link', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function to empty array for Search", function () {
-        var items = ['Search'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function to return InspectElement", function () {
-        var items = ['InspectElement'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Inspect Element', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function return ShareLink menuitem when the protocol is not file or local", function () {
-        var items = ['ShareLink'],
-            currentContext = {
-                url : 'http://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual(
-            [{'name': 'Share Link', 'function': jasmine.any(Function), 'imageUrl': jasmine.any(String)}]);
-    });
-
-    it("Cause the generateContextMenuItems function not return Share Image menuitem", function () {
-        var items = ['ShareImage'],
-            currentContext = {
-                url : 'file://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function not return ShareLink menuitem when the protocol is file://", function () {
-        var items = ['ShareLink'],
-            currentContext = {
-                url : 'file://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
-    });
-
-    it("Cause the generateContextMenuItems function not return ShareLink menuitem when the protocol is local://", function () {
-        var items = ['ShareLink'],
-            currentContext = {
-                url : 'local://www.rim.com'
-            };
-        contextmenu.setCurrentContext(currentContext);
-        expect(contextmenu.generateContextMenuItems(items)).toEqual([]);
+        expect(document.staticElements.contextMenuHandle.appendChild).not.toHaveBeenCalled();
     });
 });
