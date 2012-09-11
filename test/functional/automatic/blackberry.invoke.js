@@ -70,4 +70,218 @@ describe("blackberry.invoke", function () {
             expect(onError).not.toHaveBeenCalled();
         });
     });
+
+    it('blackberry.invoke.file_transfer_mode constants should be defined', function () {
+        expect(blackberry.invoke.FILE_TRANSFER_PRESERVE).toBe('PRESERVE');
+        expect(blackberry.invoke.FILE_TRANSFER_COPY_RO).toBe('COPY_RO');
+        expect(blackberry.invoke.FILE_TRANSFER_COPY_RW).toBe('COPY_RW');
+        expect(blackberry.invoke.FILE_TRANSFER_LINK).toBe('LINK');
+
+    });
+
+    it('open the pictureViewer card and then close to ensure invoke works with sensible file transfer defaults.', function () {
+        var delay = 1000,
+            flag = false,
+            reason,
+            errorSpy = jasmine.createSpy();
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "file://" + blackberry.io.home + "/../app/native/img/blackberry10.jpg"
+        },
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+    it('open the pictureViewer card and then close using the file protocal and file_transfer_mode property.', function () {
+        var reason,
+            delay = 1000,
+            flag = false,
+            errorSpy = jasmine.createSpy();
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "file://" + blackberry.io.home + "/../app/native/img/blackberry10.jpg",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_COPY_RO
+        },
+        function (reason) {
+        },
+
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+
+    it('open the pictureViewer card and then close to ensure invoke file_trasfer works.', function () {
+        var reason,
+            delay = 1000,
+            flag = false,
+            errorSpy = jasmine.createSpy();
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "local:///img/blackberry10.jpg",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_COPY_RO
+        },
+        function (reason) {
+        },
+        function (reason) {
+        },
+
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+    it('open the pictureViewer card and then close to ensure invoke file_trasfer read write.', function () {
+        var reason,
+            delay = 1000,
+            flag = false,
+            errorSpy = jasmine.createSpy();
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "local:///img/blackberry10.jpg",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_COPY_RW
+        },
+        function (reason) {
+        },
+        function (reason) {
+        },
+
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+    it('open an audio card using the COPY_RW file_transfer_attribute', function () {
+        var reason,
+            delay = 1000,
+            flag = false,
+            errorSpy = jasmine.createSpy();
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "local:///audio/test.mp3",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_COPY_RW
+        },
+        function (reason) {
+        },
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+    it('open an audio card with a mal formed invoke and expect it to this.fail', function () {
+        blackberry.invoke.invoke({
+            action: "bb.action",
+            uri : "local:///audio/test.mp3",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_PRESERVE
+        },
+        function (reason) {
+        },
+        function (error) {
+            expect(error).toBe("INVOKE_NO_TARGET_ERROR");
+        });
+
+
+    });
+
 });

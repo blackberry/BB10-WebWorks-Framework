@@ -89,4 +89,9 @@ _self.closeChildCard = function () {
 
 window.webworks.execSync(_ID, "registerEvents", null);
 
+window.webworks.defineReadOnlyField(_self, "FILE_TRANSFER_PRESERVE", 'PRESERVE');
+window.webworks.defineReadOnlyField(_self, "FILE_TRANSFER_COPY_RO", 'COPY_RO');
+window.webworks.defineReadOnlyField(_self, "FILE_TRANSFER_COPY_RW", 'COPY_RW');
+window.webworks.defineReadOnlyField(_self, "FILE_TRANSFER_LINK", 'LINK');
+
 module.exports = _self;
