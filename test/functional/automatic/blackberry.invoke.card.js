@@ -57,14 +57,15 @@ describe("blackberry.invoke.card", function () {
     it('open the file picker card and then close to make sure it actually opens.', function () {
         var delay = 20000,
             flag = false,
-            reason;
+            reason,
+            errorSpy = jasmine.createSpy();
+
         blackberry.invoke.card.invokeFilePicker({mode: "Picker"}, function (path) {
         },
         function (reason) {
-            reason = reason;
-        },
-        function (error) {
-        });
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
 
         waits(delay / 4);
 
@@ -88,16 +89,16 @@ describe("blackberry.invoke.card", function () {
     it('open the camera card and then close to make sure it actually opens.', function () {
         var delay = 20000,
             flag = false,
+            errorSpy = jasmine.createSpy(),
             reason;
+
         blackberry.invoke.card.invokeCamera("photo", function (path) {
         },
         function (reason) {
-            reason = reason;
             flag = true;
-        },
-        function (error) {
-        });
+        }, errorSpy);
 
+        expect(errorSpy).not.toHaveBeenCalled();
 
         waits(delay / 4);
 

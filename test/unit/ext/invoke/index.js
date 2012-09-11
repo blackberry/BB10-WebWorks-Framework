@@ -85,6 +85,21 @@ describe("invoke index", function () {
             }, jasmine.any(Function));
             expect(successCB).toHaveBeenCalled();
         });
+
+        it("can invoke with uri using the file_transfer_mode property", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    "request": encodeURIComponent(JSON.stringify({uri: "http://www.rim.com", file_transfer_mode: "PRESERVE"})),
+                };
+
+            index.invoke(successCB, null, mockedArgs);
+            expect(mockedInvocation.invoke).toHaveBeenCalledWith({
+                uri: "http://www.rim.com",
+                file_transfer_mode : "PRESERVE"
+            }, jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+
     });
 
     describe("query", function () {

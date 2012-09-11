@@ -43,6 +43,13 @@ describe("invoke client", function () {
 
     describe("invoke", function () {
 
+        it("blackberry.invoke constants should be properly defined", function () {
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILE_TRANSFER_PRESERVE", "PRESERVE");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILE_TRANSFER_COPY_RO", "COPY_RO");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILE_TRANSFER_COPY_RW", "COPY_RW");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILE_TRANSFER_LINK", "LINK");
+        });
+
         it("should call error callback if request is not valid", function () {
             var onError = jasmine.createSpy("client onError");
 
