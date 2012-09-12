@@ -21,6 +21,7 @@ var _self = {},
     onCreateSuccess = null,
     onCreateFail = null,
     onCreateSimChange = null,
+    onCreatePushTransportReady = null,
     onCreateChannel = null,
     createInvokeTargetId = null,
     createAppId = null,
@@ -31,7 +32,7 @@ var _self = {},
     CHANNEL_ALREADY_DESTROYED = 10004,
     CHANNEL_ALREADY_DESTROYED_BY_PROVIDER = 10005,
     INVALID_PPG_SUBSCRIBER_STATE = 10006,
-    DEVICE_PIN_NOT_FOUND = 10007,
+    PPG_SUBSCRIBER_NOT_FOUND = 10007,
     EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG = 10008,
     INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG = 10009,
     PPG_SUBSCRIBER_LIMIT_REACHED = 10010,
@@ -39,14 +40,16 @@ var _self = {},
     CHANNEL_SUSPENDED_BY_PROVIDER = 10012,
     CREATE_SESSION_NOT_DONE = 10100,
     MISSING_PPG_URL = 10102,
-    NETWORK_FAILURE = 10103,
+    PUSH_TRANSPORT_UNAVAILABLE = 10103,
     OPERATION_NOT_SUPPORTED = 10105,
     CREATE_CHANNEL_NOT_DONE = 10106,
     MISSING_PORT_FROM_PPG = 10107,
     MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG = 10108,
-    PPG_CURRENTLY_NOT_AVAILABLE = 10110,
     MISSING_INVOKE_TARGET_ID = 10111,
-    SESSION_ALREADY_EXISTS = 10112;
+    SESSION_ALREADY_EXISTS = 10112,
+    INVALID_PPG_URL_OR_PPG_UNAVAILABLE = 10113,
+    CREATE_CHANNEL_OPERATION = 1,
+    DESTROY_CHANNEL_OPERATION = 2;
 
 function webworksCreateCallback(result) {
     if (result === SUCCESS) {
@@ -54,6 +57,10 @@ function webworksCreateCallback(result) {
             window.webworks.event.once(_ID, "push.create.simChangeCallback", onCreateSimChange);
         }
 
+        if (onCreatePushTransportReady) {
+            window.webworks.event.add(_ID, "push.create.pushTransportReadyCallback", onCreatePushTransportReady);
+        }
+        
         if (onCreateSuccess) {
             onCreateSuccess(new PushService());
         }
@@ -69,6 +76,7 @@ function webworksCreateCallback(result) {
     onCreateSuccess = null;
     onCreateFail = null;
     onCreateSimChange = null;
+    onCreatePushTransportReady = null;
 }
 
 function webworksCreateChannelCallback(info) {
@@ -85,7 +93,7 @@ function webworksCreateChannelCallback(info) {
 PushService = function () {
 };
 
-PushService.create = function (options, successCallback, failCallback, simChangeCallback) {
+PushService.create = function (options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback) {
     var args = { "invokeTargetId" : options.invokeTargetId || "",
                  "appId" : options.appId || "",
                  "ppgUrl" : options.ppgUrl || "" };
@@ -110,6 +118,7 @@ PushService.create = function (options, successCallback, failCallback, simChange
     onCreateSuccess = successCallback;
     onCreateFail = failCallback;
     onCreateSimChange = simChangeCallback;
+    onCreatePushTransportReady = pushTransportReadyCallback;
     window.webworks.event.once(_ID, "push.create.callback", webworksCreateCallback);
 
     // Send command to framework to start Push service
@@ -192,7 +201,7 @@ window.webworks.defineReadOnlyField(PushService, "INVALID_PROVIDER_APPLICATION_I
 window.webworks.defineReadOnlyField(PushService, "CHANNEL_ALREADY_DESTROYED", CHANNEL_ALREADY_DESTROYED);
 window.webworks.defineReadOnlyField(PushService, "CHANNEL_ALREADY_DESTROYED_BY_PROVIDER", CHANNEL_ALREADY_DESTROYED_BY_PROVIDER);
 window.webworks.defineReadOnlyField(PushService, "INVALID_PPG_SUBSCRIBER_STATE", INVALID_PPG_SUBSCRIBER_STATE);
-window.webworks.defineReadOnlyField(PushService, "DEVICE_PIN_NOT_FOUND", DEVICE_PIN_NOT_FOUND);
+window.webworks.defineReadOnlyField(PushService, "PPG_SUBSCRIBER_NOT_FOUND", PPG_SUBSCRIBER_NOT_FOUND);
 window.webworks.defineReadOnlyField(PushService, "EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG", EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG);
 window.webworks.defineReadOnlyField(PushService, "INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG", INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG);
 window.webworks.defineReadOnlyField(PushService, "PPG_SUBSCRIBER_LIMIT_REACHED", PPG_SUBSCRIBER_LIMIT_REACHED);
@@ -200,14 +209,16 @@ window.webworks.defineReadOnlyField(PushService, "INVALID_OS_VERSION_OR_DEVICE_M
 window.webworks.defineReadOnlyField(PushService, "CHANNEL_SUSPENDED_BY_PROVIDER", CHANNEL_SUSPENDED_BY_PROVIDER);
 window.webworks.defineReadOnlyField(PushService, "CREATE_SESSION_NOT_DONE", CREATE_SESSION_NOT_DONE);
 window.webworks.defineReadOnlyField(PushService, "MISSING_PPG_URL", MISSING_PPG_URL);
-window.webworks.defineReadOnlyField(PushService, "NETWORK_FAILURE", NETWORK_FAILURE);
+window.webworks.defineReadOnlyField(PushService, "PUSH_TRANSPORT_UNAVAILABLE", PUSH_TRANSPORT_UNAVAILABLE);
 window.webworks.defineReadOnlyField(PushService, "OPERATION_NOT_SUPPORTED", OPERATION_NOT_SUPPORTED);
 window.webworks.defineReadOnlyField(PushService, "CREATE_CHANNEL_NOT_DONE", CREATE_CHANNEL_NOT_DONE);
 window.webworks.defineReadOnlyField(PushService, "MISSING_PORT_FROM_PPG", MISSING_PORT_FROM_PPG);
 window.webworks.defineReadOnlyField(PushService, "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG", MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG);
-window.webworks.defineReadOnlyField(PushService, "PPG_CURRENTLY_NOT_AVAILABLE", PPG_CURRENTLY_NOT_AVAILABLE);
 window.webworks.defineReadOnlyField(PushService, "MISSING_INVOKE_TARGET_ID", MISSING_INVOKE_TARGET_ID);
 window.webworks.defineReadOnlyField(PushService, "SESSION_ALREADY_EXISTS", SESSION_ALREADY_EXISTS);
+window.webworks.defineReadOnlyField(PushService, "INVALID_PPG_URL_OR_PPG_UNAVAILABLE", INVALID_PPG_URL_OR_PPG_UNAVAILABLE);
+window.webworks.defineReadOnlyField(PushService, "CREATE_CHANNEL_OPERATION", CREATE_CHANNEL_OPERATION);
+window.webworks.defineReadOnlyField(PushService, "DESTROY_CHANNEL_OPERATION", DESTROY_CHANNEL_OPERATION);
 
 /*
  * Define push.PushPayload

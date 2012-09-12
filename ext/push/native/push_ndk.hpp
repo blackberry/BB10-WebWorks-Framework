@@ -19,7 +19,6 @@
 
 #include <bb/communications/push/PushErrno.hpp>
 #include <bb/communications/push/PushService.hpp>
-#include <bb/communications/push/PushPayload.hpp>
 
 #include <pthread.h>
 #include <string>
@@ -41,6 +40,7 @@ typedef bb::communications::push::PushListener PushListener;
 typedef bb::communications::push::PushService PushService;
 typedef bb::communications::push::PushStatus PushStatus;
 typedef bb::communications::push::PushPayload PushPayload;
+typedef bb::communications::push::PushCommand PushCommand;
 
 class PushNDK: public PushListener {
 public:
@@ -65,6 +65,7 @@ public:
     virtual void onRegisterToLaunchComplete(const PushStatus& status);
     virtual void onUnregisterFromLaunchComplete(const PushStatus& status);
     virtual void onSimChange();
+    virtual void onPushTransportReady(PushCommand command);
 
 private:
     void stopService();

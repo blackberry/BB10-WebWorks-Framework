@@ -226,6 +226,13 @@ void PushNDK::onSimChange()
     m_parent->NotifyEvent("push.create.simChangeCallback", "{}");
 }
 
+void PushNDK::onPushTransportReady(PushCommand command)
+{
+    std::stringstream ss;
+    ss << command;
+    m_parent->NotifyEvent("push.create.pushTransportReadyCallback", ss.str());
+}
+
 void PushNDK::MonitorMessages()
 {
     fd_set fileDescriptorSet;

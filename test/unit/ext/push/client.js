@@ -26,7 +26,7 @@ var _extDir = __dirname + "./../../../../ext",
         "CHANNEL_ALREADY_DESTROYED" : 10004,
         "CHANNEL_ALREADY_DESTROYED_BY_PROVIDER" : 10005,
         "INVALID_PPG_SUBSCRIBER_STATE" : 10006,
-        "DEVICE_PIN_NOT_FOUND" : 10007,
+        "PPG_SUBSCRIBER_NOT_FOUND" : 10007,
         "EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG" : 10008,
         "INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG" : 10009,
         "PPG_SUBSCRIBER_LIMIT_REACHED" : 10010,
@@ -34,14 +34,16 @@ var _extDir = __dirname + "./../../../../ext",
         "CHANNEL_SUSPENDED_BY_PROVIDER" : 10012,
         "CREATE_SESSION_NOT_DONE" : 10100,
         "MISSING_PPG_URL" : 10102,
-        "NETWORK_FAILURE" : 10103,
+        "PUSH_TRANSPORT_UNAVAILABLE" : 10103,
         "OPERATION_NOT_SUPPORTED" : 10105,
         "CREATE_CHANNEL_NOT_DONE" : 10106,
         "MISSING_PORT_FROM_PPG" : 10107,
         "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG" : 10108,
-        "PPG_CURRENTLY_NOT_AVAILABLE" : 10110,
         "MISSING_INVOKE_TARGET_ID" : 10111,
-        "SESSION_ALREADY_EXISTS" : 10112		
+        "SESSION_ALREADY_EXISTS" : 10112,
+        "INVALID_PPG_URL_OR_PPG_UNAVAILABLE" : 10113,
+        "CREATE_CHANNEL_OPERATION" : 1,
+        "DESTROY_CHANNEL_OPERATION" : 2
     },
     constantsLength = 0,
     defineROFieldArgs = [];
@@ -94,7 +96,7 @@ describe("push", function () {
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CHANNEL_ALREADY_DESTROYED")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CHANNEL_ALREADY_DESTROYED_BY_PROVIDER")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("INVALID_PPG_SUBSCRIBER_STATE")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("DEVICE_PIN_NOT_FOUND")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("PPG_SUBSCRIBER_NOT_FOUND")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("PPG_SUBSCRIBER_LIMIT_REACHED")]);
@@ -102,14 +104,16 @@ describe("push", function () {
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CHANNEL_SUSPENDED_BY_PROVIDER")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CREATE_SESSION_NOT_DONE")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_PPG_URL")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("NETWORK_FAILURE")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("PUSH_TRANSPORT_UNAVAILABLE")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("OPERATION_NOT_SUPPORTED")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CREATE_CHANNEL_NOT_DONE")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_PORT_FROM_PPG")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("PPG_CURRENTLY_NOT_AVAILABLE")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_INVOKE_TARGET_ID")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SESSION_ALREADY_EXISTS")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("INVALID_PPG_URL_OR_PPG_UNAVAILABLE")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CREATE_CHANNEL_OPERATION")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("DESTROY_CHANNEL_OPERATION")]);
         });
     });
 
@@ -141,9 +145,10 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" },
                     successCallback,
                     failCallback,
-                    simChangeCallback;
+                    simChangeCallback,
+                    pushTransportReadyCallback;
 
-                expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                 expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "push.create.callback", jasmine.any(Function));
                 expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "startService", options);
             });
@@ -153,15 +158,16 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" },
                     successCallback,
                     failCallback,
-                    simChangeCallback;
+                    simChangeCallback,
+                    pushTransportReadyCallback;
 
                 runs(function () {
-                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                 });
 
                 runs(function () {
                     options.appId = "";
-                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                     expect(mockedWebworks.event.once.callCount).toEqual(2);
                     expect(mockedWebworks.execSync.callCount).toEqual(2);
                 });
@@ -173,17 +179,18 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" },
                     successCallback,
                     failCallback,
-                    simChangeCallback;
+                    simChangeCallback,
+                    pushTransportReadyCallback;
 
                 runs(function () {
-                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                 });
 
                 runs(function () {
                     options.invokeTargetId = "differentInvokeTargetId";
 
                     function createPushService() {
-                        client.PushService.create(options, successCallback, failCallback, simChangeCallback);
+                        client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback);
                     }
 
                     expect(createPushService).toThrow(invokeTargetIdError);
@@ -198,17 +205,18 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" },
                     successCallback,
                     failCallback,
-                    simChangeCallback;
+                    simChangeCallback,
+                    pushTransportReadyCallback;
 
                 runs(function () {
-                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                 });
 
                 runs(function () {
                     options.appId = "differentAppId";
 
                     function createPushService() {
-                        client.PushService.create(options, successCallback, failCallback, simChangeCallback);
+                        client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback);
                     }
 
                     expect(createPushService).toThrow(appIdError);
@@ -222,17 +230,18 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" },
                     successCallback,
                     failCallback,
-                    simChangeCallback;
+                    simChangeCallback,
+                    pushTransportReadyCallback;
 
                 runs(function () {
-                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                 });
 
                 runs(function () {
                     options.appId = "hello";
 
                     function createPushService() {
-                        client.PushService.create(options, successCallback, failCallback, simChangeCallback);
+                        client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback);
                     }
 
                     expect(createPushService).toThrow(appIdError);
@@ -247,10 +256,11 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" },
                     successCallback,
                     failCallback,
-                    simChangeCallback;
+                    simChangeCallback,
+                    pushTransportReadyCallback;
 
                 runs(function () {
-                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback)).toEqual(2);
+                    expect(client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback)).toEqual(2);
                 });
 
                 runs(function () {
@@ -258,7 +268,7 @@ describe("push", function () {
                                 "ppgUrl" : "ppgUrl" };
 
                     function createPushService() {
-                        client.PushService.create(options, successCallback, failCallback, simChangeCallback);
+                        client.PushService.create(options, successCallback, failCallback, simChangeCallback, pushTransportReadyCallback);
                     }
 
                     expect(createPushService).toThrow(appIdError);

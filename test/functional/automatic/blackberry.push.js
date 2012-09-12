@@ -22,7 +22,7 @@ describe("blackberry.push.PushService", function () {
                       "CHANNEL_ALREADY_DESTROYED" : 10004,
                       "CHANNEL_ALREADY_DESTROYED_BY_PROVIDER" : 10005,
                       "INVALID_PPG_SUBSCRIBER_STATE" : 10006,
-                      "DEVICE_PIN_NOT_FOUND" : 10007,
+                      "PPG_SUBSCRIBER_NOT_FOUND" : 10007,
                       "EXPIRED_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG" : 10008,
                       "INVALID_AUTHENTICATION_TOKEN_PROVIDED_TO_PPG" : 10009,
                       "PPG_SUBSCRIBER_LIMIT_REACHED" : 10010,
@@ -30,13 +30,16 @@ describe("blackberry.push.PushService", function () {
                       "CHANNEL_SUSPENDED_BY_PROVIDER" : 10012,
                       "CREATE_SESSION_NOT_DONE" : 10100,
                       "MISSING_PPG_URL" : 10102,
-                      "NETWORK_FAILURE" : 10103,
+                      "PUSH_TRANSPORT_UNAVAILABLE" : 10103,
                       "OPERATION_NOT_SUPPORTED" : 10105,
                       "CREATE_CHANNEL_NOT_DONE" : 10106,
                       "MISSING_PORT_FROM_PPG" : 10107,
                       "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG" : 10108,
-                      "PPG_CURRENTLY_NOT_AVAILABLE" : 10110,
-                      "MISSING_INVOKE_TARGET_ID" : 10111 },
+                      "MISSING_INVOKE_TARGET_ID" : 10111,
+                      "SESSION_ALREADY_EXISTS" : 10112,
+                      "INVALID_PPG_URL_OR_PPG_UNAVAILABLE" : 10113,
+                      "CREATE_CHANNEL_OPERATION" : 1,
+                      "DESTROY_CHANNEL_OPERATION" : 2},
         pushService;
 
 
@@ -69,7 +72,8 @@ describe("blackberry.push.PushService", function () {
     it("should fail to create a session and call the fail callback", function () {
         var onSuccess,
             onFail,
-            onSimChange;
+            onSimChange,
+            onPushTransportReady;
 
         runs(function () {
             var options = { invokeTargetId : "", 
@@ -79,8 +83,9 @@ describe("blackberry.push.PushService", function () {
             onSuccess = jasmine.createSpy();
             onFail = jasmine.createSpy();
             onSimChange = jasmine.createSpy();
+            onPushTransportReady = jasmine.createSpy();
 
-            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange);
+            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange, onPushTransportReady);
         });
 
         waitsFor(function () {
@@ -96,7 +101,8 @@ describe("blackberry.push.PushService", function () {
     it("should create a session and call the success callback", function () {
         var onSuccess,
             onFail,
-            onSimChange;
+            onSimChange,
+            onPushTransportReady;
 
         runs(function () {
             var options = { invokeTargetId : "com.webworks.test.functional.push.target",
@@ -106,8 +112,9 @@ describe("blackberry.push.PushService", function () {
             onSuccess = jasmine.createSpy();
             onFail = jasmine.createSpy();
             onSimChange = jasmine.createSpy();
+            onPushTransportReady = jasmine.createSpy();
 
-            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange);
+            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange, onPushTransportReady);
         });
 
         waitsFor(function () {

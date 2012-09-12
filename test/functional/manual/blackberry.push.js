@@ -21,7 +21,8 @@ describe("blackberry.push.PushService", function () {
     it("should create a session and call the success callback", function () {
         var onSuccess,
             onFail,
-            onSimChange;
+            onSimChange,
+            onPushTransportReady;
 
         runs(function () {
             var options = { invokeTargetId : "com.webworks.test.functional.push.target",
@@ -31,8 +32,9 @@ describe("blackberry.push.PushService", function () {
             onSuccess = jasmine.createSpy();
             onFail = jasmine.createSpy();
             onSimChange = jasmine.createSpy();
+            onPushTransportReady = jasmine.createSpy();
 
-            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange);
+            blackberry.push.PushService.create(options, onSuccess, onFail, onSimChange, onPushTransportReady);
         });
 
         waitsFor(function () {
