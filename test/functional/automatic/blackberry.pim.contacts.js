@@ -37,7 +37,7 @@ function deleteContactWithMatchingLastName(lastName) {
             numContactsRemoved++;
         };
 
-    contacts.find(["name"], function (contacts, index) {
+    contacts.find(["name"], findOptions, function (contacts, index) {
         numContactsFound = contacts.length;
         contacts.forEach(function (c, index) {
             c.remove(successCb);
@@ -47,7 +47,7 @@ function deleteContactWithMatchingLastName(lastName) {
         });
     }, function (error) {
         console.log("Failed to clean up contacts with last name '" + lastName + "', error code=" + error.code);
-    }, findOptions); 
+    }); 
 
     waitsFor(function () {
         return numContactsRemoved === numContactsFound;
@@ -455,7 +455,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], successCb, errorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, successCb, errorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -560,7 +560,7 @@ describe("blackberry.pim.contacts", function () {
                     called = true;
                 });
 
-            contacts.find(["name", "emails"], successCb, errorCb, findOptions);
+            contacts.find(["name", "emails"], findOptions, successCb, errorCb);
 
             waitsFor(function () {
                 return called;
@@ -694,7 +694,7 @@ describe("blackberry.pim.contacts", function () {
                 expect(errorCb).not.toHaveBeenCalled();
 
                 called = false;
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, findSuccessCb, findErrorCb);
             });
 
             waitsFor(function () {
@@ -755,7 +755,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -798,7 +798,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb);
+                contacts.find(["name", "emails"], null, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -835,7 +835,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -871,7 +871,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -908,7 +908,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["badFieldName", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["badFieldName", "emails"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -948,7 +948,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -987,7 +987,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name", "emails"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name", "emails"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -1047,7 +1047,7 @@ describe("blackberry.pim.contacts", function () {
             try {
                 favContact.save(function () {
                     nonFavContact.save(function () {
-                        contacts.find(["name"], findSuccessCb, findErrorCb, findOptions);
+                        contacts.find(["name"], findOptions, findSuccessCb, findErrorCb);
                     });
                 });
             } catch (e) {
@@ -1091,7 +1091,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["displayName", "nickname"], successCb, errorCb, findOptions);
+                contacts.find(["displayName", "nickname"], findOptions, successCb, errorCb);
             } catch (e) {
                 console.log("Error:  " + e);
                 error = true;
@@ -1158,7 +1158,7 @@ describe("blackberry.pim.contacts", function () {
                 daniel.save(function () {
                     donna.save(function () {
                         dawn.save(function () {
-                            contacts.find(["name"], findSuccessCb, findErrorCb, findOptions);
+                            contacts.find(["name"], findOptions, findSuccessCb, findErrorCb);
                         });
                     });
                 });
@@ -1206,7 +1206,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 error = true;
             }
@@ -1238,7 +1238,7 @@ describe("blackberry.pim.contacts", function () {
                 });
 
             try {
-                contacts.find(["name"], findSuccessCb, findErrorCb, findOptions);
+                contacts.find(["name"], findOptions, findSuccessCb, findErrorCb);
             } catch (e) {
                 error = true;
             }
@@ -1251,6 +1251,34 @@ describe("blackberry.pim.contacts", function () {
                 expect(error).toBe(false);
                 expect(findSuccessCb).toHaveBeenCalled();
                 expect(findErrorCb).not.toHaveBeenCalled();
+            });
+        });
+
+        it("Error callback is optional", function () {
+            var findOptions = new ContactFindOptions([{
+                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                    "fieldValue": "Smitherman"
+                }]),
+                called = false,
+                error = false,
+                findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
+                    called = true;
+                    expect(contacts.length).toBe(4);
+                });
+
+            try {
+                contacts.find(["name"], findOptions, findSuccessCb);
+            } catch (e) {
+                error = true;
+            }
+
+            waitsFor(function () {
+                return called;
+            }, "success/error callback never called", 15000);
+
+            runs(function () {
+                expect(error).toBe(false);
+                expect(findSuccessCb).toHaveBeenCalled();
             });
         });
 
@@ -1282,7 +1310,7 @@ describe("blackberry.pim.contacts", function () {
 
             try {
                 contactObj.save(function () {
-                    contacts.find(["name", "news"], successCb, errorCb, findOptions);
+                    contacts.find(["name", "news"], findOptions, successCb, errorCb);
                 });
             } catch (e) {
                 console.log("Error:  " + e);
