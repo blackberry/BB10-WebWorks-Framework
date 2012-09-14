@@ -33,6 +33,9 @@ describe("blackberry.pim.contacts", function () {
                 successCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
                     console.log(contacts);
                     called = true;
+                    expect(contacts).toBeDefined();
+                    expect(contacts.hasOwnProperty("length")).toBeTruthy();
+                    expect(contacts.length).not.toBe(0);
                     expect(contacts[0].name.givenName).toBe(given);
                     expect(contacts[0].name.familyName).toBe(family);
                     expect(contacts[0].activities).not.toBe([]);
@@ -50,9 +53,9 @@ describe("blackberry.pim.contacts", function () {
                 }]);
 
             try {
-                contacts.find(["name", "activities"], successCb, errorCb, findOptions);
+                contacts.find(["name", "activities"], findOptions, successCb, errorCb);
             } catch (e) {
-                console.log("Error:  " + e);
+                console.log("Error: " + e);
                 error = true;
             }
 
@@ -61,6 +64,69 @@ describe("blackberry.pim.contacts", function () {
             }, "success/error callback never called", 15000);
 
             runs(function () {
+                expect(error).toBe(false);
+                expect(successCb).toHaveBeenCalled();
+                expect(errorCb).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe("Setting contact picture works", function () {
+        it("should be able to set a picture from shared camera folder as contact picture", function () {
+            window.confirm("Please supply the name of a contact which does not have a picture in the Contact App. Please ensure your shared/camera folder has an image named IMG_00000001.jpg");
+
+            var given = prompt("Enter contact's given name:", "John"),
+                family = prompt("Enter contact's family name:", "Doe"),
+                called = false,
+                error = false,
+                successCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
+                    console.log(contacts);
+                    called = true;
+                    expect(contacts.length).toBeDefined();
+                    expect(contacts.length).not.toBe(0);
+
+                    var pic = new ContactPhoto(blackberry.io.sharedFolder + "/camera/IMG_00000001.jpg", true),
+                        saveCalled = false,
+                        picSet = false,
+                        saveSuccessCb = jasmine.createSpy().andCallFake(function (saved) {
+                            saveCalled = true;
+                            console.log(saved);
+                            picSet = window.confirm("Press OK if contact app now shows the contact with the pic.");
+                            expect(picSet).toBeTruthy();
+                        }),
+                        saveErrorCb = jasmine.createSpy().andCallFake(function (error) {
+                            saveCalled = true;
+                            console.log("error");
+                            console.log(error);
+                        });
+                    contacts[0].photos = [pic];
+                    contacts[0].save(saveSuccessCb, saveErrorCb);
+                }),
+                errorCb = jasmine.createSpy("onFindError").andCallFake(function (error) {
+                    console.log("Contact find error");
+                    called = true;
+                }),
+                findOptions = new ContactFindOptions([{
+                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                    "fieldValue": family
+                }, {
+                    "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    "fieldValue": given
+                }]);
+
+            try {
+                contacts.find(["name", "activities"], findOptions, successCb, errorCb);
+            } catch (e) {
+                console.log("Error: " + e);
+                error = true;
+            }
+
+            waitsFor(function () {
+                return called;
+            }, "success/error callback never called", 15000);
+
+            runs(function () {
+                console.log("before asserts");
                 expect(error).toBe(false);
                 expect(successCb).toHaveBeenCalled();
                 expect(errorCb).not.toHaveBeenCalled();

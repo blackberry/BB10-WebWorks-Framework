@@ -35,7 +35,7 @@ function invokeCallback(callback, args) {
     }
 }
 
-function validateFindArguments(contactFields, onFindSuccess, onFindError, findOptions) {
+function validateFindArguments(contactFields, findOptions, onFindSuccess, onFindError) {
     var tempContact,
         error = false;
 
@@ -106,11 +106,11 @@ function validateFindArguments(contactFields, onFindSuccess, onFindError, findOp
     return !error;
 }
 
-_self.find = function (contactFields, onFindSuccess, onFindError, findOptions) {
+_self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
     var callback,
         eventId;
 
-    if (!validateFindArguments(contactFields, onFindSuccess, onFindError, findOptions)) {
+    if (!validateFindArguments(contactFields, findOptions, onFindSuccess, onFindError)) {
         return;
     }
 
