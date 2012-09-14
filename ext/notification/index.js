@@ -15,39 +15,13 @@
  */
 var _config = require("./../../lib/config"),
     _event = require("./../../lib/event"),
-    _pps = qnx.webplatform.pps,
-    _ppsObject;
+    _notification = qnx.webplatform.notification;
 
-function getPPSForWrite(eventName) {
-    if (!_ppsObject) {
-        _ppsObject = _pps.create('/pps/services/notify/control', _pps.PPSMode.FULL);
-        _ppsObject.onOpenFailed = function () {
-            if (eventName) {
-                _event.trigger(eventName, "PPS Open Failed");
-            }
-        };
+function getCallback(eventName) {
 
-        _ppsObject.open(_pps.FileMode.RDWR);
-    }
-
-    _ppsObject.onNewData = function (data) {
-        if (data && data.control) {
-            if (data.control.dat && data.control.dat.toLowerCase() === "ok") {
-                _event.trigger(eventName);
-            }
-            else {
-                _event.trigger(eventName, "PPS onNewData invoked with an error");
-            }
-        }
+    return function (errorMsg) {
+        _event.trigger(eventName, errorMsg);
     };
-
-    _ppsObject.onWriteFailed = function () {
-        if (eventName) {
-            _event.trigger(eventName, "PPS Write Failed");
-        }
-    };
-
-    return _ppsObject;
 }
 
 module.exports = {
@@ -67,6 +41,8 @@ module.exports = {
                 if (_config['invoke-target'].hasOwnProperty(key)) {
                     if (_config['invoke-target'][key].type.toLowerCase() === "application") {
                         args.options.target = _config['invoke-target'][key]["@"].id;
+
+                        break;
                     }
                 }
             }
@@ -77,14 +53,8 @@ module.exports = {
         }
 
         // Calling delete with tag before writing new notification, ensures new notification will override the old one.
-        getPPSForWrite().write({'msg': 'delete', dat: {'itemid': args.options.tag}});
-        getPPSForWrite(args.options.eventName).write(
-            {'msg': 'notify', 'id': args.id,
-                dat: {'itemid': args.options.tag, "title": args.title, 'subtitle': args.options.body,
-                      'target': args.options.target, 'targetAction': args.options.targetAction,
-                      'payload': args.options.payload, 'payloadType': args.options.payloadType, 'payloadURI': args.options.payloadURI
-                     }
-            });
+        _notification.remove(args.options);
+        _notification.notify(args, getCallback(args.options.eventName));
 
         success();
     },
@@ -97,21 +67,8 @@ module.exports = {
             }
         }
 
-        getPPSForWrite().write({'msg': 'delete', dat: {'itemid': args.tag}});
+        _notification.remove(args.tag);
 
         success();
     },
-    close: function (success, fail, args) {
-        var key;
-
-        for (key in args) {
-            if (args.hasOwnProperty(key)) {
-                args[key] = JSON.parse(decodeURIComponent(args[key]));
-            }
-        }
-
-        getPPSForWrite().write({'msg': 'delete', 'id': args.id, dat: {'itemid': args.tag}});
-
-        success();
-    }
 };
