@@ -27,6 +27,8 @@ describe("webview", function () {
             setGeometry: jasmine.createSpy(),
             setApplicationOrientation: jasmine.createSpy(),
             setExtraPluginDirectory: jasmine.createSpy(),
+            setEnablePlugins: jasmine.createSpy(),
+            getEnablePlugins: jasmine.createSpy(),
             notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
@@ -151,12 +153,23 @@ describe("webview", function () {
         });
     });
 
-    describe("plugin directory", function () {
+    describe("plugins", function () {
         it("can set an extra plugin directory", function () {
             webview.create();
             webview.setExtraPluginDirectory('/usr/lib/browser/plugins');
             expect(mockedWebview.setExtraPluginDirectory).toHaveBeenCalledWith('/usr/lib/browser/plugins');
+        });
 
+        it("can enable plugins for the webview", function () {
+            webview.create();
+            webview.setEnablePlugins(true);
+            expect(mockedWebview.pluginsEnabled).toBeTruthy();
+        });
+
+        it("can retrieve whether plugins are enabled", function () {
+            webview.create();
+            webview.setEnablePlugins(true);
+            expect(webview.getEnablePlugins()).toBeTruthy();
         });
     });
 
