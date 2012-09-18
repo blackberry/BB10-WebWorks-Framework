@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 var contacts,
-    ContactFindOptions;
+    ContactFindOptions,
+    ContactPhoto;
  
 describe("blackberry.pim.contacts", function () {
     beforeEach(function () {
         contacts = blackberry.pim.contacts;
         ContactFindOptions = contacts.ContactFindOptions;
+        ContactPhoto = contacts.ContactPhoto;
     });
 
     describe("Find populates Contact properties", function () {
