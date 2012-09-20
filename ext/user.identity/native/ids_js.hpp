@@ -72,6 +72,7 @@ private:
     std::string event_id;
     
     ids_provider_mapping* getProvider(const std::string& provider);
+    std::string getErrorDescription();
 };
 
 #endif // IDS_JS_HPP_

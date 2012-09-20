@@ -37,9 +37,15 @@ JNEXT.IDS = function ()
 	self.idsSetOption = function (args) {
         var setOptionsOpts = { "option" : JSON.parse(decodeURIComponent(args.option)),
                             "value" : JSON.parse(decodeURIComponent(args.value)) };
-
+		
+	
 		if (typeof(setOptionsOpts.option) === "string") {
 			setOptionsOpts.option = parseInt(setOptionsOpts.option, 10);
+		}
+
+
+		if (typeof(setOptionsOpts.value) === "object") {
+			setOptionsOpts.value = "";
 		}
 
 		return JNEXT.invoke(self.m_id, "setOption " + JSON.stringify(setOptionsOpts));
@@ -71,7 +77,6 @@ JNEXT.IDS = function ()
 			properties = getPropertiesArgs.userProperties;
 
 		properties = properties.split(",");
-		alert("get properties has this number of props: " + properties.length);
 		getPropertiesArgs.numProps = properties.length;
 		
 		return JNEXT.invoke(self.m_id, "getProperties " + JSON.stringify(getPropertiesArgs));
