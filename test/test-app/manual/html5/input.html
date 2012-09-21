@@ -13,7 +13,21 @@
     <input id="camerainput" type="file" accept="image/*" capture="camera">
     <p>File:<br>
     <input id="fileinput" type="file">
- <script type="text/javascript">
+    <p>File: Only jpg images<br>
+    <input id="fileinput1" type="file" accept="image/jpg">
+    <p>File: All images<br>
+    <input id="fileinput2" type="file" accept="image/*">
+    <p>File: All videos<br>
+    <input id="fileinput3" type="file" accept="video/*">
+    <p>File: All audio<br>
+    <input id="fileinput4" type="file" accept="audio/*">
+    <p>File: All video and audio<br>
+    <input id="fileinput5" type="file" accept="video/*,image/*">
+    <p>File: All audio of type mp3, all video - ignores mp3 <br>
+    <input id="fileinput6" type="file" accept ="audio/mp3,video/*">
+
+
+    <script type="text/javascript">
         function readSingleFile(evt) {
             var f = evt.target.files[0];
 
@@ -35,6 +49,12 @@
 
 document.getElementById('camerainput').addEventListener('change', readSingleFile, false);
 document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+document.getElementById('fileinput1').addEventListener('change', readSingleFile, false);
+document.getElementById('fileinput2').addEventListener('change', readSingleFile, false);
+document.getElementById('fileinput3').addEventListener('change', readSingleFile, false);
+document.getElementById('fileinput4').addEventListener('change', readSingleFile, false);
+document.getElementById('fileinput5').addEventListener('change', readSingleFile, false);
+document.getElementById('fileinput6').addEventListener('change', readSingleFile, false);
 </script>
     </p> <br>
     <input id="Button2" type="button" value="Back" onclick="history.back()" />
