@@ -108,11 +108,10 @@ std::string BBM::InvokeMethod(const std::string& command)
         bool parse = reader.parse(strParam, obj);
 
         if (!parse) {
-            fprintf(stderr, "%s" "error parsing\n");
             return "";
         }
 
-        int status;
+        int status = 0;
         const std::string strStatus = obj["status"].asString();
         const std::string strStatusMessage = obj["statusMessage"].asString();
 

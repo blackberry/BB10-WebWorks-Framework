@@ -307,7 +307,7 @@ std::string PushNDK::decodeBase64(const std::string& encodedString)
 
     size_t remaining = encodedString.size();
     size_t position;
-    int i = 0, j = 0, current = 0;
+    int i = 0, current = 0;
     unsigned char current_set[4];
     std::string decoded_string;
 

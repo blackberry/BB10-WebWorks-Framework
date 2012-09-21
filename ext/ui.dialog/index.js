@@ -112,11 +112,11 @@ JNEXT.Dialog = function ()
     };
 
     self.init = function () {
-        if (!JNEXT.require("dialog")) {   
+        if (!JNEXT.require("libdialog")) {   
             return false;
         }
 
-        self.m_id = JNEXT.createObject("dialog.Dialog");
+        self.m_id = JNEXT.createObject("libdialog.Dialog");
         
         if (self.m_id === "") {   
             return false;

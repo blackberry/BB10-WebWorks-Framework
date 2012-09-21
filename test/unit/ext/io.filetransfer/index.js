@@ -36,9 +36,9 @@ describe("io.filetransfer index", function () {
         index = null;
     });
 
-    it("can access filetransfer module in JNEXT", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("filetransfer");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("filetransfer.FileTransfer");
+    it("can access libfiletransfer module in JNEXT", function () {
+        expect(JNEXT.require).toHaveBeenCalledWith("libfiletransfer");
+        expect(JNEXT.createObject).toHaveBeenCalledWith("libfiletransfer.FileTransfer");
     });
 
     describe("filetransfer upload", function () {
@@ -72,7 +72,7 @@ describe("io.filetransfer index", function () {
                 },
                 successCB = jasmine.createSpy(),
                 failCB = jasmine.createSpy();
-          
+
             index.upload(successCB, failCB, mocked_args, null);
 
             expect(JNEXT.invoke).toHaveBeenCalledWith("0", "upload " + JSON.stringify(expected_args));

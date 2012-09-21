@@ -114,11 +114,11 @@ JNEXT.PimContacts = function ()
     };
 
     self.init = function () {
-        if (!JNEXT.require("pimContacts")) {
+        if (!JNEXT.require("libpimcontacts")) {
             return false;
         }
 
-        self.m_id = JNEXT.createObject("pimContacts.PimContacts");
+        self.m_id = JNEXT.createObject("libpimcontacts.PimContacts");
         
         if (self.m_id === "") {
             return false;

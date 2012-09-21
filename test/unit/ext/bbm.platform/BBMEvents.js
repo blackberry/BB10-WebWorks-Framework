@@ -34,9 +34,9 @@ describe("bbm.platform BBMEvents", function () {
         BBMEvents = null;
     });
 
-    it("can access bbm module in JNEXT", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("bbm");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("bbm.BBM");
+    it("can access libbbm module in JNEXT", function () {
+        expect(JNEXT.require).toHaveBeenCalledWith("libbbm");
+        expect(JNEXT.createObject).toHaveBeenCalledWith("libbbm.BBM");
     });
 
     describe("onaccesschanged event", function () {

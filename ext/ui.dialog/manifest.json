@@ -1,5 +1,5 @@
 {
     "global": false,
     "namespace": "blackberry.ui.dialog",
-    "dependencies": []
+    "dependencies": ["json"]
 }

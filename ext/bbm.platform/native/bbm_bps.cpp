@@ -140,6 +140,12 @@ void BBMBPS::processProfileUpdate(bbmsp_event_t *event)
             case BBMSP_STATUS:
                 updateString += "status " + getFullProfile();
                 break;
+             case BBMSP_INSTALL_APP:
+                return;
+            case BBMSP_UNINSTALL_APP:
+                return;
+            case BBMSP_INVITATION_RECEIVED:
+                return;
         }
         m_pParent->NotifyEvent(updateString);
     }
@@ -168,6 +174,12 @@ void BBMBPS::processContactUpdate(bbmsp_event_t *event)
             case BBMSP_STATUS:
                 updateString += "status " + getFullContact(contact);
                 break;
+            case BBMSP_INSTALL_APP:
+                return;
+            case BBMSP_UNINSTALL_APP:
+                return;
+            case BBMSP_INVITATION_RECEIVED:
+                return;
         }
         m_pParent->NotifyEvent(updateString);
     }
@@ -512,7 +524,6 @@ std::string BBMBPS::GetContact(bbmsp_contact_t *contact, BBMField field)
 {
     MUTEX_LOCK();
     std::string value;
-    unsigned int size;
     char buffer[4096];
 
     switch (field)

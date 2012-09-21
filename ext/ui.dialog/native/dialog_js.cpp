@@ -91,7 +91,6 @@ std::string Dialog::InvokeMethod(const std::string& command)
         bool parse = reader.parse(jsonObject, obj);
 
         if (!parse) {
-            fprintf(stderr, "%s", "error parsing\n");
             return "Cannot parse JSON object";
         }
 
@@ -105,7 +104,7 @@ std::string Dialog::InvokeMethod(const std::string& command)
             dialogConfig->global = obj["global"].asBool();
             const Json::Value buttonsArray = obj["buttons"];
 
-            for (int i = 0; i < buttonsArray.size(); ++i) {
+            for (unsigned int i = 0; i < buttonsArray.size(); ++i) {
                 dialogConfig->buttons.push_back(buttonsArray[i].asString());
             }
 

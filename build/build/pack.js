@@ -33,11 +33,12 @@ function copyExtensions(extPath, extDest) {
         //Iterate over extensions directory
         fs.readdirSync(extPath).forEach(function (extension) {
             var apiDir = path.normalize(path.resolve(extPath, extension)),
+                apiDirDeviceSO = path.normalize(path.join(apiDir, 'native', 'arm', 'so.le-v7')),
+                apiDirSimulatorSO = path.normalize(path.join(apiDir, 'native', 'x86', 'so')),
                 apiDest = path.join(extDest, extension),
                 extensionStats = fs.lstatSync(apiDir),
                 soPath,
                 soDest,
-                apiNativeDir,
                 jsFiles,
                 soFiles;
 
@@ -56,15 +57,16 @@ function copyExtensions(extPath, extDest) {
                     utils.copyFile(jsFile, apiDest, apiDir);
                 });
 
-                //find and copy each .so file to the extension folder
-                [{src: _c.DEVICE_BUILD, dst: "device"}, {src: _c.SIM_BUILD, dst: "simulator"}].forEach(function (target) {
-                    soPath = path.normalize(path.join(target.src, "ext", extension, "native"));
-                    soDest = path.join(apiDest, target.dst);
-                    apiNativeDir = path.normalize(path.join(apiDir, "native"));
+                // Copy the .so file for this extension
+                [{ src: apiDirDeviceSO, dst: "device" }, { src: apiDirSimulatorSO, dst: "simulator"}].forEach(function (target) {
+                    if (path.existsSync(target.src)) {
+                        soDest = path.join(apiDest, target.dst);
 
-                    //If this is a native extension, copy all .so files
-                    if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
-                        soFiles = utils.listFiles(soPath, function (file) {
+                        if (!path.exists(soDest)) {
+                            fs.mkdirSync(soDest);
+                        }
+
+                        soFiles = utils.listFiles(target.src, function (file) {
                             return path.extname(file) === ".so";
                         });
 

@@ -46,8 +46,8 @@ describe("pim.contacts index", function () {
     });
 
     it("JNEXT require/createObject/registerEvents are called upon requiring index", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("pimContacts");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("pimContacts.PimContacts");
+        expect(JNEXT.require).toHaveBeenCalledWith("libpimcontacts");
+        expect(JNEXT.createObject).toHaveBeenCalledWith("libpimcontacts.PimContacts");
         expect(JNEXT.registerEvents).toHaveBeenCalled();
     });
 

@@ -178,11 +178,11 @@ JNEXT.FileTransfer = function () {
     };
 
     self.init = function () {
-        if (!JNEXT.require("filetransfer")) {
+        if (!JNEXT.require("libfiletransfer")) {
             return false;
         }
 
-        self.m_id = JNEXT.createObject("filetransfer.FileTransfer");
+        self.m_id = JNEXT.createObject("libfiletransfer.FileTransfer");
 
         if (self.m_id === "") {
             return false;

@@ -14,8 +14,8 @@
 * limitations under the License.
 */
 
-#ifndef CONNECTION_BPS_H_
-#define CONNECTION_BPS_H_
+#ifndef CONNECTION_BPS_HPP_
+#define CONNECTION_BPS_HPP_
 
 #include <bps/bps.h>
 #include <bps/netstatus.h>
@@ -52,4 +52,4 @@ private:
 
 } // namespace webworks
 
-#endif /* CONNECTION_BPS_H_ */
+#endif /* CONNECTION_BPS_HPP_ */

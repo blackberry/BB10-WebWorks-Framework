@@ -100,11 +100,11 @@ JNEXT.Push = function () {
     };
 
     self.init = function () {
-        if (!JNEXT.require("pushJNext")) {
+        if (!JNEXT.require("libpushjnext")) {
             return false;
         }
 
-        self.m_id = JNEXT.createObject("pushJNext.Push");
+        self.m_id = JNEXT.createObject("libpushjnext.Push");
 
         if (self.m_id === "") {
             return false;

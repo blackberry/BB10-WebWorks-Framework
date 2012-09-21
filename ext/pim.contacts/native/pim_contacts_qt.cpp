@@ -125,7 +125,7 @@ Json::Value PimContactsQt::CreateContact(const Json::Value& attributeObj)
     bbpim::Contact newContact;
     bbpim::ContactBuilder contactBuilder(newContact.edit());
 
-    for (int i = 0; i < attributeKeys.size(); i++) {
+    for (unsigned int i = 0; i < attributeKeys.size(); i++) {
         const std::string key = attributeKeys[i];
         contactFields.append(Json::Value(key));
         addAttributeKind(contactBuilder, attributeObj[key], key);
@@ -175,7 +175,7 @@ Json::Value PimContactsQt::EditContact(bbpim::Contact& contact, const Json::Valu
     const Json::Value::Members attributeKeys = attributeObj.getMemberNames();
     Json::Value contactFields;
 
-    for (int i = 0; i < attributeKeys.size(); i++) {
+    for (unsigned int i = 0; i < attributeKeys.size(); i++) {
         const std::string key = attributeKeys[i];
         contactFields.append(Json::Value(key));
         syncAttributeKind(contact, attributeObj[key], key);
@@ -208,7 +208,7 @@ Json::Value PimContactsQt::CloneContact(bbpim::Contact& contact, const Json::Val
     const Json::Value::Members attributeKeys = attributeObj.getMemberNames();
     Json::Value contactFields;
 
-    for (int i = 0; i < attributeKeys.size(); i++) {
+    for (unsigned int i = 0; i < attributeKeys.size(); i++) {
         const std::string key = attributeKeys[i];
         contactFields.append(Json::Value(key));
         syncAttributeKind(newContact, attributeObj[key], key);
@@ -275,9 +275,9 @@ void PimContactsQt::getSortSpecs(const Json::Value& sort)
     _sortSpecs.clear();
 
     if (sort.isArray()) {
-        for (int j = 0; j < sort.size(); j++) {
+        for (unsigned int j = 0; j < sort.size(); j++) {
             bbpim::SortOrder::Type order;
-            bbpim::SortColumn::Type sortField;
+            bbpim::SortColumn::Type sortField = bbpim::SortColumn::LastName;
 
             if (sort[j]["desc"].asBool()) {
                 order = bbpim::SortOrder::Descending;
@@ -309,7 +309,7 @@ QSet<bbpim::ContactId> PimContactsQt::getPartialSearchResults(const Json::Value&
     _contactSearchMap.clear();
 
     if (!filter.empty()) {
-        for (int j = 0; j < filter.size(); j++) {
+        for (unsigned int j = 0; j < filter.size(); j++) {
             QSet<bbpim::ContactId> currentResults = singleFieldSearch(filter[j], contactFields, favorite);
 
             if (currentResults.empty()) {
@@ -347,7 +347,7 @@ QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searc
             contactFilter.setIsFavourite(favorite);
         }
 
-        for (int i = 0; i < contactFields.size(); i++) {
+        for (unsigned int i = 0; i < contactFields.size(); i++) {
             // favorite is always included, no need to include
             if (contactFields[i].asString() == "favorite") {
                 continue;
@@ -464,7 +464,7 @@ Json::Value PimContactsQt::populateContact(bbpim::Contact& contact, const Json::
 {
     Json::Value contactItem;
 
-    for (int i = 0; i < contactFields.size(); i++) {
+    for (unsigned int i = 0; i < contactFields.size(); i++) {
         std::string field = contactFields[i].asString();
         std::map<std::string, bbpim::AttributeKind::Type>::const_iterator kindIter = _attributeKindMap.find(field);
 
@@ -758,7 +758,7 @@ void PimContactsQt::addAttributeKind(bbpim::ContactBuilder& contactBuilder, cons
                 break;
             }
             case bbpim::AttributeKind::OrganizationAffiliation: {
-                for (int i = 0; i < jsonObj.size(); i++) {
+                for (unsigned int i = 0; i < jsonObj.size(); i++) {
                     std::stringstream groupKeyStream;
                     groupKeyStream << i + 1;
 
@@ -820,12 +820,12 @@ void PimContactsQt::addAttributeKind(bbpim::ContactBuilder& contactBuilder, cons
             // Special cases (treated differently in ContactBuilder):
             default: {
                 if (field == "addresses") {
-                    for (int i = 0; i < jsonObj.size(); i++) {
+                    for (unsigned int i = 0; i < jsonObj.size(); i++) {
                         Json::Value addressObj = jsonObj[i];
                         addPostalAddress(contactBuilder, addressObj);
                     }
                 } else if (field == "photos") {
-                    for (int i = 0; i < jsonObj.size(); i++) {
+                    for (unsigned int i = 0; i < jsonObj.size(); i++) {
                         Json::Value photoObj = jsonObj[i];
                         addPhoto(contactBuilder, photoObj);
                     }
@@ -961,7 +961,7 @@ QList<SubkindValuePair> PimContactsQt::convertGroupedAttributes(const Json::Valu
     const Json::Value::Members fields = fieldsObj.getMemberNames();
     QList<SubkindValuePair> convertedList;
 
-    for (int i = 0; i < fields.size(); i++) {
+    for (unsigned int i = 0; i < fields.size(); i++) {
         const std::string fieldKey = fields[i];
         StringToSubKindMap::const_iterator subkindIter = _attributeSubKindMap.find(fieldKey);
 
@@ -977,7 +977,7 @@ QList<SubkindValuePair> PimContactsQt::convertFieldAttributes(const Json::Value&
 {
     QList<SubkindValuePair> convertedList;
 
-    for (int i = 0; i < fieldArray.size(); i++) {
+    for (unsigned int i = 0; i < fieldArray.size(); i++) {
         Json::Value fieldObj = fieldArray[i];
         std::string type = fieldObj.get("type", "").asString();
         std::string value = fieldObj.get("value", "").asString();
@@ -995,7 +995,7 @@ QList<SubkindValuePair> PimContactsQt::convertStringArray(const Json::Value& str
 {
     QList<SubkindValuePair> convertedList;
 
-    for (int i = 0; i < stringArray.size(); i++) {
+    for (unsigned int i = 0; i < stringArray.size(); i++) {
         std::string value = stringArray[i].asString();
         convertedList.append(SubkindValuePair(subkind, value));
     }
@@ -1116,7 +1116,7 @@ void PimContactsQt::syncAttributeGroup(bbpim::ContactBuilder& contactBuilder, bb
 {
     int i;
 
-    for (i = 0; i < jsonObj.size() && i < savedList.size(); i++) {
+    for (i = 0; i < static_cast<int>(jsonObj.size()) && i < savedList.size(); i++) {
         std::stringstream groupKeyStream;
         groupKeyStream << i + 1;
 
@@ -1130,8 +1130,8 @@ void PimContactsQt::syncAttributeGroup(bbpim::ContactBuilder& contactBuilder, bb
                 contactBuilder = contactBuilder.deleteAttribute(savedList[i][j]);
             }
         }
-    } else if (i < jsonObj.size()) {
-        for (; i < jsonObj.size(); i++) {
+    } else if (i < static_cast<int>(jsonObj.size())) {
+        for (; i < static_cast<int>(jsonObj.size()); i++) {
             std::stringstream groupKeyStream;
             groupKeyStream << i + 1;
 
@@ -1178,7 +1178,7 @@ void PimContactsQt::syncPostalAddresses(bbpim::ContactBuilder& contactBuilder, Q
 {
     int i;
 
-    for (i = 0; i < savedList.size() && i < jsonObj.size(); i++) {
+    for (i = 0; i < savedList.size() && i < static_cast<int>(jsonObj.size()); i++) {
         Json::Value addressObj = jsonObj[i];
         bbpim::ContactPostalAddressBuilder addressBuilder(savedList[i].edit());
 
@@ -1201,8 +1201,8 @@ void PimContactsQt::syncPostalAddresses(bbpim::ContactBuilder& contactBuilder, Q
         for (; i < savedList.size(); i++) {
             contactBuilder = contactBuilder.deletePostalAddress(savedList[i]);
         }
-    } else if (i < jsonObj.size()) {
-        for (; i < jsonObj.size(); i++) {
+    } else if (i < static_cast<int>(jsonObj.size())) {
+        for (; i < static_cast<int>(jsonObj.size()); i++) {
             addPostalAddress(contactBuilder, jsonObj[i]);
         }
     }
@@ -1213,13 +1213,13 @@ void PimContactsQt::syncPhotos(bbpim::ContactBuilder& contactBuilder, QList<bbpi
     int i;
 
     // We must do the delete first, because there seems to be a problem if we do it after
-    if (savedList.size() > jsonObj.size()) {
+    if (savedList.size() > static_cast<int>(jsonObj.size())) {
         for (i = jsonObj.size(); i < savedList.size(); i++) {
             contactBuilder = contactBuilder.deletePhoto(savedList[i]);
         }
     }
 
-    for (i = 0; i < savedList.size() && i < jsonObj.size(); i++) {
+    for (i = 0; i < savedList.size() && i < static_cast<int>(jsonObj.size()); i++) {
         std::string filepath = jsonObj[i].get("originalFilePath", "").asString();
         bool pref = jsonObj[i].get("pref", false).asBool();
 
@@ -1232,8 +1232,8 @@ void PimContactsQt::syncPhotos(bbpim::ContactBuilder& contactBuilder, QList<bbpi
         }
     }
 
-    if (i < jsonObj.size()) {
-        for (; i < jsonObj.size(); i++) {
+    if (i < static_cast<int>(jsonObj.size())) {
+        for (; i < static_cast<int>(jsonObj.size()); i++) {
             addPhoto(contactBuilder, jsonObj[i]);
         }
     }

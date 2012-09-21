@@ -91,11 +91,11 @@ JNEXT.BBM = function ()
     };
 
     _self.init = function () {
-        if (!JNEXT.require("bbm")) {   
+        if (!JNEXT.require("libbbm")) {   
             return false;
         }
 
-        _self.m_id = JNEXT.createObject("bbm.BBM");
+        _self.m_id = JNEXT.createObject("libbbm.BBM");
 
         if (_self.m_id === "") {   
             return false;

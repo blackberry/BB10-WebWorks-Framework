@@ -41,7 +41,7 @@ ConnectionTypes ConnectionBPS::GetConnectionType()
     netstatus_interface_details_t* details;
     netstatus_interface_type_t type;
     int status;
-    ConnectionTypes returnType;
+    ConnectionTypes returnType = UNKNOWN;
 
     netstatus_get_availability(&available);
 
