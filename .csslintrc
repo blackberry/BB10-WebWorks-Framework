@@ -7,8 +7,6 @@
     "font-faces",
     "vendor-prefix",
     "text-indent",
-    "gradients",
-    "compatible-vendor-prefixes",
     "adjoining-classes",
     "known-properties",
     "empty-rules",

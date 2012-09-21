@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html>
+	<head>
+	    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1.0,user-scalable=yes" />
+		<title>Test Web Content Page</title>
+		<script type="text/javascript">
+		function reloadPage()
+		{
+			var x=document.getElementById("iframeForManifestCache");
+			var y=(x.contentWindow || x.contentDocument);
+			y.location.assign("http://www.rim.com");
+//			y.location.assign("http://html5demos.com/offlineapp");
+			y.location.replace("http://cachemanifest.heroku.com/clock.html");
+		}
+		</script>     
+    </head>
+    
+    <body> 
+	<p><b>Instruction: <p>1. Check if the digital clock shows up in the iframe</p> <p>2. Disconnect the radio</p> <p>3. Click the reload page button, the digital clock should still be able to show up in the iframe</b></p>
+	<iframe src="http://cachemanifest.heroku.com/clock.html" width="80%" height="60%" id="iframeForManifestCache">
+    <p>Your browser does not support iframes.</p>
+    </iframe>
+	
+	<input id="buttonForIframe" type="button" value="Reload page" onclick="reloadPage()" />
+
+    <p><a href="main.htm">Go back to main page</a></p> 
+	
+    </body>
+
+</html>

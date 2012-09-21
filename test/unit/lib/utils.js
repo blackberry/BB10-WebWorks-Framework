@@ -62,4 +62,85 @@ describe("Utils", function () {
     it("Verify that the proper SVG MIME types are returned", function () {
         expect(utils.fileNameToImageMIME("test.svg")).toEqual("image/svg+xml");
     });
+
+    // A cascading method invoker, kinda like jWorkflow
+    describe("series", function () {
+        var tasks,
+            callbackObj,
+            seriesComplete,
+            callbackInvocations,
+            invocationCounter,
+            task;
+
+        beforeEach(function () {
+            tasks = [];
+            callbackInvocations = [];
+            invocationCounter = 0;
+            seriesComplete = false;
+            callbackObj = {
+                func: function (args) {
+                    callbackInvocations.push('done');
+                    seriesComplete = true;
+                },
+                args: []
+            };
+            task = {
+                func: function (callback) {
+                    callbackInvocations.push(invocationCounter++);
+                    callback();
+                },
+                args: []
+            };
+        });
+
+        afterEach(function () {
+            tasks = null;
+            callbackObj = null;
+            seriesComplete = null;
+            callbackInvocations = null;
+            invocationCounter = null;
+            task = null;
+        });
+
+        it('should call callback right away when there are no tasks to execute', function () {
+            spyOn(callbackObj, 'func');
+            utils.series(tasks, callbackObj);
+            expect(callbackObj.func).toHaveBeenCalled();
+        });
+
+        it('should invoke the task method before the callback', function () {
+            tasks.push(task);
+            utils.series(tasks, callbackObj);
+            waitsFor(function () {
+                return seriesComplete;
+            });
+           
+            expect(callbackInvocations.length).toEqual(2);
+            expect(callbackInvocations[0]).toEqual(0);
+            expect(callbackInvocations[1]).toEqual('done');
+        });
+
+        it('should invocation the tasks in order with the callback being the last invocation', function () {
+            var i;
+
+            tasks.push(task);
+            tasks.push(task);
+            tasks.push(task);
+            tasks.push(task);
+
+            utils.series(tasks, callbackObj);
+
+            waitsFor(function () {
+                return seriesComplete;
+            });
+            
+            expect(callbackInvocations.length).toEqual(5);
+
+            for (i = 0; i < 4; i++) {
+                expect(callbackInvocations[i]).toEqual(i);
+            }
+
+            expect(callbackInvocations[4]).toEqual('done');
+        });
+    });
 });
