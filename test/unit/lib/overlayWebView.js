@@ -15,7 +15,7 @@
  */
 describe("Overlay Webview", function () {
     var webview,
-        libPath = "./../../../", 
+        libPath = "./../../../",
         mockedController,
         mockedWebview,
         mockedApplication;
@@ -30,13 +30,20 @@ describe("Overlay Webview", function () {
             zOrder: undefined,
             url: undefined,
             setGeometry: jasmine.createSpy(),
+            setApplicationOrientation: jasmine.createSpy(),
+            notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
             addEventListener: jasmine.createSpy(),
-            enableWebEventRedirect: jasmine.createSpy()
+            enableWebEventRedirect: jasmine.createSpy(),
+            notifyContextMenuCancelled: jasmine.createSpy(),
+            allowQnxObject: undefined,
+            contextMenu: {
+                subscribeTo: jasmine.createSpy()
+            }
         };
         mockedApplication = {
             windowVisible: undefined
@@ -47,9 +54,7 @@ describe("Overlay Webview", function () {
                 getController: function () {
                     return mockedController;
                 },
-                createWebView: function (createFunction) {
-                    //process.nextTick(createFunction);
-                    //setTimeout(createFunction,0);
+                createUIWebView: function (createFunction) {
                     runs(createFunction);
                     return mockedWebview;
                 },
@@ -72,17 +77,13 @@ describe("Overlay Webview", function () {
             webview.create();
             waits(1);
             runs(function () {
-                expect(mockedWebview.enableCrossSiteXHR).toEqual(true);
                 expect(mockedWebview.visible).toEqual(true);
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(1);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-
-                expect(mockedApplication.windowVisible).toEqual(true);
-
-                expect(mockedWebview.onContextMenuRequestEvent).toEqual(jasmine.any(Function));
-                expect(mockedWebview.backgroundColor).toEqual("0x00FFFFFF");
+                expect(mockedWebview.backgroundColor).toEqual(0x00FFFFFF);
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
+                expect(mockedWebview.allowQnxObject).toEqual(true);
             });
         });
 
@@ -104,15 +105,15 @@ describe("Overlay Webview", function () {
             webview.destroy();
             expect(mockedWebview.destroy).toHaveBeenCalled();
         });
-        
+
         it("sets the url property", function () {
             var url = "http://AWESOMESAUCE.com";
             webview.create(mockedWebview);
             webview.setURL(url);
             expect(mockedWebview.url).toEqual(url);
         });
-        
-        it("calls the underlying executeJavaScript", function () {
+
+        it("calls the underlying executeJavascript", function () {
             var js = "var awesome='Jasmine BDD'";
             webview.create(mockedWebview);
             webview.executeJavascript(js);
@@ -122,6 +123,40 @@ describe("Overlay Webview", function () {
             webview.create(mockedWebview);
             expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
-    });
 
+        it("can get the id for the webiew", function () {
+            webview.create();
+            expect(webview.id).toEqual(mockedWebview.id);
+        });
+
+        it("can set geometry", function () {
+            webview.create();
+            webview.setGeometry(0, 0, 100, 200);
+            expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
+        });
+
+        it("can set application orientation", function () {
+            webview.create();
+            webview.setApplicationOrientation(90);
+            expect(mockedWebview.setApplicationOrientation).toHaveBeenCalledWith(90);
+        });
+
+        it("can notifyApplicationOrientationDone", function () {
+            webview.create();
+            webview.notifyApplicationOrientationDone();
+            expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
+        });
+
+        it("can notifyContextMenuCancelled", function () {
+            webview.create();
+            webview.notifyContextMenuCancelled();
+            expect(mockedWebview.notifyContextMenuCancelled).toHaveBeenCalled();
+        });
+
+        it("can render the ccm for another webview ", function () {
+            webview.create();
+            webview.renderContextMenuFor(webview);
+            expect(mockedWebview.contextMenu.subscribeTo).toHaveBeenCalledWith(webview);
+        });
+    });
 });

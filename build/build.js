@@ -17,7 +17,6 @@ var childProcess = require("child_process"),
     util = require("util"),
     jWorkflow = require("jWorkflow"),
     clean = require("./build/clean"),
-    compileUI = require("./build/compile-ui"),
     buildNative = require("./build/build-native"),
     pack = require("./build/pack");
 
@@ -43,8 +42,7 @@ function _handle(func) {
 
 module.exports = _handle(function () {
     var build = jWorkflow.order(clean)
-                         .andThen(buildNative)
-                         .andThen(compileUI)
+                         .andThen(buildNative())
                          .andThen(pack);
 
     build.start(function (error) {

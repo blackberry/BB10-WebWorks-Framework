@@ -34,37 +34,46 @@ function copyExtensions(extPath, extDest) {
         fs.readdirSync(extPath).forEach(function (extension) {
             var apiDir = path.normalize(path.resolve(extPath, extension)),
                 apiDest = path.join(extDest, extension),
-                soPath, soDest,
+                extensionStats = fs.lstatSync(apiDir),
+                soPath,
+                soDest,
                 apiNativeDir,
-                jsFiles, soFiles;
-            
-            //find all .js files
-            jsFiles = utils.listFiles(apiDir, function (file) {
-                return path.extname(file) === ".js";
-            });
-            
-            //Copy each .js file to its extensions folder
-            jsFiles.forEach(function (jsFile) {
-                utils.copyFile(jsFile, apiDest, apiDir);
-            });
-            
-            //find and copy each .so file to the extension folder 
-            ["device", "simulator"].forEach(function (target) {
-                soPath = path.normalize(path.join(apiDir, target));
-                soDest = path.join(apiDest, target);
-                apiNativeDir = path.normalize(path.join(apiDir, "native"));
-                
-                //If this is a native extension, copy all .so files
-                if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
-                    soFiles = utils.listFiles(soPath, function (file) {
-                        return path.extname(file) === ".so";
-                    });
-                    
-                    soFiles.forEach(function (soFile) {
-                        utils.copyFile(soFile, soDest, soPath);
-                    });
-                }
-            });
+                jsFiles,
+                soFiles;
+
+            //In case there is a file in the ext directory
+            //check that we are dealing with a real extenion first
+            if (extensionStats.isDirectory()) {
+
+                //find all .js files or .json files
+                jsFiles = utils.listFiles(apiDir, function (file) {
+                    var extName = path.extname(file);
+                    return extName === ".js" || extName === ".json";
+                });
+
+                //Copy each .js file to its extensions folder
+                jsFiles.forEach(function (jsFile) {
+                    utils.copyFile(jsFile, apiDest, apiDir);
+                });
+
+                //find and copy each .so file to the extension folder
+                [{src: _c.DEVICE_BUILD, dst: "device"}, {src: _c.SIM_BUILD, dst: "simulator"}].forEach(function (target) {
+                    soPath = path.normalize(path.join(target.src, "ext", extension, "native"));
+                    soDest = path.join(apiDest, target.dst);
+                    apiNativeDir = path.normalize(path.join(apiDir, "native"));
+
+                    //If this is a native extension, copy all .so files
+                    if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
+                        soFiles = utils.listFiles(soPath, function (file) {
+                            return path.extname(file) === ".so";
+                        });
+
+                        soFiles.forEach(function (soFile) {
+                            utils.copyFile(soFile, soDest, soPath);
+                        });
+                    }
+                });
+            }
         });
     }
 }
@@ -74,12 +83,13 @@ module.exports = function (src, baton) {
         extDest = path.join(_c.DEPLOY, 'ext'),
         clientFilesDest = path.join(_c.DEPLOY, 'clientFiles'),
         bootstrapDest = path.join(_c.DEPLOY, 'dependencies/bootstrap'),
+        jnextDest = path.join(_c.DEPLOY, 'dependencies/jnext'),
         browserRequireDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
-        webplatformDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
-        
+        webplatformDest = _c.DEPLOY,
+
         //files
         readmeFile = path.join(_c.ROOT, 'README.md'),
-        licenseFile = path.join(_c.ROOT, 'LICENSE');
+        licenseFile = path.join(_c.ROOT, 'licenses.txt');
 
     require('./bundler').bundle();
 
@@ -88,13 +98,16 @@ module.exports = function (src, baton) {
     copyExtensions(_c.EXT, extDest);
     copyFolder(_c.CLIENTFILES, clientFilesDest);
     copyFolder(_c.DEPENDENCIES_BOOTSTRAP, bootstrapDest);
-    
+    copyFolder(_c.DEPENDENCIES_JNEXT, jnextDest);
+    copyFolder(_c.DEPENDENCIES_WEBPLATFORM_UI, _c.DEPLOY_UI);
+
     //Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
     utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
     utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
+    utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_I18N, webplatformDest);
     utils.copyFile(readmeFile, _c.DEPLOY);
     utils.copyFile(licenseFile, _c.DEPLOY);
-    
+
     //Remove public folder
     wrench.rmdirSyncRecursive(_c.DEPLOY + 'lib/public', true);
 };

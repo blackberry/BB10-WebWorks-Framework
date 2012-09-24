@@ -1,15 +1,9 @@
-[submodule "dependencies/test-server/public/lib/jasmine"]
-	path = dependencies/test-server/public/lib/jasmine
-	url = https://github.com/pivotal/jasmine.git
-[submodule "dependencies/jnext_1_0_8_3"]
-	path = dependencies/jnext_1_0_8_3
-	url = http://github.rim.net/webworks/jnext_1_0_8_3.git
-[submodule "dependencies/JsonCpp"]
-	path = dependencies/JsonCpp
-	url = http://github.rim.net/webworks/JsonCpp.git
-[submodule "dependencies/gtest"]
-	path = dependencies/gtest
-	url = http://github.rim.net/webworks/gtest.git
 [submodule "dependencies/webplatform"]
 	path = dependencies/webplatform
 	url = http://github.rim.net/webworks/webplatform.git
+[submodule "dependencies/jasmine"]
+	path = dependencies/jasmine
+	url = https://github.com/pivotal/jasmine.git
+[submodule "dependencies/csslint"]
+	path = dependencies/csslint
+	url = https://github.com/blackberry-webworks/csslint.git

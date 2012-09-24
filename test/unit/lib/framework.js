@@ -20,9 +20,11 @@ var srcPath = __dirname + '/../../../lib/',
     webview,
     overlayWebView,
     controllerWebView,
+    rotationHelper,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mockedWebview,
     mockedApplicationWindow,
+    mockedApplication,
     mock_request = {
         url: "http://www.dummy.com",
         allow: jasmine.createSpy(),
@@ -48,22 +50,32 @@ describe("framework", function () {
         mockedApplicationWindow = {
             visible: undefined
         };
-        GLOBAL.qnx = {
-            callExtensionMethod : function () {
-                return 42;
-            },
-            webplatform : {
-                getController : function () {
-                    return mockedWebview;
+        mockedApplication = {
+            addEventListener: jasmine.createSpy()
+        };
+        GLOBAL.window = {
+            qnx: {
+                callExtensionMethod : function () {
+                    return 42;
                 },
-                getApplicationWindow : function () {
-                    return mockedApplicationWindow;
+                webplatform : {
+                    getController : function () {
+                        return mockedWebview;
+                    },
+                    getApplication : function () {
+                        return mockedApplication;
+                    },
+                    getApplicationWindow : function () {
+                        return mockedApplicationWindow;
+                    }
                 }
             }
         };
         webview = util.requireWebview();
         overlayWebView = require(srcPath + "overlayWebView");
         controllerWebView = require(srcPath + "controllerWebView");
+        rotationHelper = require(srcPath + 'rotationHelper');
+        spyOn(rotationHelper, "addWebview");
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
@@ -71,10 +83,13 @@ describe("framework", function () {
             done();
         });
         spyOn(controllerWebView, "init");
+        spyOn(controllerWebView, "dispatchEvent");
         spyOn(webview, "destroy");
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");
         spyOn(overlayWebView, "setURL");
+        spyOn(overlayWebView, "renderContextMenuFor");
+        spyOn(overlayWebView, "handleDialogFor");
         spyOn(console, "log");
     });
 
@@ -82,6 +97,13 @@ describe("framework", function () {
         framework.start();
         expect(controllerWebView.init).toHaveBeenCalled();
         expect(webview.create).toHaveBeenCalled();
+    });
+
+    it("adds all three webviews to the rotationHandler", function () {
+        framework.start();
+        expect(rotationHelper.addWebview).toHaveBeenCalledWith(webview);
+        expect(rotationHelper.addWebview).toHaveBeenCalledWith(overlayWebView);
+        expect(rotationHelper.addWebview).toHaveBeenCalledWith(controllerWebView);
     });
 
     it("on start passing callback and setting object parameters to create method of webview", function () {

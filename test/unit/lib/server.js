@@ -19,11 +19,23 @@ describe("server", function () {
         plugin = require("../../../lib/plugins/default"),
         extensionPlugin = require("../../../lib/plugins/extensions"),
         Whitelist = require("../../../lib/policy/whitelist").Whitelist,
-        applicationAPIServer = require("../../../ext/blackberry.app/index"),
-        DEFAULT_SERVICE = "exec";
+        applicationAPIServer = require("../../../ext/app/index"),
+        utils = require("../../../lib/utils"),
+        DEFAULT_SERVICE = "default",
+        DEFAULT_ACTION = "exec";
 
     beforeEach(function () {
         spyOn(console, "log");
+        spyOn(utils, "loadModule").andCallFake(function (module) {
+            if (module.indexOf("ext/") >= 0) {
+                // on device, "ext/blackberry.app/index.js" would exist since packager would
+                // name the extension folder with feature id in compilation time,
+                // but in unit test environment, it's the real extension folder being used
+                return require("../../" + module.replace("blackberry.", ""));
+            } else {
+                return require("../../../lib/" + module);
+            }
+        });
     });
 
     describe("when handling requests", function () {
@@ -35,7 +47,8 @@ describe("server", function () {
                     service: "",
                     action: ""
                 },
-                body: "" 
+                body: "",
+                origin: ""
             };
             res = {
                 send: jasmine.createSpy()
@@ -48,12 +61,24 @@ describe("server", function () {
         });
 
         it("calls the default plugin if the service doesn't exist", function () {
-            spyOn(plugin, DEFAULT_SERVICE);
+            var rebuiltRequest = {
+                params: {
+                    service: DEFAULT_SERVICE,
+                    action: DEFAULT_ACTION,
+                    ext: "not",
+                    method: "here",
+                    args: null
+                },
+                body: "",
+                origin: ""
+            };
+            spyOn(plugin, DEFAULT_ACTION);
             req.params.service = "not";
             req.params.action = "here";
 
             server.handle(req, res);
-            expect(plugin[DEFAULT_SERVICE]).toHaveBeenCalled();
+
+            expect(plugin[DEFAULT_ACTION]).toHaveBeenCalledWith(rebuiltRequest, jasmine.any(Function), jasmine.any(Function), null, jasmine.any(Object));
         });
 
         it("returns 404 if the action doesn't exist", function () {
@@ -83,10 +108,10 @@ describe("server", function () {
             req.params.action = "exec";
 
             server.handle(req, res);
-            expect(res.send).toHaveBeenCalledWith(200, {
+            expect(res.send).toHaveBeenCalledWith(200, encodeURIComponent(JSON.stringify({
                 code: 1,
                 data: ["MyFeatureId"]
-            });
+            })));
         });
 
         it("returns the result and code -1 when fail callback called", function () {
@@ -98,11 +123,11 @@ describe("server", function () {
             req.params.action = "exec";
 
             server.handle(req, res);
-            expect(res.send).toHaveBeenCalledWith(200, {
+            expect(res.send).toHaveBeenCalledWith(200, encodeURIComponent(JSON.stringify({
                 code: -1,
                 data: null,
                 msg: "ErrorMessage"
-            });
+            })));
         });
     });
     
@@ -145,7 +170,7 @@ describe("server", function () {
         it("returns 403 if the feature is not white listed", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
             server.handle(req, res);
-            expect(res.send).toHaveBeenCalledWith(403, jasmine.any(Object));
+            expect(res.send).toHaveBeenCalledWith(403, jasmine.any(String));
         });
         
         it("calls the action method on the feature", function () {
@@ -165,10 +190,10 @@ describe("server", function () {
             
             server.handle(req, res);
             
-            expect(res.send).toHaveBeenCalledWith(200, {
+            expect(res.send).toHaveBeenCalledWith(200, encodeURIComponent(JSON.stringify({
                 code: 1,
                 data: expectedResult
-            });
+            })));
         });
         
         it("returns the result and code -1 when fail callback called", function () {
@@ -181,11 +206,11 @@ describe("server", function () {
             
             server.handle(req, res);
             
-            expect(res.send).toHaveBeenCalledWith(200, {
+            expect(res.send).toHaveBeenCalledWith(200, encodeURIComponent(JSON.stringify({
                 code: -1,
                 data: null,
                 msg: expectedResult
-            });
+            })));
         });
     });
 });  
