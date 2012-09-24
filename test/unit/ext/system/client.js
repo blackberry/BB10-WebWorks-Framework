@@ -105,19 +105,20 @@ describe("system client", function () {
         };
 
         beforeEach(function () {
-            delete require.cache[require.resolve(apiDir + "/client")];
-            sysClient = null;
 
             GLOBAL.window = GLOBAL;
             mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(mockDeviceProperties);
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
             GLOBAL.window.webworks = mockedWebworks;
             // client needs to be required for each test
+            delete require.cache[require.resolve(apiDir + "/client")];
             sysClient = require(apiDir + "/client");
         });
 
         afterEach(function () {
             delete GLOBAL.window;
+            delete require.cache[require.resolve(apiDir + "/client")];
+            sysClient = null;
         });
 
         it("execSync should have been called once for all system fields", function () {
@@ -135,38 +136,56 @@ describe("system client", function () {
         });
     });
 
-    describe("language and region", function () {
+    describe("properties", function () {
 
-        beforeEach(function () {
-            delete require.cache[require.resolve(apiDir + "/client")];
-            sysClient = null;
-
-            GLOBAL.window = GLOBAL;
-            mockedWebworks.execSync = jasmine.createSpy("execSync").andCallFake(function (namespace, field, args) {
-                if (field === "language") {
-                    return "fr_CA";
-                } else if (field === "region") {
-                    return "en_US";
-                }
+        describe("region", function () {
+            beforeEach(function () {
+                GLOBAL.window = GLOBAL;
+                mockedWebworks.execSync = jasmine.createSpy("execSync").andCallFake(function (namespace, field) {
+                    if (field === "language") {
+                        return "fr_CA";
+                    } else if (field === "region") {
+                        return "en_US";
+                    }
+                });
+                mockedWebworks.defineReadOnlyField = jasmine.createSpy();
+                GLOBAL.window.webworks = mockedWebworks;
+                // client needs to be required for each test
+                delete require.cache[require.resolve(apiDir + "/client")];
+                sysClient = require(apiDir + "/client");
             });
-            mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
-            // client needs to be required for each test
-            sysClient = require(apiDir + "/client");
+
+            afterEach(function () {
+                delete GLOBAL.window;
+                delete require.cache[require.resolve(apiDir + "/client")];
+                sysClient = null;
+            });
+
+            it("region", function () {
+                expect(sysClient.region).toEqual("en_US");
+                expect(mockedWebworks.execSync.argsForCall).toContain([ID, "region", null]);
+            });
         });
 
-        afterEach(function () {
-            delete GLOBAL.window;
-        });
+        describe("language", function () {
+            var mockNavigator;
 
-        it("language", function () {
-            expect(sysClient.language).toEqual("fr_CA");
-            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "language", null]);
-        });
+            beforeEach(function () {
+                mockNavigator = {
+                    language: (new Date()).toString()
+                };
+                GLOBAL.navigator = mockNavigator;
+                sysClient = require(apiDir + "/client");
+            });
 
-        it("region", function () {
-            expect(sysClient.region).toEqual("en_US");
-            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "region", null]);
+            afterEach(function () {
+                delete GLOBAL.navigator;
+            });
+
+            it("defines a getter for navigator.language", function () {
+                expect(sysClient.language).toEqual(mockNavigator.language);
+            });
+
         });
     });
 });

@@ -16,58 +16,59 @@
 var _config = require("./../../lib/config"),
     _event = require("./../../lib/event"),
     _utils = require("./../../lib/utils"),
+    _appEvents = require("./../../lib/events/applicationEvents"),
     _actionMap = {
         swipedown: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "swipedown",
             trigger: function () {
                 _event.trigger("swipedown");
             }
         },
         pause: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "inactive",
             trigger: function () {
                 _event.trigger("pause");
             }
         },
         resume: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "active",
             trigger: function () {
                 _event.trigger("resume");
             }
         },
         keyboardOpening: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "keyboardOpening",
             trigger: function () {
                 _event.trigger("keyboardOpening");
             }
         },
         keyboardOpened: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "keyboardOpened",
             trigger: function () {
                 _event.trigger("keyboardOpened");
             }
         },
         keyboardClosing: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "keyboardClosing",
             trigger: function () {
                 _event.trigger("keyboardClosing");
             }
         },
         keyboardClosed: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "keyboardClosed",
             trigger: function () {
                 _event.trigger("keyboardClosed");
             }
         },
         keyboardPosition: {
-            context: require("./appEvents"),
+            context: _appEvents,
             event: "keyboardPosition",
             trigger: function (yPosition) {
                 var _yPosition = JSON.parse(yPosition);

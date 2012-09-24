@@ -26,17 +26,17 @@ var libDir = __dirname + "./../../../../lib/",
     successCB,
     failCB;
 
-beforeEach(function () {
-    GLOBAL.JNEXT = {};
-    sysIndex = require(apiDir + "index");
-});
-
-afterEach(function () {
-    delete GLOBAL.JNEXT;
-    sysIndex = null;
-});
 
 describe("system index", function () {
+    beforeEach(function () {
+        sysIndex = require(apiDir + "index");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.qnx;
+        sysIndex = null;
+    });
+
     it("hasPermission", function () {
         var success = jasmine.createSpy(),
             env = {
@@ -195,266 +195,173 @@ describe("system index", function () {
         });
     });
 
-    describe("device properties", function () {
-        var ppsUtils,
-            mockedPPS,
-            path = "/pps/services/deviceproperties",
-            mode = "0";
-
+    describe("qnx.webplatform.device properties", function () {
         beforeEach(function () {
-            GLOBAL.JNEXT = {};
-            ppsUtils = require(libDir + "pps/ppsUtils");
             sysIndex = require(apiDir + "index");
-            mockedPPS = {
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy().andReturn(true),
-                read: jasmine.createSpy().andReturn({
-                    "hardwareid" : "0x8500240a",
-                    "scmbundle" : "10.0.6.99",
-                    "devicename": "Device"
-                }),
-                close: jasmine.createSpy()
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        device: {
+                        }
+                    }
+                }
             };
         });
 
         afterEach(function () {
-            GLOBAL.JNEXT = null;
-            ppsUtils = null;
+            delete GLOBAL.window;
             sysIndex = null;
-            mockedPPS = null;
         });
 
-        it("can call fail if failed to open PPS object for getDeviceProperties", function () {
-            var fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.getDeviceProperties(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+        it("can call fail if a property isn't present", function () {
+            ["hardwareid", "scmbundle", "devicename"].forEach(function (propertyName) {
+                var fail = jasmine.createSpy();
+                sysIndex.getDeviceProperties(null, fail, null, null);
+                expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+            });
         });
 
         it("can call success with getDeviceProperties", function () {
-            var success = jasmine.createSpy();
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                hardwareId = "0x8500240a",
+                softwareVersion = "10.0.6.99",
+                name = "Device";
 
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+            window.qnx.webplatform.device.hardwareId = hardwareId;
+            window.qnx.webplatform.device.scmBundle = softwareVersion;
+            window.qnx.webplatform.device.deviceName = name;
 
-            sysIndex.getDeviceProperties(success, null, null, null);
+            sysIndex.getDeviceProperties(success, fail, null, null);
 
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
             expect(success).toHaveBeenCalledWith({
-                "hardwareId" : "0x8500240a",
-                "softwareVersion" : "10.0.6.99",
-                "name": "Device"
+                "hardwareId" : hardwareId,
+                "softwareVersion" : softwareVersion,
+                "name": name
             });
         });
 
-        it("can call success with getDeviceProperties and PPS cached", function () {
-            var success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.getDeviceProperties(success, null, null, null);
-
-            // The PPS objects should have been init in the test above; once the PPS has been read it is cached
-            expect(mockedPPS.init).not.toHaveBeenCalled();
-            expect(mockedPPS.open).not.toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).not.toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith({
-                "hardwareId" : "0x8500240a",
-                "softwareVersion" : "10.0.6.99",
-                "name": "Device"
-            });
-        }); 
-
     });
 
-    describe("device language", function () {
-        var ppsUtils,
-            mockedPPS,
-            path = "/pps/services/confstr/_CS_LOCALE",
-            mode = "0";
-
-        beforeEach(function () {
-            GLOBAL.JNEXT = {};
-            ppsUtils = require(libDir + "pps/ppsUtils");
-            sysIndex = require(apiDir + "index");
-            mockedPPS = {
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy().andReturn(true),
-                read: jasmine.createSpy().andReturn({"_CS_LOCALE" : "en_US"}),
-                close: jasmine.createSpy()
-            };
-        });
-
-        afterEach(function () {
-            GLOBAL.JNEXT = null;
-            ppsUtils = null;
-            sysIndex = null;
-            mockedPPS = null;
-        });
-
-        it("can call fail if failed to open PPS object for language", function () {
-            var fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.language(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
-        });
-
-        it("can call success with language", function () {
-            var success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.language(success, null, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("en_US");
-        });
-    });
 
     describe("device region", function () {
-        var ppsUtils,
-            mockedPPS,
-            path = "/pps/services/locale/settings",
-            mode = "0";
-
+        var mockApplication;
         beforeEach(function () {
-            GLOBAL.JNEXT = {};
-            ppsUtils = require(libDir + "pps/ppsUtils");
             sysIndex = require(apiDir + "index");
-            mockedPPS = {
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy().andReturn(true),
-                read: jasmine.createSpy().andReturn({"region" : "en_US"}),
-                close: jasmine.createSpy()
+            mockApplication = {};
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        getApplication: jasmine.createSpy().andReturn(mockApplication)
+                    }
+                }
             };
         });
 
         afterEach(function () {
-            GLOBAL.JNEXT = null;
-            ppsUtils = null;
+            delete GLOBAL.window;
             sysIndex = null;
-            mockedPPS = null;
         });
 
-        it("can call fail if failed to open PPS object for region", function () {
-            var fail = jasmine.createSpy();
+        it("calls success when there is no error retrieving data", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
 
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+            mockApplication.systemRegion = (new Date()).getTime();
 
-            sysIndex.region(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+            sysIndex.region(success, fail);
+            expect(success).toHaveBeenCalledWith(window.qnx.webplatform.getApplication().systemRegion);
+            expect(fail).not.toHaveBeenCalled();
         });
 
-        it("can call success with region", function () {
-            var success = jasmine.createSpy();
+        it("calls fail when there is an error", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                errMsg = "Something bad happened";
 
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+            Object.defineProperty(mockApplication, "systemRegion", {
+                get: function () {
+                    throw new Error(errMsg);
+                }
+            });
 
-            sysIndex.region(success, null, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("en_US");
+            sysIndex.region(success, fail);
+            expect(success).not.toHaveBeenCalled();
+            expect(fail).toHaveBeenCalledWith(-1, errMsg);
         });
     });
 
     describe("languagechanged event", function () {
+        var appEvents;
         beforeEach(function () {
-            successCB = jasmine.createSpy("Success Callback");
-            failCB = jasmine.createSpy("Fail Callback");
             spyOn(utils, "loadExtensionModule").andCallFake(function () {
                 return eventExt;
             });
-        });
-
-        afterEach(function () {
-            successCB = null;
-            failCB = null;
+            appEvents = require(libDir + "events/applicationEvents");
         });
 
         it("responds to 'languagechanged' events", function () {
-            var eventName = "languagechanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "languagechanged",
+                eventName = "systemLanguageChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
             eventExt.add(null, null, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            expect(events.add).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
 
         it("removes 'languagechanged' event", function () {
-            var eventName = "languagechanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "languagechanged",
+                eventName = "systemLanguageChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "remove");
             eventExt.remove(null, null, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
     });
 
     describe("regionchanged event", function () {
+        var appEvents;
         beforeEach(function () {
-            successCB = jasmine.createSpy("Success Callback");
-            failCB = jasmine.createSpy("Fail Callback");
             spyOn(utils, "loadExtensionModule").andCallFake(function () {
                 return eventExt;
             });
-        });
-
-        afterEach(function () {
-            successCB = null;
-            failCB = null;
+            appEvents = require(libDir + "events/applicationEvents");
         });
 
         it("responds to 'regionchanged' events", function () {
-            var eventName = "regionchanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "regionchanged",
+                eventName = "systemRegionChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
             eventExt.add(null, null, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            expect(events.add).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
 
         it("removes 'regionchanged' event", function () {
-            var eventName = "regionchanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "regionchanged",
+                eventName = "systemRegionChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "remove");
             eventExt.remove(null, null, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
     });
 
@@ -511,10 +418,12 @@ describe("system index", function () {
         });
 
         describe("fontchanged event", function () {
+            var appEvents;
             beforeEach(function () {
                 spyOn(utils, "loadExtensionModule").andCallFake(function () {
                     return eventExt;
                 });
+                appEvents = require(libDir + "events/applicationEvents");
             });
 
             it("responds to 'fontchanged' events", function () {
@@ -524,9 +433,11 @@ describe("system index", function () {
                 spyOn(events, "add");
                 sysIndex.registerEvents(jasmine.createSpy());
                 eventExt.add(null, null, args);
-                expect(events.add).toHaveBeenCalled();
-                expect(events.add.mostRecentCall.args[0].event).toEqual(eventName);
-                expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+                expect(events.add).toHaveBeenCalledWith({
+                    context: appEvents,
+                    event: eventName,
+                    trigger: jasmine.any(Function)
+                });
             });
 
             it("removes 'fontchanged' event", function () {
@@ -535,8 +446,11 @@ describe("system index", function () {
 
                 spyOn(events, "remove");
                 eventExt.remove(null, null, args);
-                expect(events.remove).toHaveBeenCalled();
-                expect(events.remove.mostRecentCall.args[0].event).toEqual(eventName);
+                expect(events.remove).toHaveBeenCalledWith({
+                    context: appEvents,
+                    event: eventName,
+                    trigger: jasmine.any(Function)
+                });
             });
         });
     });

@@ -17,7 +17,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
     _whitelist = new Whitelist(),
     _event = require("../../lib/event"),
     _utils = require("../../lib/utils"),
-    _ppsUtils = require("../../lib/pps/ppsUtils"),
+    _applicationEvents = require("../../lib/events/applicationEvents"),
     _ppsEvents = require("../../lib/pps/ppsEvents"),
     // This object is used by action map and contains links between pps object fields monitored for change in that object helper methods
     // to analyze if the value is the one callback should be invoked and fields name and value format as would appear on return.
@@ -125,34 +125,6 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
                 }]
             }],
             mode: 0
-        },
-        languagechanged: {
-            eventName: "languagechanged",
-            eventDetailsArr: [{
-                path: "/pps/services/confstr/_CS_LOCALE?wait,delta",
-                fieldNameArr: [{
-                    eventName: "_CS_LOCALE",
-                    paramName: "language",
-                    formatValue: function (str) {
-                        return str;
-                    }
-                }]
-            }],
-            mode: 0
-        },
-        regionchanged: {
-            eventName: "regionchanged",
-            eventDetailsArr: [{
-                path: "/pps/services/locale/settings?wait,delta",
-                fieldNameArr: [{
-                    eventName: "region",
-                    paramName: "region",
-                    formatValue: function (str) {
-                        return str;
-                    }
-                }]
-            }],
-            mode: 0
         }
     },
     _actionMap = {
@@ -178,84 +150,29 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
             }
         },
         languagechanged: {
-            context: _ppsEvents,
-            event: _eventsMap.languagechanged,
-            trigger: function (args) {
-                _event.trigger("languagechanged", args.language);
+            context: _applicationEvents,
+            event: "systemLanguageChange",
+            trigger: function (language) {
+                _event.trigger("languagechanged", language);
             }
         },
         regionchanged: {
-            context: _ppsEvents,
-            event: _eventsMap.regionchanged,
-            trigger: function (args) {
-                _event.trigger("regionchanged", args.region);
+            context: _applicationEvents,
+            event: "systemRegionChange",
+            trigger: function (region) {
+                _event.trigger("regionchanged", region);
             }
         },
         fontchanged: {
-            context: require("./systemEvents"),
+            context: _applicationEvents,
             event: "fontchanged",
             trigger: function (fontFamily, fontSize) {
                 _event.trigger("fontchanged", {'fontFamily': fontFamily, 'fontSize': fontSize});
             }
         }
     },
-    _deviceprops,
     ERROR_ID = -1;
 
-/*
- * Read the PPS object once and cache it for future calls
- */
-function readDeviceProperties() {
-    var PPSUtils = _ppsUtils.createObject();
-
-    PPSUtils.init();
-
-    if (PPSUtils.open("/pps/services/deviceproperties", "0")) {
-        _deviceprops = PPSUtils.read();
-    }
-
-    PPSUtils.close();
-}
-
-// Get device language object from /pps/services/confstr/_CS_LOCALE
-function readDeviceLanguage(success, fail) {
-    var PPSUtils = _ppsUtils.createObject(),
-        language = "";
-
-    PPSUtils.init();
-
-    if (PPSUtils.open("/pps/services/confstr/_CS_LOCALE", "0")) {
-        language = PPSUtils.read()._CS_LOCALE;
-    }
-
-    PPSUtils.close();
-
-    if (language !== "") {
-        success(language);
-    } else {
-        fail(-1, "Cannot read the device language");
-    }
-}
-
-// Get device region setting from /pps/services/locale/settings object
-function readDeviceRegion(success, fail) {
-    var PPSUtils = _ppsUtils.createObject(),
-        region = "";
-
-    PPSUtils.init();
-
-    if (PPSUtils.open("/pps/services/locale/settings", "0")) {
-        region = PPSUtils.read().region;
-    }
-
-    PPSUtils.close();
-
-    if (region !== "") {
-        success(region);
-    } else {
-        fail(-1, "Cannot read the device region setting");
-    }
-}
 
 function getCurrentTimezone(success, fail) {
     var pps = qnx.webplatform.pps,
@@ -302,7 +219,7 @@ function getTimezones(success, fail) {
 }
 
 module.exports = {
-    registerEvents: function (success, fail, args, env) {
+    registerEvents: function (success, fail) {
         try {
             var _eventExt = _utils.loadExtensionModule("event", "index");
             _eventExt.registerEvents(_actionMap);
@@ -322,7 +239,7 @@ module.exports = {
         success(allowed ? 0 : 1);
     },
 
-    hasCapability: function (success, fail, args, env) {
+    hasCapability: function (success, fail, args) {
         var SUPPORTED_CAPABILITIES = [
                 "input.touch",
                 "location.gps",
@@ -339,7 +256,7 @@ module.exports = {
         success(SUPPORTED_CAPABILITIES.indexOf(capability) >= 0);
     },
 
-    getFontInfo: function (success, fail, args, env) {
+    getFontInfo: function (success, fail) {
         var fontFamily,
             fontSize;
 
@@ -352,29 +269,29 @@ module.exports = {
             fail(ERROR_ID, e);
         }
     },
-    
-    getDeviceProperties: function (success, fail, args, env) {
-        if (!_deviceprops) {
-            readDeviceProperties();
-        }
 
-        if (_deviceprops) {
-            success({
-                "hardwareId" : _deviceprops["hardwareid"],
-                "softwareVersion" : _deviceprops["scmbundle"],
-                "name" : _deviceprops["devicename"]
-            });
-        } else {
-            fail(-1, "Cannot open PPS object");
+    getDeviceProperties: function (success, fail) {
+        try {
+            var returnObj = {
+                "hardwareId" : window.qnx.webplatform.device.hardwareId,
+                "softwareVersion" : window.qnx.webplatform.device.scmBundle,
+                "name" : window.qnx.webplatform.device.deviceName
+            };
+            success(returnObj);
+        } catch (err) {
+            fail(ERROR_ID, err.message);
         }
     },
 
-    language: function (success, fail, args, env) {
-        readDeviceLanguage(success, fail);
-    },
+    region: function (success, fail) {
+        var region;
 
-    region: function (success, fail, args, env) {
-        readDeviceRegion(success, fail);
+        try {
+            region = window.qnx.webplatform.getApplication().systemRegion;
+            success(region);
+        } catch (e) {
+            fail(ERROR_ID, e.message);
+        }
     },
 
     getCurrentTimezone: function (success, fail, args, env) {

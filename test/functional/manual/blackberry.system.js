@@ -341,7 +341,7 @@ describe("blackberry.system", function () {
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onRegionChanged).toHaveBeenCalledWith("en_GB");
+                expect(onRegionChanged).toHaveBeenCalledWith("en-GB");
             });
         });
 
@@ -385,7 +385,7 @@ describe("blackberry.system", function () {
             }, "event to fire", waitForTimeout);
 
             runs(function () {
-                expect(onLanguageChanged).toHaveBeenCalledWith("en_GB");
+                expect(onLanguageChanged).toHaveBeenCalledWith("en-GB");
             });
         });
 
