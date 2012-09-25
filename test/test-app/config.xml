@@ -52,25 +52,61 @@
     <access uri="http://jquery.com/" subdomains="true"/>
     <access uri="http://www.wikipedia.org//" subdomains="true"/>
     <access uri="http://wikimedia.org//" subdomains="true"/>
-    <access uri="http://Smoketest8-vmyyz.labyyz.testnet.rim.net/" subdomains="true">
-        <feature id="blackberry.app"/>
-    </access>
-    <access uri="http://Smoketest1-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
-    <access uri="http://Smoketest3-vmyyz.labyyz.testnet.rim.net/index.html?*" subdomains="false"/>
-    <access uri="http://Smoketest4-vmyyz.labyyz.testnet.rim.net/a/index.html" subdomains="false"/>
-    <access uri="http://Smoketest5-vmyyz.labyyz.testnet.rim.net/"/>
-    <access uri="http://Smoketest6-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
-    <access uri="http://www.Smoketest6-vmyyz.labyyz.testnet.rim.net/"/>
-    <access uri="http://Smoketest7-vmyyz.labyyz.testnet.rim.net">
+
+    <access uri="http://smoketest1-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
+    <access uri="http://smoketest3-vmyyz.labyyz.testnet.rim.net/index.html?*" subdomains="false"/>
+    <access uri="http://smoketest4-vmyyz.labyyz.testnet.rim.net/a/index.html" subdomains="false"/>
+    <access uri="http://smoketest4-vmyyz.labyyz.testnet.rim.net/parent/child/index.html" subdomains="false"/>
+    <access uri="http://smoketest5-vmyyz.labyyz.testnet.rim.net/"/>
+    <access uri="http://smoketest6-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
+    <access uri="http://www.smoketest6-vmyyz.labyyz.testnet.rim.net/"/>
+    <access uri="http://smoketest7-vmyyz.labyyz.testnet.rim.net">
         <feature id="blackberry.identity"/>
     </access>
-    <access uri="http://www.Smoketest7-vmyyz.labyyz.testnet.rim.net">
+    <access uri="http://www.smoketest7-vmyyz.labyyz.testnet.rim.net">
         <feature id="blackberry.app"/>
     </access>
-    <access uri="http://Smoketest8-vmyyz.labyyz.testnet.rim.net/a/">
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net/" subdomains="true">
         <feature id="blackberry.app"/>
     </access>
-    <access uri="file:///accounts/1000/shared/photos"></access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net/d" subdomains="false">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net/e/webworks.html" subdomains="false">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net/e/webworks2.html" subdomains="false">
+        <feature id="blackberry.system" />
+    </access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net/webapi_whitelisted.js?*" subdomains="false">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net" subdomains="true" />
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net/d" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net/e/webworks.html" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net/e/webworks2.html" subdomains="true">
+        <feature id="blackberry.system" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net/webapi_whitelisted.js?*" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net/webapi_blacklisted.js?*" subdomains="true" />
+    <access uri="http://smoketest10-vmyyz.labyyz.testnet.rim.net/" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest10-vmyyz.labyyz.testnet.rim.net/d" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+
+
+
+
+    <access uri="file:///accounts/1000/shared/documents/textData.txt" />
+    <access uri="file:///accounts/1000/shared/documents/subdir/textData.txt" />
 
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
         Licensed under the Apache License, Version 2.0 (the "License");
