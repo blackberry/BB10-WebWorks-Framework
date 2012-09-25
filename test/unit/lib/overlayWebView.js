@@ -41,6 +41,7 @@ describe("Overlay Webview", function () {
             enableWebEventRedirect: jasmine.createSpy(),
             notifyContextMenuCancelled: jasmine.createSpy(),
             allowQnxObject: undefined,
+            allowRpc: undefined,
             contextMenu: {
                 subscribeTo: jasmine.createSpy()
             }
@@ -84,6 +85,7 @@ describe("Overlay Webview", function () {
                 expect(mockedWebview.backgroundColor).toEqual(0x00FFFFFF);
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
                 expect(mockedWebview.allowQnxObject).toEqual(true);
+                expect(mockedWebview.allowRpc).toEqual(true);
             });
         });
 
