@@ -16,6 +16,7 @@
 
 var srcPath = __dirname + '/../../../lib/',
     framework = require(srcPath + 'framework'),
+    config = require(srcPath + "config"),
     util = require(srcPath + "utils"),
     webview,
     overlayWebView,
@@ -24,6 +25,7 @@ var srcPath = __dirname + '/../../../lib/',
     mockedWebview,
     mockedApplicationWindow,
     mockedApplication,
+    mockedBlackberry,
     mock_request = {
         url: "http://www.dummy.com",
         allow: jasmine.createSpy(),
@@ -71,6 +73,13 @@ describe("framework", function () {
                 }
             }
         };
+        mockedBlackberry = {
+            invoke: {
+                invoke: jasmine.createSpy()
+            }
+        };
+        GLOBAL.blackberry = mockedBlackberry;
+
         webview = util.requireWebview();
         overlayWebView = require(srcPath + "overlayWebView");
         controllerWebView = require(srcPath + "controllerWebView");
@@ -93,6 +102,7 @@ describe("framework", function () {
             callback();
         });
         spyOn(overlayWebView, "removeEventListener");
+        spyOn(overlayWebView, "bindAppWebViewToChildWebViewControls");
         spyOn(console, "log");
     });
 
@@ -124,4 +134,52 @@ describe("framework", function () {
         expect(webview.destroy).toHaveBeenCalled();
     });
 
+    describe('creating the overlay webview', function () {
+        beforeEach(function () {
+            framework.start();
+        });
+        it('calls overlayWebView.create', function () {
+            expect(overlayWebView.create).toHaveBeenCalled();
+        });
+
+        it('sets the overlayWebView URL', function () {
+            expect(overlayWebView.setURL).toHaveBeenCalledWith("local:///chrome/ui.html");
+        });
+
+        it('calls renderContextMenuFor passing the webview', function () {
+            expect(overlayWebView.renderContextMenuFor).toHaveBeenCalledWith(webview);
+        });
+
+        it('calls handleDialogFor passing the webview', function () {
+            expect(overlayWebView.handleDialogFor).toHaveBeenCalledWith(webview);
+        });
+
+        it('dispatches the ui.init event on the controllerWebView', function () {
+            expect(controllerWebView.dispatchEvent).toHaveBeenCalledWith('ui.init', null);
+        });
+    });
+
+    describe('configuring OpenChildWindow events', function () {
+        it('delegates to childWebViewControls on the overlay webview', function () {
+            config.enableChildWebView = true;
+            framework.start();
+            expect(overlayWebView.bindAppWebViewToChildWebViewControls).toHaveBeenCalledWith(webview);
+        });
+
+        it('binds to OpenChildWindow and invokes the browser', function () {
+            var openChildWindowHandler;
+            webview.__defineSetter__('onChildWindowOpen', function (input) {
+                openChildWindowHandler = input;
+            });
+            config.enableChildWebView = false;
+            framework.start();
+            expect(openChildWindowHandler).toEqual(jasmine.any(Function));
+            openChildWindowHandler({url: 'http://www.google.com'});
+            expect(mockedBlackberry.invoke.invoke).toHaveBeenCalledWith(
+                {uri: 'http://www.google.com', target: "sys.browser" },
+                jasmine.any(Function),
+                jasmine.any(Function)
+            );
+        });
+    });
 });

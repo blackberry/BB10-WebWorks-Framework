@@ -85,7 +85,7 @@ describe("Overlay Webview", function () {
             runs(function () {
                 expect(mockedWebview.visible).toEqual(true);
                 expect(mockedWebview.active).toEqual(true);
-                expect(mockedWebview.zOrder).toEqual(1);
+                expect(mockedWebview.zOrder).toEqual(2);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
                 expect(mockedWebview.backgroundColor).toEqual(0x00FFFFFF);
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
