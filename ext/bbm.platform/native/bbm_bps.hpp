@@ -67,7 +67,9 @@ public:
 private:
     BBM *m_pParent;
     void processAccessCode(int code);
+    void processProfileUpdate(bbmsp_event_t *event);
     void processContactUpdate(bbmsp_event_t *event);
+    std::string getFullProfile();
     std::string getFullContact(bbmsp_contact_t *contact);
     static bool contactEventsEnabled;
     static pthread_mutex_t m_lock;

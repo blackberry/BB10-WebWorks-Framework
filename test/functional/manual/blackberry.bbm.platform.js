@@ -15,7 +15,6 @@
  */
 
 describe("blackberry.bbm.platform", function () {
-
     describe("onacccesschange", function () {
         var onChange,
             waitForTimeout = 15000;
@@ -41,6 +40,7 @@ describe("blackberry.bbm.platform", function () {
 
 describe("blackberry.bbm.platform.self", function () {
     describe("blackberry.platform.bbm.self.setStatus", function () {
+
         it('should be able to set the BBM status to busy with text', function () {
             runs(function () {
                 blackberry.bbm.platform.self.setStatus("busy", "I am busy");
@@ -94,29 +94,44 @@ describe("blackberry.bbm.platform.self", function () {
 });
 
 describe("blackberry.bbm.platform.users", function () {
-    it("inviteToDownload", function () {
-        var confirmation;
+    describe("bbm cards", function () {
+        it("inviteToDownload", function () {
+            var confirmation;
         
-        runs(function () {
-            blackberry.bbm.platform.users.inviteToDownload();
-        });
+            runs(function () {
+                blackberry.bbm.platform.users.inviteToDownload();
+            });
 
-        waitsFor(function () {
-            confirmation = window.confirm("Did it invoke?");
-            return confirmation;
-        });
+            waitsFor(function () {
+                confirmation = window.confirm("Did it invoke?");
+                return confirmation;
+            });
 
-        runs(function () {
-            expect(confirmation).toEqual(true);
+            runs(function () {
+                expect(confirmation).toEqual(true);
+            });
         });
     });
-});
 
-
-describe("blackberry.bbm.platform.users", function () {
     describe("onupdate", function () {
         var onUpdate,
-            waitForTimeout = 30000;
+            waitForTimeout = 15000;
+
+        it('can receive updates when the current user profile is changed', function () {
+            runs(function () {
+                onUpdate = jasmine.createSpy();
+                blackberry.event.addEventListener("onupdate", onUpdate);
+                blackberry.bbm.platform.self.setPersonalMessage("test");
+            });
+
+            waitsFor(function () {
+                return onUpdate.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onUpdate).toHaveBeenCalled();
+            });
+        });
 
         it("can receive updates from other users", function () {
             runs(function () {
@@ -130,7 +145,7 @@ describe("blackberry.bbm.platform.users", function () {
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onUpdate.toBeCalled());
+                expect(onUpdate).toHaveBeenCalled();
             });
         });
     });
