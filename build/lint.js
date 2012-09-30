@@ -17,8 +17,10 @@ var utils = require('./build/utils'),
     jWorkflow = require("jWorkflow"),
     fs = require('fs');
 
-function _done() {
-    utils.displayOutput("Lint SUCCESS");
+function _done(error) {
+    if (error === 0) {
+        utils.displayOutput("Lint SUCCESS");
+    }
     process.exit();
 }
 
@@ -49,10 +51,9 @@ function _lintCPP() {
 
 module.exports = function (files) {
     var lint = jWorkflow.order(_lintJS())
-                    .andThen(_lintCSS())
                     .andThen(_lintCPP());
 
-    lint.start(function () {
-        _done();
-    });
+    lint.start(function (code) {
+            _done(code);
+        });
 };
