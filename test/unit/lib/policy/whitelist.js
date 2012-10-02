@@ -651,6 +651,52 @@ describe("whitelist", function () {
                 expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);
             });
 
+            it("can allow access to whitelisted file URL from an external startup page", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "file://store/home/user/documents",
+                        allowSubDomain : false,
+                        features : null
+                    }]
+                });
+
+                expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);
+            });
+
+            it("can allow access to whitelisted local URL from an external startup page", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "local://localpage.html",
+                        allowSubDomain : false,
+                        features : null
+                    }]
+                });
+
+                expect(whitelist.isAccessAllowed("local://localpage.html")).toEqual(true);
+            });
+
+            it("can allow access to whitelisted file URL from an external startup page with wildcard access", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : true
+                });
+
+                expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);
+            });
+
+            it("can allow access to whitelisted local URL from an external startup page with wildcard access", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : true
+                });
+
+                expect(whitelist.isAccessAllowed("local://localpage.html")).toEqual(true);
+            });
+
             it("can deny file URL access when no file urls are whitelisted", function () {
                 var whitelist = new Whitelist({
                     hasMultiAccess : false,
