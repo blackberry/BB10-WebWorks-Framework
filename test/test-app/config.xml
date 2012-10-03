@@ -30,6 +30,7 @@
     <feature id="blackberry.invoke" required="true" version="1.0.0.0" />
     <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
     <feature id="blackberry.notification" required="true" version="1.0.0.0" />
+    <feature id="blackberry.sensors" required="true" version="1.0.0.0" />
     <feature id="enable-flash" />
 
     <access uri="http://www.rim.com">
