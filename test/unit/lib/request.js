@@ -58,14 +58,14 @@ describe("request", function () {
         spyOn(server, "handle");
         var url = "http://localhost:8472/roomService/kungfuAction/customExt/crystalMethod?blargs=yes",
             requestObj = request.init(mockedWebview),
-            returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url})),
+            returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url, referrer: "http://www.origin.com" })),
             expectedRequest = {
                 params: {
                     service: "roomService",
                     action: "kungfuAction",
                     ext: "customExt",
                     method: "crystalMethod",
-                    args: "blargs=yes"
+                    args: "blargs=yes",
                 },
                 body: undefined,
                 origin: "http://www.origin.com"
@@ -81,7 +81,7 @@ describe("request", function () {
         spyOn(server, "handle");
         var url = "http://localhost:8472/roomService/kungfuAction/customExt/crystal/Method?blargs=yes",
             requestObj = request.init(mockedWebview),
-            returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url})),
+            returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url, referrer: "http://www.origin.com" })),
             expectedRequest = {
                 params: {
                     service: "roomService",
