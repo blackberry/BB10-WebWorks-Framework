@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 var utils = require('./build/utils'),
+    wrench = require('wrench'),
+    path = require('path'),
+    _c = require('./build/conf'),
+    preprocess = require('./build/preprocess'),
     jWorkflow = require("jWorkflow"),
     fs = require('fs');
+
+function copyFile(src, dst) {
+    var fileBuffer = fs.readFileSync(src);
+    fs.writeFileSync(dst, fileBuffer);
+}
 
 function _done(error) {
     if (error === 0) {
@@ -27,7 +36,8 @@ function _done(error) {
 function _lintJS() {
     var options = ["--reporter", "build/lint/reporter.js", "--show-non-errors"],
         files = ["."];
-    return utils.execCommandWithJWorkflow('jshint ' + files.concat(options).join(' '));
+
+    return utils.execCommandWithJWorkflow('jshint ' + files.concat(options).join(' '), {cwd: _c.TEMP});
 }
 
 function _lintCSS() {
@@ -50,10 +60,19 @@ function _lintCPP() {
 }
 
 module.exports = function (files) {
-    var lint = jWorkflow.order(_lintJS())
+    utils.copyFolder(path.join(_c.ROOT, "ext"), path.join(_c.TEMP, "ext"));
+    utils.copyFolder(path.join(_c.ROOT, "lib"), path.join(_c.TEMP, "lib"));
+    utils.copyFolder(path.join(_c.ROOT, "build"), path.join(_c.TEMP, "build"));
+    utils.copyFolder(path.join(_c.ROOT, "test"), path.join(_c.TEMP, "test"));
+    copyFile(path.join(_c.ROOT, ".jshintignore"), path.join(_c.TEMP, ".jshintignore"));
+    copyFile(path.join(_c.ROOT, ".jshintrc"), path.join(_c.TEMP, ".jshintrc"));
+
+    var lint = jWorkflow.order(preprocess([], [_c.TEMP]))
+                    .andThen(_lintJS())
                     .andThen(_lintCPP());
 
     lint.start(function (code) {
+            wrench.rmdirSyncRecursive(_c.TEMP, true);
             _done(code);
         });
 };

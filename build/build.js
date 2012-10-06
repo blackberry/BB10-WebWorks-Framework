@@ -18,7 +18,8 @@ var childProcess = require("child_process"),
     jWorkflow = require("jWorkflow"),
     clean = require("./build/clean"),
     buildNative = require("./build/build-native"),
-    pack = require("./build/pack");
+    pack = require("./build/pack"),
+    preprocess = require("./build/preprocess");
 
 function _done(error) {
     if (error) {
@@ -43,7 +44,8 @@ function _handle(func) {
 module.exports = _handle(function () {
     var build = jWorkflow.order(clean)
                          .andThen(buildNative())
-                         .andThen(pack);
+                         .andThen(pack)
+                         .andThen(preprocess(Array.prototype.slice.call(arguments)));
 
     build.start(function (error) {
         _done(error);

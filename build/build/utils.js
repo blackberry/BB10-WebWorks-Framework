@@ -108,5 +108,15 @@ module.exports = {
                 displayOutput(data);
             });
         };
+    },
+
+    copyFolder: function (source, destination) {
+        //create the destination folder if it does not exist
+        if (!path.existsSync(destination)) {
+            wrench.mkdirSyncRecursive(destination, "0755");
+        }
+
+        wrench.copyDirSyncRecursive(source, destination);
     }
+
 };

@@ -17,7 +17,10 @@ var path = require("path");
 
 module.exports = {
     ROOT: path.normalize(__dirname + "/../../"),
+    TEMP: path.normalize(__dirname + "/../../temp/"),
     DEPLOY: path.normalize(__dirname + "/../../target/zip/"),
+    DEPLOY_LIB: path.normalize(__dirname + "/../../target/zip/lib"),
+    DEPLOY_EXT: path.normalize(__dirname + "/../../target/zip/ext"),
     DEPLOY_UI: path.normalize(__dirname + "/../../target/zip/ui-resources/"),
     DEPLOY_STYLES: path.normalize(__dirname + "/../../target/zip/ui-resources/styles/"),
     TARGET: path.normalize(__dirname + "/../../target/"),
@@ -32,6 +35,7 @@ module.exports = {
     UI: path.normalize(__dirname + "/../../ui-resources"),
     UI_PLUGINS: path.normalize(__dirname + "/../../ui-resources/plugins"),
     DEPENDENCIES: path.normalize(__dirname + "/../../dependencies"),
+    DEPENDENCIES_PREPROCESSOR: path.normalize(__dirname + "/../../dependencies/Node-JavaScript-Preprocessor/server.js"),
     DEPENDENCIES_BOOTSTRAP: path.normalize(__dirname + "/../../dependencies/bootstrap"),
     DEPENDENCIES_JNEXT: path.normalize(__dirname + "/../../dependencies/jnext"),
     DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB: path.normalize(__dirname + "/../../dependencies/webplatform/framework/clientFiles/webplatform.js"),
