@@ -14,7 +14,9 @@ describe("webview", function () {
             enableCrossSiteXHR: undefined,
             visible: undefined,
             active: undefined,
-            setGeometry: jasmine.createSpy()
+            setGeometry: jasmine.createSpy(),
+            dispatchEvent : jasmine.createSpy(),
+            addEventListener : jasmine.createSpy()
         };
         mockedWebview = {
             id: 42,
@@ -95,6 +97,8 @@ describe("webview", function () {
                 expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'local://', false);
                 expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
                 expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
+
+                expect(mockedController.dispatchEvent).toHaveBeenCalledWith("webview.initialized", jasmine.any(Array));
             });
         });
 

@@ -14,7 +14,9 @@ describe("permissions", function () {
             enableCrossSiteXHR: undefined,
             visible: undefined,
             active: undefined,
-            setGeometry: jasmine.createSpy()
+            setGeometry: jasmine.createSpy(),
+            dispatchEvent : jasmine.createSpy(),
+            addEventListener : jasmine.createSpy()
         };
         mockedWebview = {
             id: 42,

@@ -46,6 +46,11 @@ describe("Overlay Webview", function () {
                 subscribeTo: jasmine.createSpy()
             }
         };
+        mockedController = {
+            dispatchEvent : jasmine.createSpy(),
+            addEventListener : jasmine.createSpy()
+        };
+
         mockedApplication = {
             windowVisible: undefined
         };
@@ -86,6 +91,7 @@ describe("Overlay Webview", function () {
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
                 expect(mockedWebview.allowQnxObject).toEqual(true);
                 expect(mockedWebview.allowRpc).toEqual(true);
+                expect(mockedController.dispatchEvent).toHaveBeenCalledWith("overlayWebView.initialized", jasmine.any(Array));
             });
         });
 
