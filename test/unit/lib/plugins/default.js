@@ -68,10 +68,10 @@ describe("default plugin", function () {
 
         it("checks if the feature is white listed if it exists", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(testExtension, "author");
+            spyOn(testExtension, "getReadOnlyFields");
 
             req.params.ext = "blackberry.app";
-            req.params.method = "author";
+            req.params.method = "getReadOnlyFields";
 
             defaultPlugin.exec(req, res, succ, fail, args);
             expect(fail).wasNotCalled();
@@ -83,7 +83,7 @@ describe("default plugin", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
 
             req.params.ext = "blackberry.app";
-            req.params.method = "author";
+            req.params.method = "getReadOnlyFields";
 
             defaultPlugin.exec(req, succ, fail, args);
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 403);
@@ -93,46 +93,46 @@ describe("default plugin", function () {
             var env = {"request": req, "response": res};
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(testExtension, "author");
+            spyOn(testExtension, "getReadOnlyFields");
 
             req.params.ext = "blackberry.app";
-            req.params.method = "author";
+            req.params.method = "getReadOnlyFields";
 
             defaultPlugin.exec(req, succ, fail, args, env);
 
-            expect(testExtension.author).toHaveBeenCalledWith(succ, fail, args, env);
+            expect(testExtension.getReadOnlyFields).toHaveBeenCalledWith(succ, fail, args, env);
         });
 
         it("calls a multi-level method of the extension", function () {
             var env = {"request": req, "response": res};
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(testExtension, "author");
-            testExtension.author.a = {
+            spyOn(testExtension, "getReadOnlyFields");
+            testExtension.getReadOnlyFields.a = {
                 b : {
                     c : jasmine.createSpy()
                 }
             };
 
             req.params.ext = "blackberry.app";
-            req.params.method = "author/a/b/c";
+            req.params.method = "getReadOnlyFields/a/b/c";
 
             defaultPlugin.exec(req, succ, fail, args, env);
 
             expect(fail).wasNotCalled();
-            expect(testExtension.author.a.b.c).toHaveBeenCalledWith(succ, fail, args, env);
+            expect(testExtension.getReadOnlyFields.a.b.c).toHaveBeenCalledWith(succ, fail, args, env);
         });
 
         it("throws a 404 is a multi-level method is not found", function () {
             var env = {"request": req, "response": res};
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(testExtension, "author");
-            testExtension.author.a = {
+            spyOn(testExtension, "getReadOnlyFields");
+            testExtension.getReadOnlyFields.a = {
             };
 
             req.params.ext = "blackberry.app";
-            req.params.method = "author/a/b/c";
+            req.params.method = "getReadOnlyFields/a/b/c";
 
             defaultPlugin.exec(req, succ, fail, args, env);
 

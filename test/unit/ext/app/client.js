@@ -17,31 +17,25 @@ var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/app",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
-    mockedWebworks = {
-        execSync: jasmine.createSpy()
+    mockData = {
+        author: "testAuthor",
+        authorEmail: "testEmail",
+        authorURL: "testURL",
+        copyright: "testCopyright",
+        description: "testDescription",
+        id : "testId",
+        license: "testLicense",
+        licenseURL: "testLicenseURL",
+        name: "testName",
+        version: "testVersion"      
     },
-    fields = [
-        "author",
-        "authorEmail",
-        "authorURL",
-        "copyright",
-        "description",
-        "id",
-        "license",
-        "licenseURL",
-        "name",
-        "version"
-    ],
-    execSyncArgs = [];
+    mockedWebworks = {
+        execSync: jasmine.createSpy().andReturn(mockData)
+    };
 
 beforeEach(function () {
     GLOBAL.window = GLOBAL;
     GLOBAL.window.webworks = mockedWebworks;
-
-    fields.forEach(function (field) {
-        execSyncArgs.push([_ID, field, null]);
-    });
-
     client = require(_apiDir + "/client");
 });
 
@@ -51,67 +45,67 @@ afterEach(function () {
 });
 
 describe("app client", function () {
-    it("execSync should have been called once for each app field", function () {
-        expect(mockedWebworks.execSync.callCount).toEqual(fields.length + 1); // +1 to account for the call to execSync for events
+    it("execSync should have been called once for all app fields", function () {
+        expect(mockedWebworks.execSync.callCount).toEqual(2); // +1 to account for the call to execSync for events
     });
 
     describe("author", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("author")]);
+        it("should be populated", function () {
+            expect(client.author === mockData.author);
         });
     });
 
     describe("authorEmail", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("authorEmail")]);
+        it("should be populated", function () {
+            expect(client.authorEmail === mockData.authorEmail);
         });
     });
 
     describe("authorURL", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("authorURL")]);
+        it("should be populated", function () {
+            expect(client.authorURL === mockData.authorURL);
         });
     });
 
     describe("copyright", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("copyright")]);
+        it("should be populated", function () {
+            expect(client.copyright === mockData.copyright);
         });
     });
 
     describe("description", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("description")]);
+        it("should be populated", function () {
+            expect(client.description === mockData.description);
         });
     });
 
     describe("id", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("id")]);
+        it("should be populated", function () {
+            expect(client.id === mockData.id);
         });
     });
 
     describe("license", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("license")]);
+        it("should be populated", function () {
+            expect(client.license === mockData.license);
         });
     });
 
     describe("licenseURL", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("licenseURL")]);
+        it("should be populated", function () {
+            expect(client.licenseURL === mockData.licenseURL); 
         });
     });
 
     describe("name", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("name")]);
+        it("should be populated", function () {
+            expect(client.name === mockData.name);
         });
     });
 
     describe("version", function () {
-        it("should call execSync", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("version")]);
+        it("should be populated", function () {
+            expect(client.version === mockData.version);
         });
     });
     

@@ -87,44 +87,20 @@ module.exports = {
         }
     },
 
-    author: function (success, fail, args, env) {
-        success(_config.author);
-    },
-
-    authorEmail: function (success, fail, args, env) {
-        success(_config.authorEmail);
-    },
-
-    authorURL: function (success, fail, args, env) {
-        success(_config.authorURL);
-    },
-
-    copyright: function (success, fail, args, env) {
-        success(_config.copyright);
-    },
-
-    description: function (success, fail, args, env) {
-        success(_config.description);
-    },
-
-    id: function (success, fail, args, env) {
-        success(_config.id);
-    },
-
-    license: function (success, fail, args, env) {
-        success(_config.license);
-    },
-
-    licenseURL: function (success, fail, args, env) {
-        success(_config.licenseURL);
-    },
-
-    name: function (success, fail, args, env) {
-        success(_config.name);
-    },
-
-    version: function (success, fail, args, env) {
-        success(_config.version);
+    getReadOnlyFields : function (success, fail, args, env) {
+        var ro = {
+            author: _config.author,
+            authorEmail: _config.authorEmail,
+            authorURL: _config.authorURL,
+            copyright: _config.copyright,
+            description: _config.description,
+            id: _config.id,
+            license: _config.license,
+            licenseURL: _config.licenseURL,
+            name: _config.name,
+            version: _config.version
+        };
+        success(ro);
     },
 
     exit: function () {

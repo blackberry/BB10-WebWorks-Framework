@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 var _self = {},
-    ID = require("./manifest.json").namespace;
+    ID = require("./manifest.json").namespace,
+    readOnlyValues;
 
 _self.exit = function () {
     return window.webworks.execSync(ID, "exit");
 };
 
 function defineReadOnlyField(field) {
-    var value = window.webworks.execSync(ID, field, null);
+    var value;
+    if (!readOnlyValues) {
+        readOnlyValues = window.webworks.execSync(ID, "getReadOnlyFields", null);
+    }
+    value = readOnlyValues ? readOnlyValues[field] : null;
     Object.defineProperty(_self, field, {"value": value, "writable": false});
 }
 

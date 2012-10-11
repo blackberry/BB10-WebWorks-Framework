@@ -140,7 +140,7 @@ describe("server", function () {
                     service: "default",
                     action: "exec",
                     ext: "blackberry.app",
-                    method: "author",
+                    method: "getReadOnlyFields",
                     args: null,
                     origin: null
                 },
@@ -175,16 +175,16 @@ describe("server", function () {
         
         it("calls the action method on the feature", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(applicationAPIServer, "author");
+            spyOn(applicationAPIServer, "getReadOnlyFields");
             server.handle(req, res);            
-            expect(applicationAPIServer.author).toHaveBeenCalled();
+            expect(applicationAPIServer.getReadOnlyFields).toHaveBeenCalled();
         });
         
         it("returns the result and code 1 when success callback called", function () {
-            var expectedResult = {"author": "Yogi bear"};
+            var expectedResult = {"getReadOnlyFields": "Yogi bear"};
             
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
+            spyOn(applicationAPIServer, "getReadOnlyFields").andCallFake(function (success, fail) {
                 success(expectedResult);
             });
             
@@ -200,7 +200,7 @@ describe("server", function () {
             var expectedResult = "omg";
             
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
+            spyOn(applicationAPIServer, "getReadOnlyFields").andCallFake(function (success, fail) {
                 fail(-1, expectedResult);
             });
             
