@@ -73,9 +73,21 @@ describe("app index", function () {
 
     describe("getReadOnlyFields", function () {
         it("can call success", function () {
-            var success = jasmine.createSpy();
+            var success = jasmine.createSpy(),
+                expectedReturn = {
+                    author : "Me",
+                    authorEmail : "guocat@gmail.com",
+                    authorURL : "http://bbtools_win7_01/yui", 
+                    copyright : "@Rebecca", 
+                    description : "this is the description", 
+                    id : "", 
+                    license : "This is a license", 
+                    licenseURL : "", 
+                    name : "wwTest", 
+                    version : "1.0.0.0"
+                };
             index.getReadOnlyFields(success, null, null, null);
-            expect(success).toHaveBeenCalled();
+            expect(success).toHaveBeenCalledWith(expectedReturn);
         });
     });
 
