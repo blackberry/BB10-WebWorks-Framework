@@ -1005,14 +1005,24 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Setting favorite=true find favorite contacts only', function () {
-            var favContact = contacts.create({
+            var addr = new ContactAddress({
+                    "type": "work",
+                    "streetAddress": "200 University Ave W",
+                    "streetOther": "University of Waterloo",
+                    "locality": "Waterloo",
+                    "region": "Kitchener-Waterloo",
+                    "postalCode": "N2L 3G1",
+                    "country": "Canada"
+                }),
+                favContact = contacts.create({
                     "name": new ContactName({
                         "familyName": "Smitherman",
                         "givenName": "Clement"
                     }),
                     "favorite": true,
                     "displayName": "csmitherman",
-                    "nickname": "CS"
+                    "nickname": "CS",
+                    "addresses": [addr]
                 }),
                 nonFavContact = contacts.create({
                     "name": new ContactName({
@@ -1254,6 +1264,83 @@ describe("blackberry.pim.contacts", function () {
             });
         });
 
+        it("Empty find options return all contacts with no particular sort order", function () {
+            var findOptions = new ContactFindOptions(),
+                called = false,
+                error = false,
+                findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
+                    called = true;
+                    expect(contacts.length).not.toBeLessThan(5); // in case there are other contacts not for test purpose
+                }),
+                findErrorCb = jasmine.createSpy().andCallFake(function (error) {
+                    called = true;
+                });
+
+            try {
+                contacts.find(["name", "addresses", "displayName", "nickname"], findOptions, findSuccessCb, findErrorCb);
+            } catch (e) {
+                error = true;
+            }
+
+            waitsFor(function () {
+                return called;
+            }, "success/error callback never called", 15000);
+
+            runs(function () {
+                expect(error).toBe(false);
+                expect(findSuccessCb).toHaveBeenCalled();
+                expect(findErrorCb).not.toHaveBeenCalled();
+            });
+        });
+
+        it("Omitting filters with sort fields specified will return all contacts in a particular sort order", function () {
+            var findOptions = new ContactFindOptions(null, [{
+                    fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME,
+                    desc: false
+                }, {
+                    fieldName: ContactFindOptions.SORT_FIELD_GIVEN_NAME,
+                    desc: true
+                }]),
+                called = false,
+                error = false,
+                findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
+                    var temp = [];
+                    called = true;
+
+                    contacts.forEach(function (c) {
+                        if (c.name.familyName === "Smitherman" || c.name.familyName === "Simpson") {
+                            temp.push(c.name.givenName + " " + c.name.familyName);
+                        }
+                    });
+
+                    expect(contacts.length).not.toBeLessThan(5); // in case there are other contacts not for test purpose
+                    expect(temp[0]).toBe("Dawn Simpson");
+                    expect(temp[1]).toBe("Donna Smitherman");
+                    expect(temp[2]).toBe("Daniel Smitherman");
+                    expect(temp[3]).toBe("Clement Smitherman");
+                    expect(temp[4]).toBe("Clarence Smitherman");
+                }),
+                findErrorCb = jasmine.createSpy().andCallFake(function (error) {
+                    called = true;
+                });
+
+            try {
+                contacts.find(["name", "addresses", "displayName", "nickname"], findOptions, findSuccessCb, findErrorCb);
+            } catch (e) {
+                error = true;
+            }
+
+            waitsFor(function () {
+                return called;
+            }, "success/error callback never called", 15000);
+
+            runs(function () {
+                expect(error).toBe(false);
+                expect(findSuccessCb).toHaveBeenCalled();
+                expect(findErrorCb).not.toHaveBeenCalled();
+            });
+        });
+
         it("Error callback is optional", function () {
             var findOptions = new ContactFindOptions([{
                     "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
@@ -1292,7 +1379,7 @@ describe("blackberry.pim.contacts", function () {
                     expect(contacts.length).toBe(1);
                     expect(contacts[0].name.givenName).toBe("John");
                     expect(contacts[0].name.familyName).toBe("WebWorksTest");
-                    expect(contacts[0].news).not.toBe([]);
+                    expect(contacts[0].news).not.toBe(null);
                     expect(contacts[0].news.length).toBeGreaterThan(0);
                 }),
                 errorCb = jasmine.createSpy("onFindError").andCallFake(function (error) {

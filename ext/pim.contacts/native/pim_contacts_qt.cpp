@@ -59,8 +59,7 @@ Json::Value PimContactsQt::Find(const Json::Value& args)
 {
     Json::Value returnObj;
 
-    if (!args.isMember("fields") || args["fields"].empty() || !args.isMember("options") || args["options"].isNull() ||
-        !args["options"].isMember("filter") || args["options"]["filter"].empty()) {
+    if (!args.isMember("fields") || args["fields"].empty() || !args.isMember("options") || args["options"].isNull()) {
         returnObj["_success"] = false;
         returnObj["code"] = INVALID_ARGUMENT_ERROR;
         return returnObj;
@@ -78,12 +77,44 @@ Json::Value PimContactsQt::Find(const Json::Value& args)
         limit = args["options"]["limit"].asInt();
     }
 
-    results = getPartialSearchResults(args["options"]["filter"], args["fields"], favorite);
+    if (args["options"].isMember("filter") && !args["options"]["filter"].empty()) {
+        results = getPartialSearchResults(args["options"]["filter"], args["fields"], favorite);
 
-    getSortSpecs(args["options"]["sort"]);
+        getSortSpecs(args["options"]["sort"]);
 
-    returnObj["_success"] = true;
-    returnObj["contacts"] = assembleSearchResults(results, args["fields"], limit);
+        returnObj["_success"] = true;
+        returnObj["contacts"] = assembleSearchResults(results, args["fields"], limit);
+    } else {
+        // if no filters specified, use list filters to get all contacts
+        bbpim::ContactService service;
+        bbpim::ContactListFilters listFilters;
+        QList<bbpim::Contact> results;
+        Json::Value contacts;
+
+        getSortSpecs(args["options"]["sort"]);
+        if (!_sortSpecs.empty()) {
+            listFilters.setSortBy(_sortSpecs);
+        }
+
+        listFilters.setIncludeAttributes(getIncludeAttributesList(args["fields"], &listFilters));
+
+        if (favorite) {
+            listFilters.setIsFavourite(favorite);
+        }
+
+        if (limit != -1) {
+            listFilters.setLimit(limit);
+        }
+
+        results = service.contacts(listFilters);
+        for (QList<bbpim::Contact>::const_iterator i = results.constBegin(); i != results.constEnd(); i++) {
+            Json::Value contactItem = populateContact(*i, args["fields"]);
+            contacts.append(contactItem);
+        }
+
+        returnObj["_success"] = true;
+        returnObj["contacts"] = contacts;
+    }
 
     return returnObj;
 }
@@ -329,6 +360,42 @@ QSet<bbpim::ContactId> PimContactsQt::getPartialSearchResults(const Json::Value&
     return results;
 }
 
+QList<bbpim::AttributeKind::Type> PimContactsQt::getIncludeAttributesList(const Json::Value& contactFields, bbpim::ContactListFilters* listFilters)
+{
+    QList<bbpim::AttributeKind::Type> includeFields;
+
+    for (unsigned int i = 0; i < contactFields.size(); i++) {
+        // favorite is always included, no need to include
+        if (contactFields[i].asString() == "favorite") {
+            continue;
+        }
+
+        StringToKindMap::const_iterator kindIter = _attributeKindMap.find(contactFields[i].asString());
+
+        if (kindIter != _attributeKindMap.end()) {
+            // multiple fields can map to the same kind, only add kind to the list if it's not already added
+            if (includeFields.count(kindIter->second) == 0) {
+                includeFields.append(kindIter->second);
+            }
+        } else if (contactFields[i].asString() == "displayName" || contactFields[i].asString() == "nickname") {
+            // special case: displayName and nickname are first-level fields under Contact but only map to AttributeSubKind
+            if (includeFields.count(bbpim::AttributeKind::Name) == 0) {
+                includeFields.append(bbpim::AttributeKind::Name);
+            }
+        } else if (contactFields[i].asString() == "addresses") {
+            if (listFilters != NULL) {
+                listFilters->setIncludePostalAddress(true);
+            }
+        } else if (contactFields[i].asString() == "photos") {
+            if (listFilters != NULL) {
+                listFilters->setIncludePhotos(true);
+            }
+        }
+    }
+
+    return includeFields;
+}
+
 QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searchFieldsJson, const Json::Value& contactFields, bool favorite)
 {
     QList<bbpim::SearchField::Type> searchFields = PimContactsQt::getSearchFields(searchFieldsJson);
@@ -337,7 +404,6 @@ QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searc
     if (!searchFields.empty()) {
         bbpim::ContactService contactService;
         bbpim::ContactSearchFilters contactFilter;
-        QList<bbpim::AttributeKind::Type> includeFields;
         QList<bbpim::Contact> results;
 
         contactFilter.setSearchFields(searchFields);
@@ -347,29 +413,8 @@ QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searc
             contactFilter.setIsFavourite(favorite);
         }
 
-        for (unsigned int i = 0; i < contactFields.size(); i++) {
-            // favorite is always included, no need to include
-            if (contactFields[i].asString() == "favorite") {
-                continue;
-            }
-
-            std::map<std::string, bbpim::AttributeKind::Type>::const_iterator kindIter = _attributeKindMap.find(contactFields[i].asString());
-
-            if (kindIter != _attributeKindMap.end()) {
-                // multiple fields can map to the same kind, only add kind to the list if it's not already added
-                if (includeFields.count(kindIter->second) == 0) {
-                    includeFields.append(kindIter->second);
-                }
-            } else if (contactFields[i].asString() == "displayName" || contactFields[i].asString() == "nickname") {
-                // special case: displayName and nickname are first-level fields under Contact but only map to AttributeSubKind
-                if (includeFields.count(bbpim::AttributeKind::Name) == 0) {
-                    includeFields.append(bbpim::AttributeKind::Name);
-                }
-            }
-        }
-
         contactFilter.setShowAttributes(true);
-        contactFilter.setIncludeAttributes(includeFields);
+        contactFilter.setIncludeAttributes(getIncludeAttributesList(contactFields));
 
         results = contactService.searchContacts(contactFilter);
 
@@ -460,13 +505,13 @@ void PimContactsQt::replaceAll(std::string& s, const std::string& souce, const s
  * Helper functions shared by Find and Save
  ****************************************************************/
 
-Json::Value PimContactsQt::populateContact(bbpim::Contact& contact, const Json::Value& contactFields)
+Json::Value PimContactsQt::populateContact(const bbpim::Contact& contact, const Json::Value& contactFields)
 {
     Json::Value contactItem;
 
     for (unsigned int i = 0; i < contactFields.size(); i++) {
         std::string field = contactFields[i].asString();
-        std::map<std::string, bbpim::AttributeKind::Type>::const_iterator kindIter = _attributeKindMap.find(field);
+        StringToKindMap::const_iterator kindIter = _attributeKindMap.find(field);
 
         if (kindIter != _attributeKindMap.end()) {
             switch (kindIter->second) {

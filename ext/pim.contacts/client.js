@@ -52,31 +52,33 @@ function validateFindArguments(contactFields, findOptions, onFindSuccess, onFind
         });
 
         if (!error) {
-            // findOptions and findOptions.filter are mandatory
-            if (!findOptions || !findOptions.filter || !findOptions.filter.length ||
-                typeof findOptions.limit !== "number" || typeof findOptions.favorite !== "boolean") {
+            // findOptions is mandatory
+            if (!findOptions || typeof findOptions.limit !== "number" || typeof findOptions.favorite !== "boolean") {
                 error = true;
             } else {
-                findOptions.filter.forEach(function (f) {
-                    switch (f.fieldName) {
-                    case ContactFindOptions.SEARCH_FIELD_GIVEN_NAME:
-                    case ContactFindOptions.SEARCH_FIELD_FAMILY_NAME:
-                    case ContactFindOptions.SEARCH_FIELD_ORGANIZATION_NAME:
-                    case ContactFindOptions.SEARCH_FIELD_PHONE:
-                    case ContactFindOptions.SEARCH_FIELD_EMAIL:
-                    case ContactFindOptions.SEARCH_FIELD_BBMPIN:
-                    case ContactFindOptions.SEARCH_FIELD_LINKEDIN:
-                    case ContactFindOptions.SEARCH_FIELD_TWITTER:
-                    case ContactFindOptions.SEARCH_FIELD_VIDEO_CHAT:
-                        break;
-                    default:
-                        error = true;
-                    }
+                // findOptions.filter is optional
+                if (findOptions.filter) {
+                    findOptions.filter.forEach(function (f) {
+                        switch (f.fieldName) {
+                        case ContactFindOptions.SEARCH_FIELD_GIVEN_NAME:
+                        case ContactFindOptions.SEARCH_FIELD_FAMILY_NAME:
+                        case ContactFindOptions.SEARCH_FIELD_ORGANIZATION_NAME:
+                        case ContactFindOptions.SEARCH_FIELD_PHONE:
+                        case ContactFindOptions.SEARCH_FIELD_EMAIL:
+                        case ContactFindOptions.SEARCH_FIELD_BBMPIN:
+                        case ContactFindOptions.SEARCH_FIELD_LINKEDIN:
+                        case ContactFindOptions.SEARCH_FIELD_TWITTER:
+                        case ContactFindOptions.SEARCH_FIELD_VIDEO_CHAT:
+                            break;
+                        default:
+                            error = true;
+                        }
 
-                    if (!f.fieldValue) {
-                        error = true;
-                    }
-                });
+                        if (!f.fieldValue) {
+                            error = true;
+                        }
+                    });
+                }
 
                 // findOptions.sort is optional
                 if (!error && findOptions.sort && findOptions.sort.length) {
