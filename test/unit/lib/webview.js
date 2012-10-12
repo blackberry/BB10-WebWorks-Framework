@@ -46,7 +46,9 @@ describe("webview", function () {
             getSensitivity: jasmine.createSpy(),
             setBackgroundColor: jasmine.createSpy(),
             getBackgroundColor: jasmine.createSpy(),
-            allowWebEvent: jasmine.createSpy()
+            allowWebEvent: jasmine.createSpy(),
+            allowUserMedia: jasmine.createSpy(),
+            disallowUserMedia: jasmine.createSpy()
         };
         mockedApplication = {
         };
@@ -201,6 +203,35 @@ describe("webview", function () {
             webview.create();
             webview.continueSSLHandshaking(streamId, SSLAction);
             expect(mockedWebview.continueSSLHandshaking).toHaveBeenCalledWith(streamId, SSLAction);
+        });
+    });
+
+    describe("User Media", function () {
+        it("has allowUserMedia defined", function () {
+            webview.create();
+            expect(webview.allowUserMedia).toBeDefined();
+        });
+
+        it("has disallowUserMedia defined", function () {
+            webview.create();
+            expect(webview.disallowUserMedia).toBeDefined();
+        });
+
+        it("calls allowUserMedia on WebView", function () {
+            var evtId = 10,
+                cameraName = "CAMERA_UNIT_FRONT";
+
+            webview.create();
+            webview.allowUserMedia(evtId, cameraName);
+            expect(mockedWebview.allowUserMedia).toHaveBeenCalledWith(evtId, cameraName);
+        });
+
+        it("calls disallowUserMedia on WebView", function () {
+            var evtId = 10;
+
+            webview.create();
+            webview.disallowUserMedia(evtId);
+            expect(mockedWebview.disallowUserMedia).toHaveBeenCalledWith(evtId);
         });
     });
 

@@ -89,6 +89,10 @@ describe("framework", function () {
         spyOn(overlayWebView, "setURL");
         spyOn(overlayWebView, "renderContextMenuFor");
         spyOn(overlayWebView, "handleDialogFor");
+        spyOn(overlayWebView, "addEventListener").andCallFake(function (eventName, callback) {
+            callback();
+        });
+        spyOn(overlayWebView, "removeEventListener");
         spyOn(console, "log");
     });
 
