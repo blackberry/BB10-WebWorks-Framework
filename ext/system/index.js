@@ -217,18 +217,6 @@ function readDeviceProperties() {
     PPSUtils.close();
 }
 
-function getDeviceProperty(prop, success, fail) {
-    if (!_deviceprops) {
-        readDeviceProperties();
-    }
-
-    if (_deviceprops) {
-        success(_deviceprops[prop]);
-    } else {
-        fail(-1, "Cannot open PPS object");
-    }
-}
-
 // Get device language object from /pps/services/confstr/_CS_LOCALE
 function readDeviceLanguage(success, fail) {
     var PPSUtils = _ppsUtils.createObject(),
@@ -321,16 +309,20 @@ module.exports = {
         }
     },
     
-    hardwareId: function (success, fail, args, env) {
-        getDeviceProperty("hardwareid", success, fail);
-    },
+    getDeviceProperties: function (success, fail, args, env) {
+        if (!_deviceprops) {
+            readDeviceProperties();
+        }
 
-    softwareVersion: function (success, fail, args, env) {
-        getDeviceProperty("scmbundle", success, fail);
-    },
-
-    name: function (success, fail, args, env) {
-        getDeviceProperty("devicename", success, fail);
+        if (_deviceprops) {
+            success({
+                "hardwareId" : _deviceprops["hardwareid"],
+                "softwareVersion" : _deviceprops["scmbundle"],
+                "name" : _deviceprops["devicename"]
+            });
+        } else {
+            fail(-1, "Cannot open PPS object");
+        }
     },
 
     language: function (success, fail, args, env) {

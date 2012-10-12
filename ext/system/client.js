@@ -15,7 +15,8 @@
  */
 
 var _self = {},
-    ID = require("./manifest.json").namespace;
+    ID = require("./manifest.json").namespace,
+    deviceProperties;
 
 function getFieldValue(field) {
     var value = null;
@@ -25,6 +26,18 @@ function getFieldValue(field) {
     } catch (e) {
         console.error(e);
     }
+
+    return value;
+}
+
+function getDeviceProperty(field) {
+    var value;
+
+    if (!deviceProperties) {
+        deviceProperties = getFieldValue("getDeviceProperties");
+    }
+
+    value = deviceProperties ? deviceProperties[field] : null;
 
     return value;
 }
@@ -54,9 +67,9 @@ defineGetter("region");
 
 window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
 window.webworks.defineReadOnlyField(_self, "DENY", 1);
-window.webworks.defineReadOnlyField(_self, "hardwareId", getFieldValue("hardwareId"));
-window.webworks.defineReadOnlyField(_self, "softwareVersion", getFieldValue("softwareVersion"));
-window.webworks.defineReadOnlyField(_self, "name", getFieldValue("name"));
+window.webworks.defineReadOnlyField(_self, "hardwareId", getDeviceProperty("hardwareId"));
+window.webworks.defineReadOnlyField(_self, "softwareVersion", getDeviceProperty("softwareVersion"));
+window.webworks.defineReadOnlyField(_self, "name", getDeviceProperty("name"));
 
 window.webworks.execSync(ID, "registerEvents", null);
 

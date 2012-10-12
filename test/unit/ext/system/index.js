@@ -224,13 +224,13 @@ describe("system index", function () {
             mockedPPS = null;
         });
 
-        it("can call fail if failed to open PPS object for hardwareId", function () {
+        it("can call fail if failed to open PPS object for getDeviceProperties", function () {
             var fail = jasmine.createSpy();
 
             mockedPPS.open = jasmine.createSpy().andReturn(false);
             spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
 
-            sysIndex.hardwareId(null, fail, null, null);
+            sysIndex.getDeviceProperties(null, fail, null, null);
 
             expect(mockedPPS.init).toHaveBeenCalled();
             expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
@@ -239,83 +239,43 @@ describe("system index", function () {
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
         });
 
-        it("can call fail if failed to open PPS object for softwareVersion", function () {
-            var fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.softwareVersion(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
-        });
-
-        it("can call fail if failed to open PPS object for device name", function () {
-            var fail = jasmine.createSpy(),
-                success = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.name(success, fail, null, null);
-
-            expect(success).not.toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, "Cannot open PPS object");
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-        });
-
-        it("can call success with hardwareId", function () {
+        it("can call success with getDeviceProperties", function () {
             var success = jasmine.createSpy();
 
             spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
 
-            sysIndex.hardwareId(success, null, null, null);
+            sysIndex.getDeviceProperties(success, null, null, null);
 
             expect(mockedPPS.init).toHaveBeenCalled();
             expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
             expect(mockedPPS.read).toHaveBeenCalled();
             expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("0x8500240a");
+            expect(success).toHaveBeenCalledWith({
+                "hardwareId" : "0x8500240a",
+                "softwareVersion" : "10.0.6.99",
+                "name": "Device"
+            });
         });
 
-        it("can call success with softwareVersion", function () {
+        it("can call success with getDeviceProperties and PPS cached", function () {
             var success = jasmine.createSpy();
 
             spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
 
-            sysIndex.softwareVersion(success, null, null, null);
+            sysIndex.getDeviceProperties(success, null, null, null);
 
             // The PPS objects should have been init in the test above; once the PPS has been read it is cached
             expect(mockedPPS.init).not.toHaveBeenCalled();
             expect(mockedPPS.open).not.toHaveBeenCalledWith(path, mode);
             expect(mockedPPS.read).not.toHaveBeenCalled();
             expect(mockedPPS.close).not.toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("10.0.6.99");
-        });
+            expect(success).toHaveBeenCalledWith({
+                "hardwareId" : "0x8500240a",
+                "softwareVersion" : "10.0.6.99",
+                "name": "Device"
+            });
+        }); 
 
-        it("can call success with name", function () {
-            var fail = jasmine.createSpy(),
-                success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.name(success, fail, null, null);
-
-            // The PPS objects should have been init in the test above; once the PPS has been read it is cached
-            expect(mockedPPS.init).not.toHaveBeenCalled();
-            expect(mockedPPS.open).not.toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).not.toHaveBeenCalled();
-            expect(fail).not.toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("Device");
-        });
     });
 
     describe("device language", function () {

@@ -76,22 +76,19 @@ describe("system client", function () {
     });
 
     describe("device properties and registerEvents", function () {
-        var fields = [
-                "hardwareId",
-                "softwareVersion",
-                "name"
-            ],
-            execSyncArgs = [];
+
+        var mockDeviceProperties = {
+            hardwareId: "123",
+            softwareVersion: "456",
+            name: "789"
+        };
 
         beforeEach(function () {
             delete require.cache[require.resolve(apiDir + "/client")];
             sysClient = null;
 
             GLOBAL.window = GLOBAL;
-            fields.forEach(function (field) {
-                execSyncArgs.push([ID, field, null]);
-            });
-            mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(null);
+            mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(mockDeviceProperties);
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
             GLOBAL.window.webworks = mockedWebworks;
             // client needs to be required for each test
@@ -99,34 +96,21 @@ describe("system client", function () {
         });
 
         afterEach(function () {
-            execSyncArgs = [];
             delete GLOBAL.window;
         });
 
-        it("execSync should have been called once for each system field", function () {
-            expect(mockedWebworks.execSync.callCount).toEqual(fields.length + 1); // the extra call is for registerEvents
+        it("execSync should have been called once for all system fields", function () {
+            expect(mockedWebworks.execSync.callCount).toEqual(2); // the extra call is for registerEvents
         });
 
         it("registerEvents", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain([ID, "registerEvents", null]);
         });
 
-        it("hardwareId", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("hardwareId")]);
-        });
-
-        it("softwareVersion", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("softwareVersion")]);
-        });
-
-        it("name", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("name")]);
-        });
-
         it("readonly fields set", function () {
-            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", null);
-            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", null);
-            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "name", null);
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", "123");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", "456");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "name", "789");
         });
     });
 
