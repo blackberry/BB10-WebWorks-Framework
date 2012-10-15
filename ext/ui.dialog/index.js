@@ -33,8 +33,8 @@ function validateIdMessageSettings(args) {
 
 var dialog,
     _event = require("../../lib/event"),
-    _webview = require("../../lib/webview");
-    
+    _clientWebView = require("../../lib/clientWebView");
+
 module.exports = {
     customAskAsync: function (success, fail, args, env) {
         if (validateIdMessageSettings(args) === 1) {
@@ -48,12 +48,12 @@ module.exports = {
             fail(-1, "buttons is undefined");
             return;
         }
-        
+
         if (!Array.isArray(args.buttons)) {
             fail(-1, "buttons is not an array");
             return;
         }
-        
+
         dialog.show(args.eventId, args.message, args.buttons, args.settings);
         success();
     },
@@ -63,14 +63,14 @@ module.exports = {
             fail(-1, "message is undefined");
             return;
         }
-        
+
         if (args.type) {
             args.type = JSON.parse(decodeURIComponent(args.type));
         } else {
             fail(-1, "type is undefined");
             return;
         }
-        
+
         if (args.type < 0 || args.type > 4) {
             fail(-1, "invalid dialog type: " + args.type);
             return;
@@ -94,14 +94,14 @@ module.exports = {
 ///////////////////////////////////////////////////////////////////
 
 JNEXT.Dialog = function ()
-{   
+{
     var self = this;
 
     self.show = function (eventId, message, buttons, settings) {
         settings.message = message;
         settings.buttons = buttons;
         settings.eventId = eventId;
-        settings.windowGroup = _webview.windowGroup();
+        settings.windowGroup = _clientWebView.windowGroup();
         self.eventId = settings.eventId = eventId;
         var val = JNEXT.invoke(self.m_id, "show " + JSON.stringify(settings));
         return val;
@@ -112,28 +112,28 @@ JNEXT.Dialog = function ()
     };
 
     self.init = function () {
-        if (!JNEXT.require("dialog")) {   
+        if (!JNEXT.require("dialog")) {
             return false;
         }
 
         self.m_id = JNEXT.createObject("dialog.Dialog");
-        
-        if (self.m_id === "") {   
+
+        if (self.m_id === "") {
             return false;
         }
 
         JNEXT.registerEvents(self);
     };
-    
+
     self.onEvent = function (strData) {
         var arData = strData.split(" "),
             strEventDesc = arData[0];
-            
+
         if (strEventDesc === "result") {
             _event.trigger(self.eventId, arData[1]);
         }
     };
-    
+
     self.onBlink = {};
     self.m_id = "";
     self.eventId = "";

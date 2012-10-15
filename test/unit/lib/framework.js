@@ -17,7 +17,7 @@
 var srcPath = __dirname + '/../../../lib/',
     framework = require(srcPath + 'framework'),
     util = require(srcPath + "utils"),
-    webview,
+    clientWebView,
     overlayWebView,
     controllerWebView,
     rotationHelper,
@@ -71,12 +71,12 @@ describe("framework", function () {
                 }
             }
         };
-        webview = util.requireWebview();
+        clientWebView = util.requireWebview();
         overlayWebView = require(srcPath + "overlayWebView");
         controllerWebView = require(srcPath + "controllerWebView");
         rotationHelper = require(srcPath + 'rotationHelper');
         spyOn(rotationHelper, "addWebview");
-        spyOn(webview, "create").andCallFake(function (done) {
+        spyOn(clientWebView, "create").andCallFake(function (done) {
             done();
         });
         spyOn(overlayWebView, "create").andCallFake(function (done) {
@@ -84,48 +84,48 @@ describe("framework", function () {
         });
         spyOn(controllerWebView, "init");
         spyOn(controllerWebView, "dispatchEvent");
-        spyOn(webview, "destroy");
-        spyOn(webview, "executeJavascript");
-        spyOn(webview, "setURL");
+        spyOn(clientWebView, "destroy");
+        spyOn(clientWebView, "executeJavascript");
+        spyOn(clientWebView, "setURL");
         spyOn(overlayWebView, "setURL");
         spyOn(overlayWebView, "renderContextMenuFor");
         spyOn(overlayWebView, "handleDialogFor");
         spyOn(console, "log");
     });
 
-    it("can start a webview instance", function () {
+    it("can start a clientWebView instance", function () {
         framework.start();
         expect(controllerWebView.init).toHaveBeenCalled();
-        expect(webview.create).toHaveBeenCalled();
+        expect(clientWebView.create).toHaveBeenCalled();
     });
 
     it("adds all three webviews to the rotationHandler", function () {
         framework.start();
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(webview);
+        expect(rotationHelper.addWebview).toHaveBeenCalledWith(clientWebView);
         expect(rotationHelper.addWebview).toHaveBeenCalledWith(overlayWebView);
         expect(rotationHelper.addWebview).toHaveBeenCalledWith(controllerWebView);
     });
 
-    it("on start passing callback and setting object parameters to create method of webview", function () {
+    it("on start passing callback and setting object parameters to create method of clientWebView", function () {
         framework.start();
-        expect(webview.create).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Object));
+        expect(clientWebView.create).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Object));
     });
 
     it("setting object should have debugEnabled to be defined", function () {
         framework.start();
-        expect((webview.create.mostRecentCall.args)[1].debugEnabled).toBeDefined();
+        expect((clientWebView.create.mostRecentCall.args)[1].debugEnabled).toBeDefined();
     });
 
-    it("can start a webview instance with a url", function () {
+    it("can start a clientWebView instance with a url", function () {
         var url = "http://www.google.com";
         framework.start(url);
-        expect(webview.setURL).toHaveBeenCalledWith(url);
+        expect(clientWebView.setURL).toHaveBeenCalledWith(url);
     });
 
-    it("can stop a webview instance", function () {
+    it("can stop a clientWebView instance", function () {
         framework.start();
         framework.stop();
-        expect(webview.destroy).toHaveBeenCalled();
+        expect(clientWebView.destroy).toHaveBeenCalled();
     });
 
 });

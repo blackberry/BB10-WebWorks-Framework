@@ -1,14 +1,14 @@
-describe("webview", function () {
+describe("clientWebView", function () {
     var libPath = "./../../../",
         request = require(libPath + "lib/request"),
         utils = require(libPath + "lib/utils"),
-        webview,
+        clientWebView,
         mockedController,
         mockedWebview,
         mockedApplication;
 
     beforeEach(function () {
-        webview = require(libPath + "lib/webview");
+        clientWebView = require(libPath + "lib/clientWebView");
         mockedController = {
             enableWebInspector: undefined,
             enableCrossSiteXHR: undefined,
@@ -74,9 +74,9 @@ describe("webview", function () {
     });
 
     describe("create", function () {
-        it("sets up the visible webview", function () {
+        it("sets up the visible clientWebView", function () {
             spyOn(request, "init").andCallThrough();
-            webview.create();
+            clientWebView.create();
             waits(1);
             runs(function () {
                 expect(mockedWebview.visible).toEqual(true);
@@ -88,15 +88,15 @@ describe("webview", function () {
 
                 //The default config.xml only has access to WIDGET_LOCAL
                 //and has permission for two apis
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'local://', false);
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
+                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('clientWebView.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'local://', false);
+                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('clientWebView.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
+                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('clientWebView.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
             });
         });
 
         it("calls the ready function", function () {
             var chuck = jasmine.createSpy();
-            webview.create(chuck);
+            clientWebView.create(chuck);
             waits(1);
             runs(function () {
                 expect(chuck).toHaveBeenCalled();
@@ -107,64 +107,64 @@ describe("webview", function () {
 
     describe("file system sandbox", function () {
         it("setSandbox", function () {
-            webview.create();
-            webview.setSandbox(false);
+            clientWebView.create();
+            clientWebView.setSandbox(false);
             expect(mockedWebview.setFileSystemSandbox).toBeFalsy();
         });
 
         it("getSandbox", function () {
-            webview.create();
-            webview.setSandbox(false);
-            expect(webview.getSandbox()).toBeFalsy();
+            clientWebView.create();
+            clientWebView.setSandbox(false);
+            expect(clientWebView.getSandbox()).toBeFalsy();
         });
     });
 
     describe("id", function () {
         it("can get the id for the webiew", function () {
-            webview.create();
-            expect(webview.id).toEqual(mockedWebview.id);
+            clientWebView.create();
+            expect(clientWebView.id).toEqual(mockedWebview.id);
         });
     });
 
     describe("geometry", function () {
         it("can set geometry", function () {
-            webview.create();
-            webview.setGeometry(0, 0, 100, 200);
+            clientWebView.create();
+            clientWebView.setGeometry(0, 0, 100, 200);
             expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
         });
     });
 
     describe("application orientation", function () {
         it("can set application orientation", function () {
-            webview.create();
-            webview.setApplicationOrientation(90);
+            clientWebView.create();
+            clientWebView.setApplicationOrientation(90);
             expect(mockedWebview.setApplicationOrientation).toHaveBeenCalledWith(90);
         });
 
         it("can notifyApplicationOrientationDone", function () {
-            webview.create();
-            webview.notifyApplicationOrientationDone();
+            clientWebView.create();
+            clientWebView.notifyApplicationOrientationDone();
             expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
         });
     });
 
     describe("plugins", function () {
         it("can set an extra plugin directory", function () {
-            webview.create();
-            webview.setExtraPluginDirectory('/usr/lib/browser/plugins');
+            clientWebView.create();
+            clientWebView.setExtraPluginDirectory('/usr/lib/browser/plugins');
             expect(mockedWebview.setExtraPluginDirectory).toHaveBeenCalledWith('/usr/lib/browser/plugins');
         });
 
-        it("can enable plugins for the webview", function () {
-            webview.create();
-            webview.setEnablePlugins(true);
+        it("can enable plugins for the clientWebView", function () {
+            clientWebView.create();
+            clientWebView.setEnablePlugins(true);
             expect(mockedWebview.pluginsEnabled).toBeTruthy();
         });
 
         it("can retrieve whether plugins are enabled", function () {
-            webview.create();
-            webview.setEnablePlugins(true);
-            expect(webview.getEnablePlugins()).toBeTruthy();
+            clientWebView.create();
+            clientWebView.setEnablePlugins(true);
+            expect(clientWebView.getEnablePlugins()).toBeTruthy();
         });
     });
 
@@ -174,16 +174,16 @@ describe("webview", function () {
                 certificateInfo = {
                     test : 'test'
                 };
-            webview.create();
-            webview.addKnownSSLCertificate(url, certificateInfo);
+            clientWebView.create();
+            clientWebView.addKnownSSLCertificate(url, certificateInfo);
             expect(mockedWebview.addKnownSSLCertificate).toHaveBeenCalledWith(url, certificateInfo);
         });
 
         it("continue SSL Hanshaking", function () {
             var streamId = 8,
                 SSLAction = 'SSLActionReject';
-            webview.create();
-            webview.continueSSLHandshaking(streamId, SSLAction);
+            clientWebView.create();
+            clientWebView.continueSSLHandshaking(streamId, SSLAction);
             expect(mockedWebview.continueSSLHandshaking).toHaveBeenCalledWith(streamId, SSLAction);
         });
     });
@@ -191,27 +191,27 @@ describe("webview", function () {
     describe("methods other than create", function () {
 
         it("calls the underlying destroy", function () {
-            webview.create(mockedWebview);
-            webview.destroy();
+            clientWebView.create(mockedWebview);
+            clientWebView.destroy();
             expect(mockedWebview.destroy).toHaveBeenCalled();
         });
 
         it("sets the url property", function () {
             var url = "http://AWESOMESAUCE.com";
-            webview.create(mockedWebview);
-            webview.setURL(url);
+            clientWebView.create(mockedWebview);
+            clientWebView.setURL(url);
             expect(mockedWebview.url).toEqual(url);
         });
 
         it("calls the underlying executeJavaScript", function () {
             var js = "var awesome='Jasmine BDD'";
-            webview.create(mockedWebview);
-            webview.executeJavascript(js);
+            clientWebView.create(mockedWebview);
+            clientWebView.executeJavascript(js);
             expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith(js);
         });
         it("calls the underlying windowGroup property", function () {
-            webview.create(mockedWebview);
-            expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
+            clientWebView.create(mockedWebview);
+            expect(clientWebView.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
     });
 
