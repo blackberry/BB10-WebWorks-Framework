@@ -16,7 +16,7 @@
 
 var filetransfer,
     _event = require("../../lib/event"),
-    _webview = require("../../lib/webview"),
+    _clientWebView = require("../../lib/clientWebView"),
     Whitelist = require('../../lib/policy/whitelist').Whitelist,
     _whitelist = new Whitelist();
 
@@ -35,7 +35,7 @@ module.exports = {
                     "params": {},
                     "chunkedMode": true,
                     "chunkSize": 1024,
-                    "windowGroup" : _webview.windowGroup()
+                    "windowGroup" : _clientWebView.windowGroup()
                 }
             },
             undefined_params = [];
@@ -108,7 +108,7 @@ module.exports = {
             return;
         }
 
-        args.windowGroup = _webview.windowGroup();
+        args.windowGroup = _clientWebView.windowGroup();
 
         filetransfer.download(args);
         success();

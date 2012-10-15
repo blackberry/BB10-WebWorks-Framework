@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 describe("Overlay Webview", function () {
-    var webview,
+    var overlayWebView,
         libPath = "./../../../",
         mockedController,
         mockedWebview,
         mockedApplication;
 
     beforeEach(function () {
-        webview = require(libPath + "lib/overlayWebView");
+        overlayWebView = require(libPath + "lib/overlayWebView");
         mockedWebview = {
             id: 42,
             enableCrossSiteXHR: undefined,
@@ -74,8 +74,8 @@ describe("Overlay Webview", function () {
     });
 
     describe("create", function () {
-        it("sets up the visible webview", function () {
-            webview.create();
+        it("sets up the visible overlayWebView", function () {
+            overlayWebView.create();
             waits(1);
             runs(function () {
                 expect(mockedWebview.visible).toEqual(true);
@@ -91,7 +91,7 @@ describe("Overlay Webview", function () {
 
         it("calls the ready function", function () {
             var chuck = jasmine.createSpy();
-            webview.create(chuck);
+            overlayWebView.create(chuck);
             waits(1);
             runs(function () {
                 expect(chuck).toHaveBeenCalled();
@@ -103,62 +103,62 @@ describe("Overlay Webview", function () {
     describe("methods other than create", function () {
 
         it("calls the underlying destroy", function () {
-            webview.create(mockedWebview);
-            webview.destroy();
+            overlayWebView.create(mockedWebview);
+            overlayWebView.destroy();
             expect(mockedWebview.destroy).toHaveBeenCalled();
         });
 
         it("sets the url property", function () {
             var url = "http://AWESOMESAUCE.com";
-            webview.create(mockedWebview);
-            webview.setURL(url);
+            overlayWebView.create(mockedWebview);
+            overlayWebView.setURL(url);
             expect(mockedWebview.url).toEqual(url);
         });
 
         it("calls the underlying executeJavascript", function () {
             var js = "var awesome='Jasmine BDD'";
-            webview.create(mockedWebview);
-            webview.executeJavascript(js);
+            overlayWebView.create(mockedWebview);
+            overlayWebView.executeJavascript(js);
             expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith(js);
         });
         it("calls the underlying windowGroup property", function () {
-            webview.create(mockedWebview);
-            expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
+            overlayWebView.create(mockedWebview);
+            expect(overlayWebView.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
 
         it("can get the id for the webiew", function () {
-            webview.create();
-            expect(webview.id).toEqual(mockedWebview.id);
+            overlayWebView.create();
+            expect(overlayWebView.id).toEqual(mockedWebview.id);
         });
 
         it("can set geometry", function () {
-            webview.create();
-            webview.setGeometry(0, 0, 100, 200);
+            overlayWebView.create();
+            overlayWebView.setGeometry(0, 0, 100, 200);
             expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
         });
 
         it("can set application orientation", function () {
-            webview.create();
-            webview.setApplicationOrientation(90);
+            overlayWebView.create();
+            overlayWebView.setApplicationOrientation(90);
             expect(mockedWebview.setApplicationOrientation).toHaveBeenCalledWith(90);
         });
 
         it("can notifyApplicationOrientationDone", function () {
-            webview.create();
-            webview.notifyApplicationOrientationDone();
+            overlayWebView.create();
+            overlayWebView.notifyApplicationOrientationDone();
             expect(mockedWebview.notifyApplicationOrientationDone).toHaveBeenCalled();
         });
 
         it("can notifyContextMenuCancelled", function () {
-            webview.create();
-            webview.notifyContextMenuCancelled();
+            overlayWebView.create();
+            overlayWebView.notifyContextMenuCancelled();
             expect(mockedWebview.notifyContextMenuCancelled).toHaveBeenCalled();
         });
 
         it("can render the ccm for another webview ", function () {
-            webview.create();
-            webview.renderContextMenuFor(webview);
-            expect(mockedWebview.contextMenu.subscribeTo).toHaveBeenCalledWith(webview);
+            overlayWebView.create();
+            overlayWebView.renderContextMenuFor(overlayWebView);
+            expect(mockedWebview.contextMenu.subscribeTo).toHaveBeenCalledWith(overlayWebView);
         });
     });
 });

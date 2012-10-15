@@ -1,5 +1,5 @@
 describe("permissions", function () {
-    var webview,
+    var clientWebView,
         libPath = "./../../../",
         mockedController,
         mockedWebview,
@@ -8,7 +8,7 @@ describe("permissions", function () {
         config = require(libPath + "lib/config");
 
     beforeEach(function () {
-        webview = require(libPath + "lib/webview");
+        clientWebView = require(libPath + "lib/clientWebView");
         mockedController = {
             enableWebInspector: undefined,
             enableCrossSiteXHR: undefined,
@@ -73,7 +73,7 @@ describe("permissions", function () {
 
     describe("init", function () {
         it("can set up a permissions object", function () {
-            webview.create();
+            clientWebView.create();
             waits(1);
             expect(permissions.init).toBeDefined();
             permissions.init(mockedWebview);
@@ -87,7 +87,7 @@ describe("permissions", function () {
     describe("permissons tests", function () {
 
         beforeEach(function () {
-            webview.create();
+            clientWebView.create();
             waits(1);
             expect(permissions.init).toBeDefined();
             permissions.init(mockedWebview);
