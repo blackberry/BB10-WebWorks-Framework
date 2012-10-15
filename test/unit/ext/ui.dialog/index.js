@@ -16,6 +16,7 @@
 
 var root = __dirname + "/../../../../",
     webview = require(root + "lib/webview"),
+    overlayWebView = require(root + "lib/overlayWebView"),
     index;
 
 describe("ui.dialog index", function () {
@@ -30,11 +31,7 @@ describe("ui.dialog index", function () {
         index = require(root + "ext/ui.dialog/index");
     });
 
-    it("makes sure that JNEXT is initalized", function () {
-        expect(GLOBAL.JNEXT.require).toHaveBeenCalled();
-    });
-
-    it("makes sure that JNEXT called properly", function () {
+    it("makes sure that the dialog is called properly", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
@@ -47,11 +44,11 @@ describe("ui.dialog index", function () {
         args.message = encodeURIComponent(args.message);
         args.buttons = encodeURIComponent(JSON.stringify(args.buttons));
         args.settings = encodeURIComponent(JSON.stringify(args.settings));
-        
+    
+        spyOn(overlayWebView, "showDialog");
         index.customAskAsync(successCB, failCB, args);
         
-        expect(webview.windowGroup).toHaveBeenCalled();
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalled();
+        expect(overlayWebView.showDialog).toHaveBeenCalled();
     });
     
     it("makes sure that a message is specified", function () {
@@ -77,8 +74,20 @@ describe("ui.dialog index", function () {
         
         expect(failCB).toHaveBeenCalled();
     });
+    it("makes sure that buttons is an array", function () {
+        var successCB = jasmine.createSpy(),
+            failCB = jasmine.createSpy(),
+            args = {buttons : 3};
 
-    it("makes sure that JNEXT is called properly for standard dialogs", function () {
+        args.eventId = "12345";        
+        args.message = "Hello World";
+        args.message = encodeURIComponent(args.message);
+        index.customAskAsync(successCB, failCB, args);
+        
+        expect(failCB).toHaveBeenCalledWith(-1, "buttons is not an array");
+    });
+
+    it("makes sure that the dialog is called properly for standard dialogs", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
@@ -92,10 +101,10 @@ describe("ui.dialog index", function () {
         args.type = encodeURIComponent(args.type);
         args.settings = encodeURIComponent(JSON.stringify(args.settings));
         
+        spyOn(overlayWebView, "showDialog");
         index.standardAskAsync(successCB, failCB, args);
-
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalled();
-        expect(webview.windowGroup).toHaveBeenCalled();
+        
+        expect(overlayWebView.showDialog).toHaveBeenCalled();
         expect(successCB).toHaveBeenCalledWith();
     });
 
@@ -132,12 +141,12 @@ describe("ui.dialog index", function () {
 
         args.eventId = "12345";
         args.message = "Hello World";
-        args.type = 5;
+        args.type = 6;
         args.message = encodeURIComponent(args.message);
         args.type = encodeURIComponent(args.type);
 
         index.standardAskAsync(successCB, failCB, args);
 
-        expect(failCB).toHaveBeenCalledWith(-1, "invalid dialog type: 5");
+        expect(failCB).toHaveBeenCalledWith(-1, "invalid dialog type: 6");
     });
 });

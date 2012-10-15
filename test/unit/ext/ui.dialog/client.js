@@ -25,11 +25,12 @@ var root = __dirname + "/../../../../",
                  isOn : jasmine.createSpy() }
     },
     constants = {
-        "D_OK": 0,
-        "D_SAVE": 1,
-        "D_DELETE": 2,
-        "D_YES_NO": 3,
-        "D_OK_CANCEL": 4
+        "D_OK" : 0,
+        "D_SAVE" : 1,
+        "D_DELETE" : 2,
+        "D_YES_NO" : 3,
+        "D_OK_CANCEL" : 4,
+        "D_PROMPT" : 5
     },
     defineROFieldArgs = [];
 
@@ -52,6 +53,7 @@ describe("ui.dialog", function () {
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_DELETE")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_YES_NO")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_OK_CANCEL")]);
+        expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_PROMPT")]);
     });
     
     it("creates a dialog", function () {
