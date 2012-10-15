@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 var _self = {},
-    _ID = require("./manifest.json").namespace;
+    _ID = require("./manifest.json").namespace,
+    _fields;
 
 function getFieldValue(field) {
-    var value = null;
+    var value;
 
-    try {
-        value = window.webworks.execSync(_ID, field, null);
-    } catch (e) {
-        console.error(e);
+    if (!_fields) {
+        try {
+            _fields = window.webworks.execSync(_ID, "getFields", null);
+        } catch (e) {
+            console.error(e);
+        }
     }
+
+    value = _fields ? _fields[field] : null;
 
     return value;
 }

@@ -19,7 +19,9 @@ var _apiDir = __dirname + "./../../../../ext/identity/",
     ppsUtils,
     mockedPPS,
     path,
-    mode = "0";
+    mode = "0",
+    devicePropertiesPath = "/pps/services/private/deviceproperties",
+    uiccPath = "/pps/services/cellular/uicc/card0/status_restricted";
 
 describe("identity index", function () {
     beforeEach(function () {
@@ -28,7 +30,10 @@ describe("identity index", function () {
         index = require(_apiDir + "index");
         mockedPPS = {
             init: jasmine.createSpy(),
-            open: jasmine.createSpy().andReturn(true),
+            open: jasmine.createSpy().andCallFake(function (openPath) {
+                path = openPath;
+                return true;
+            }),
             read: jasmine.createSpy(),
             close: jasmine.createSpy()
         };
@@ -39,27 +44,44 @@ describe("identity index", function () {
         ppsUtils = null;
         index = null;
         mockedPPS = null;
+        path = null;
     });
 
-    describe("uuid", function () {
-        path = "/pps/services/private/deviceproperties";
+    describe("getFields", function () {
 
         beforeEach(function () {
-            mockedPPS.read.andReturn({"devicepin": "abcdefg"});
+
+            mockedPPS.read.andCallFake(function () {
+                if (path === devicePropertiesPath) {
+                    return {
+                        devicepin: "abcdefg",
+                        IMEI: "AA-BBBBBB-CCCCCC-D",
+                    };
+                }
+                if (path === uiccPath) {
+                    return { imsi: "310150123456789" };
+                }
+            });
         });
 
-        it("can call success with devicepin", function () {
+        it("can call success", function () {
             var success = jasmine.createSpy();
 
             spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
 
-            index.uuid(success, null, null, null);
+            index.getFields(success, null, null, null);
 
             expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
+            expect(mockedPPS.open.callCount).toEqual(2); 
+            expect(mockedPPS.open).toHaveBeenCalledWith(devicePropertiesPath, mode);
+            expect(mockedPPS.open).toHaveBeenCalledWith(uiccPath, mode);
             expect(mockedPPS.read).toHaveBeenCalled();
             expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("abcdefg");
+            expect(success).toHaveBeenCalledWith({
+                uuid: "abcdefg",
+                IMSI: "310150123456789",
+                IMEI: "AA-BBBBBB-CCCCCC-D"
+            });
         });
 
         it("can call fail if failed to open PPS object", function () {
@@ -68,97 +90,15 @@ describe("identity index", function () {
             mockedPPS.open = jasmine.createSpy().andReturn(false);
             spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
 
-            index.uuid(null, fail, null, null);
+            index.getFields(null, fail, null, null);
 
             expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
+            expect(mockedPPS.open.callCount).toEqual(2);
+            expect(mockedPPS.open).toHaveBeenCalledWith(devicePropertiesPath, mode);
+            expect(mockedPPS.open).toHaveBeenCalledWith(uiccPath, mode);
             expect(mockedPPS.read).not.toHaveBeenCalled();
             expect(mockedPPS.close).toHaveBeenCalled();
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
-        });
-    });
-
-    describe("IMSI", function () {
-        var imsi = "310150123456789",
-            path = "/pps/services/cellular/uicc/card0/status_restricted";
-
-        beforeEach(function () {
-            mockedPPS.read.andReturn({"imsi": imsi});
-        });
-
-        it("can call success with IMSI", function () {
-            var success = jasmine.createSpy(),
-                fail = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            index.IMSI(success, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith(imsi);
-            expect(fail).not.toHaveBeenCalled();
-        });
-
-        it("can call fail if failed to open PPS object", function () {
-            var success = jasmine.createSpy(),
-                fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            index.IMSI(success, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).not.toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, "Cannot open PPS object");
-        });
-    });
-
-    describe("IMEI", function () {
-        var imei = "AA-BBBBBB-CCCCCC-D",
-            path = "/pps/services/private/deviceproperties";
-
-        beforeEach(function () {
-            mockedPPS.read.andReturn({"IMEI": imei});
-        });
-
-        it("can call success with IMEI", function () {
-            var success = jasmine.createSpy("success"),
-                fail = jasmine.createSpy("fail");
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            index.IMEI(success, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).not.toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith(imei);
-        });
-
-        it("can call fail if failed to open PPS object", function () {
-            var success = jasmine.createSpy(),
-                fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            index.IMEI(success, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).not.toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, "Cannot open PPS object");
         });
     });
 });

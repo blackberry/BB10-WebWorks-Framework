@@ -17,24 +17,13 @@ var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/identity",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
-    mockedWebworks = {},
-    fields = [
-        "uuid",
-        "IMEI",
-        "IMSI"
-    ],
-    execSyncArgs = [];
+    mockedWebworks = {};
 
 beforeEach(function () {
     GLOBAL.window = GLOBAL;
-
-    fields.forEach(function (field) {
-        execSyncArgs.push([_ID, field, null]);
-    });
 });
 
 afterEach(function () {
-    execSyncArgs = [];
     delete GLOBAL.window;
 });
 
@@ -49,18 +38,15 @@ describe("identity client", function () {
         beforeEach(function () {
             mockedWebworks.execSync = jasmine.createSpy().andCallFake(function (service, action, args) {
                 var result = "Unsupported action";
-
-                switch (action)
-                {
-                case "uuid":
-                    result =  "0x12345678";
-                    break;
-                case "IMSI":
-                    result = "310150123456789";
-                    break;
-                case "IMEI":
-                    result = "AA-BBBBBB-CCCCCC-D";
+                
+                if (action === "getFields") {
+                    result = {
+                        uuid: "0x12345678",
+                        IMSI: "310150123456789",
+                        IMEI: "AA-BBBBBB-CCCCCC-D"
+                    };
                 }
+
                 return result;
             });
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
@@ -71,23 +57,24 @@ describe("identity client", function () {
 
         afterEach(unloadClient);
 
-        it("execSync should have been called once for each identity field", function () {
-            expect(mockedWebworks.execSync.callCount).toEqual(fields.length);
+        it("execSync should have been called once for all fields", function () {
+            expect(mockedWebworks.execSync.callCount).toEqual(1);
         });
 
-        it("uuid should call execSync and equal to execSync return value", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("uuid")]);
+        it("uuid should call execSync and value should be defined", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "uuid", "0x12345678");
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "getFields", null);
+            expect(mockedWebworks.execSync).not.toHaveBeenCalledWith(_ID, "uuid", null);
         });
 
-        it("IMSI should call execSync", function () {
+        it("IMSI value should be defined", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "IMSI", "310150123456789");
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "IMSI", null);
+            expect(mockedWebworks.execSync).not.toHaveBeenCalledWith(_ID, "IMSI", null);
         });
 
-        it("IMSI should call execSync", function () {
+        it("IMSI value should be defined", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "IMEI", "AA-BBBBBB-CCCCCC-D");
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "IMEI", null);
+            expect(mockedWebworks.execSync).not.toHaveBeenCalledWith(_ID, "IMEI", null);
         });
     });
 
@@ -102,7 +89,7 @@ describe("identity client", function () {
         afterEach(unloadClient);
 
         it("uuid should call execSync and catch error and return null", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("uuid")]);
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "getFields", null);
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "uuid", null);
         });
     });

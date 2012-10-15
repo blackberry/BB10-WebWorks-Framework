@@ -29,7 +29,7 @@ function getPPSField(path, field) {
 
     ppsObj.close();
 
-    if (ppsContent) {
+    if (ppsContent && field) {
         return (ppsContent[field]);
     } else {
         return ppsContent;
@@ -37,29 +37,19 @@ function getPPSField(path, field) {
 }
 
 module.exports = {
-    uuid: function (success, fail, args, env) {
-        var result = getPPSField("/pps/services/private/deviceproperties", "devicepin");
+    getFields: function (success, fail, args, env) {
+        var fields = { },
+            deviceProperties = getPPSField("/pps/services/private/deviceproperties");
 
-        if (result) {
-            success(result);
-        } else {
-            fail(ERROR_ID, ERRON_MSG_PPS);
+        if (deviceProperties) {
+            fields.uuid = deviceProperties.devicepin;
+            fields.IMEI = deviceProperties.IMEI;
         }
-    },
-    IMSI: function (success, fail, args, env) {
-        var result = getPPSField("/pps/services/cellular/uicc/card0/status_restricted", "imsi");
 
-        if (result) {
-            success(result);
-        } else {
-            fail(ERROR_ID, ERRON_MSG_PPS);
-        }
-    },
-    IMEI: function (success, fail, args, env) {
-        var result = getPPSField("/pps/services/private/deviceproperties", "IMEI");
+        fields.IMSI = getPPSField("/pps/services/cellular/uicc/card0/status_restricted", "imsi");
 
-        if (result) {
-            success(result);
+        if (fields.uuid || fields.IMSI || fields.IMEI) {
+            success(fields);
         } else {
             fail(ERROR_ID, ERRON_MSG_PPS);
         }
