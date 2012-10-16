@@ -540,4 +540,88 @@ describe("system index", function () {
             });
         });
     });
+
+    describe("getCurrentTimezone", function () {
+        var mockedOpen = jasmine.createSpy();
+
+        beforeEach(function () {
+            GLOBAL.qnx = {
+                webplatform: {
+                    pps: {
+                        create: jasmine.createSpy().andReturn({
+                            open: mockedOpen,
+                            data: {
+                                _CS_TIMEZONE: {
+                                    _CS_TIMEZONE: "hello123"
+                                }
+                            }
+                        }),
+                        PPSMode: {
+                            FULL: 123
+                        },
+                        FileMode: {
+                            RDONLY: 456
+                        }
+                    }
+                }
+            };
+        });
+
+        it("return timezone from PPS", function () {
+            var pps = qnx.webplatform.pps,
+                successCb = jasmine.createSpy();
+
+            sysIndex.getCurrentTimezone(successCb);
+
+            expect(pps.create).toHaveBeenCalledWith("/pps/services/confstr/_CS_TIMEZONE", pps.PPSMode.FULL);
+            expect(mockedOpen).toHaveBeenCalledWith(pps.FileMode.RDONLY);
+            expect(successCb).toHaveBeenCalledWith("hello123");
+        });
+    });
+
+    describe("getTimezones", function () {
+        beforeEach(function () {
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        getController: jasmine.createSpy().andReturn({
+                            setFileSystemSandbox: jasmine.createSpy()
+                        })
+                    }
+                },
+                webkitRequestFileSystem: jasmine.createSpy().andCallFake(function (mode, size, onInitFs, errorHandler) {
+                    onInitFs({
+                        root: {
+                            getFile: jasmine.createSpy().andCallFake(function (path, options, gotFile, errorHandler) {
+                                gotFile({
+                                    file: jasmine.createSpy().andCallFake(function (cb) {
+                                        cb();
+                                    })
+                                });
+                            })
+                        }
+                    });
+                }),
+                PERSISTENT: 1
+            };
+            GLOBAL.FileReader = function () {
+                return {
+                    onloadend: jasmine.createSpy(),
+                    readAsText: jasmine.createSpy().andCallFake(function (file) {
+                        this.onloadend.apply({
+                            result: "\"America/New_York\"\n\"America/Los_Angeles\""
+                        });
+                    })
+                };
+            };
+        });
+
+        it("return timezones from native", function () {
+            var successCb = jasmine.createSpy();
+
+            sysIndex.getTimezones(successCb);
+
+            expect(successCb).toHaveBeenCalledWith(["America/New_York", "America/Los_Angeles"]);
+        });
+    });
 });

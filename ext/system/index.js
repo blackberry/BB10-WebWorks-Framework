@@ -257,6 +257,50 @@ function readDeviceRegion(success, fail) {
     }
 }
 
+function getCurrentTimezone(success, fail) {
+    var pps = qnx.webplatform.pps,
+        ppsObj = pps.create("/pps/services/confstr/_CS_TIMEZONE", pps.PPSMode.FULL);
+
+    ppsObj.open(pps.FileMode.RDONLY);
+    if (ppsObj.data && ppsObj.data._CS_TIMEZONE) {
+        success(ppsObj.data._CS_TIMEZONE._CS_TIMEZONE);
+    } else {
+        success(null);
+    }
+}
+
+function getTimezones(success, fail) {
+    var errorHandler = function (e) {
+            fail(-1, "Fail to read timezones");
+        },
+        gotFile = function (fileEntry) {
+            fileEntry.file(function (file) {
+                var reader = new FileReader();
+
+                reader.onloadend = function (e) {
+                    var fileContent = this.result,
+                        lines = fileContent.split("\n"),
+                        timezones = [];
+
+                    lines.forEach(function (line) {
+                        if (/^"/.test(line)) {
+                            timezones.push(line.replace(/"/g, ""));
+                        }
+                    });
+                    success(timezones);
+                };
+
+                reader.readAsText(file);
+            }, errorHandler);
+        },
+        onInitFs = function (fs) {
+            fs.root.getFile("/usr/share/zoneinfo/tzvalid", {create: false}, gotFile, errorHandler);
+        };
+
+    window.qnx.webplatform.getController().setFileSystemSandbox = false;
+    window.webkitRequestFileSystem(window.PERSISTENT, 1024 * 1024, onInitFs, errorHandler);
+}
+
 module.exports = {
     registerEvents: function (success, fail, args, env) {
         try {
@@ -331,5 +375,13 @@ module.exports = {
 
     region: function (success, fail, args, env) {
         readDeviceRegion(success, fail);
+    },
+
+    getCurrentTimezone: function (success, fail, args, env) {
+        getCurrentTimezone(success, fail);
+    },
+
+    getTimezones: function (success, fail, args, env) {
+        getTimezones(success, fail);
     }
 };

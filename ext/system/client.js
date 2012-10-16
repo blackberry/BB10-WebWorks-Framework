@@ -62,6 +62,14 @@ _self.getFontInfo = function () {
     return window.webworks.execSync(ID, "getFontInfo");
 };
 
+_self.getCurrentTimezone = function () {
+    return window.webworks.execSync(ID, "getCurrentTimezone");
+};
+
+_self.getTimezones = function () {
+    return window.webworks.execSync(ID, "getTimezones");
+};
+
 defineGetter("language");
 defineGetter("region");
 

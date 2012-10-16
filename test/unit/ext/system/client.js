@@ -67,6 +67,27 @@ describe("system client", function () {
         expect(result).toBeTruthy();
     });
 
+    it("getCurrentTimezone", function () {
+        spyOn(mockedWebworks, "execSync").andReturn("America/New_York");
+
+        var result = sysClient.getCurrentTimezone();
+
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "getCurrentTimezone");
+        expect(result).toBe("America/New_York");
+    });
+
+    it("getTimezones", function () {
+        var timezones = ["America/New_York", "America/Los_Angeles"],
+            result;
+
+        spyOn(mockedWebworks, "execSync").andReturn(timezones);
+
+        result = sysClient.getTimezones();
+
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "getTimezones");
+        expect(result).toBe(timezones);
+    });
+
     it("ALLOW", function () {
         expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "ALLOW", 0);
     });
