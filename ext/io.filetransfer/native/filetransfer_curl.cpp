@@ -520,7 +520,7 @@ int FileTransferCurl::mkdir_p (const char *pathname, mode_t mode)
     char *sp = NULL;
     char path[PATH_MAX+1] = { 0 };
     char tmp[PATH_MAX+1]  = { 0 };
-    struct stat st = { 0 };
+    struct stat st;
     int len = 0;
 
     // invalid pathname
