@@ -3,6 +3,11 @@
 // recognized in your jurisdiction.
 // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
 
+/**
+ * The original file was modified to remove assert, throw and other exception generation mechanisms
+ */
+
+
 #if !defined(JSON_IS_AMALGAMATION)
 # include <json/reader.h>
 # include <json/value.h>
@@ -10,10 +15,10 @@
 #endif // if !defined(JSON_IS_AMALGAMATION)
 #include <utility>
 #include <cstdio>
-#include <cassert>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <string.h>
 
 #if _MSC_VER >= 1400 // VC++ 8.0
 #pragma warning( disable : 4996 )   // disable warning about strdup being deprecated.
@@ -379,10 +384,14 @@ Reader::addComment( Location begin,
                     Location end, 
                     CommentPlacement placement )
 {
-   assert( collectComments_ );
+   if( !collectComments_ )
+       return;
+
    if ( placement == commentAfterOnSameLine )
    {
-      assert( lastValue_ != 0 );
+      if( lastValue_ == NULL )
+          return;
+
       lastValue_->setComment( std::string( begin, end ), placement );
    }
    else
@@ -573,7 +582,9 @@ Reader::decodeNumber( Token &token )
                                                    : Value::maxLargestUInt;
    Value::LargestUInt threshold = maxIntegerValue / 10;
    Value::UInt lastDigitThreshold = Value::UInt( maxIntegerValue % 10 );
-   assert( lastDigitThreshold >=0  &&  lastDigitThreshold <= 9 );
+   if( lastDigitThreshold > 9 ) {
+       return addError( "Digit is not within bounds [0..9]", token );
+   }
    Value::LargestUInt value = 0;
    while ( current < token.end_ )
    {
@@ -872,7 +883,7 @@ std::istream& operator>>( std::istream &sin, Value &root )
     Json::Reader reader;
     bool ok = reader.parse(sin, root, true);
     //JSON_ASSERT( ok );
-    if (!ok) throw std::runtime_error(reader.getFormattedErrorMessages());
+    if (!ok) soft_warn(reader.getFormattedErrorMessages().c_str());
     return sin;
 }
 

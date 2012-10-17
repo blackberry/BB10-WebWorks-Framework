@@ -3,6 +3,12 @@
 // recognized in your jurisdiction.
 // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
 
+
+/**
+ * The original file was modified to remove assert, throw and other exception generation mechanisms
+ */
+
+
 #if !defined(JSON_IS_AMALGAMATION)
 # include <json/value.h>
 # include <json/writer.h>
@@ -14,15 +20,15 @@
 #include <utility>
 #include <stdexcept>
 #include <cstring>
-#include <cassert>
+#include <string.h>
 #ifdef JSON_USE_CPPTL
 # include <cpptl/conststring.h>
 #endif
 #include <cstddef>    // size_t
 
-#define JSON_ASSERT_UNREACHABLE assert( false )
-#define JSON_ASSERT( condition ) assert( condition );  // @todo <= change this into an exception throw
-#define JSON_FAIL_MESSAGE( message ) throw std::runtime_error( message );
+#define JSON_ASSERT_UNREACHABLE soft_assert( false )
+#define JSON_ASSERT( condition ) soft_assert( condition );  // @todo <= change this into an exception throw
+#define JSON_FAIL_MESSAGE( message ) soft_error( message );
 #define JSON_ASSERT_MESSAGE( condition, message ) if (!( condition )) JSON_FAIL_MESSAGE( message )
 
 namespace Json {
@@ -139,9 +145,9 @@ Value::CommentInfo::setComment( const char *text )
 // Notes: index_ indicates if the string was allocated when
 // a string is stored.
 
-Value::CZString::CZString( ArrayIndex index )
+Value::CZString::CZString( ArrayIndex aIndex )
    : cstr_( 0 )
-   , index_( index )
+   , index_( aIndex )
 {
 }
 
@@ -156,10 +162,11 @@ Value::CZString::CZString( const CZString &other )
 : cstr_( other.index_ != noDuplication &&  other.cstr_ != 0
                 ?  duplicateStringValue( other.cstr_ )
                 : other.cstr_ )
-   , index_( other.cstr_ ? (other.index_ == noDuplication ? noDuplication : duplicate)
+   , index_( other.cstr_ ? (int)(other.index_ == noDuplication ? noDuplication : duplicate)
                          : other.index_ )
 {
 }
+
 
 Value::CZString::~CZString()
 {
@@ -233,15 +240,15 @@ Value::CZString::isStaticString() const
  * memset( this, 0, sizeof(Value) )
  * This optimization is used in ValueInternalMap fast allocator.
  */
-Value::Value( ValueType type )
-   : type_( type )
+Value::Value( ValueType aType )
+   : type_( aType )
    , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
 #endif
 {
-   switch ( type )
+   switch ( aType )
    {
    case nullValue:
       break;
@@ -280,6 +287,7 @@ Value::Value( ValueType type )
 #if defined(JSON_HAS_INT64)
 Value::Value( UInt value )
    : type_( uintValue )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -290,6 +298,7 @@ Value::Value( UInt value )
 
 Value::Value( Int value )
    : type_( intValue )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -303,6 +312,7 @@ Value::Value( Int value )
 
 Value::Value( Int64 value )
    : type_( intValue )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -314,6 +324,7 @@ Value::Value( Int64 value )
 
 Value::Value( UInt64 value )
    : type_( uintValue )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -324,6 +335,7 @@ Value::Value( UInt64 value )
 
 Value::Value( double value )
    : type_( realValue )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -398,6 +410,7 @@ Value::Value( const CppTL::ConstString &value )
 
 Value::Value( bool value )
    : type_( booleanValue )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -409,6 +422,7 @@ Value::Value( bool value )
 
 Value::Value( const Value &other )
    : type_( other.type_ )
+   , allocated_( 0 )
    , comments_( 0 )
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
    , itemIsUsed_( 0 )
@@ -1058,7 +1072,7 @@ Value::resize( ArrayIndex newSize )
       {
          value_.map_->erase( index );
       }
-      assert( size() == newSize );
+      JSON_ASSERT( size() == newSize );
    }
 #else
    value_.array_->resize( newSize );
@@ -1716,6 +1730,8 @@ Path::addPathInArg( const std::string &path,
                     InArgs::const_iterator &itInArg, 
                     PathArgument::Kind kind )
 {
+   JSON_UNUSED(path);
+
    if ( itInArg == in.end() )
    {
       // Error: missing argument %d
@@ -1735,6 +1751,8 @@ void
 Path::invalidPath( const std::string &path, 
                    int location )
 {
+    JSON_UNUSED(location);
+    JSON_UNUSED(path);
    // Error: invalid path.
 }
 

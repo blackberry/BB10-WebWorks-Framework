@@ -41,6 +41,10 @@
 #  endif
 # endif
 
+#  if defined(WINDOWS) || defined(WIN32)
+#    define JSON_DLL_BUILD 1
+#  endif
+
 # ifdef JSON_IN_CPPTL
 #  define JSON_API CPPTL_API
 # elif defined(JSON_DLL_BUILD)
@@ -82,15 +86,20 @@ namespace Json {
 #  if defined(_MSC_VER) // Microsoft Visual Studio
    typedef __int64 Int64;
    typedef unsigned __int64 UInt64;
+#  define JSON_UNUSED(x) (void)x;
+
 #  else // if defined(_MSC_VER) // Other platforms, use long long
    typedef long long int Int64;
    typedef unsigned long long int UInt64;
+   
+   template <typename T>
+   inline void jUnused(T &x) { (void)x; }
+#  define JSON_UNUSED(x) jUnused(x);
 #  endif // if defined(_MSC_VER)
    typedef Int64 LargestInt;
    typedef UInt64 LargestUInt;
 #  define JSON_HAS_INT64
 # endif // if defined(JSON_NO_INT64)
 } // end namespace Json
-
 
 #endif // JSON_CONFIG_H_INCLUDED
