@@ -1,16 +1,28 @@
+#!/bin/bash
 if [[ "$OS" == *Windows* ]] ; then
     npm install -g jake jshint@0.5.2 uglify-js
 else
     sudo npm install -g jake jshint@0.5.2 uglify-js
 fi
+
 npm install jasmine-node express wrench@1.3.6 jWorkflow mustache node-zip node-native-zip
-if [ "$1" != "-scm" ]; then 
+
+#Don't grab submodules for SCM builds (already included in productization repo)
+if [ "$1" != "-scm" ]; then
     git submodule update --init;
 fi
-cd ./dependencies/webplatform/framework;
-if [[ "$OS" == *Windows* ]]; then
-    source configure;
+
+#If webplatform exists, configure and build it.
+if [ -f "./dependencies/webplatform/framework/configure" ]; then
+    cd ./dependencies/webplatform/framework;
+    if [[ "$OS" == *Windows* ]]; then
+        source configure;
+    else
+        ./configure
+    fi
+    jake;
 else
-    ./configure
+    mkdir -p ./dependencies/webplatform/framework/clientFiles;
+    echo -e "\n**** WARNING: Webplatform could not be found. ****"
+    echo -e "If building from the open-source community, please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation before running jake. If you have already done so, please disregard this message.\n"
 fi
-jake;

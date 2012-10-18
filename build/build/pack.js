@@ -101,10 +101,18 @@ module.exports = function (src, baton) {
     copyFolder(_c.DEPENDENCIES_JNEXT, jnextDest);
 
     //Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
-    utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
-    utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
     utils.copyFile(readmeFile, _c.DEPLOY);
     utils.copyFile(licenseFile, _c.DEPLOY);
+
+    //Copy webplatform files/folders if they exist
+    if (path.existsSync(_c.DEPENDENCIES_WEBPLATFORM)) {
+        utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
+        utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
+    } else {
+        console.log("\n****ERROR: Webplatform could not be found.****");
+        console.log("If building from the open-source community, please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation.\n");
+
+    }
 
     //Remove public folder
     wrench.rmdirSyncRecursive(_c.DEPLOY + 'lib/public', true);
