@@ -21,7 +21,7 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
     - [*Mac/Linux*] `source \*BBNDK installation directory\*/bbndk-env.sh`
     - [*Windows*] `\*BBNDK installation directory\*\bbndk-env.bat`
 6. **Webplatform setup:**<br />
-    If building from the open-source community, copy the following webplatform files from the latest [BlackBerry 10 WebWorks SDK](https://developer.blackberry.com/html5/download/sdk) into `./dependencies/webplatform/framework/clientFiles/`. For more details on how to install go [here](https://developer.blackberry.com/html5/documentation/install_and_configure_ww_bb10_2007535_11.html).
+    Copy the following webplatform files from the latest [BlackBerry 10 WebWorks SDK](https://developer.blackberry.com/html5/download/sdk) into `./dependencies/webplatform/framework/clientFiles/`. For more details on how to install go [here](https://developer.blackberry.com/html5/documentation/install_and_configure_ww_bb10_2007535_11.html).
     - `Framework/dependencies/bootstrap/webplatform.js`
 7. Run `jake` or `jake build` and check that the output folder is created under the "target/zip" subfolder. If on windows, run jake from command prompt.
 8. Run `jake test` and check that jake runs and completes
