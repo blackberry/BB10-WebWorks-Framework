@@ -110,7 +110,7 @@ module.exports = function (src, baton) {
         utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
     } else {
         console.log("\n****ERROR: Webplatform could not be found.****");
-        console.log("If building from the open-source community, please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation.\n");
+        console.log("Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation.\n");
 
     }
 
