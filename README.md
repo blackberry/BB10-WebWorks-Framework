@@ -37,8 +37,12 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
 *Note: To see a full list of commands available with jake, use `jake -T`.*
 
 ##Common issues
-1. ```Cloning into dependencies/webplatform... error: Couldn't resolve host 'github.rim.net' while accessing http://github.rim.net/webworks/webplatform.git/info/refs```<br />
-    Solution: This error can be ignored, but please see the "Setup and Build" - "Webplatform setup:" section above for instructions on copying the necessary webplatform files.
+ ```
+Cloning into dependencies/webplatform... error: Couldn't resolve host 'github.rim.net' while accessing
+http://github.rim.net/webworks/webplatform.git/info/refs
+```
+<br />
+Solution: This error can be ignored, but please see the "Setup and Build" - "Webplatform setup:" section above for instructions on copying the necessary webplatform files.
 
 ##Dependencies
 1. cpplint is used for linting Cpp code. Source code is located under dependencies/cpplint
