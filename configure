@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Please note: If you are running a Linux or Mac OS, you may be prompted for the system password"
+echo "This is to allow the Packager to install node dependencies globally."
 if [[ "$OS" == *Windows* ]] ; then
     npm install -g jake jshint@0.5.2 uglify-js
 else
@@ -21,8 +23,10 @@ if [ -f "./dependencies/webplatform/framework/configure" ]; then
         ./configure
     fi
     jake;
-else
-    mkdir -p ./dependencies/webplatform/framework/clientFiles;
-    echo -e "\n**** WARNING: Webplatform could not be found. ****"
-    echo -e "Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation before running jake. If you have already done so, please disregard this message.\n"
+else if [ ! -f "./dependencies/webplatform/framework/clientFiles/webplatform.js" ]; then
+        mkdir -p ./dependencies/webplatform/framework/clientFiles;
+        echo -e "\n**** WARNING: Webplatform could not be found. ****"
+        echo -e "Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation before running jake."
+    fi
 fi
+echo -e "\nConfiguring complete. Please proceed with running \"jake\"."
