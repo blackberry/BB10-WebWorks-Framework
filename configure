@@ -1,16 +1,32 @@
+#!/bin/bash
+echo "Please note: If you are running a Linux or Mac OS, you may be prompted for the system password"
+echo "This is to allow the Packager to install node dependencies globally."
 if [[ "$OS" == *Windows* ]] ; then
     npm install -g jake jshint@0.5.2 uglify-js
 else
     sudo npm install -g jake jshint@0.5.2 uglify-js
 fi
+
 npm install jasmine-node express wrench@1.3.6 jWorkflow mustache node-zip node-native-zip
-if [ "$1" != "-scm" ]; then 
+
+#Don't grab submodules for SCM builds (already included in productization repo)
+if [ "$1" != "-scm" ]; then
     git submodule update --init;
 fi
-cd ./dependencies/webplatform/framework;
-if [[ "$OS" == *Windows* ]]; then
-    source configure;
-else
-    ./configure
+
+#If webplatform exists, configure and build it.
+if [ -f "./dependencies/webplatform/framework/configure" ]; then
+    cd ./dependencies/webplatform/framework;
+    if [[ "$OS" == *Windows* ]]; then
+        source configure;
+    else
+        ./configure
+    fi
+    jake;
+else if [ ! -f "./dependencies/webplatform/framework/clientFiles/webplatform.js" ]; then
+        mkdir -p ./dependencies/webplatform/framework/clientFiles;
+        echo -e "\n**** WARNING: Webplatform could not be found. ****"
+        echo -e "Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation before running jake."
+    fi
 fi
-jake;
+echo -e "\nConfiguring complete. Please proceed with running \"jake\"."
