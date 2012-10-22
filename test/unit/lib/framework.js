@@ -20,7 +20,6 @@ var srcPath = __dirname + '/../../../lib/',
     webview,
     overlayWebView,
     controllerWebView,
-    rotationHelper,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mockedWebview,
     mockedApplicationWindow,
@@ -74,8 +73,6 @@ describe("framework", function () {
         webview = util.requireWebview();
         overlayWebView = require(srcPath + "overlayWebView");
         controllerWebView = require(srcPath + "controllerWebView");
-        rotationHelper = require(srcPath + 'rotationHelper');
-        spyOn(rotationHelper, "addWebview");
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
@@ -97,13 +94,6 @@ describe("framework", function () {
         framework.start();
         expect(controllerWebView.init).toHaveBeenCalled();
         expect(webview.create).toHaveBeenCalled();
-    });
-
-    it("adds all three webviews to the rotationHandler", function () {
-        framework.start();
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(webview);
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(overlayWebView);
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(controllerWebView);
     });
 
     it("on start passing callback and setting object parameters to create method of webview", function () {
