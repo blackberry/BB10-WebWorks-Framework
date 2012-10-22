@@ -105,10 +105,10 @@ module.exports = function (src, baton) {
 
     //Copy webplatform files/folders if they exist
     if (path.existsSync(_c.DEPENDENCIES_WEBPLATFORM)) {
-		copyFolder(_c.DEPENDENCIES_WEBPLATFORM_UI, _c.DEPLOY_UI);
+        copyFolder(_c.DEPENDENCIES_WEBPLATFORM_UI, _c.DEPLOY_UI);
         utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
         utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
-		utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_I18N, webplatformDest);
+        utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_I18N, webplatformDest);
     } else {
         console.log("\n****ERROR: Webplatform could not be found.****");
         console.log("Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation.\n");
