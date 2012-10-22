@@ -54,16 +54,40 @@ describe("blackberry.ui.contextmenu index", function () {
         fail.reset();
     });
 
-    it("can configure the enabled property", function () {
+    it("can set the enabled property to false properly", function () {
         var args = {
                 enabled: false
             },
             env = {};
 
         contextmenu.enabled(success, fail, args, env);
-        expect(overlayWebView.contextMenu.enabled).toHaveBeenCalledWith(success, fail, {enabled: false}, env);
+        expect(overlayWebView.contextMenu.enabled).toEqual(false);
     });
 
+    it("can set and read the enabled property to true", function () {
+        var args = {
+                enabled: true
+            },
+            env = {};
+
+        contextmenu.enabled(success, fail, args, env);
+        expect(overlayWebView.contextMenu.enabled).toEqual(true);
+    });
+
+    it("Will not set the property when incorrect parameters are passed", function () {
+        var args = {
+                enabled: true
+            },
+            env = {};
+
+        contextmenu.enabled(success, fail, args, env);
+        expect(overlayWebView.contextMenu.enabled).toEqual(true);
+        args = {
+            enabled: "false"
+        };
+        env = {};
+        expect(overlayWebView.contextMenu.enabled).toEqual(true);
+    });
     it("can add a custom menu item", function () {
         var args = {
                 contexts: encodeURIComponent(JSON.stringify(['ALL'])),

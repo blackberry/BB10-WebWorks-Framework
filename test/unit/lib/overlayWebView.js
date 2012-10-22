@@ -166,5 +166,9 @@ describe("Overlay Webview", function () {
             webview.renderContextMenuFor(webview);
             expect(mockedWebview.contextMenu.subscribeTo).toHaveBeenCalledWith(webview);
         });
+
+        it("It has a zOrder propety ", function () {
+            expect(webview.zOrder).toBeDefined();
+        });
     });
 });
