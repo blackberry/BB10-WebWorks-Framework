@@ -44,7 +44,8 @@ describe("webview", function () {
             setSensitivity: jasmine.createSpy(),
             getSensitivity: jasmine.createSpy(),
             setBackgroundColor: jasmine.createSpy(),
-            getBackgroundColor: jasmine.createSpy()
+            getBackgroundColor: jasmine.createSpy(),
+            allowWebEvent: jasmine.createSpy()
         };
         mockedApplication = {
         };
@@ -98,6 +99,7 @@ describe("webview", function () {
                 expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
                 expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
 
+                expect(mockedWebview.allowWebEvent).toHaveBeenCalledWith("DialogRequested");
                 expect(mockedController.dispatchEvent).toHaveBeenCalledWith("webview.initialized", jasmine.any(Array));
             });
         });
