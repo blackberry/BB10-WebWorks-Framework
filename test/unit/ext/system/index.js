@@ -456,25 +456,12 @@ describe("system index", function () {
     });
 
     describe("getCurrentTimezone", function () {
-        var mockedOpen = jasmine.createSpy();
-
         beforeEach(function () {
-            GLOBAL.qnx = {
-                webplatform: {
-                    pps: {
-                        create: jasmine.createSpy().andReturn({
-                            open: mockedOpen,
-                            data: {
-                                _CS_TIMEZONE: {
-                                    _CS_TIMEZONE: "hello123"
-                                }
-                            }
-                        }),
-                        PPSMode: {
-                            FULL: 123
-                        },
-                        FileMode: {
-                            RDONLY: 456
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        device: {
+                            timezone: "hello123"
                         }
                     }
                 }
@@ -482,13 +469,10 @@ describe("system index", function () {
         });
 
         it("return timezone from PPS", function () {
-            var pps = qnx.webplatform.pps,
-                successCb = jasmine.createSpy();
+            var successCb = jasmine.createSpy();
 
             sysIndex.getCurrentTimezone(successCb);
 
-            expect(pps.create).toHaveBeenCalledWith("/pps/services/confstr/_CS_TIMEZONE", pps.PPSMode.FULL);
-            expect(mockedOpen).toHaveBeenCalledWith(pps.FileMode.RDONLY);
             expect(successCb).toHaveBeenCalledWith("hello123");
         });
     });

@@ -173,19 +173,6 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
     },
     ERROR_ID = -1;
 
-
-function getCurrentTimezone(success, fail) {
-    var pps = qnx.webplatform.pps,
-        ppsObj = pps.create("/pps/services/confstr/_CS_TIMEZONE", pps.PPSMode.FULL);
-
-    ppsObj.open(pps.FileMode.RDONLY);
-    if (ppsObj.data && ppsObj.data._CS_TIMEZONE) {
-        success(ppsObj.data._CS_TIMEZONE._CS_TIMEZONE);
-    } else {
-        success(null);
-    }
-}
-
 function getTimezones(success, fail) {
     var errorHandler = function (e) {
             fail(-1, "Fail to read timezones");
@@ -295,7 +282,11 @@ module.exports = {
     },
 
     getCurrentTimezone: function (success, fail, args, env) {
-        getCurrentTimezone(success, fail);
+        try {
+            success(window.qnx.webplatform.device.timezone);
+        } catch (err) {
+            fail(ERROR_ID, err.message);
+        }
     },
 
     getTimezones: function (success, fail, args, env) {
