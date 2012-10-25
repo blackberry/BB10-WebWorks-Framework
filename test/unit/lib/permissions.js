@@ -4,8 +4,7 @@ describe("permissions", function () {
         mockedController,
         mockedWebview,
         mockedApplication,
-        permissions = require(libPath + "lib/permissions"),
-        config = require(libPath + "lib/config");
+        permissions = require(libPath + "lib/permissions");
 
     beforeEach(function () {
         webview = require(libPath + "lib/webview");
@@ -96,24 +95,11 @@ describe("permissions", function () {
             permissions.init(mockedWebview);
         });
 
-        it("can call the onGeolocationPermissionRequest with permission properly to allow", function () {
+        it("can call the onGeolocationPermissionRequest", function () {
             var request = '{ "origin" : "test.com" }';
-            if (config && config.permissions) {
-                config.permissions.push("read_geolocation");
-            } else {
-                config.permissions = ["read_geolocation"];
-            }
             permissions.onGeolocationPermissionRequest(request);
             expect(mockedWebview.allowGeolocation).toHaveBeenCalledWith("test.com");
         });
 
-        it("can call the onGeolocationPermissionRequest with permission properly to disallow", function () {
-            var request = '{ "origin" : "test.com" }';
-            if (config && config.permissions) {
-                config.permissions = null;
-            }
-            permissions.onGeolocationPermissionRequest(request);
-            expect(mockedWebview.disallowGeolocation).toHaveBeenCalledWith("test.com");
-        });
     });
 });
