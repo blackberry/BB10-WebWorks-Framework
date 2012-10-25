@@ -26,14 +26,14 @@ var _config = require("./../../lib/config"),
         },
         pause: {
             context: require("./appEvents"),
-            event: "pause",
+            event: "inactive",
             trigger: function () {
                 _event.trigger("pause");
             }
         },
         resume: {
             context: require("./appEvents"),
-            event: "resume",
+            event: "active",
             trigger: function () {
                 _event.trigger("resume");
             }

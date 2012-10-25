@@ -21,6 +21,17 @@ var _apiDir = __dirname + "./../../../../ext/app/",
     mockedExit,
     config;
 
+function getWebPlatformEventName(e) {
+    switch (e) {
+    case "pause":
+        return "inactive";
+    case "resume":
+        return "active";
+    default:
+        return e;
+    }
+}
+
 function testRegisterEvent(e) {
     var args = {eventName : encodeURIComponent(e)},
         success = jasmine.createSpy(),
@@ -34,7 +45,7 @@ function testRegisterEvent(e) {
     eventExt.add(null, null, args);
     expect(success).toHaveBeenCalled();
     expect(events.add).toHaveBeenCalled();
-    expect(events.add.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.add.mostRecentCall.args[0].event).toEqual(getWebPlatformEventName(e));
     expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
 }
 
@@ -43,7 +54,7 @@ function testUnRegisterEvent(e) {
 
     eventExt.remove(null, null, args);
     expect(events.remove).toHaveBeenCalled();
-    expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.remove.mostRecentCall.args[0].event).toEqual(getWebPlatformEventName(e));
     expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
 }
 
