@@ -44,7 +44,8 @@ describe("framework", function () {
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
-            addEventListener: jasmine.createSpy()
+            addEventListener: jasmine.createSpy(),
+            uiWebView: undefined
         };
         mockedApplicationWindow = {
             visible: undefined
@@ -84,6 +85,7 @@ describe("framework", function () {
         spyOn(webview, "destroy");
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");
+        spyOn(webview, "setUIWebViewObj");
         spyOn(overlayWebView, "setURL");
         spyOn(overlayWebView, "renderContextMenuFor");
         spyOn(overlayWebView, "handleDialogFor");

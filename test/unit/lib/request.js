@@ -1,4 +1,4 @@
-describe("requestination ", function () {
+describe("request", function () {
     var request,
         libPath = "./../../../",
         Whitelist = require(libPath + 'lib/policy/whitelist').Whitelist,
@@ -100,34 +100,4 @@ describe("requestination ", function () {
         expect(server.handle).toHaveBeenCalledWith(expectedRequest, expectedResponse);
     });
 
-    it("unknown protocol handler is valid", function () {
-        var requestObj = request.init();
-        expect(requestObj.unknownProtocolHandler).toBeDefined();
-    });
-
-    it("prevents default for unknownProtocol", function () {
-        var requestObj = request.init(),
-            returnValue,
-            mockedInvocation = {
-                invoke: jasmine.createSpy("invoke")
-            };
-        GLOBAL.window = {};
-        GLOBAL.window.qnx = {
-            webplatform: {
-                getApplication: function () {
-                    return {
-                        invocation: mockedInvocation
-                    };
-                }
-            }
-        };
-        returnValue = requestObj.unknownProtocolHandler(JSON.stringify({
-            url : "tel:647-123-1234"
-        }));
-        expect(JSON.parse(returnValue).setPreventDefault).toEqual(true);
-        expect(mockedInvocation.invoke).toHaveBeenCalledWith({
-            action: 'bb.action.OPEN',
-            uri: "tel:647-123-1234"
-        }, jasmine.any(Function));
-    });
 });
