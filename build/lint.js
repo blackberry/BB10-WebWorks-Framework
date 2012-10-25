@@ -50,7 +50,16 @@ function _lintCSS() {
 function _lintCPP() {
     var returnValue = function (prev, baton) {},
         options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels,-whitespace/braces,-readability/streams"],
-        files = ["ext"];
+        files = [
+            "ext/app",
+            "ext/bbm.platform",
+            "ext/connection",
+            "ext/io.filetransfer",
+            "ext/json",
+            "ext/pim.contacts",
+            "ext/push",
+            "ext/ui.dialog"
+        ];
     //Only cpplint on unix. Windows currently has an issue with cpplinting
     if (!utils.isWindows()) {
         returnValue = utils.execCommandWithJWorkflow('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '));
