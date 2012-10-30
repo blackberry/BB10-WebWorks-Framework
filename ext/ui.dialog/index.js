@@ -57,7 +57,7 @@ module.exports = {
             return;
         }
 
-        var  messageObj = {
+        var messageObj = {
             title : args.settings.title,
             message :  args.message,
             dialogType : "CustomAsk",
@@ -72,10 +72,12 @@ module.exports = {
     standardAskAsync: function (success, fail, args, env) {
         var buttons,
             messageObj = {};
+
         if (validateIdMessageSettings(args) === 1) {
             fail(-1, "message is undefined");
             return;
         }
+        
         if (args.type) {
             args.type = JSON.parse(decodeURIComponent(args.type));
         } else {
@@ -87,6 +89,7 @@ module.exports = {
             fail(-1, "invalid dialog type: " + args.type);
             return;
         }
+        
         buttons = {
             0: "JavaScriptAlert",                       // D_OK
             1: ["Save", "Discard"],                     // D_SAVE
@@ -95,6 +98,7 @@ module.exports = {
             4: "JavaScriptConfirm",                     // D_OK_CANCEL
             5: "JavaScriptPrompt",                      // D_Prompt
         };
+        
         if (!Array.isArray(buttons[args.type])) {
             messageObj = {
                 title : args.settings.title,
@@ -103,8 +107,7 @@ module.exports = {
                 thirdOptionLabel : args.settings.thirdOptionLabel,
                 url : args.settings.url
             };
-        }
-        else {
+        } else {
             messageObj = {
                 title : args.settings.title,
                 message :  args.message,
@@ -115,17 +118,26 @@ module.exports = {
                 url : args.settings.url
             };
         }
+
         overlayWebView.showDialog(messageObj, function (result) {
-            var returnValue = {
-                "firstButton" : result.ok,
-                "secondButton" : result.cancel,
-                "thirdOptionButton" : result.thirdOptionButton
-            };
-            if (args.type === 5) {
-                returnValue.promptText = result.oktext;
+            var index,
+                promptText;
+
+            if (result.ok) {
+                index = 0;  
+            } else if (result.cancel) {
+                index = 1;
+            } else {
+                index = 2;
             }
-            _event.trigger(args.eventId, returnValue); 
-        });
+
+            if (args.type !== 5) {
+                _event.trigger(args.eventId, index);
+            } else {
+                promptText = decodeURIComponent(result.oktext);
+                _event.trigger(args.eventId, index, promptText); 
+            }
+        });        
         success();
     }
 };
