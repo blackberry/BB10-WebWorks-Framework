@@ -18,7 +18,30 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
     _event = require("../../lib/event"),
     _utils = require("../../lib/utils"),
     _applicationEvents = require("../../lib/events/applicationEvents"),
+    _deviceEvents = require("../../lib/events/deviceEvents"),
+
     _actionMap = {
+        batterystatus: {
+            context: _deviceEvents,
+            event: "battery.statusChange",
+            trigger: function (data) {
+                _event.trigger("batterystatus", data);
+            }
+        },
+        batterylow: {
+            context: _deviceEvents,
+            event: "battery.chargeLow",
+            trigger: function (data) {
+                _event.trigger("batterylow", data);
+            }
+        },
+        batterycritical: {
+            context: _deviceEvents,
+            event: "battery.chargeCritical",
+            trigger: function (data) {
+                _event.trigger("batterycritical", data);
+            }
+        },
         languagechanged: {
             context: _applicationEvents,
             event: "systemLanguageChange",

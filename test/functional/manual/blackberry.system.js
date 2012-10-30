@@ -30,7 +30,7 @@ function testSystemReadOnly(field) {
 describe("blackberry.system", function () {
     var waitForTimeout = 15000;
 
-    it("name should have a valid value", function () {
+    xit("name should have a valid value", function () {
         var message = "Device Name: " + blackberry.system.name + "\n\n" +
                 "Is the device name valid?",
             confirm = window.confirm(message);
@@ -38,7 +38,201 @@ describe("blackberry.system", function () {
         expect(confirm).toBeTruthy();
     });
 
-    describe("regionchanged", function () {
+    describe("batterystatus", function () {
+        var onBatteryStatusChange;
+
+        beforeEach(function () {
+            onBatteryStatusChange = jasmine.createSpy("onBatteryStatusChange");
+            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
+            onBatteryStatusChange = null;
+        });
+
+        it("should be called when the battery level decreases", function () {
+            window.confirm("[Device]Drain the battery. [SIM]Decrease the 'StateOfCharge' in battery PPS Object");
+
+            waitsFor(function () {
+                return onBatteryStatusChange.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryStatusChange).toHaveBeenCalled();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeFalsy();
+            });
+        });
+
+        it("should be called when the power source is connected", function () {
+            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
+
+            waitsFor(function () {
+                return onBatteryStatusChange.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryStatusChange).toHaveBeenCalled();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeTruthy();
+                blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
+            });
+        });
+
+        it("should be called when the battery level increases", function () {
+            window.confirm("[Device]Please wait for battery to increase charge by 1%. [SIM]Increase the 'StateOfCharge' in battery PPS Object");
+
+            waitsFor(function () {
+                return onBatteryStatusChange.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryStatusChange).toHaveBeenCalled();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeTruthy();
+            });
+        });
+
+        it("should be called when the power source is disconnected", function () {
+            window.confirm("[Device]Please unplug the power source. [SIM]Change 'ChargingState' to 'NC' in charger PPS Object");
+
+            waitsFor(function () {
+                return onBatteryStatusChange.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryStatusChange).toHaveBeenCalled();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryStatusChange.mostRecentCall.args[0].isPlugged).toBeFalsy();
+            });
+        });
+    });
+
+    describe("batterylow", function () {
+        var onBatteryLow;
+
+        beforeEach(function () {
+            onBatteryLow = jasmine.createSpy("onBatteryLow");
+            blackberry.event.addEventListener('batterylow', onBatteryLow);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener('batterylow', onBatteryLow);
+            onBatteryLow = null;
+        });
+
+        it("should be called when the battery level decreases to lower than 15%", function () {
+            window.confirm("[Device]Drain the battery to level lower than 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 15%");
+
+            waitsFor(function () {
+                return onBatteryLow.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).toHaveBeenCalledWith(jasmine.any(Object));
+                expect(onBatteryLow.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryLow.mostRecentCall.args[0].isPlugged).toBeDefined();
+            });
+        });
+
+        it("should not be called when the battery level decreases but still higher or equal to 15%", function () {
+            window.confirm("[Device]Drain the battery to level higher or equal to 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level higher or equal to 15%");
+
+            waitsFor(function () {
+                return (onBatteryLow.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).not.toHaveBeenCalled();
+            });
+        });
+
+        it("should not be called to any change to power source state", function () {
+            window.confirm("[Device]Change the power source state (Plug/Unplug). [SIM]Tweak 'ChargingState' to 'NC' or 'DC' in charger PPS Object");
+
+            waitsFor(function () {
+                return (onBatteryLow.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).not.toHaveBeenCalled();
+            });
+        });
+
+        it("should trigger callback for low event when re-entering threshold after adding event lister after all were removed", function () {
+
+            window.confirm("[Device]Drain the battery to level lower than 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 15%");
+            blackberry.event.removeEventListener('batterylow', onBatteryLow);
+            window.confirm("[Device]Charge the battery to level higher or equal to 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level higher or equal to 15");
+            window.confirm("[Device]Drain the battery to level lower than 15%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 15%");
+            blackberry.event.addEventListener('batterylow', onBatteryLow);
+
+            waitsFor(function () {
+                return onBatteryLow.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryLow).toHaveBeenCalledWith(jasmine.any(Object));
+                expect(onBatteryLow.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryLow.mostRecentCall.args[0].isPlugged).toBeDefined();
+            });
+        });
+    });
+
+    describe("batterycritical", function () {
+        var onBatteryCritical;
+
+        beforeEach(function () {
+            onBatteryCritical = jasmine.createSpy("onBatteryCritical");
+            blackberry.event.addEventListener('batterycritical', onBatteryCritical);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener('batterycritical', onBatteryCritical);
+            onBatteryCritical = null;
+        });
+
+        it("should be called when the battery level decreases to lower than 5%", function () {
+            window.confirm("[Device]Drain the battery to level lower than 5%. [SIM]Set 'StateOfCharge' in battery PPS Object to level lower than 5%");
+
+            waitsFor(function () {
+                return onBatteryCritical.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryCritical).toHaveBeenCalledWith(jasmine.any(Object));
+                expect(onBatteryCritical.mostRecentCall.args[0].level).toBeDefined();
+                expect(onBatteryCritical.mostRecentCall.args[0].isPlugged).toBeDefined();
+            });
+        });
+
+        it("should not be called when the battery level decreases but still higher or equal to 5%", function () {
+            window.confirm("[Device]Drain the battery to level higher or equal to 5%. [SIM]Set 'StateOfCharge' in battery PPS Object to level higher or equal to 5%");
+
+            waitsFor(function () {
+                return (onBatteryCritical.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryCritical).not.toHaveBeenCalled();
+            });
+        });
+
+        it("should not be called to any change to power source state", function () {
+            window.confirm("[Device]Change the power source state (Plug/Unplug). [SIM]Tweak 'ChargingState' to 'NC' or 'DC' in charger PPS Object");
+
+            waitsFor(function () {
+                return (onBatteryCritical.callCount === 0);
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onBatteryCritical).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    xdescribe("regionchanged", function () {
         var onRegionChanged = null;
 
         beforeEach(function () {
@@ -59,7 +253,7 @@ describe("blackberry.system", function () {
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onRegionChanged).toHaveBeenCalledWith("en-GB");
+                //expect(onRegionChanged).toHaveBeenCalledWith("en-GB");
             });
         });
 
@@ -82,7 +276,7 @@ describe("blackberry.system", function () {
         });
     });
 
-    describe("languagechanged", function () {
+    xdescribe("languagechanged", function () {
         var onLanguageChanged = null;
 
         beforeEach(function () {
@@ -126,7 +320,7 @@ describe("blackberry.system", function () {
         });
     });
 
-    describe("fontchanged event", function () {
+    xdescribe("fontchanged event", function () {
         it("should call fontchanged callback when it registered to listend for the event", function () {
             var fontChangedCB = jasmine.createSpy("fontchanged");
 

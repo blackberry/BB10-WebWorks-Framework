@@ -233,6 +233,123 @@ describe("system index", function () {
         });
     });
 
+    describe("batterystatus event", function () {
+        var deviceEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            deviceEvents = require(libDir + "events/deviceEvents");
+        });
+
+        it("responds to 'batterystatus' events", function () {
+            var clientEventName = "batterystatus",
+                eventName = "battery.statusChange",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'batterystatus' event", function () {
+            var clientEventName = "batterystatus",
+                eventName = "battery.statusChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("batterylow event", function () {
+        var deviceEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            deviceEvents = require(libDir + "events/deviceEvents");
+        });
+
+        it("responds to 'batterylow' events", function () {
+            var clientEventName = "batterylow",
+                eventName = "battery.chargeLow",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'batterylow' event", function () {
+            var clientEventName = "batterylow",
+                eventName = "battery.chargeLow",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("batterycritical event", function () {
+        var deviceEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            deviceEvents = require(libDir + "events/deviceEvents");
+        });
+
+        it("responds to 'batterycritical' events", function () {
+            var clientEventName = "batterycritical",
+                eventName = "battery.chargeCritical",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'batterycritical' event", function () {
+            var clientEventName = "batterycritical",
+                eventName = "battery.chargeCritical",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
     describe("font", function () {
         describe("font methods", function () {
             var fontFamily = "courier",

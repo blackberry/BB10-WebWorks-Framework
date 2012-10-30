@@ -15,46 +15,41 @@
  */
 
 var _libDir = __dirname + "./../../../../lib/",
-    appEventPrefix = "application.",
-    appEvents,
-    mockedApplication;
+    deviceEventPrefix = "device.",
+    deviceEvents;
 
-describe("lib/events/applicationEvents", function () {
+describe("lib/events/deviceEvents", function () {
     beforeEach(function () {
-        mockedApplication = {
-            addEventListener: jasmine.createSpy("application addEventListener"),
-            removeEventListener: jasmine.createSpy("application removeEventListener")
-        };
         GLOBAL.window.qnx = {
             webplatform: {
-                getApplication: function () {
-                    return mockedApplication;
+                device: {
+                    addEventListener: jasmine.createSpy(),
+                    removeEventListener: jasmine.createSpy()
                 }
             }
         };
-        appEvents = require(_libDir + "events/applicationEvents");
+        deviceEvents = require(_libDir + "events/deviceEvents");
     });
 
     afterEach(function () {
-        mockedApplication = null;
         delete GLOBAL.window;
-        appEvents = null;
+        deviceEvents = null;
     });
 
     describe("addEventListener", function () {
         it("adds event name with application prepended", function () {
             var eventName = "MostAwesomeEventEver",
                 trigger = function () {};
-            appEvents.addEventListener(eventName, trigger);
-            expect(mockedApplication.addEventListener).toHaveBeenCalledWith(appEventPrefix + eventName, trigger);
+            deviceEvents.addEventListener(eventName, trigger);
+            expect(window.qnx.webplatform.device.addEventListener).toHaveBeenCalledWith(deviceEventPrefix + eventName, trigger);
         });
 
         it("warns in the console if the eventName is falsey", function () {
             var eventName = false,
                 trigger = function () {};
             spyOn(console, "warn");
-            appEvents.addEventListener(eventName, trigger);
-            expect(mockedApplication.addEventListener).not.toHaveBeenCalledWith(appEventPrefix + eventName, trigger);
+            deviceEvents.addEventListener(eventName, trigger);
+            expect(window.qnx.webplatform.device.addEventListener).not.toHaveBeenCalledWith(deviceEventPrefix + eventName, trigger);
             expect(console.warn).toHaveBeenCalledWith(jasmine.any(String));
         });
     });
@@ -63,16 +58,16 @@ describe("lib/events/applicationEvents", function () {
         it("adds event name with application prepended", function () {
             var eventName = "MostAwesomeEventEver",
                 trigger = function () {};
-            appEvents.removeEventListener(eventName, trigger);
-            expect(mockedApplication.removeEventListener).toHaveBeenCalledWith(appEventPrefix + eventName, trigger);
+            deviceEvents.removeEventListener(eventName, trigger);
+            expect(window.qnx.webplatform.device.removeEventListener).toHaveBeenCalledWith(deviceEventPrefix + eventName, trigger);
         });
 
         it("warns in the console if the eventName is falsey", function () {
             var eventName = false,
                 trigger = function () {};
             spyOn(console, "warn");
-            appEvents.removeEventListener(eventName, trigger);
-            expect(mockedApplication.removeEventListener).not.toHaveBeenCalledWith(appEventPrefix + eventName, trigger);
+            deviceEvents.removeEventListener(eventName, trigger);
+            expect(window.qnx.webplatform.device.removeEventListener).not.toHaveBeenCalledWith(deviceEventPrefix + eventName, trigger);
             expect(console.warn).toHaveBeenCalledWith(jasmine.any(String));
         });
     });
