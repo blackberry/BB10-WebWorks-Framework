@@ -43,38 +43,6 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
     },
     ERROR_ID = -1;
 
-function getTimezones(success, fail) {
-    var errorHandler = function (e) {
-            fail(-1, "Fail to read timezones");
-        },
-        gotFile = function (fileEntry) {
-            fileEntry.file(function (file) {
-                var reader = new FileReader();
-
-                reader.onloadend = function (e) {
-                    var fileContent = this.result,
-                        lines = fileContent.split("\n"),
-                        timezones = [];
-
-                    lines.forEach(function (line) {
-                        if (/^"/.test(line)) {
-                            timezones.push(line.replace(/"/g, ""));
-                        }
-                    });
-                    success(timezones);
-                };
-
-                reader.readAsText(file);
-            }, errorHandler);
-        },
-        onInitFs = function (fs) {
-            fs.root.getFile("/usr/share/zoneinfo/tzvalid", {create: false}, gotFile, errorHandler);
-        };
-
-    window.qnx.webplatform.getController().setFileSystemSandbox = false;
-    window.webkitRequestFileSystem(window.PERSISTENT, 1024 * 1024, onInitFs, errorHandler);
-}
-
 module.exports = {
     registerEvents: function (success, fail) {
         try {
@@ -151,7 +119,7 @@ module.exports = {
         }
     },
 
-    getCurrentTimezone: function (success, fail, args, env) {
+    getCurrentTimezone: function (success, fail) {
         try {
             success(window.qnx.webplatform.device.timezone);
         } catch (err) {
@@ -159,7 +127,11 @@ module.exports = {
         }
     },
 
-    getTimezones: function (success, fail, args, env) {
-        getTimezones(success, fail);
+    getTimezones: function (success, fail) {
+        try {
+            window.qnx.webplatform.device.getTimezones(success);
+        } catch (err) {
+            fail(ERROR_ID, err.message);
+        }
     }
 };

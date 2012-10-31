@@ -350,35 +350,13 @@ describe("system index", function () {
             GLOBAL.window = {
                 qnx: {
                     webplatform: {
-                        getController: jasmine.createSpy().andReturn({
-                            setFileSystemSandbox: jasmine.createSpy()
-                        })
-                    }
-                },
-                webkitRequestFileSystem: jasmine.createSpy().andCallFake(function (mode, size, onInitFs, errorHandler) {
-                    onInitFs({
-                        root: {
-                            getFile: jasmine.createSpy().andCallFake(function (path, options, gotFile, errorHandler) {
-                                gotFile({
-                                    file: jasmine.createSpy().andCallFake(function (cb) {
-                                        cb();
-                                    })
-                                });
+                        device: {
+                            getTimezones: jasmine.createSpy().andCallFake(function (callback) {
+                                callback(["America/New_York", "America/Los_Angeles"]);
                             })
                         }
-                    });
-                }),
-                PERSISTENT: 1
-            };
-            GLOBAL.FileReader = function () {
-                return {
-                    onloadend: jasmine.createSpy(),
-                    readAsText: jasmine.createSpy().andCallFake(function (file) {
-                        this.onloadend.apply({
-                            result: "\"America/New_York\"\n\"America/Los_Angeles\""
-                        });
-                    })
-                };
+                    }
+                }
             };
         });
 
