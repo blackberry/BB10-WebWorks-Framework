@@ -73,6 +73,7 @@ module.exports = function (done, custom) {
     }
 
     utils.copyFolder(path.join(_c.ROOT, "ext"), path.join(_c.TEMP, "ext"));
+    utils.copyFolder(path.join(_c.ROOT, "ext-internal"), path.join(_c.TEMP, "ext-internal"));
     utils.copyFolder(path.join(_c.ROOT, "lib"), path.join(_c.TEMP, "lib"));
     utils.copyFolder(path.join(_c.ROOT, "build"), path.join(_c.TEMP, "build"));
     utils.copyFolder(path.join(_c.DEPENDENCIES, "require"), path.join(_c.TEMP + "/dependencies", "require"));

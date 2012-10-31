@@ -33,6 +33,7 @@ test/test-app/wwTest.zip
 test/test-app/device
 test/test-app/simulator
 test/test-app/automatic/spec/
+test/test-app/automation/spec/
 test/test-app/manual/framework/spec/
 test/test-app/js/jasmine.js
 test/test-app/css/jasmine.css

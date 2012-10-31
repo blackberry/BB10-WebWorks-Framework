@@ -160,5 +160,6 @@
         <rim:permit>access_pimdomain_contacts</rim:permit>
         <rim:permit>post_notification</rim:permit>
         <rim:permit system="true">_sys_use_consumer_push</rim:permit>
+        <rim:permit>run_when_backgrounded</rim:permit>
     </rim:permissions>
 </widget>

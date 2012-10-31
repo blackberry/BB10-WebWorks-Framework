@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*global internal */
+
 function testAppValue(field, value) {
     expect(blackberry.app[field]).toBeDefined();
     expect(blackberry.app[field]).toEqual(value);
@@ -25,7 +28,7 @@ function testAppReadOnly(field) {
 }
 
 describe("blackberry.app", function () {
-    var waitForTimeout = 15000;
+    var waitForTimeout = 2000;
 
     describe("pause", function () {
         var onPause;
@@ -41,8 +44,6 @@ describe("blackberry.app", function () {
         });
 
         it("should invoke callback when application is thumbnailed when Application Behavior is 'Paused'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Paused', then thumbnail this app");
-
             waitsFor(function () {
                 return onPause.callCount;
             }, "event never fired", waitForTimeout);
@@ -50,6 +51,8 @@ describe("blackberry.app", function () {
             runs(function () {
                 expect(onPause).toHaveBeenCalled();
             });
+
+            internal.automation.swipeUp();
         });
     });
 
@@ -66,9 +69,8 @@ describe("blackberry.app", function () {
             onResume = null;
         });
 
-        it("should invoke callback when application is fullscreened when Application Behavior is 'Paused'", function () {
-            window.confirm("Changed settings General -> Application Behavior to 'Paused', thumbnail this app, then tap it to make it fullscreen");
 
+        it("should invoke callback when application is fullscreened when Application Behavior is 'Paused'", function () {
             waitsFor(function () {
                 return onResume.callCount;
             }, "event never fired", waitForTimeout);
@@ -76,6 +78,8 @@ describe("blackberry.app", function () {
             runs(function () {
                 expect(onResume).toHaveBeenCalled();
             });
+
+            internal.automation.touch(300, 300);
         });
     });
 
@@ -93,7 +97,6 @@ describe("blackberry.app", function () {
         });
 
         it("should invoke callback when user swipes down from within application", function () {
-            window.confirm("Swipe down from the top of the application");
 
             waitsFor(function () {
                 return onSwipeDown.callCount;
@@ -102,6 +105,8 @@ describe("blackberry.app", function () {
             runs(function () {
                 expect(onSwipeDown).toHaveBeenCalled();
             });
+
+            internal.automation.swipeDown();            
         });
     });
 
@@ -109,17 +114,21 @@ describe("blackberry.app", function () {
         var onKeyboardOpening,
             onKeyboardOpened,
             onKeyboardClosing,
-            onKeyboardClosed;
+            onKeyboardClosed,
+            onKeyboardPosition;
 
         beforeEach(function () {
             onKeyboardOpening = jasmine.createSpy();
             onKeyboardOpened = jasmine.createSpy();
             onKeyboardClosing = jasmine.createSpy();
             onKeyboardClosed = jasmine.createSpy();
+            onKeyboardPosition = jasmine.createSpy();
             blackberry.event.addEventListener("keyboardOpening", onKeyboardOpening);
             blackberry.event.addEventListener("keyboardOpened", onKeyboardOpened);
             blackberry.event.addEventListener("keyboardClosing", onKeyboardClosing);
             blackberry.event.addEventListener("keyboardClosed", onKeyboardClosed);
+            blackberry.event.addEventListener("keyboardPosition", onKeyboardPosition);
+
         });
 
         afterEach(function () {
@@ -127,51 +136,44 @@ describe("blackberry.app", function () {
             blackberry.event.removeEventListener("keyboardOpened", onKeyboardOpened);
             blackberry.event.removeEventListener("keyboardClosing", onKeyboardClosing);
             blackberry.event.removeEventListener("keyboardClosed", onKeyboardClosed);
+            blackberry.event.removeEventListener("keyboardPosition", onKeyboardPosition);
             onKeyboardOpening = null;
             onKeyboardOpened = null;
             onKeyboardClosing = null;
             onKeyboardClosed = null;
+            onKeyboardPosition = null;
         });
 
-        it("should invoke callback when user swipes down from within application", function () {
-            window.confirm("Open and close the keyboard by swiping diagonally away from the bottom left-hand corner of the application");
+        it("should invoke callbacks when user opens keyboard", function () {
 
             waitsFor(function () {
-                return onKeyboardOpening.callCount && onKeyboardOpened.callCount && onKeyboardClosing.callCount && onKeyboardClosed.callCount;
+                return onKeyboardOpening.callCount && onKeyboardOpened.callCount;
             }, "event never fired", waitForTimeout);
 
             runs(function () {
                 expect(onKeyboardOpening).toHaveBeenCalled();
                 expect(onKeyboardOpened).toHaveBeenCalled();
-                expect(onKeyboardClosing).toHaveBeenCalled();
-                expect(onKeyboardClosed).toHaveBeenCalled();
+                expect(onKeyboardPosition).toHaveBeenCalled();
             });
-        });
-    });
 
-    describe("onKeyboard Position Event", function () {
-        var onKeyboardPosition;
-
-        beforeEach(function () {
-            onKeyboardPosition = jasmine.createSpy();
-            blackberry.event.addEventListener("keyboardPosition", onKeyboardPosition);
+            internal.automation.showKeyboard();
+            
         });
 
-        afterEach(function () {
-            blackberry.event.removeEventListener("keyboardPosition", onKeyboardPosition);
-            onKeyboardPosition = null;
-        });
-
-        it("should invoke callback when user swipes down from within application", function () {
-            window.confirm("Open the keyboard");
+        it("should invoke callbacks when user closes keyboard", function () {
 
             waitsFor(function () {
-                return onKeyboardPosition.callCount;
+                return onKeyboardClosing.callCount && onKeyboardClosed.callCount;
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onKeyboardPosition).toHaveBeenCalled();
+                expect(onKeyboardClosing).toHaveBeenCalled();
+                expect(onKeyboardClosed).toHaveBeenCalled();
             });
+
+            internal.automation.hideKeyboard();
+            
         });
+ 
     });
 });
