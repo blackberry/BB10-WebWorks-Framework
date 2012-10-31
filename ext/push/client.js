@@ -45,9 +45,10 @@ var _self = {},
     CREATE_CHANNEL_NOT_DONE = 10106,
     MISSING_PORT_FROM_PPG = 10107,
     MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG = 10108,
+    PPG_SERVER_ERROR = 10110,
     MISSING_INVOKE_TARGET_ID = 10111,
     SESSION_ALREADY_EXISTS = 10112,
-    INVALID_PPG_URL_OR_PPG_UNAVAILABLE = 10113,
+    INVALID_PPG_URL = 10114,
     CREATE_CHANNEL_OPERATION = 1,
     DESTROY_CHANNEL_OPERATION = 2;
 
@@ -214,9 +215,10 @@ window.webworks.defineReadOnlyField(PushService, "OPERATION_NOT_SUPPORTED", OPER
 window.webworks.defineReadOnlyField(PushService, "CREATE_CHANNEL_NOT_DONE", CREATE_CHANNEL_NOT_DONE);
 window.webworks.defineReadOnlyField(PushService, "MISSING_PORT_FROM_PPG", MISSING_PORT_FROM_PPG);
 window.webworks.defineReadOnlyField(PushService, "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG", MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG);
+window.webworks.defineReadOnlyField(PushService, "PPG_SERVER_ERROR", PPG_SERVER_ERROR);
 window.webworks.defineReadOnlyField(PushService, "MISSING_INVOKE_TARGET_ID", MISSING_INVOKE_TARGET_ID);
 window.webworks.defineReadOnlyField(PushService, "SESSION_ALREADY_EXISTS", SESSION_ALREADY_EXISTS);
-window.webworks.defineReadOnlyField(PushService, "INVALID_PPG_URL_OR_PPG_UNAVAILABLE", INVALID_PPG_URL_OR_PPG_UNAVAILABLE);
+window.webworks.defineReadOnlyField(PushService, "INVALID_PPG_URL", INVALID_PPG_URL);
 window.webworks.defineReadOnlyField(PushService, "CREATE_CHANNEL_OPERATION", CREATE_CHANNEL_OPERATION);
 window.webworks.defineReadOnlyField(PushService, "DESTROY_CHANNEL_OPERATION", DESTROY_CHANNEL_OPERATION);
 
