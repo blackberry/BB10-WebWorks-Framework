@@ -15,7 +15,7 @@
 */
 var os = require("os"),
     fs = require('fs'),
-    wrench = require("../../node_modules/wrench"),
+    wrench = require("wrench"),
     path = require('path'),
     childProcess = require("child_process");
 
