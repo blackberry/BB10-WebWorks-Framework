@@ -2,7 +2,8 @@
 <widget xmlns=" http://www.w3.org/ns/widgets"
         xmlns:rim="http://www.blackberry.com/ns/widgets"
         version="1.0.0"
-        id="WebWorksTest">
+        id="WebWorksTest"
+        rim:header="RIM:WebWorks/App">
 
     <name>WebWorks Test Application</name>
 
@@ -36,6 +37,7 @@
     </access>
     <access uri="http://atg05-yyz.labyyz.testnet.rim.net" />
     <access uri="http://10.137.251.215/" />
+    <access uri="http://10.137.251.65/" subdomains="true"/>
     <access uri="http://html5demos.com/" />
     <access uri="http://maps.google.com/" subdomains="true"/>
     <access uri="http://googleapis.com/" subdomains="true" />

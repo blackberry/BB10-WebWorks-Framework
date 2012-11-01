@@ -5,7 +5,8 @@ describe("webview", function () {
         webview,
         mockedController,
         mockedWebview,
-        mockedApplication;
+        mockedApplication,
+        globalCreate;
 
     beforeEach(function () {
         webview = require(libPath + "lib/webview");
@@ -25,6 +26,7 @@ describe("webview", function () {
             active: undefined,
             zOrder: undefined,
             url: undefined,
+            extraHttpHeaders: undefined,
             setFileSystemSandbox: undefined,
             addOriginAccessWhitelistEntry: jasmine.createSpy(),
             setGeometry: jasmine.createSpy(),
@@ -63,9 +65,11 @@ describe("webview", function () {
                     //setTimeout(createFunction,0);
                     if (typeof options === 'function') {
                         runs(options);
+                        globalCreate = options;
                     }
                     else {
                         runs(createFunction);
+                        globalCreate = createFunction;
                     }
                     return mockedWebview;
                 },
@@ -259,6 +263,14 @@ describe("webview", function () {
         it("calls the underlying windowGroup property", function () {
             webview.create(mockedWebview);
             expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
+        });
+
+        it("expect the config to set the extraHttpHeader", function () {
+            webview.create();
+            waits(1);
+            runs(function () {
+                expect(mockedWebview.extraHttpHeaders).toEqual({"rim-header": "RIM-Widget:rim/widget"});
+            });
         });
     });
 

@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
     <script type="text/javascript" src="../js/jasmine.js"></script>
     <script type="text/javascript" src="../js/jasmine-html.js"></script>
-    <script type="text/javascript" src="../js/webworks.js"></script>
+    <script type="text/javascript" src="local:///chrome/webworks.js"></script>
 
     <script type="text/javascript">
         var jasmineEnv = jasmine.getEnv();
@@ -42,6 +42,7 @@
             script.type = "text/javascript";
             script.src = filePath;
             head.appendChild(script);
+
         }
 
         function setAllBoxes(value) {
@@ -98,6 +99,7 @@
         <input type="checkbox" value="blackberry.ui.dialog">blackberry.ui.dialog</input><br />
         <input type="checkbox" value="blackberry.bbm.platform">blackberry.bbm.platform</input><br />
         <input type="checkbox" value="crossOrigin">crossOrigin</input><br />
+        <input type="checkbox" value="customHeader">customHeader</input><br />
         <input type="checkbox" value="remoteFunctionCall">remoteFunctionCall</input><br />
         <input type="checkbox" value="blackberry.notification">blackberry.notification</input><br />
     </form>
