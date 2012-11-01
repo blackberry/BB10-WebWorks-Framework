@@ -95,7 +95,8 @@ private:
     static void getSortSpecs(const Json::Value& sort);
     static QSet<bbpim::ContactId> getPartialSearchResults(const Json::Value& filter, const Json::Value& contactFields, const bool favorite);
     static bool lessThan(const bbpim::Contact& c1, const bbpim::Contact& c2);
-    static void replaceAll(std::string& str, const std::string& from, const std::string& to);
+    static std::string replaceAll(const std::string& s, const std::string& souce = "\"", const std::string& target = "\\\"");
+    static std::string replaceString(const std::string& s);
     static QList<bbpim::AttributeKind::Type> getIncludeAttributesList(const Json::Value& contactFields, bbpim::ContactListFilters* listFilters = NULL);
 
     // Helper functions for Save

@@ -54,10 +54,13 @@ describe("pim.contacts index", function () {
     it("find - with correct permission specified", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
-            findOptions = new ContactFindOptions([{
-                fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                fieldValue: "John"
-            }], null, 5);
+            findOptions = {
+                filter: [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], 
+                limit: 5
+            };
 
         spyOn(utils, "hasPermission").andReturn(true);
 
@@ -78,10 +81,13 @@ describe("pim.contacts index", function () {
     it("find - without correct permission specified", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
-            findOptions = new ContactFindOptions([{
-                fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                fieldValue: "John"
-            }], null, 5);
+            findOptions = {
+                filter: [{
+                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                    fieldValue: "John"
+                }], 
+                limit: 5
+            };
 
         spyOn(utils, "hasPermission").andReturn(false);
 
@@ -106,7 +112,7 @@ describe("pim.contacts index", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
             contact = new Contact({
-                name: new ContactName({"familyName": "Smith", "givenName": "John"}),
+                name: {"familyName": "Smith", "givenName": "John"},
                 note: "this is a test"
             }),
             args = {},
@@ -136,7 +142,7 @@ describe("pim.contacts index", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
             contact = new Contact({
-                name: new ContactName({"familyName": "Smith", "givenName": "John"}),
+                name: {"familyName": "Smith", "givenName": "John"},
                 note: "this is a test"
             }),
             args = {},

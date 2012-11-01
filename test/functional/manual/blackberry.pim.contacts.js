@@ -46,13 +46,15 @@ describe("blackberry.pim.contacts", function () {
                 errorCb = jasmine.createSpy("onFindError").andCallFake(function (error) {
                     called = true;
                 }),
-                findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": family
-                }, {
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    "fieldValue": given
-                }]);
+                findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": family
+                    }, {
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        "fieldValue": given
+                    }]
+                };
 
             try {
                 contacts.find(["name", "activities"], findOptions, successCb, errorCb);
@@ -87,7 +89,11 @@ describe("blackberry.pim.contacts", function () {
                     expect(contacts.length).toBeDefined();
                     expect(contacts.length).not.toBe(0);
 
-                    var pic = new ContactPhoto(blackberry.io.sharedFolder + "/camera/IMG_00000001.jpg", true),
+                    var pic = 
+                        { 
+                            originalFilePath: blackberry.io.sharedFolder + "/camera/IMG_00000001.jpg",
+                            pref: true
+                        },
                         saveCalled = false,
                         picSet = false,
                         saveSuccessCb = jasmine.createSpy().andCallFake(function (saved) {
@@ -108,13 +114,15 @@ describe("blackberry.pim.contacts", function () {
                     console.log("Contact find error");
                     called = true;
                 }),
-                findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": family
-                }, {
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    "fieldValue": given
-                }]);
+                findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": family
+                    }, {
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        "fieldValue": given
+                    }]
+                };
 
             try {
                 contacts.find(["name", "activities"], findOptions, successCb, errorCb);

@@ -493,12 +493,18 @@ Json::Value PimContactsQt::assembleSearchResults(const QSet<bbpim::ContactId>& r
     return contactArray;
 }
 
-void PimContactsQt::replaceAll(std::string& s, const std::string& souce, const std::string& target) {
+std::string PimContactsQt::replaceAll(const std::string& s, const std::string& souce, const std::string& target) {
     size_t start = 0;
-    while ((start = s.find(souce, start)) != std::string::npos) {
-        s.replace(start, souce.length(), target);
+    std::string temp(s);
+    while ((start = temp.find(souce, start)) != std::string::npos) {
+        temp.replace(start, souce.length(), target);
         start += target.length();
     }
+    return temp;
+}
+std::string PimContactsQt::replaceString(const std::string& s) {
+    std::string temp = replaceAll(replaceAll(replaceAll(replaceAll(s), "\n", "\\\\n"), "\r", ""), "\t", "\\\\t");
+    return temp;
 }
 
 /****************************************************************
@@ -604,14 +610,14 @@ void PimContactsQt::populateField(const bbpim::Contact& contact, bbpim::Attribut
                 val["type"] = Json::Value(typeIter->second);
 
                 std::string value = currentAttr.value().toStdString();
-                replaceAll(value, "\"", "\\\"");
+                value = replaceString(value);
 
                 val["value"] = Json::Value(value);
                 contactItem.append(val);
             } else {
                 if (isArray) {
                     std::string value = currentAttr.value().toStdString();
-                    replaceAll(value, "\"", "\\\"");
+                    value = replaceString(value);
 
                     val = Json::Value(value);
                     contactItem.append(val);
@@ -626,7 +632,7 @@ void PimContactsQt::populateField(const bbpim::Contact& contact, bbpim::Attribut
             }
         } else if (kind == bbpim::AttributeKind::Note) {
             std::string note = currentAttr.value().toStdString();
-            replaceAll(note, "\"", "\\\"");
+            note = replaceString(note);
             contactItem["note"] = Json::Value(note);
             break;
         }
@@ -646,7 +652,7 @@ void PimContactsQt::populateDisplayNameNickName(const bbpim::Contact& contact, J
 
             if (currentAttr.subKind() == subkind) {
                 std::string value = currentAttr.value().toStdString();
-                replaceAll(value, "\"", "\\\"");
+                value = replaceString(value);
                 contactItem[field] = Json::Value(value);
                 break;
             }
@@ -695,7 +701,7 @@ void PimContactsQt::populateOrganizations(const bbpim::Contact& contact, Json::V
 
             if (typeIter != _subKindAttributeMap.end()) {
                 std::string value = attr.value().toStdString();
-                replaceAll(value, "\"", "\\\"");
+                value = replaceString(value);
                 org[typeIter->second] = Json::Value(value);
             }
         }
@@ -735,15 +741,15 @@ void PimContactsQt::populateNews(const bbpim::Contact& contact, Json::Value& con
         QString format = "yyyy-MM-dd";
 
         std::string body = k->body().toStdString();
-        replaceAll(body, "\"", "\\\"");
+        body = replaceString(body);
         news["body"] = Json::Value(body);
 
         std::string title = k->title().toStdString();
-        replaceAll(title, "\"", "\\\"");
+        title = replaceString(title);
         news["title"] = Json::Value(title);
 
         std::string articleSource = k->articleSource().toStdString();
-        replaceAll(articleSource, "\"", "\\\"");
+        articleSource = replaceString(articleSource);
         news["articleSource"] = Json::Value(articleSource);
 
         news["type"] = Json::Value(k->type().toStdString());
@@ -774,7 +780,7 @@ void PimContactsQt::populateActivity(const bbpim::Contact& contact, Json::Value&
         Json::Value activity;
 
         std::string desc = k->description().toStdString();
-        replaceAll(desc, "\"", "\\\"");
+        desc = replaceString(desc);
 
         activity["description"] = Json::Value(desc);
         activity["direction"] = Json::Value(k->direction());

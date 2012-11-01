@@ -18,6 +18,7 @@ var pimContacts,
     _event = require("../../lib/event"),
     _utils = require("../../lib/utils"),
     config = require("../../lib/config"),
+    contactUtils = require("./contactUtils"),
     ContactError = require("./ContactError");
 
 function checkPermission(success, eventId) {
@@ -47,6 +48,17 @@ module.exports = {
         }
 
         if (!checkPermission(success, findOptions["_eventId"])) {
+            return;
+        }
+
+        if (!contactUtils.validateFindArguments(findOptions.options)) {
+            _event.trigger(findOptions._eventId, {
+                "result": escape(JSON.stringify({
+                    "_success": false,
+                    "code": ContactError.INVALID_ARGUMENT_ERROR
+                }))
+            });
+            success();
             return;
         }
 
