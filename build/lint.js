@@ -50,18 +50,28 @@ function _lintCSS() {
 function _lintCPP() {
     var returnValue = function (prev, baton) {},
         options = ["--R", "--filter=-whitespace/line_length,-whitespace/comments,-whitespace/labels,-whitespace/braces,-readability/streams"],
-        files = [
-            "ext/app",
-            "ext/bbm.platform",
-            "ext/connection",
-            "ext/io.filetransfer",
-            "ext/json",
-            "ext/pim.contacts",
-            "ext/push",
-            "ext/ui.dialog"
-        ];
+        files = ["ext"],
+        blacklist = ["jpps"];
     //Only cpplint on unix. Windows currently has an issue with cpplinting
     if (!utils.isWindows()) {
+        //This will expand files into an array of arrays and then reduce into a single array
+        files = files.map(function (filePath) {
+            //readdirSync only returns a list of fileNames, they will need to have the original path appended to them
+            return fs.readdirSync(filePath).map(function (childPath) {
+                var returnPath = path.join(filePath, childPath);
+                //Check child entries to see if they have been blacklisted, if so exclude
+                if (blacklist.indexOf(childPath) === -1) {
+                    //Ignore all file children (THIS COULD BITE US IN THE BUTT IF THEY ARE CPP FILES)
+                    if (utils.isDirectory(returnPath)) {
+                        return returnPath;
+                    }
+                }
+            }).filter(function (string) {
+                return string && string.length !== 0;
+            });
+        }).reduce(function (previous, current) {
+            return previous.concat(current);
+        });
         returnValue = utils.execCommandWithJWorkflow('python ' + __dirname + "/../dependencies/cpplint/cpplint.py " + options.concat(files).join(' '));
     }
 

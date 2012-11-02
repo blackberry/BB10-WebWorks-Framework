@@ -117,6 +117,9 @@ module.exports = {
         }
 
         wrench.copyDirSyncRecursive(source, destination);
-    }
+    },
 
+    isDirectory: function (source) {
+        return fs.statSync(source).isDirectory();
+    }
 };
