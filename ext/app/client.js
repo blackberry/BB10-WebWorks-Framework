@@ -30,6 +30,18 @@ function defineReadOnlyField(field) {
     Object.defineProperty(_self, field, {"value": value, "writable": false});
 }
 
+Object.defineProperty(_self, "orientation", {
+    get: function () {
+        var orientation;
+        try {
+            orientation = window.webworks.execSync(ID, "currentOrientation");
+        } catch (e) {
+            console.error(e);
+        }
+        return orientation;
+    }
+});
+
 defineReadOnlyField("author");
 
 defineReadOnlyField("authorEmail");
@@ -49,6 +61,23 @@ defineReadOnlyField("licenseURL");
 defineReadOnlyField("name");
 
 defineReadOnlyField("version");
+
+function lockOrientation(orientation, receiveRotateEvents) {
+    return window.webworks.execSync(ID, "lockOrientation", { orientation: orientation });
+}
+
+function unlockOrientation() {
+    window.webworks.execSync(ID, "unlockOrientation");
+}
+
+function rotate(orientation) {
+    window.webworks.execSync(ID, "rotate", {orientation: orientation});
+}
+
+// Orientation Properties
+Object.defineProperty(_self, "lockOrientation", {"value": lockOrientation, "writable": false});
+Object.defineProperty(_self, "unlockOrientation", {"value": unlockOrientation, "writable": false});
+Object.defineProperty(_self, "rotate", {"value": rotate, "writable": false});
 
 window.webworks.execSync(ID, "registerEvents", null);
 

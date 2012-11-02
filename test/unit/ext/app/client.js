@@ -27,7 +27,8 @@ var _extDir = __dirname + "./../../../../ext",
         license: "testLicense",
         licenseURL: "testLicenseURL",
         name: "testName",
-        version: "testVersion"      
+        version: "testVersion",
+        orientation: "portrait-primary"
     },
     mockedWebworks = {
         execSync: jasmine.createSpy().andReturn(mockData)
@@ -36,6 +37,7 @@ var _extDir = __dirname + "./../../../../ext",
 beforeEach(function () {
     GLOBAL.window = GLOBAL;
     GLOBAL.window.webworks = mockedWebworks;
+    GLOBAL.window.orientation = 0;
     client = require(_apiDir + "/client");
 });
 
@@ -93,7 +95,7 @@ describe("app client", function () {
 
     describe("licenseURL", function () {
         it("should be populated", function () {
-            expect(client.licenseURL === mockData.licenseURL); 
+            expect(client.licenseURL === mockData.licenseURL);
         });
     });
 
@@ -108,13 +110,46 @@ describe("app client", function () {
             expect(client.version === mockData.version);
         });
     });
-    
+
     describe("exit", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();
             GLOBAL.window.webworks = mockedWebworks;
             client.exit();
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "exit");
+        });
+    });
+
+    describe("orientation", function () {
+        it("should be populated", function () {
+            expect(client.orientation === mockData.orientation);
+        });
+    });
+
+    describe("lockOrientation", function () {
+        it("should call execSync", function () {
+            mockedWebworks.execSync = jasmine.createSpy();
+            GLOBAL.window.webworks = mockedWebworks;
+            client.lockOrientation('portrait-primary');
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "lockOrientation", { orientation: 'portrait-primary' });
+        });
+    });
+
+    describe("unlockOrientation", function () {
+        it("should call execSync", function () {
+            mockedWebworks.execSync = jasmine.createSpy();
+            GLOBAL.window.webworks = mockedWebworks;
+            client.unlockOrientation();
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "unlockOrientation");
+        });
+    });
+
+    describe("rotate", function () {
+        it("should call execSync", function () {
+            mockedWebworks.execSync = jasmine.createSpy();
+            GLOBAL.window.webworks = mockedWebworks;
+            client.rotate('landscape');
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "rotate", {orientation: 'landscape'});
         });
     });
 });

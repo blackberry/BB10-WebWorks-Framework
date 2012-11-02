@@ -97,17 +97,121 @@ describe("blackberry.app", function () {
         });
 
         it("should invoke callback when user swipes down from within application", function () {
+            internal.automation.swipeDown();
 
             waitsFor(function () {
                 return onSwipeDown.callCount;
-            }, "event never fired", waitForTimeout);
+            }, "event never fired", waitForTimeout * 2);
 
             runs(function () {
                 expect(onSwipeDown).toHaveBeenCalled();
             });
 
-            internal.automation.swipeDown();            
         });
+    });
+
+    describe("orientation", function () {
+        var onOrientationChange;
+
+        beforeEach(function () {
+            onOrientationChange = jasmine.createSpy();
+            blackberry.event.addEventListener("orientationchange", onOrientationChange);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("orientationchange", onOrientationChange);
+            onOrientationChange = null;
+        });
+
+        it("should invoke callback with landscape-primary when user rotates the phone counter-clockwise from within application", function () {
+            internal.automation.rotate("RIGHT_UP");
+            waitsFor(function () {
+                return onOrientationChange.callCount;
+            }, "event never fired", waitForTimeout * 2);
+
+            runs(function () {
+                expect(onOrientationChange).toHaveBeenCalledWith("landscape-primary");
+            });
+        });
+
+        it("should invoke callback with landscape-secondary when user rotates the phone clockwise from within application", function () {
+            internal.automation.rotate("LEFT_UP");
+
+            waitsFor(function () {
+                return onOrientationChange.callCount;
+            }, "event never fired", waitForTimeout * 2);
+
+            runs(function () {
+                expect(onOrientationChange).toHaveBeenCalledWith("landscape-secondary");
+            });
+        });
+
+        it("should invoke callback with portrait-primary when user rotates the phone back to normal position from within application", function () {
+            internal.automation.rotate("TOP_UP");
+
+            waitsFor(function () {
+                return onOrientationChange.callCount;
+            }, "event never fired", waitForTimeout * 2);
+
+            runs(function () {
+                expect(onOrientationChange).toHaveBeenCalledWith("portrait-primary");
+            });
+        });
+
+
+        it("should be able to lock orientation and still listen to the event", function () {
+
+            blackberry.app.lockOrientation("portrait-primary");
+
+            waits(4000);
+
+            runs(function () {
+                internal.automation.rotate("LEFT_UP");
+                waitsFor(function () {
+                    return onOrientationChange.callCount;
+                }, "event never fired", waitForTimeout * 2);
+
+                runs(function () {
+                    expect(onOrientationChange).toHaveBeenCalledWith("landscape-secondary");
+                    expect(blackberry.app.orientation).toBe("landscape-secondary");
+                    expect(window.orientation).toBe(0);
+                });
+            });
+        });
+
+        it("should be able to unlock orientation and still listen to the event", function () {
+            waits (2000);
+            runs(function () {
+                blackberry.app.unlockOrientation();
+
+                waitsFor(function () {
+                    return onOrientationChange.callCount;
+                }, "event never fired", waitForTimeout * 2);
+
+                runs(function () {
+                    expect(onOrientationChange).toHaveBeenCalledWith("landscape-secondary");
+                    expect(blackberry.app.orientation).toBe("landscape-secondary");
+                    waits(4000);
+                    runs(function () {
+                        expect(window.orientation).toBe(-90);
+                    });
+                });
+            });
+        });
+
+        it("should have the correct orientation set", function () {
+            waits (2000);
+            runs(function () {
+                internal.automation.rotate("LEFT_UP");
+                waits(2000);
+                runs(function () {
+                    expect(blackberry.app.orientation).toBe("landscape-secondary");
+                    internal.automation.rotate("TOP_UP");
+                });
+            });
+
+        });
+
     });
 
     describe("onKeyboard Events", function () {
@@ -148,7 +252,7 @@ describe("blackberry.app", function () {
 
             waitsFor(function () {
                 return onKeyboardOpening.callCount && onKeyboardOpened.callCount;
-            }, "event never fired", waitForTimeout);
+            }, "event never fired", waitForTimeout * 2);
 
             runs(function () {
                 expect(onKeyboardOpening).toHaveBeenCalled();
@@ -157,23 +261,22 @@ describe("blackberry.app", function () {
             });
 
             internal.automation.showKeyboard();
-            
+
         });
 
         it("should invoke callbacks when user closes keyboard", function () {
 
             waitsFor(function () {
                 return onKeyboardClosing.callCount && onKeyboardClosed.callCount;
-            }, "event never fired", waitForTimeout);
+            }, "event never fired", waitForTimeout * 2);
 
             runs(function () {
                 expect(onKeyboardClosing).toHaveBeenCalled();
                 expect(onKeyboardClosed).toHaveBeenCalled();
             });
-
             internal.automation.hideKeyboard();
-            
         });
- 
+
     });
+
 });

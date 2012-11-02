@@ -19,44 +19,44 @@ var _self = {},
 _self.swipeDown = function () {
     internal.pps.syncWrite(
         {
-            action : "nativeGesture", 
-            duration: "500", 
-            points : "[[(384,-10)(384,500)]]", 
-            _src: "desktop", 
+            action : "nativeGesture",
+            duration: "500",
+            points : "[[(384,-10)(384,500)]]",
+            _src: "desktop",
             _dest: "ui-agent"
-        }, 
+        },
         "/pps/services/agent/ui-agent/control"
-    );            
+    );
 };
 
 _self.swipeUp = function () {
     internal.pps.syncWrite(
         {
-            action : "nativeGesture", 
-            duration: "500", 
-            points : "[[(384,2000)(384,500)]]", 
-            _src: "desktop", 
+            action : "nativeGesture",
+            duration: "500",
+            points : "[[(384,2000)(384,500)]]",
+            _src: "desktop",
             _dest: "ui-agent"
-        }, 
+        },
         "/pps/services/agent/ui-agent/control"
-    );          
+    );
 };
 
 _self.touch = function (x, y) {
     internal.pps.syncWrite(
         {
-            action : "nativeTouch", 
-            points : "[[(" + x + "," + y + ")]]", 
-            _src: "desktop", 
+            action : "nativeTouch",
+            points : "[[(" + x + "," + y + ")]]",
+            _src: "desktop",
             _dest: "ui-agent"
-        }, 
+        },
         "/pps/services/agent/ui-agent/control"
     );
 };
 
 _self.showKeyboard = function () {
     internal.pps.syncWrite(
-        { msg : "show" }, 
+        { msg : "show" },
         "/pps/services/input/control",
         { fileMode : internal.pps.FileMode.WRONLY }
     );
@@ -64,7 +64,7 @@ _self.showKeyboard = function () {
 
 _self.hideKeyboard = function () {
     internal.pps.syncWrite(
-        { msg : "hide" }, 
+        { msg : "hide" },
         "/pps/services/input/control",
         { fileMode : internal.pps.FileMode.WRONLY }
     );
@@ -73,12 +73,27 @@ _self.hideKeyboard = function () {
 _self.keyboardGesture = function () {
     internal.pps.syncWrite(
         {
-            action : "nativeGesture", 
-            duration: "500", 
-            points : "[[(200,2000)(200,500)][(400,2000)(400,500)]]", 
-            _src: "desktop", 
+            action : "nativeGesture",
+            duration: "500",
+            points : "[[(200,2000)(200,500)][(400,2000)(400,500)]]",
+            _src: "desktop",
             _dest: "ui-agent"
-        }, 
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
+};
+
+/*
+ * orientation can be [LEFT_UP | RIGHT_UP | TOP_UP | BOTTOM_UP | FACE_UP | FACE_DOWN | FACE_DOWN]
+ */
+_self.rotate = function (orientation) {
+    internal.pps.syncWrite(
+        {
+            action : "setAccelerometerOrientation",
+            orientation : orientation,
+            _src: "desktop",
+            _dest: "ui-agent"
+        },
         "/pps/services/agent/ui-agent/control"
     );
 };
