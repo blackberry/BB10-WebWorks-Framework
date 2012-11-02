@@ -284,4 +284,46 @@ describe("blackberry.invoke", function () {
 
     });
 
+    it('Register an invoke interrupter and expect the handler to NOT be triggered on invoke since it is not interruptable', function () {
+        var handler = jasmine.createSpy(),
+            reason,
+            delay = 1000,
+            flag = false,
+            errorSpy = jasmine.createSpy();
+
+        // Register the handler function
+        blackberry.invoke.registerInterrupter(handler);
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "local:///audio/test.mp3",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_COPY_RW
+        },
+        function (reason) {
+        },
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+
+        expect(handler).not.toHaveBeenCalled();
+    });
 });

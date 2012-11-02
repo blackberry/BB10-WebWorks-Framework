@@ -17,7 +17,9 @@
 var _self = {},
     _ID = require("./manifest.json").namespace,
     _invokeEventId = "invoke.invokeEventId",
-    _queryEventId = "invoke.queryEventId";
+    _queryEventId = "invoke.queryEventId",
+    _invokeInterrupter,
+    _invokeHandler;
 
 _self.invoke = function (request, onSuccess, onError) {
     var data,
@@ -86,6 +88,39 @@ _self.query = function (request, onSuccess, onError) {
 _self.closeChildCard = function () {
     window.webworks.execSync(_ID, "closeChildCard");
 };
+
+Object.defineProperty(_self, "interrupter", {
+    get : function () {
+        return _invokeHandler;
+    },
+
+    set: function (handler) {
+        var returnRequest;
+        try {
+            // Clear the current one no matter what
+            if (window.webworks.event.isOn('invocation.interrupted')) {
+                window.webworks.event.remove('blackberry.event', 'invocation.interrupted', _invokeInterrupter);
+            }
+            // Check if we are nulling, or undefining the handler, take off the interruption
+            _invokeHandler = handler;
+
+            if (!handler) {
+                window.webworks.execAsync(_ID, "clearInterrupter");
+            } else {
+                _invokeInterrupter = function (request) {
+                    returnRequest = handler(request);
+                    window.webworks.execAsync(_ID, "returnInterruption", {request : returnRequest});
+                };
+
+                window.webworks.event.add('blackberry.event', 'invocation.interrupted', _invokeInterrupter);
+                window.webworks.execAsync(_ID, "registerInterrupter");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+});
 
 window.webworks.execSync(_ID, "registerEvents", null);
 
