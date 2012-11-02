@@ -130,21 +130,6 @@ describe("White listing", function () {
         return script;
     }
 
-    function testExternalBlacklistedWebAPIScript(domain) {
-        var url = "http://" + domain + "/webapi_blacklisted.js?v=" + generateSerial(),
-            script;
-        runs(function () {
-            delete window.Blacklisted;
-            script = testHtmlElementLoads('script', {type: "text/javascript", src: url});
-        });
-        runs(function () {
-            expect(window.Blacklisted).toBeDefined();
-            expect(window.Blacklisted.getAppId).toBeDefined();
-            expect(window.Blacklisted.getAppId()).not.toBeDefined();
-        });
-        return script;
-    }
-
     function testExternalJsFailsToRun(domain) {
         var url = "http://" + domain + "/general_blacklisted.js?v=" + generateSerial(),
             script;
@@ -205,8 +190,7 @@ describe("White listing", function () {
     }
 
     function testWebApisForIframe(iframe, origin, whitelistedApi) {
-        var messageReceived = false,
-            whitelistedApiMessageReceived = false,
+        var whitelistedApiMessageReceived = false,
             nonWhitelistedApiMessageReceived = false,
             reply = null,
             receiveMessage = function (e) {
