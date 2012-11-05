@@ -21,13 +21,15 @@ var LIB_FOLDER = "../../lib/",
     _utils = require(LIB_FOLDER + 'utils');
 
 function enabled(success, fail, args, env) {
-    var _enabled = JSON.parse(decodeURIComponent(args.enabled));
-    if (typeof(_enabled) === 'boolean') {
-        _overlayWebView.contextMenu.enabled = _enabled;
-    } else {
-        if (fail) {
-            fail();
+    var _enabled;
+    if (args.enabled) {
+        _enabled = JSON.parse(decodeURIComponent(args.enabled));
+        if (typeof(_enabled) === 'boolean') {
+            _overlayWebView.contextMenu.enabled = _enabled;
         }
+        success();
+    } else {
+        success(_overlayWebView.contextMenu.enabled);
     }
 }
 

@@ -62,6 +62,7 @@ describe("blackberry.ui.contextmenu index", function () {
 
         contextmenu.enabled(success, fail, args, env);
         expect(overlayWebView.contextMenu.enabled).toEqual(false);
+        expect(success).toHaveBeenCalled();
     });
 
     it("can set and read the enabled property to true", function () {
@@ -72,6 +73,7 @@ describe("blackberry.ui.contextmenu index", function () {
 
         contextmenu.enabled(success, fail, args, env);
         expect(overlayWebView.contextMenu.enabled).toEqual(true);
+        expect(success).toHaveBeenCalled();
     });
 
     it("Will not set the property when incorrect parameters are passed", function () {
