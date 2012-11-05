@@ -802,6 +802,19 @@ describe("whitelist", function () {
 
                 expect(whitelist.isAccessAllowed("rtsp://media.com/video.avi")).toEqual(true);
             });
+
+            it("always allows access to data-uris", function () {
+                var whitelist = new Whitelist({
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "http://awesome.com",
+                        allowSubDomain : false,
+                        features : null
+                    }]
+                });
+
+                expect(whitelist.isAccessAllowed("data:image/png;base64,zamagawdbase64string")).toEqual(true);
+            });
         });
     });
 });
