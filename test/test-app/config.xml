@@ -21,6 +21,7 @@
     <feature id="blackberry.identity" required="true" version="1.0.0.0"/>
     <feature id="blackberry.event" required="true" version="1.0.0.0"/>
     <feature id="blackberry.ui.dialog" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.ui.toast" required="true" version="1.0.0.0"/>
     <feature id="blackberry.io" required="true" version="1.0.0.0"/>
     <feature id="blackberry.io.filetransfer" required="true" version="1.0.0.0" />
     <feature id="blackberry.push" required="true" version="1.0.0.0" />
