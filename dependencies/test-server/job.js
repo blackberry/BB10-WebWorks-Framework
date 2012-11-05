@@ -40,7 +40,7 @@ function prepare(job, callback) {
         FUNCTIONAL_TEST_FILENAME = "/functional.zip";
     
     // TODO: Do a CLEAN/Delete workspace first
-    if (!path.existsSync(_workspace)) {
+    if (!fs.existsSync(_workspace)) {
         console.log('CREATE: new workspace')
         fs.mkdirSync(_workspace, "0755");
     } else {
@@ -88,7 +88,7 @@ function downloadDependency(source, destination, callback) {
         _destination = _workspace + destination,
         req;
 
-    if (!path.existsSync(_destination)) {
+    if (!fs.existsSync(_destination)) {
         console.log("DL&UNZIP: " + destination);
 
         // TODO: check HTTP response status code for 
@@ -123,14 +123,14 @@ function unzipDependency(target, callback) {
         parent, 
         to = _workspace;
     
-    if (!path.existsSync(_workspace + target)) {
+    if (!fs.existsSync(_workspace + target)) {
         callback('.zip is missing ...');
     }
 
     data = fs.readFileSync(_workspace + target);
     filesObj = zip.Reader(data).toObject();
 
-    if (!path.existsSync(to)) {
+    if (!fs.existsSync(to)) {
         wrench.mkdirSyncRecursive(to, "0755");
     }
 

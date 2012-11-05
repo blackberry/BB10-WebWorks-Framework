@@ -12,8 +12,8 @@
     "url": "http://www.apache.org/licenses/LICENSE-2.0"
   }],
   "dependencies": {
-    "connect": "1.7.x",
-    "express": "2.5.0",
+    "connect": "2.6.2",
+    "express": "3.0.1",
     "argsparser": "0.0.x",
     "jasmine-node": "1.0.7",
     "jWorkflow": "*"

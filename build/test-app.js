@@ -36,7 +36,7 @@ function createZipFile(prev, baton) {
         zipFiles,
         relativePath,
         fileStats;
-    
+
     appFiles = utils.listFiles(TEST_APP_PATH, function (element) {
         return !FILES_TO_IGNORE.some(function (file, index, array) {
             return element.indexOf(file) !== -1;
@@ -52,7 +52,7 @@ function createZipFile(prev, baton) {
             return { name: relativePath, path: element};
         }
     }).filter(function (element) {
-        return element; 
+        return element;
     });
 
     appZip.addFiles(zipFiles, function (err) {
@@ -60,10 +60,10 @@ function createZipFile(prev, baton) {
             util.puts("Error creating zip file " + err);
             baton.drop();
         }
-        
+
         fs.writeFile(appZipPath, appZip.toBuffer(), function () {
             baton.pass(prev);
-        });   
+        });
 
     });
 }
@@ -77,7 +77,7 @@ module.exports = function () {
 
 
     //Check if css dir exists, if not create it (not necessary for js because it already contains webworks.js)
-    if (!path.exists(cssDir)) {
+    if (!fs.existsSync(cssDir)) {
         wrench.mkdirSyncRecursive(cssDir);
     }
 
@@ -92,10 +92,10 @@ module.exports = function () {
     //Automation functional tests
     wrench.copyDirSyncRecursive(path.join(testSrcDir, "automation"), path.join(TEST_APP_PATH, "automation", "spec"));
     //If the zip exists delete it
-    if (path.existsSync(appZipPath)) {
+    if (fs.existsSync(appZipPath)) {
         fs.unlinkSync(appZipPath);
     }
-    
+
     buildZip.start(function () {
         util.puts("Test App created successfully");
     });

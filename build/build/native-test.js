@@ -32,7 +32,7 @@ function _getCmd(ext, device, ip) {
     testDir = device === "device" ? deviceDir : simDir;
     
     //If the folder exists, grab the test
-    if (path.existsSync(testDir)) {
+    if (fs.existsSync(testDir)) {
         console.log("Running Unit tests for " + ext);
         cmd += " " +
             "scp " + testDir  + " root@" + ip + ":/tmp/test && " +
