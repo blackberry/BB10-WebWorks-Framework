@@ -21,7 +21,7 @@ var wrench = require("wrench"),
 
 function copyFolder(source, destination) {
     //create the destination folder if it does not exist
-    if (!path.existsSync(destination)) {
+    if (!fs.existsSync(destination)) {
         wrench.mkdirSyncRecursive(destination, "0755");
     }
 
@@ -29,7 +29,7 @@ function copyFolder(source, destination) {
 }
 
 function copyExtensions(extPath, extDest) {
-    if (path.existsSync(extPath)) {
+    if (fs.existsSync(extPath)) {
         //Iterate over extensions directory
         fs.readdirSync(extPath).forEach(function (extension) {
             var apiDir = path.normalize(path.resolve(extPath, extension)),
@@ -59,10 +59,10 @@ function copyExtensions(extPath, extDest) {
 
                 // Copy the .so file for this extension
                 [{ src: apiDirDeviceSO, dst: "device" }, { src: apiDirSimulatorSO, dst: "simulator"}].forEach(function (target) {
-                    if (path.existsSync(target.src)) {
+                    if (fs.existsSync(target.src)) {
                         soDest = path.join(apiDest, target.dst);
 
-                        if (!path.exists(soDest)) {
+                        if (!fs.existsSync(soDest)) {
                             fs.mkdirSync(soDest);
                         }
 

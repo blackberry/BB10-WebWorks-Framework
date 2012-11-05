@@ -38,7 +38,7 @@ module.exports = {
 
         //By default we should copy
         //ONLY if we should NOT overwrite && the file exists will we skip copying
-        if (!shouldNotOverwrite || !path.existsSync(fileLocation)) {
+        if (!shouldNotOverwrite || !fs.existsSync(fileLocation)) {
             fileBuffer = fs.readFileSync(srcFile);
             fs.writeFileSync(fileLocation, fileBuffer);
         }
@@ -114,7 +114,7 @@ module.exports = {
 
     copyFolder: function (source, destination) {
         //create the destination folder if it does not exist
-        if (!path.existsSync(destination)) {
+        if (!fs.existsSync(destination)) {
             wrench.mkdirSyncRecursive(destination, "0755");
         }
 
