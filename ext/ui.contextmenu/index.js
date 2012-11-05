@@ -22,7 +22,7 @@ var LIB_FOLDER = "../../lib/",
 
 function enabled(success, fail, args, env) {
     var _enabled;
-    if (args.enabled) {
+    if (typeof args.enabled !== 'undefined') {
         _enabled = JSON.parse(decodeURIComponent(args.enabled));
         if (typeof(_enabled) === 'boolean') {
             _overlayWebView.contextMenu.enabled = _enabled;

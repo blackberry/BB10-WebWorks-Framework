@@ -16,9 +16,14 @@
 var _extDir = __dirname + "./../../../../ext/",
     _libDir = __dirname + "./../../../../lib/",
     contextmenu,
-    overlayWebView = require(_libDir + "overlayWebView"),
+    overlayWebView,
     success = jasmine.createSpy(),
     fail = jasmine.createSpy(),
+    mockedContextMenu = {
+        addItem: jasmine.createSpy(),
+        removeItem: jasmine.createSpy(),
+        enabled : true
+    },
     mockedQnx = {
         webplatform: {
             getController: function () {
@@ -30,11 +35,7 @@ var _extDir = __dirname + "./../../../../ext/",
             },
             createUIWebView: function () {
                 return {
-                    contextMenu: {
-                        enabled: jasmine.createSpy(),
-                        addItem: jasmine.createSpy(),
-                        removeItem: jasmine.createSpy()
-                    }
+                    contextMenu : mockedContextMenu
                 };
             }
         }
@@ -46,7 +47,9 @@ describe("blackberry.ui.contextmenu index", function () {
         GLOBAL.qnx = mockedQnx;
         GLOBAL.window = {qnx: mockedQnx};
         contextmenu = require(_extDir + "ui.contextmenu");
+        overlayWebView = require(_libDir + "overlayWebView");
         overlayWebView.create();
+        overlayWebView.contextMenu = mockedContextMenu;
     });
 
     afterEach(function () {
@@ -59,7 +62,6 @@ describe("blackberry.ui.contextmenu index", function () {
                 enabled: false
             },
             env = {};
-
         contextmenu.enabled(success, fail, args, env);
         expect(overlayWebView.contextMenu.enabled).toEqual(false);
         expect(success).toHaveBeenCalled();
@@ -83,12 +85,13 @@ describe("blackberry.ui.contextmenu index", function () {
             env = {};
 
         contextmenu.enabled(success, fail, args, env);
-        expect(overlayWebView.contextMenu.enabled).toEqual(true);
+        expect(mockedContextMenu.enabled).toEqual(true);
         args = {
             enabled: "false"
         };
         env = {};
-        expect(overlayWebView.contextMenu.enabled).toEqual(true);
+        expect(mockedContextMenu.enabled).toEqual(true);
+        expect(success).toHaveBeenCalled();
     });
     it("can add a custom menu item", function () {
         var args = {
@@ -103,7 +106,7 @@ describe("blackberry.ui.contextmenu index", function () {
             };
 
         contextmenu.addItem(success, fail, args, env);
-        expect(overlayWebView.contextMenu.addItem).toHaveBeenCalledWith(success, fail, expectedArgs, env);
+        expect(mockedContextMenu.addItem).toHaveBeenCalledWith(success, fail, expectedArgs, env);
     });
 
     it("can remove a custom menu item", function () {
@@ -119,7 +122,7 @@ describe("blackberry.ui.contextmenu index", function () {
             };
 
         contextmenu.removeItem(success, fail, args, env);
-        expect(overlayWebView.contextMenu.removeItem).toHaveBeenCalledWith(success, fail, expectedArgs, env);
+        expect(mockedContextMenu.removeItem).toHaveBeenCalledWith(success, fail, expectedArgs, env);
     });
 
 });
