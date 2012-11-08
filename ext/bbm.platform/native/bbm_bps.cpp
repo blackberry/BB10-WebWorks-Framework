@@ -20,6 +20,7 @@
 #include <bbmsp/bbmsp_contactlist.h>
 #include <bbmsp/bbmsp_context.h>
 #include <bbmsp/bbmsp_events.h>
+#include <bbmsp/bbmsp_messaging.h>
 #include <bbmsp/bbmsp_userprofile.h>
 #include <bbmsp/bbmsp_util.h>
 #include <json/writer.h>
@@ -349,11 +350,6 @@ void BBMBPS::StopContactEvents()
     contactEventsEnabled = false;
 }
 
-int BBMBPS::GetGid()
-{
-    return static_cast<int>(getgid());
-}
-
 void BBMBPS::Register(const std::string& uuid)
 {
     bps_event_t *event = NULL;
@@ -596,6 +592,11 @@ std::string BBMBPS::GetContact(bbmsp_contact_t *contact, BBMField field)
     }
     MUTEX_UNLOCK();
     return value;
+}
+
+void BBMBPS::InviteToDownload()
+{
+    bbmsp_send_download_invitation();
 }
 
 } // namespace webworks

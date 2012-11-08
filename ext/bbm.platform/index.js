@@ -155,22 +155,8 @@ module.exports = {
 
     users : {
         inviteToDownload : function (success, fail, args) {
-            var gid,
-                done,
-                cancel,
-                details =  {},
-                callback = function (e) {
-                    if (e) {
-                        fail(-1, "invocation failure: " + e);
-                    }
-                    else {
-                        success();
-                    }
-                };
-
-            gid = bbm.getgid();
-            details.gid = gid;
-            qnx.webplatform.getApplication().cards.bbm.inviteToDownload.open(details, done, cancel, callback);
+            bbm.users.inviteToDownload();
+            success();
         }
     }
 };

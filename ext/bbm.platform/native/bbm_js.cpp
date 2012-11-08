@@ -81,11 +81,6 @@ std::string BBM::InvokeMethod(const std::string& command)
         m_pBBMController->StartContactEvents();
     } else if (strCommand == "stopContactEvents") {
         m_pBBMController->StopContactEvents();
-    } else if (strCommand == "getgid") {
-        int gid = m_pBBMController->GetGid();
-        std::stringstream ss;
-        ss << gid;
-        return ss.str();
     } else if (strCommand == "register") {
         // parse the JSON
         bool parse = reader.parse(strParam, obj);
@@ -126,6 +121,8 @@ std::string BBM::InvokeMethod(const std::string& command)
         m_pBBMController->SetPersonalMessage(strParam);
     } else if (strCommand == "self.setDisplayPicture") {
         m_pBBMController->SetDisplayPicture(strParam);
+    } else if (strCommand == "users.inviteToDownload") {
+        m_pBBMController->InviteToDownload();
     }
     return "";
 }

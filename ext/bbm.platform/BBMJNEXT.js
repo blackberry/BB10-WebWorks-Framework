@@ -61,10 +61,6 @@ JNEXT.BBM = function ()
         JNEXT.invoke(_self.m_id, "register " + JSON.stringify(options));
     };
 
-    _self.getgid = function () {
-        return JNEXT.invoke(_self.m_id, "getgid");
-    };
-
     _self.self.getProfile = function (field) {
         return JNEXT.invoke(_self.m_id, "self.getProfile " + field);
     };
@@ -84,6 +80,10 @@ JNEXT.BBM = function ()
 
     _self.self.setDisplayPicture = function (displayPicture) {
         JNEXT.invoke(_self.m_id, "self.setDisplayPicture " + displayPicture);
+    };
+
+    _self.users.inviteToDownload = function () {
+        JNEXT.invoke(_self.m_id, "users.inviteToDownload");
     };
 
     _self.getId = function () {
