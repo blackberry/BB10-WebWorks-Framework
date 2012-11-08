@@ -17,6 +17,7 @@
 var root = __dirname + "/../../../../",
     webview = require(root + "lib/webview"),
     overlayWebView = require(root + "lib/overlayWebView"),
+    events = require(root + "lib/event"),
     index;
 
 describe("ui.dialog index", function () {
@@ -27,7 +28,7 @@ describe("ui.dialog index", function () {
             invoke : jasmine.createSpy(),
             require : jasmine.createSpy()
         };
-        
+        spyOn(events, "trigger");
         index = require(root + "ext/ui.dialog/index");
     });
 
@@ -97,15 +98,23 @@ describe("ui.dialog index", function () {
         args.message = "Hello World";
         args.type = 0;
         args.settings = { title: "Hi" };
+        args.eventId = encodeURIComponent(JSON.stringify(args.eventId));
         args.message = encodeURIComponent(args.message);
         args.type = encodeURIComponent(args.type);
         args.settings = encodeURIComponent(JSON.stringify(args.settings));
         
-        spyOn(overlayWebView, "showDialog");
+        spyOn(overlayWebView, "showDialog").andCallFake(function (messageObj, callback) {
+            callback({
+                "ok": true
+            });
+        });
         index.standardAskAsync(successCB, failCB, args);
         
         expect(overlayWebView.showDialog).toHaveBeenCalled();
         expect(successCB).toHaveBeenCalledWith();
+        expect(events.trigger).toHaveBeenCalledWith("12345", {
+            "return": escape("Ok")
+        });
     });
 
     it("makes sure that a message is specified for standard dialogs", function () {

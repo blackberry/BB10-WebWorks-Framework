@@ -73,6 +73,7 @@ describe("blackberry.ui.dialog", function () {
         testDialogValue("D_DELETE", 2);
         testDialogValue("D_YES_NO", 3);
         testDialogValue("D_OK_CANCEL", 4);
+        testDialogValue("D_PROMPT", 5);
     });
     
     it('blackberry.ui.* should be read-only', function () {
@@ -81,5 +82,6 @@ describe("blackberry.ui.dialog", function () {
         testDialogReadOnly("D_DELETE");
         testDialogReadOnly("D_YES_NO");
         testDialogReadOnly("D_OK_CANCEL");
+        testDialogReadOnly("D_PROMPT");
     });
 });
