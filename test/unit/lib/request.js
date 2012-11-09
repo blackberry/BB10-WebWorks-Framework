@@ -29,12 +29,12 @@ describe("lib/request", function () {
         expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();
     });
 
-    it("checks whether the request is for an iframe when accessing the whitelist", function () {
+    it("no longer differentiates between iframes and other requests when accessing the whitelist", function () {
         spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(true);
         var url = "http://www.google.com",
             requestObj = request.init(mockedWebview);
         requestObj.networkResourceRequestedHandler(JSON.stringify({url: url, targetType: "TargetIsXMLHTTPRequest"}));
-        expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalledWith(url, true);
+        expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalledWith(url);
     });
 
     it("can apply whitelist rules and allow valid urls", function () {

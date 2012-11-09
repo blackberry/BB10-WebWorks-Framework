@@ -78,6 +78,15 @@ describe("Cross Origin Wildcard", function () {
         });
     }
 
+    function testXhrGetLoadsUrl(url) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, false);
+        xhr.send();
+        expect(xhr.readyState).toBe(4);
+        expect(xhr.status).toBe(200);
+        return xhr;
+    }
+
     beforeEach(function () {
         spyOn(window, "alert");
     });
@@ -89,7 +98,7 @@ describe("Cross Origin Wildcard", function () {
     });
 
     // 15. Access resources on device file system from external server, where startup page is local
-    describe("wildcard access device from local startup page", function () {
+    describe("application with wildcard access and a local startup page", function () {
         // 1. Startup page is local.
         it("can access whitelisted file:// path", function () {
             writeTestFile();
@@ -98,5 +107,11 @@ describe("Cross Origin Wildcard", function () {
                 testHtmlElementLoads('iframe', { src : 'file:///accounts/1000/shared/documents/textData.txt' });
             });
         });
+
+        it("can access random servers via XHR", function () {
+            testXhrGetLoadsUrl("http://www.google.com");
+            testXhrGetLoadsUrl("http://www.rim.com");
+        });
     });
+
 });
