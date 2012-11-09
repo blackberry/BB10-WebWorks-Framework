@@ -21,14 +21,14 @@ var sensors = require("./sensorsJNEXT").sensors,
 module.exports = {
     addEventListener: function (event, trigger) {
         if (events.indexOf(event) !== -1) {
-            sensors.startSensor(event, trigger);
+            sensors.getInstance().startSensor(event, trigger);
         } else {
             console.log("Ignore registration for unknown event: " + event);
         }
     },
     removeEventListener: function (event) {
         if (events.indexOf(event) !== -1) {
-            sensors.stopSensor(event);
+            sensors.getInstance().stopSensor(event);
         } else {
             console.log("Ignore un-registration for unknown event: " + event);
         }

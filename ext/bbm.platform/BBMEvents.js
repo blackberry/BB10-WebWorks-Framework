@@ -19,18 +19,18 @@ var bbm = require("./BBMJNEXT").bbm;
 module.exports = {
     addEventListener: function (event, trigger) {
         if (event === "onaccesschanged") {
-            bbm.startEvents(trigger);
+            bbm.getInstance().startEvents(trigger);
         } else if (event === "onupdate") {
-            bbm.startContactEvents(trigger);
+            bbm.getInstance().startContactEvents(trigger);
         } else {
             console.log("Ignore registration for unknown event: " + event);
         }
     },
     removeEventListener: function (event) {
         if (event === "onaccesschanged") {
-            bbm.stopEvents();
+            bbm.getInstance().stopEvents();
         } else if (event === "onupdate") {
-            bbm.stopContactEvents();
+            bbm.getInstance().stopContactEvents();
         } else {
             console.log("Ignore un-registration for unknown event: " + event);
         }

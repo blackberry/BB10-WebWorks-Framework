@@ -36,9 +36,9 @@ describe("io.filetransfer index", function () {
         index = null;
     });
 
-    it("can access libfiletransfer module in JNEXT", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("libfiletransfer");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("libfiletransfer.FileTransfer");
+    it("makes sure JNEXT was not initialized on require", function () {
+        expect(JNEXT.require).not.toHaveBeenCalledWith("libfiletransfer");
+        expect(JNEXT.createObject).not.toHaveBeenCalledWith("libfiletransfer.FileTransfer");
     });
 
     describe("filetransfer upload", function () {

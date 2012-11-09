@@ -29,7 +29,9 @@ var bbm,
 
 JNEXT.BBM = function ()
 {
-    var _self = this;
+    var _self = this,
+        hasInstance = false;
+
     _self.self = {};
     _self.users = {};
 
@@ -128,7 +130,13 @@ JNEXT.BBM = function ()
     _self.m_id = "";
     _self.displayPictureEventId = "";
 
-    _self.init();
+    _self.getInstance = function () {
+        if (!hasInstance) {
+            _self.init();
+            hasInstance = true;
+        }
+        return _self;
+    };
 };
 
 bbm = new JNEXT.BBM();

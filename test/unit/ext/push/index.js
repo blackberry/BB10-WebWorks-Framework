@@ -40,8 +40,8 @@ describe("push index", function () {
         args = {};
     });
 
-    it("makes sure that JNEXT is initalized", function () {
-        expect(GLOBAL.JNEXT.require).toHaveBeenCalled();
+    it("makes sure that JNEXT not is initalized", function () {
+        expect(GLOBAL.JNEXT.require).not.toHaveBeenCalled();
     });
 
     it("makes sure that JNEXT.invoke startService is called", function () {

@@ -123,7 +123,7 @@ module.exports = {
             if (args.options.sensor === "") {
                 fail(-1, "Must specify a sensor");
             }
-            success(sensors.setOptions(args.options));
+            success(sensors.getInstance().setOptions(args.options));
         } else {
             fail(-1, "Need to specify arguments");
         }

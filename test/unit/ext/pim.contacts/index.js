@@ -45,10 +45,10 @@ describe("pim.contacts index", function () {
         index = null;
     });
 
-    it("JNEXT require/createObject/registerEvents are called upon requiring index", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("libpimcontacts");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("libpimcontacts.PimContacts");
-        expect(JNEXT.registerEvents).toHaveBeenCalled();
+    it("JNEXT require/createObject/registerEvents are not called upon requiring index", function () {
+        expect(JNEXT.require).not.toHaveBeenCalledWith("libpimcontacts");
+        expect(JNEXT.createObject).not.toHaveBeenCalledWith("libpimcontacts.PimContacts");
+        expect(JNEXT.registerEvents).not.toHaveBeenCalled();
     });
 
     it("find - with correct permission specified", function () {

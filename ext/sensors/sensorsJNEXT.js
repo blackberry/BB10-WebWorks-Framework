@@ -22,7 +22,8 @@ var sensors,
 ///////////////////////////////////////////////////////////////////
 
 JNEXT.Sensors = function () {
-    var self = this;
+    var self = this,
+        hasInstance = false;
 
     self.startSensor = function (sensor, callback) {
         callbackMap[sensor] = callback;
@@ -67,7 +68,14 @@ JNEXT.Sensors = function () {
 
     self.m_id = "";
 
-    self.init();
+    self.getInstance = function () {
+        if (!hasInstance) {
+            hasInstance = true;
+            self.init();
+        }
+        return self;
+    };
+
 };
 
 sensors = new JNEXT.Sensors();

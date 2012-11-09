@@ -62,7 +62,7 @@ module.exports = {
             return;
         }
 
-        pimContacts.find(findOptions);
+        pimContacts.getInstance().find(findOptions);
 
         success();
     },
@@ -81,7 +81,7 @@ module.exports = {
             return;
         }
 
-        pimContacts.save(attributes);
+        pimContacts.getInstance().save(attributes);
         success();
     },
 
@@ -93,7 +93,7 @@ module.exports = {
             return;
         }
 
-        pimContacts.remove(attributes);
+        pimContacts.getInstance().remove(attributes);
         success();
     }
 };
@@ -104,7 +104,8 @@ module.exports = {
 
 JNEXT.PimContacts = function ()
 {   
-    var self = this;
+    var self = this,
+        hasInstance = false;
 
     self.find = function (args) {
         JNEXT.invoke(self.m_id, "find " + JSON.stringify(args));
@@ -152,7 +153,13 @@ JNEXT.PimContacts = function ()
     
     self.m_id = "";
 
-    self.init();
+    self.getInstance = function () {
+        if (!hasInstance) {
+            self.init();
+            hasInstance = true;
+        }
+        return self;
+    };
 };
 
 pimContacts = new JNEXT.PimContacts();
