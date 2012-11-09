@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 
+#ifndef __X86__
 #define SENSOR_MSG_PULSE 64
 #define SENSOR_BASE_PULSE 128
 
@@ -318,4 +319,4 @@ void SensorsNDK::createSensorMap()
     _sensorTypeMap["deviceholster"] = std::make_pair(SENSOR_TYPE_HOLSTER, config);
 }
 }
-
+#endif

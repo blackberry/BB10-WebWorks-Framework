@@ -20,4 +20,6 @@ endif
 
 include $(MKFILES_ROOT)/qtargets.mk
 
+ifeq ($(CPU),arm)
 LIBS+=sensor
+endif
