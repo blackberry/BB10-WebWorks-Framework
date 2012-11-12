@@ -117,7 +117,7 @@ void* PimContacts::FindThread(void *args)
     webworks::PimContactsQt pim_qt;
     Json::Value result = pim_qt.Find(*(thread_info->jsonObj));
     delete thread_info->jsonObj;
-    
+
     Json::FastWriter writer;
     std::string event = writer.write(result);
 
