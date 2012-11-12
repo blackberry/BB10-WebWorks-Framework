@@ -4,7 +4,7 @@ QNX_LIB=$(QNX_TARGET)/$(CPUVARDIR)/lib
 
 WEBWORKS_DIR=../../../../..
 
-uCCFLAGS+=-fstack-protector-strong -fPIC -D_FORTIFY_SOURCE=2 -Wtrampolines -Wall -Wextra -Wformat=2 -Werror
+CCFLAGS+=-fstack-protector-strong -fPIC -D_FORTIFY_SOURCE=2 -Wtrampolines -Wall -Wextra -Wformat=2 -Werror
 LDFLAGS+=-Wl,-rpath,./app/native/plugins/jnext,-z,relro,-z,now,-s
 
 EXTRA_LIBVPATH+=$(QNX_LIB) \
