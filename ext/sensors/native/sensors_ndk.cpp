@@ -39,6 +39,7 @@ int SensorsNDK::m_sensorChannel;
 int SensorsNDK::m_coid;
 bool SensorsNDK::m_sensorsEnabled;
 ActiveSensorMap *SensorsNDK::m_pActiveSensors;
+pthread_t SensorsNDK:: m_thread = 0;
 pthread_mutex_t SensorsNDK::m_lock = PTHREAD_MUTEX_INITIALIZER;
 
 SensorsNDK::SensorsNDK(Sensors *parent) : m_pParent(parent)
@@ -53,6 +54,8 @@ SensorsNDK::~SensorsNDK()
     if (m_pActiveSensors) {
         delete m_pActiveSensors;
     }
+
+    pthread_mutex_destroy(&m_lock);
 }
 
 void SensorsNDK::StartEvents()
@@ -62,8 +65,9 @@ void SensorsNDK::StartEvents()
 
         if (error) {
             m_thread = 0;
+        } else {
+            MUTEX_LOCK();
         }
-        MUTEX_LOCK();
     }
 }
 

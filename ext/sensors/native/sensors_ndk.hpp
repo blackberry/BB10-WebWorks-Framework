@@ -54,7 +54,7 @@ private:
     Sensors *m_pParent;
     SensorTypeMap _sensorTypeMap;
     static ActiveSensorMap *m_pActiveSensors;
-    pthread_t m_thread;
+    static pthread_t m_thread;
     struct sigevent m_sigEvent;
     static int m_sensorChannel;
     static int m_coid;
