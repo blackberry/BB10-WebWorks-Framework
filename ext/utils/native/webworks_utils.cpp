@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <resolv.h>
 #include <sstream>
 #include <string>
 
@@ -29,13 +30,26 @@ std::string Utils::intToStr(const int val)
     return out.str();
 }
 
-int Utils::strToInt(const std::string val) {
+int Utils::strToInt(const std::string& val) {
     int number;
 
     if (!(std::istringstream(val) >> number)) {
         return -1;
     }
     return number;
+}
+
+std::string Utils::toBase64(const unsigned char *input, const size_t size)
+{
+    size_t outputSize = size * 4;
+    char *output = new char[outputSize];
+    outputSize = b64_ntop(input, size, output, outputSize);
+    output[outputSize] = 0;
+
+    std::string outputString(output);
+    delete output;
+
+    return outputString;
 }
 
 } // namespace webworks
