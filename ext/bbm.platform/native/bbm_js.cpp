@@ -31,16 +31,17 @@ void* BBM::BBMEventThread(void *parent)
 
     webworks::BBMBPS *bbmEvents = new webworks::BBMBPS(pParent);
 
-    bbmEvents->InitializeEvents();
-    eventsInitialized = true;
-    bbmEvents->WaitForEvents();
+    if (bbmEvents->InitializeEvents()) {
+        eventsInitialized = true;
+        bbmEvents->WaitForEvents();
+    }
 
     return NULL;
 }
 
 BBM::BBM(const std::string& id) : m_id(id), m_thread(0)
 {
-    m_pBBMController = new webworks::BBMBPS();
+    m_pBBMController = new webworks::BBMBPS(this);
 
     m_pBBMController->SetActiveChannel(m_pBBMController->GetActiveChannel());
 }
@@ -74,6 +75,10 @@ std::string BBM::InvokeMethod(const std::string& command)
 
     if (strCommand == "startEvents") {
         StartEvents();
+    }
+
+    if (!eventsInitialized) {
+        return "";
     } else if (strCommand == "stopEvents") {
         StopEvents();
     } else if (strCommand == "startContactEvents") {
@@ -82,11 +87,7 @@ std::string BBM::InvokeMethod(const std::string& command)
     } else if (strCommand == "stopContactEvents") {
         m_pBBMController->StopContactEvents();
     } else if (strCommand == "register") {
-        // parse the JSON
-        bool parse = reader.parse(strParam, obj);
-
-        if (!parse) {
-            fprintf(stderr, "%s", "error parsing\n");
+        if (!reader.parse(strParam, obj)) {
             return "";
         }
 
@@ -94,15 +95,11 @@ std::string BBM::InvokeMethod(const std::string& command)
 
         m_pBBMController->Register(uuid);
     } else if (strCommand == "self.getProfile") {
-        webworks::BBMField field = static_cast<webworks::BBMField>(atoi(strParam.c_str()));
-        return m_pBBMController->GetProfile(field);
+        return m_pBBMController->GetProfile(strParam);
     } else if (strCommand == "self.getDisplayPicture") {
         m_pBBMController->GetDisplayPicture();
-        return "";
     } else if (strCommand == "self.setStatus") {
-        bool parse = reader.parse(strParam, obj);
-
-        if (!parse) {
+        if (!reader.parse(strParam, obj)) {
             return "";
         }
 
@@ -121,6 +118,36 @@ std::string BBM::InvokeMethod(const std::string& command)
         m_pBBMController->SetPersonalMessage(strParam);
     } else if (strCommand == "self.setDisplayPicture") {
         m_pBBMController->SetDisplayPicture(strParam);
+    } else if (strCommand == "self.profilebox.addItem") {
+        if (!reader.parse(strParam, obj)) {
+            return "";
+        }
+
+        m_pBBMController->ProfileBoxAddItem(obj);
+    } else if (strCommand == "self.profilebox.removeItem") {
+        if (!reader.parse(strParam, obj)) {
+            return "";
+        }
+
+        m_pBBMController->ProfileBoxRemoveItem(obj);
+    } else if (strCommand == "self.profilebox.clearItems") {
+        m_pBBMController->ProfileBoxClearItems();
+    } else if (strCommand == "self.profilebox.registerIcon") {
+        if (!reader.parse(strParam, obj)) {
+            return "";
+        }
+
+        m_pBBMController->ProfileBoxRegisterIcon(obj);
+    } else if (strCommand == "self.profilebox.getItemIcon") {
+        if (!reader.parse(strParam, obj)) {
+            return "";
+        }
+
+        m_pBBMController->ProfileBoxGetItemIcon(obj);
+    } else if (strCommand == "self.profilebox.getItems") {
+        return m_pBBMController->ProfileBoxGetItems();
+    } else if (strCommand == "self.profilebox.getAccessible") {
+        return m_pBBMController->ProfileBoxGetAccessible();
     } else if (strCommand == "users.inviteToDownload") {
         m_pBBMController->InviteToDownload();
     }

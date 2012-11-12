@@ -16,9 +16,15 @@
  
 var _self = {},
     _ID = require("./manifest.json").namespace,
-    _displayPictureEventId = "bbm.self.displayPicture";
+    _getDisplayPictureEventId = "bbm.self.getDisplayPicture",
+    _setDisplayPictureEventId = "bbm.self.setDisplayPicture",
+    _profileBoxAddItemEventId = "bbm.self.profilebox.addItem",
+    _profileBoxRemoveItemEventId = "bbm.self.profilebox.removeItem",
+    _profileBoxRegisterIconEventId = "bbm.self.profilebox.registerIcon",
+    _profileBoxGetItemIconEventId = "bbm.self.profilebox.getItemIcon";
 
 _self.self = {};
+_self.self.profilebox = {};
 _self.users = {};
 
 function getFieldValue(field) {
@@ -41,15 +47,36 @@ function defineGetter(obj, field) {
     });
 }
 
-function createEventHandler(callback, eventId) {
+function createEventHandler(onSuccess, onError, eventId) {
+    var callback;
+
+    callback = function (data) {
+        if (data) {
+            if (data.error) {
+                if (onError && typeof onError === "function") {
+                    onError(data);
+                }
+            } else {
+                if (onSuccess && typeof onSuccess === "function") {
+                    onSuccess(data.success);
+                }
+            }
+        }
+    };
+    
     if (!window.webworks.event.isOn(eventId)) {
         window.webworks.event.once(_ID, eventId, callback);
     }
+
+    return { "onSuccess": callback, "onError": function (args) {
+                callback({ "error": args });
+            }
+    };
 }
 
 _self.register = function (options) {
     var args = { "options" : options };
-    return window.webworks.execAsync(_ID, "register", args);
+    return window.webworks.execSync(_ID, "register", args);
 };
 
 defineGetter(_self.self, "self/appVersion");
@@ -61,30 +88,71 @@ defineGetter(_self.self, "self/ppid");
 defineGetter(_self.self, "self/status");
 defineGetter(_self.self, "self/statusMessage");
 
-_self.self.getDisplayPicture = function (callback) {
-    var args = { "eventId" : _displayPictureEventId };
-    createEventHandler(callback, _displayPictureEventId);
-    return window.webworks.execAsync(_ID, "self/getDisplayPicture", args);
+_self.self.getDisplayPicture = function (success, error) {
+    var args = { "eventId": _getDisplayPictureEventId },
+        handler = createEventHandler(success, error, _getDisplayPictureEventId);
+    return window.webworks.exec(handler.onSuccess, handler.onError, _ID, "self/getDisplayPicture", args);
 };
 
 _self.self.setStatus = function (status, statusMessage) {
-    var args = { "status" : status, "statusMessage" : statusMessage };
-    return window.webworks.execAsync(_ID, "self/setStatus", args);
+    var args = { "status": status, "statusMessage": statusMessage };
+    return window.webworks.execSync(_ID, "self/setStatus", args);
 };
 
 _self.self.setPersonalMessage = function (personalMessage) {
-    var args = { "personalMessage" : personalMessage };
-    return window.webworks.execAsync(_ID, "self/setPersonalMessage", args);
+    var args = { "personalMessage": personalMessage };
+    return window.webworks.execSync(_ID, "self/setPersonalMessage", args);
 };
 
-_self.self.setDisplayPicture = function (displayPicture) {
-    var args = { "displayPicture" : displayPicture };
-    return window.webworks.execAsync(_ID, "self/setDisplayPicture", args);
+_self.self.setDisplayPicture = function (displayPicture, success, error) {
+    var args = { "displayPicture": displayPicture, "eventId": _setDisplayPictureEventId },
+        handler = createEventHandler(success, error, _setDisplayPictureEventId);
+    return window.webworks.exec(handler.onSuccess, handler.onError, _ID, "self/setDisplayPicture", args);
+};
+
+_self.self.profilebox.addItem = function (options, success, error) {
+    var args = { "options": options, "eventId": _profileBoxAddItemEventId },
+        handler = createEventHandler(success, error, _profileBoxAddItemEventId);
+    return window.webworks.exec(handler.onSuccess, handler.onError, _ID, "self/profilebox/addItem", args);
+};
+
+_self.self.profilebox.removeItem = function (options, success, error) {
+    var args = { "options": options, "eventId": _profileBoxRemoveItemEventId },
+        handler = createEventHandler(success, error, _profileBoxRemoveItemEventId);
+    return window.webworks.exec(handler.onSuccess, handler.onError, _ID, "self/profilebox/removeItem", args);
+};
+
+_self.self.profilebox.clearItems = function () {
+    return window.webworks.execSync(_ID, "self/profilebox/clearItems"); 
+};
+
+_self.self.profilebox.registerIcon = function (options, success, error) {
+    var args = { "options": options, "eventId": _profileBoxRegisterIconEventId },
+        handler = createEventHandler(success, error, _profileBoxRegisterIconEventId);
+    return window.webworks.exec(handler.onSuccess, handler.onError, _ID, "self/profilebox/registerIcon", args);
+};
+
+_self.self.profilebox.getItemIcon = function (options, success, error) {
+    var args = { "options": options, "eventId": _profileBoxGetItemIconEventId },
+        handler = createEventHandler(success, error, _profileBoxGetItemIconEventId);
+    return window.webworks.exec(handler.onSuccess, handler.onError, _ID, "self/profilebox/getItemIcon", args);
 };
 
 _self.users.inviteToDownload = function () {
-    return window.webworks.execAsync(_ID, "users/inviteToDownload");
+    return window.webworks.execSync(_ID, "users/inviteToDownload");
 };
+
+Object.defineProperty(_self.self.profilebox, "accessible", {
+    get: function () {
+        return window.webworks.execSync(_ID, "self/profilebox/getAccessible");
+    }
+});
+
+Object.defineProperty(_self.self.profilebox, "item", {
+    get: function () {
+        return window.webworks.execSync(_ID, "self/profilebox/getItems");
+    }
+});
 
 window.webworks.execSync(_ID, "registerEvents", null);
 

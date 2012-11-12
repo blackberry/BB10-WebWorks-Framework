@@ -14,3 +14,5 @@ SRCS+=$(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/lib_json/js
       webworks_utils.cpp
 
 include $(MKFILES_ROOT)/qtargets.mk
+
+LIBS += socket
