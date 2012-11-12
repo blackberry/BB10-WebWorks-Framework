@@ -27,10 +27,12 @@ function copyFile(src, dst) {
 }
 
 function _done(error) {
-    if (error === 0) {
+    if (error === undefined) {
         utils.displayOutput("Lint SUCCESS");
+    } else {
+        utils.displayOutput("Lint FAILED");
     }
-    process.exit();
+    process.exit(error);
 }
 
 function _lintJS() {
