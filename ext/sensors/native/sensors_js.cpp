@@ -84,7 +84,6 @@ std::string Sensors::InvokeMethod(const std::string& command)
 
         if (obj.isMember("queue")) {
             sensorConfig.queue = obj["queue"].asInt();
-            fprintf(stderr, "stuff: %d\n", sensorConfig.queue);
         } else {
             sensorConfig.queue = SENSOR_CONFIG_UNDEFINED;
         }
