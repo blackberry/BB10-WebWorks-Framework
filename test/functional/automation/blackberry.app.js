@@ -180,7 +180,7 @@ describe("blackberry.app", function () {
         });
 
         it("should be able to unlock orientation and still listen to the event", function () {
-            waits (2000);
+            waits(2000);
             runs(function () {
                 blackberry.app.unlockOrientation();
 
@@ -200,7 +200,7 @@ describe("blackberry.app", function () {
         });
 
         it("should have the correct orientation set", function () {
-            waits (2000);
+            waits(2000);
             runs(function () {
                 internal.automation.rotate("LEFT_UP");
                 waits(2000);
