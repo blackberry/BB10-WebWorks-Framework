@@ -34,11 +34,11 @@ describe("blackberry.bbm.platform", function () {
             });
 
             waitsFor(function () {
-                return onChange.callCount;
+                return (onChange.callCount > 2);
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onChange).toHaveBeenCalled();
+                expect(onChange).toHaveBeenCalledWith(true, "allowed");
             });
         });
 
