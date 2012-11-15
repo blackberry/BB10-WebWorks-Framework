@@ -166,6 +166,35 @@ describe("invoke.card client", function () {
         });
     });
 
+    describe("invoke Media Player", function () {
+        var details,
+            done,
+            cancel,
+            invokeCallback;
+
+        beforeEach(function () {
+            details = {
+                contentTitle: "Test Title",
+                contentUri: "file:///accounts/1000/shared/camera/VID_00000001.mp4",
+                imageUri: "file:///accounts/1000/shared/camera/AUD_00000001.mp4"
+            };
+            done = jasmine.createSpy("done");
+            cancel = jasmine.createSpy("cancel");
+            invokeCallback = jasmine.createSpy("invokeCallback");
+        });
+
+        it("should call execAsyn with correct details passed", function () {
+            client.invokeMediaPlayer(details);
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeMediaPlayer", {options: details});
+        });
+
+        it("should register all the events", function () {
+            client.invokeMediaPlayer(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+        });
+    });
 });
 
 

@@ -17,6 +17,7 @@
 var _apiDir = __dirname + "./../../../../ext/card/",
     _libDir = __dirname + "./../../../../lib/",
     _extDir = __dirname + "./../../../../ext/",
+    mockedMediaPlayer,
     mockedCamera,
     mockedFile,
     index,
@@ -26,6 +27,9 @@ var _apiDir = __dirname + "./../../../../ext/card/",
 describe("invoke.card index", function () {
 
     beforeEach(function () {
+        mockedMediaPlayer = {
+            open: jasmine.createSpy("mediaplayerPreviewer.open")
+        };
         mockedCamera = {
             open: jasmine.createSpy("camera.open")
         };
@@ -39,8 +43,9 @@ describe("invoke.card index", function () {
                     getApplication: function () {
                         return {
                             cards: {
+                                mediaplayerPreviewer: mockedMediaPlayer,
                                 camera: mockedCamera,
-                                file: mockedFile
+                                filePicker: mockedFile
                             }
                         };
                     }
@@ -54,8 +59,10 @@ describe("invoke.card index", function () {
     });
 
     afterEach(function () {
+        mockedMediaPlayer = null;
         mockedCamera = null;
         delete GLOBAL.window;
+        mockedFile = null;
         index = null;
         delete require.cache[require.resolve(_apiDir + "index")];
         successCB = null;
@@ -76,16 +83,39 @@ describe("invoke.card index", function () {
             expect(successCB).toHaveBeenCalled();
         });
     });
+
     describe("invoke file picker", function () {
         it("can invoke file picker with options", function () {
             var successCB = jasmine.createSpy(),
                 mockedArgs = {
-                    "mode": encodeURIComponent(JSON.stringify({options: {mode: "Picker"}}))
+                    "options": encodeURIComponent(JSON.stringify({mode: "Picker"}))
                 };
 
-            index.invokeCamera(successCB, null, mockedArgs);
-            expect(mockedCamera.open).toHaveBeenCalledWith({
-                    options: {mode: "Picker"}
+            index.invokeFilePicker(successCB, null, mockedArgs);
+            expect(mockedFile.open).toHaveBeenCalledWith({
+                    mode: "Picker"
+                }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+    });
+
+    describe("invoke mediaplayer", function () {
+        it("can invoke mediaplayer previewer with options", function () {
+            var contentTitle = "Test Title",
+                contentUri = "file:///accounts/1000/shared/camera/VID_00000001.mp4",
+                imageUri = "",
+                mockedArgs = {
+                    contentTitle: contentTitle,
+                    contentUri: contentUri,
+                    imageUri: imageUri
+                };
+
+            index.invokeMediaPlayer(successCB, null, {options: encodeURIComponent(JSON.stringify(mockedArgs))});
+
+            expect(mockedMediaPlayer.open).toHaveBeenCalledWith({
+                    contentTitle: decodeURIComponent(contentTitle),
+                    contentUri: decodeURIComponent(contentUri),
+                    imageUri: decodeURIComponent(imageUri)
                 }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
             expect(successCB).toHaveBeenCalled();
         });

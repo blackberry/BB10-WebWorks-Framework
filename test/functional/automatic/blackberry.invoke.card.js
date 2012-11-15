@@ -119,4 +119,43 @@ describe("blackberry.invoke.card", function () {
             });
         });
     });
+
+    it('open the mediaplayer card, close it and check for response reason to be equal closed .', function () {
+        var delay = 20000,
+            flag = false,
+            errorSpy = jasmine.createSpy("Callback when error happens"),
+            reason,
+            callback;
+
+        blackberry.invoke.card.invokeMediaPlayer({contentTitle: "Test Title"}, function (path) {
+        },
+        function (reason) {
+            flag = true;
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay / 4);
+
+        runs(function () {
+            flag = false;
+            callback = function (request) {
+                blackberry.event.removeEventListener("onChildCardClosed", callback);
+
+                reason = request.reason;
+                flag = true;
+            };
+
+            blackberry.event.addEventListener("onChildCardClosed", callback);
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                // Currently the response that comes onChildCardClosed is not informative or just emtpy.
+                expect(reason).toBe("closed");
+            });
+        });
+    });
 });

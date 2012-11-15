@@ -23,6 +23,26 @@ var _self = {},
     _filePickerCancelEventId = "invokeFilePicker.cancelEventId",
     _filePickerInvokeEventId = "invokeFilePicker.invokeEventId";
 
+_self.invokeMediaPlayer = function (options, done, cancel, invokeCallback) {
+    var doneEventId = "invokeMediaPlayer.doneEventId",
+        cancelEventId = "invokeMediaPlayer.cancelEventId",
+        invokeEventId = "invokeMediaPlayer.invokeEventId";
+
+    if (!window.webworks.event.isOn(doneEventId)) {
+        window.webworks.event.once(_ID, doneEventId, done);
+    }
+
+    if (!window.webworks.event.isOn(cancelEventId)) {
+        window.webworks.event.once(_ID, cancelEventId, cancel);
+    }
+
+    if (!window.webworks.event.isOn(invokeEventId)) {
+        window.webworks.event.once(_ID, invokeEventId, invokeCallback);
+    }
+
+    return window.webworks.execAsync(_ID, "invokeMediaPlayer", {options: options || {}});
+};
+
 _self.invokeCamera = function (mode, done, cancel, invokeCallback) {
     if (!window.webworks.event.isOn(_cameraDoneEventId)) {
         window.webworks.event.once(_ID, _cameraDoneEventId, done);

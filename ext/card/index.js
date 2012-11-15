@@ -16,6 +16,22 @@
 var _event = require("../../lib/event");
 
 module.exports = {
+    invokeMediaPlayer: function (success, fail, args) {
+        var options = JSON.parse(decodeURIComponent(args["options"])),
+            done = function (data) {
+                _event.trigger("invokeMediaPlayer.doneEventId", data);
+            },
+            cancel = function (reason) {
+                _event.trigger("invokeMediaPlayer.cancelEventId", reason);
+            },
+            invokeCallback = function (error) {
+                _event.trigger("invokeMediaPlayer.invokeEventId", error);
+            };
+
+        window.qnx.webplatform.getApplication().cards.mediaplayerPreviewer.open(options, done, cancel, invokeCallback);
+        success();
+    },
+
     invokeCamera: function (success, fail, args) {
         var mode = JSON.parse(decodeURIComponent(args["mode"])),
             done = function (path) {
@@ -31,6 +47,7 @@ module.exports = {
         window.qnx.webplatform.getApplication().cards.camera.open(mode, done, cancel, invokeCallback);
         success();
     },
+
     invokeFilePicker: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (path) {
