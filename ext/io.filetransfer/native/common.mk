@@ -5,7 +5,7 @@ include $(QCONFIG)
 
 NAME=filetransfer
 PLUGIN=yes
-JSON=yes
+UTILS=yes
 
 include ../../../../meta.mk
 

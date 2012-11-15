@@ -5,7 +5,7 @@ include $(QCONFIG)
 
 NAME=bbm
 PLUGIN=yes
-JSON=yes
+UTILS=yes
 
 include ../../../../meta.mk
 

@@ -1,5 +1,5 @@
 {
     "global": false,
-    "namespace": "blackberry.pim.contacts",
+    "namespace": "blackberry.pim.calendar",
     "dependencies": ["utils"]
 }

@@ -1,5 +1,4 @@
-LIST=VARIANT
-EARLY_DIRS=utils
+LIST=CPU
 ifndef QRECURSE
 QRECURSE=recurse.mk
 ifdef QCONFIG
