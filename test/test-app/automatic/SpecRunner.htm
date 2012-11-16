@@ -3,7 +3,19 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jasmine Spec Runner</title>
+    <style type="text/css">
+        #overlay {
+            z-index:1000;
+            position:absolute;
+            top:0;
+            bottom:0;
+            left:0;
+            width:100%;
+            background:#fff;
+            visibility:hidden;
+        }
 
+    </style>
     <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
     <script type="text/javascript" src="../js/jasmine.js"></script>
     <script type="text/javascript" src="../js/jasmine-html.js"></script>
@@ -69,7 +81,21 @@
                 }
                 execJasmine();
             };
-        });
+            });
+
+        function showOverlay() {
+            var o = document.getElementById('overlay');
+            o.style.visibility = 'visible';
+            window.scrollTo(0,0);
+        }
+        function hideOverlay() {
+            var o = document.getElementById('overlay');
+            o.style.visibility = 'hidden';
+        }
+
+    function takeScreenshot() {
+       internal.automation.takeScreenshot("/accounts/1000/shared/camera/WebWorksScreenShot.bmp");
+    }
 
   </script>
 
@@ -109,6 +135,9 @@
     <input id="deselectAll" type="button" value="De-select All" />
     <input id="addSpecs" type="button" value="Add Specs" />
     <input id="start" type="button" value="Run Jasmine" /><br />
+    <div id="overlay">
+        <button onclick="takeScreenshot()" > Take ScreenShot </button>
+    </div>
 
 </body>
 </html>

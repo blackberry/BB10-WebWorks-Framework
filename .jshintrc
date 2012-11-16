@@ -20,6 +20,7 @@
         "qnx",
         "chrome",
         "blackberry",
+        "internal",
         "JNEXT",
         "frameworkModules",
         //Node
@@ -37,7 +38,10 @@
         "iris",
         //Browser
         "DOMElement",
-        "atob"
+        "atob",
+        //automated tests
+        "showOverlay",
+        "hideOverlay"
     ],
 
     "node" : false,

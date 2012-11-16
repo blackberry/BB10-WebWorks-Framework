@@ -17,6 +17,7 @@ var path = require("path");
 
 module.exports = {
     ROOT: path.normalize(__dirname + "/../../"),
+    REFERENCE_IMAGES: path.normalize(__dirname + "/../../test/data/ReferenceImages/"),
     TEMP: path.normalize(__dirname + "/../../temp/"),
     DEPLOY: path.normalize(__dirname + "/../../target/zip/"),
     DEPLOY_LIB: path.normalize(__dirname + "/../../target/zip/lib"),

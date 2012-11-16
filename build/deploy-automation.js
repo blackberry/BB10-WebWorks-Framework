@@ -18,25 +18,46 @@ var childProcess = require('child_process'),
     utils = require('./build/utils');
 
 function getTestForAgentCmd(ip) {
-    return "ssh root@" + ip + " '[ -f /var/automation/ui-agent ] && echo 1 || " +
-        "(echo 0 ; mkdir -p /var/automation)'";
+    return "ssh root@" + ip + " '[ -f /var/automation/ui-agent ] && " +
+        "[ -f /var/automation/PuppetMasterAgent ] && [ -f /var/automation/automation-interface ] && echo 1 || " +
+        "(echo 0 ; mkdir -p /var/automation ; mkdir -p /accounts/1000/shared/misc/PuppetMaster/ReferenceImages/)'";
+}
+
+function getCopyReferenceImageCmd(ip, user) {
+    return "scp -r test/data/automation root@" + ip + ":/accounts/1000/shared/misc/PuppetMaster/ ";
 }
 
 function getCopyAgentCmd(ip, user) {
     return "mkdir -p /Volumes/QNXAutomation && " +
         "mount -t smbfs //'RIMNET;" + user + "'@javasrv50.devlab2k.testnet.rim.net/QNX%20Automation%20Agents /Volumes/QNXAutomation && " +
-        "scp /Volumes/QNXAutomation/agents_v1.0.0.0/target/arm/agents/ui-agent root@" + ip + ":/var/automation/ui-agent || " +
+        "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/ui-agent root@" + ip + ":/var/automation/ui-agent && " +
+        "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/automation-interface root@" + ip + ":/var/automation/automation-interface && " +
+        "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/PuppetMasterAgent root@" + ip + ":/var/automation/PuppetMasterAgent && " +
         "umount /Volumes/QNXAutomation";
 }
 
 function getRunAgentCmd(ip) {
-    return ["root@" + ip, 
+    return ["root@" + ip,
+        "rm -fr /accounts/1000/shared/misc/PuppetMaster ; " +
         "if ! pidin | grep ui-agent > /dev/null; then " +
         "/var/automation/ui-agent > /dev/null & " +
         "sleep 2; " +
-        "chmod 666 /pps/services/agent/ui-agent/control; " +
         "else echo 'ui-agent is already running'; " +
-        "fi;"];
+        "fi; " +
+        "if ! pidin | grep automation-interface > /dev/null; then " +
+        "/var/automation/automation-interface > /dev/null & " +
+        "sleep 2; " +
+        "else echo 'automation-interface is already running'; " +
+        "fi; " +
+        "if ! pidin | grep PuppetMasterAgent > /dev/null; then " +
+        "/var/automation/PuppetMasterAgent > /dev/null & " +
+        "sleep 10; " +
+        "else echo 'PuppetMasterAgent is already running'; " +
+        "fi;" +
+        "sleep 5;" +
+        "chmod 666 /pps/services/agent/ui-agent/control; " +
+        "chmod 666 /pps/services/agent/puppetmaster/control; "
+        ];
 }
 
 function onError(stderr) {
@@ -46,7 +67,7 @@ function onError(stderr) {
 }
 
 function execAgent(ip) {
-    console.log('Starting ui-agent...');
+    console.log('Starting automation agents...');
     childProcess.spawn('ssh', getRunAgentCmd(ip), [], { stdio: 'inherit', detached: true });
 }
 
@@ -60,18 +81,27 @@ function execCopy(ip, user) {
     });
 }
 
+function execCopyReferenceImage(ip, user) {
+    childProcess.exec(getCopyReferenceImageCmd(ip, user), function (error, stdout, stderr) {
+        if (error) {
+            onError(stderr);
+        }
+    });
+}
+
 function exec(ip, user) {
-    console.log('Checking if ui-agent is installed...');
+    console.log('Checking if automation agents are installed...');
     childProcess.exec(getTestForAgentCmd(ip), function (error, stdout, stderr) {
         if (error) {
             onError(stderr);
         } else {
             if (stdout.toString()[0] === "0") {
-                console.log('ui-agent is not installed. Copying from shared drive...');
+                console.log('automation agents are not installed. Copying from shared drive...');
                 execCopy(ip, user);
             } else {
                 execAgent(ip);
             }
+            execCopyReferenceImage(ip, user);
         }
     });
 }

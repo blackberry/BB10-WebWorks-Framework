@@ -98,4 +98,42 @@ _self.rotate = function (orientation) {
     );
 };
 
+/*
+ * Takes the screenshot, path can be any path the application has write access.
+ */
+_self.takeScreenshot = function (path) {
+    internal.pps.syncWrite(
+        {
+            action : "Remote Call",
+            class : "ScreenApi",
+            method : "takeScreenshot",
+            parameter0 : path,
+            _src : "test-agent",
+            _dest : "puppetmaster"
+        },
+        "/pps/services/agent/puppetmaster/control"
+    );
+};
+
+/*
+ * Compares screenshot to a reference image located under /accounts/1000/shared/misc/PuppetMaster/ReferenceImages/
+ * name is the image name stored under.
+ */
+_self.compareCurrentScreen = function (name, callback) {
+    //should be converted to using delta mode on the output object but its hard due to subsequent calls
+    internal.pps.syncWrite(
+        {
+            action : "Remote Call",
+            class : "ScreenApi",
+            method : "compareScreenToReference",
+            parameter0 : name,
+            _src : "test-agent",
+            _dest : "puppetmaster"
+        },
+        "/pps/services/agent/puppetmaster/control"
+    );
+    setTimeout(function () {
+        callback(internal.pps.syncRead("/pps/services/agent/puppetmaster/output").output.response);
+    }, 1000);
+};
 module.exports = _self;
