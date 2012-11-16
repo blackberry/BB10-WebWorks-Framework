@@ -28,6 +28,7 @@ describe("webview", function () {
             url: undefined,
             extraHttpHeaders: undefined,
             setFileSystemSandbox: undefined,
+            addOriginAccessWhitelistEntry: jasmine.createSpy(),
             setGeometry: jasmine.createSpy(),
             setApplicationOrientation: jasmine.createSpy(),
             setExtraPluginDirectory: jasmine.createSpy(),
@@ -99,14 +100,13 @@ describe("webview", function () {
                 expect(request.init).toHaveBeenCalledWith(mockedWebview);
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
 
-                //The default config.xml only has access to WIDGET_LOCAL
-                //and has permission for two apis
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'local://', false);
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
-
                 expect(mockedWebview.allowWebEvent).toHaveBeenCalledWith("DialogRequested");
                 expect(mockedController.dispatchEvent).toHaveBeenCalledWith("webview.initialized", jasmine.any(Array));
+                //The default config.xml only has access to WIDGET_LOCAL
+                //and has permission for two apis
+                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('local://', utils.getURIPrefix(), true);
+                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('local://', 'file://', true);
+                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('file://', 'local://', true);
             });
         });
 

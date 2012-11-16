@@ -37,7 +37,8 @@ describe("permissions", function () {
             enableWebEventRedirect: jasmine.createSpy(),
             allowGeolocation: jasmine.createSpy(),
             disallowGeolocation: jasmine.createSpy(),
-            allowWebEvent: jasmine.createSpy()
+            allowWebEvent: jasmine.createSpy(),
+            addOriginAccessWhitelistEntry: jasmine.createSpy()
         };
         mockedApplication = {
             windowVisible: undefined

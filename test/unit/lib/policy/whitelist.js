@@ -147,18 +147,29 @@ describe("whitelist", function () {
         it("can allow access to whitelisted feature for whitelisted HTTP uris", function () {
             var whitelist = new Whitelist({
                 hasMultiAccess : false,
-                accessList : [{
-                    uri : "http://google.com",
-                    allowSubDomain : false,
-                    features : [{
-                        id : "blackberry.app",
-                        required : true,
-                        version : "1.0.0"
-                    }]
-                }]
+                accessList : [
+                    {
+                        uri : "http://google.com",
+                        allowSubDomain : false,
+                        features : [{
+                            id : "blackberry.app",
+                            required : true,
+                            version : "1.0.0"
+                        }]
+                    }, {
+                        uri: "http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/",
+                        allowSubDomain: false,
+                        features: [{
+                            id : "blackberry.app",
+                            required : true,
+                            version : "1.0.0"
+                        }]
+                    }
+                ]
             });
 
             expect(whitelist.isFeatureAllowed("http://google.com", "blackberry.app")).toEqual(true);
+            expect(whitelist.isFeatureAllowed("http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/a/webworks.html", "blackberry.app")).toEqual(true);
         });
 
         it("can deny access to non-whitelisted feature for whitelisted HTTP uris", function () {
@@ -699,7 +710,7 @@ describe("whitelist", function () {
                         {
                             uri : "file:///accounts/1000/shared/documents/textData.txt",
                             allowSubDomain : false,
-                            features: [{"id":"jpps"},{"id":"blackberry.event"},{"id":"blackberry.notification"},{"id":"internal.automation"},{"id":"internal.pps"}]
+                            features: []
                         }
                     ]
                 });

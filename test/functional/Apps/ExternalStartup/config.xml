@@ -12,25 +12,26 @@
 
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/burger.png?*" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/favicon.ico" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/general_whitelisted.js?*" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/index.html" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/webapi_whitelisted.js?*" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/css" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/js" />
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/spec" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/burger.png?*" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/favicon.ico" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/general_whitelisted.js?*" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/index.html" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/index.html?*" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/webapi_whitelisted.js?*" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/css" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/js" />
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/spec" />
 
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/js/helpers.js">
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/js/helpers.js">
         <feature id="blackberry.app" />
         <feature id="blackberry.io" />
     </access>
 
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/a/webworks.html">
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/a/webworks.html">
         <feature id="blackberry.app" />
     </access>
 
-    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net/external.html">
+    <access uri="http://smoketest-vmyyz.labyyz.testnet.rim.net:8080/external.html">
         <feature id="blackberry.app" />
         <feature id="blackberry.io" />
     </access>

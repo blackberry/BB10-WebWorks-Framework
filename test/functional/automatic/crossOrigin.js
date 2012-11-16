@@ -19,10 +19,11 @@ describe("White listing", function () {
         var element = document.createElement(htmlElement);
         element.onload = jasmine.createSpy();
         element.onerror = jasmine.createSpy();
+        element.onabort = jasmine.createSpy();
         mixin(attributes, element);
         document.body.appendChild(element);
         waitsFor(function () {
-            return element.onerror.wasCalled || element.onload.wasCalled;
+            return element.onerror.wasCalled || element.onload.wasCalled || element.onabort.wasCalled;
         }, "the element to load or error", 5000);
         runs(function () {
             if (shouldFail) {
@@ -55,14 +56,6 @@ describe("White listing", function () {
 
     function testXhrGetLoadsDocument(domain) {
         return testXhrGetLoadsUrl("http://" + domain + "/index.html?v=" + generateSerial());
-    }
-
-    function testXhrGetThrowsAlert(url) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, false);
-        xhr.send();
-        expect(window.alert).toHaveBeenCalledWith('Access to "' + url + '" not allowed');
-        return xhr;
     }
 
     function testXhrGetFailsToLoadUrl(url) {
@@ -154,15 +147,15 @@ describe("White listing", function () {
             iframe,
             reply = null,
             receiveMessage = function (e) {
-                if (iframe) {
-                    if (e.data === 'wwready') {
-                        var messageToSend = message || 'ping';
+                if (e.data === 'wwready') {
+                    var messageToSend = message || 'ping';
+                    if (iframe && iframe.contentWindow) {
                         iframe.contentWindow.postMessage(messageToSend, origin);
                     } else {
-                        reply = e.data;
+                        window.removeEventListener('message', this);
                     }
                 } else {
-                    window.removeEventListener('message', this);
+                    reply = e.data;
                 }
             };
 
@@ -418,7 +411,8 @@ describe("White listing", function () {
 
             it("cannot append params to a path whitelisted without ?*", function () {
                 //Will not throw an exception because its not blocked by webkit
-                testXhrGetThrowsAlert("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/index.html?a=b&c=d&v=" + generateSerial());
+                //BUT will now throw an exception for being a denied synchronous request
+                testXhrGetFailsToLoadUrl("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/index.html?a=b&c=d&v=" + generateSerial());
             });
         });
 
@@ -451,7 +445,8 @@ describe("White listing", function () {
                 testXhrGetFailsToLoadDocument(blacklistedDomain);
             });
 
-            it('cannot navigate to external html page', function () {
+            //Cannot currently be tested because iframes will not fire onload, onerror or onabort
+            xit('cannot navigate to external html page', function () {
                 testIframeFailsToLoad(blacklistedDomain);
             });
 
@@ -470,13 +465,13 @@ describe("White listing", function () {
             it("can access /a/index.html", function () {
                 testXhrGetLoadsUrl("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/a/index.html");
             });
-            //This is NOT blocked by webkit so no exception will be throw, but an alert will still be called
+            //This is NOT blocked by webkit, but an exception will be thrown because it was denied
             it("cannot access sibling folder /b/index.html", function () {
-                testXhrGetThrowsAlert("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/b/index.html");
+                testXhrGetFailsToLoadUrl("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/b/index.html");
             });
             // This IS blocked since we don't have an access element for the parent directory
             it("cannot access the parent resource index.html", function () {
-                testXhrGetThrowsAlert("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/parent/index.html");
+                testXhrGetFailsToLoadUrl("http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/parent/index.html");
             });
         });
     });
@@ -484,7 +479,7 @@ describe("White listing", function () {
     // 04. Allowed access from local startup page to external resources through URI subdomains
     describe("allowing access to subdomains", function () {
 
-        var whitelistedSubdomain = "www.smoketest9-vmyyz.labyyz.testnet.rim.net:8080";
+        var whitelistedSubdomain = "www.smoketest7-vmyyz.labyyz.testnet.rim.net:8080";
 
         // Step 1: Validate that if URI domain is provided in config.xml where subdomain=true,
         // access from widget to html page, image, javascript,  Web API on external server,
@@ -532,7 +527,8 @@ describe("White listing", function () {
                 testXhrGetFailsToLoadDocument(blacklistedSubdomain);
             });
 
-            it('cannot navigate to external html page', function () {
+            //Cannot currently be tested because iframes will not fire onload, onerror or onabort
+            xit('cannot navigate to external html page', function () {
                 testIframeFailsToLoad(blacklistedSubdomain);
             });
 
@@ -718,6 +714,7 @@ describe("White listing", function () {
             });
         });
 
+        //Not true on an insecure device
         xit("cannot access arbitrary file:// path", function () {
             return testHtmlElementFailsToLoad('iframe', {src: 'file:///etc/passwd' });
         });
@@ -739,8 +736,8 @@ describe("White listing", function () {
         // 4: Validate that if path to file on device filesystem is not declared in the
         // ACCESS field in config.xml, access to this file is dislallowed  - user
         // is getting error "The resorce cannot be retrieved because it was not found in config.xml".
-        xit("cannot access a non-whitelisted file:// path", function () {
-            return testHtmlElementFailsToLoad('iframe', {src: 'file:///etc/passwd' });
+        it("cannot access a non-whitelisted file:// path", function () {
+            return testXhrGetFailsToLoadUrl('file:///etc/passwd');
         });
     });
 

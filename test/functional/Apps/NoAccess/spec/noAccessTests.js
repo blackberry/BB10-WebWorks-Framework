@@ -171,7 +171,8 @@ describe("No Access Element Tests", function () {
         testXhrGetFailsToLoadDocument(blacklistedDomain);
     });
 
-    it('cannot navigate to external html page', function () {
+    //Cannot currently be tested because iframes will not fire onload, onerror or onabort
+    xit('cannot navigate to external html page', function () {
         testIframeFailsToLoad(blacklistedDomain);
     });
 
