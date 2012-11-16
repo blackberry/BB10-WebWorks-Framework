@@ -86,6 +86,7 @@ describe("blackberry.invoke.card", function () {
             });
         });
     });
+
     it('open the camera card and then close to make sure it actually opens.', function () {
         var delay = 20000,
             flag = false,
@@ -158,4 +159,40 @@ describe("blackberry.invoke.card", function () {
             });
         });
     });
+
+
+    it('open the ICS viewer card and then close to make sure it actually opens.', function () {
+        var delay = 20000,
+            flag = false,
+            errorSpy = jasmine.createSpy(),
+            reason;
+
+        blackberry.invoke.card.invokeIcsViewer({uri: "test"}, function (path) {
+        },
+        function (reason) {
+            flag = true;
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay / 4);
+
+        runs(function () {
+            flag = false;
+
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
 });

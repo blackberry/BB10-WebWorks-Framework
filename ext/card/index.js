@@ -62,6 +62,21 @@ module.exports = {
 
         window.qnx.webplatform.getApplication().cards.filePicker.open(options, done, cancel, invokeCallback);
         success();
+    },
+    invokeIcsViewer: function (success, fail, args) {
+        var options = JSON.parse(decodeURIComponent(args["options"])),
+            done = function (path) {
+                _event.trigger("invokeIcsViewer.doneEventId", path);
+            },
+            cancel = function (reason) {
+                _event.trigger("invokeIcsViewer.cancelEventId", reason);
+            },
+            invokeCallback = function (error) {
+                _event.trigger("invokeIcsViewer.invokeEventId", error);
+            };
+
+        window.qnx.webplatform.getApplication().cards.icsViewer.open(options, done, cancel, invokeCallback);
+        success();
     }
 };
 

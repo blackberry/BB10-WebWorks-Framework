@@ -21,7 +21,10 @@ var _self = {},
     _cameraInvokeEventId = "invokeCamera.invokeEventId",
     _filePickerDoneEventId = "invokeFilePicker.doneEventId",
     _filePickerCancelEventId = "invokeFilePicker.cancelEventId",
-    _filePickerInvokeEventId = "invokeFilePicker.invokeEventId";
+    _filePickerInvokeEventId = "invokeFilePicker.invokeEventId",
+    _icsDoneEventId = "invokeIcsViewer.doneEventId",
+    _icsCancelEventId = "invokeIcsViewer.cancelEventId",
+    _icsInvokeEventId = "invokeIcsViewer.invokeEventId";
 
 _self.invokeMediaPlayer = function (options, done, cancel, invokeCallback) {
     var doneEventId = "invokeMediaPlayer.doneEventId",
@@ -84,6 +87,26 @@ _self.invokeFilePicker = function (options, done, cancel, invokeCallback) {
     }
     return window.webworks.execAsync(_ID, "invokeFilePicker", {options: options || ""});
 };
+
+_self.invokeIcsViewer = function (options, done, cancel, invokeCallback) {
+    /*
+    * options = {
+    *     uri: path to the ICS file on device
+    *     accountId: id of the calendar account to open the file in (optional)
+    * }
+    */
+    if (!window.webworks.event.isOn(_icsDoneEventId)) {
+        window.webworks.event.once(_ID, _icsDoneEventId, done);
+    }
+    if (!window.webworks.event.isOn(_icsCancelEventId)) {
+        window.webworks.event.once(_ID, _icsCancelEventId, cancel);
+    }
+    if (!window.webworks.event.isOn(_icsInvokeEventId)) {
+        window.webworks.event.once(_ID, _icsInvokeEventId, invokeCallback);
+    }
+    return window.webworks.execAsync(_ID, "invokeIcsViewer", {options: options || ""});
+};
+
 
 //CAMERA PROPERTIES
 window.webworks.defineReadOnlyField(_self, "CAMERA_MODE_PHOTO", 'photo');

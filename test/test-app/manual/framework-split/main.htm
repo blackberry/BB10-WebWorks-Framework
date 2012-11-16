@@ -7,27 +7,28 @@
         <script src="local:///js/jquery-1.7.2.min.js"></script>
         <script src="local:///js/jquery.mobile-1.1.1.min.js"></script>
         <link rel="stylesheet" href="local:///css/jquery.mobile-1.1.1.min.css" />
-		<script language="javascript" type="text/javascript">
-            function do_input_Test() {
-                document.location.href = "local:///manual/framework-split/cards.htm";
+	<script language="javascript" type="text/javascript">
+            function do_camera_Test() {
+                document.location.href = "local:///manual/framework-split/cameraCard.htm";
             }
             function do_mediaplayer_Test() {
                 document.location.href = "local:///manual/framework-split/mediaplayer.htm";
+            }
+            function do_filePicker_Test() {
+                document.location.href = "local:///manual/framework-split/filePickerCard.htm";
+            }
+            function do_icsViewer_Test() {
+                document.location.href = "local:///manual/framework-split/icsViewerCard.htm";
             }
         </script>
 	</head>
 	<body>
         <input id="backButton" type="button" value="Back" onclick="document.location.href = 'local:///index.htm';" />
+
         <p> This WebWorks Smoke Test includes the following tests: </p>
-		<li> blackberry.invoke.card </li>
-		</ol>
-            <p>
-            <input id="Button17" type="button" value="blackberry.invoke.card" onclick="return do_input_Test()" /></p>
-        </ol>
-        <li> blackberry.invoke.card.mediaplayer </li>
-        </ol>
-            <p>
-            <input id="Button17" type="button" value="mediaplayer" onclick="return do_mediaplayer_Test()" /></p>
-    </ol>
-	</body>
+        <p><input type="button" value="Camera Card" onclick="return do_camera_Test()" /></p>
+        <p><input type="button" value="File Picker Card" onclick="return do_filePicker_Test()" /></p>
+        <p><input type="button" value="ICS Viewer Card" onclick="return do_icsViewer_Test()" /></p>
+        <p><input type="button" value="Media Player Card" onclick="return do_mediaplayer_Test()" /></p>
+    </body>
 </html>

@@ -85,6 +85,7 @@ describe("invoke.card client", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "CAMERA_MODE_FULL", "full");
         });
     });
+
     describe("invoke File Picker ", function () {
         var details,
             done,
@@ -183,7 +184,7 @@ describe("invoke.card client", function () {
             invokeCallback = jasmine.createSpy("invokeCallback");
         });
 
-        it("should call execAsyn with correct details passed", function () {
+        it("should call execAsync with correct details passed", function () {
             client.invokeMediaPlayer(details);
             expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeMediaPlayer", {options: details});
         });
@@ -194,7 +195,33 @@ describe("invoke.card client", function () {
             expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
             expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
         });
+
     });
+
+    describe("invoke ics viewer", function () {
+        var done,
+            cancel,
+            invokeCallback;
+
+        beforeEach(function () {
+            done = jasmine.createSpy("done");
+            cancel = jasmine.createSpy("cancel");
+            invokeCallback = jasmine.createSpy("invokeCallback");
+        });
+
+        it("should call execAsync with uri and accountId", function () {
+            client.invokeIcsViewer({uri: "file://path"});
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeIcsViewer", {options: {uri: "file://path"}});
+            client.invokeIcsViewer({uri: "file://path", accountId: 1});
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeIcsViewer", {options: {uri: "file://path", accountId: 1}});
+        });
+
+        it("should register all the events", function () {
+            client.invokeIcsViewer({uri: "file://path", accountId: 1}, done, cancel, invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+        });
+    });
+
 });
-
-

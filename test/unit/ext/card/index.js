@@ -20,6 +20,7 @@ var _apiDir = __dirname + "./../../../../ext/card/",
     mockedMediaPlayer,
     mockedCamera,
     mockedFile,
+    mockedIcs,
     index,
     successCB,
     failCB;
@@ -36,6 +37,9 @@ describe("invoke.card index", function () {
         mockedFile = {
             open: jasmine.createSpy("file.open")
         };
+        mockedIcs = {
+            open: jasmine.createSpy("ics.open")
+        };
         GLOBAL.window = {
             qnx: {
                 callExtensionMethod : function () {},
@@ -45,7 +49,8 @@ describe("invoke.card index", function () {
                             cards: {
                                 mediaplayerPreviewer: mockedMediaPlayer,
                                 camera: mockedCamera,
-                                filePicker: mockedFile
+                                filePicker: mockedFile,
+                                icsViewer: mockedIcs
                             }
                         };
                     }
@@ -120,4 +125,19 @@ describe("invoke.card index", function () {
             expect(successCB).toHaveBeenCalled();
         });
     });
+
+    describe("invoke ICS viewer", function () {
+        it("can invoke ICS viewer with options", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    options: encodeURIComponent(JSON.stringify({options: {uri: "file://path/to/file.ics"}}))
+                };
+            index.invokeIcsViewer(successCB, null, mockedArgs);
+            expect(mockedIcs.open).toHaveBeenCalledWith({
+                options: { uri : "file://path/to/file.ics" }
+            }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+    });
+
 });
