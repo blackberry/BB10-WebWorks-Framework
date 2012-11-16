@@ -92,6 +92,8 @@ module.exports = {
         return function (prev, baton) {
             baton.take();
             console.log("EXECUTING " + command);
+            options = options || {};
+            options.maxBuffer = 1024 * 1024;
             var c = childProcess.exec(command, options, function (error, stdout, stderr) {
                 if (error && !neverDrop) {
                     baton.drop(error.code);
