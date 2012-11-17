@@ -488,14 +488,21 @@ describe("whitelist", function () {
             it("can allow access to subdomains of whitelisted uris", function () {
                 var whitelist = new Whitelist({
                     hasMultiAccess : false,
-                    accessList : [{
-                        uri : "http://awesome.com/",
-                        allowSubDomain : true,
-                        features : null
-                    }]
+                    accessList : [
+                        {
+                            uri : "http://awesome.com/",
+                            allowSubDomain : true,
+                            features : null
+                        }, {
+                            uri: "http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080",
+                            allowSubDomain: true,
+                            features: null
+                        }
+                    ]
                 });
 
                 expect(whitelist.isAccessAllowed("http://subdomain.awesome.com")).toEqual(true);
+                expect(whitelist.isAccessAllowed("http://www.smoketest9-vmyyz.labyyz.testnet.rim.net:8080")).toEqual(true);
             });
 
             it("can disallow access to subdomains of whitelisted uris", function () {
