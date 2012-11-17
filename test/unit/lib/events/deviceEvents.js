@@ -32,6 +32,8 @@ describe("lib/events/deviceEvents", function () {
     });
 
     afterEach(function () {
+
+        delete GLOBAL.window.qnx;
         delete GLOBAL.window;
         deviceEvents = null;
     });

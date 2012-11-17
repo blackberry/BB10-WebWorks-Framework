@@ -26,6 +26,7 @@ var srcPath = __dirname + '/../../../lib/',
     mockedApplicationWindow,
     mockedApplication,
     mockedBlackberry,
+    mockedDevice,
     mock_request = {
         url: "http://www.dummy.com",
         allow: jasmine.createSpy(),
@@ -53,10 +54,13 @@ describe("framework", function () {
             visible: undefined
         };
         mockedApplication = {
-            addEventListener: jasmine.createSpy()
+            addEventListener: jasmine.createSpy(),
+            webInspectorPort : "1337"
         };
-        GLOBAL.window = {
-            qnx: {
+        mockedDevice = {
+            getNetworkInterfaces : jasmine.createSpy()
+        };
+        GLOBAL.window.qnx = {
                 callExtensionMethod : function () {
                     return 42;
                 },
@@ -69,17 +73,17 @@ describe("framework", function () {
                     },
                     getApplicationWindow : function () {
                         return mockedApplicationWindow;
-                    }
+                    },
+                    device : mockedDevice
                 }
-            }
-        };
+            };
         mockedBlackberry = {
             invoke: {
                 invoke: jasmine.createSpy()
             }
         };
         GLOBAL.blackberry = mockedBlackberry;
-
+        GLOBAL.NamedNodeMap = function () {};
         webview = util.requireWebview();
         overlayWebView = require(srcPath + "overlayWebView");
         controllerWebView = require(srcPath + "controllerWebView");
@@ -95,6 +99,10 @@ describe("framework", function () {
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");
         spyOn(webview, "setUIWebViewObj");
+        spyOn(webview, "addEventListener").andCallFake(function (eventName, callback) {
+            callback();
+        });
+        spyOn(webview, "removeEventListener");
         spyOn(overlayWebView, "setURL");
         spyOn(overlayWebView, "renderContextMenuFor");
         spyOn(overlayWebView, "handleDialogFor");
@@ -103,7 +111,11 @@ describe("framework", function () {
         });
         spyOn(overlayWebView, "removeEventListener");
         spyOn(overlayWebView, "bindAppWebViewToChildWebViewControls");
-        spyOn(console, "log");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.blackberry;
+        delete GLOBAL.window.qnx;
     });
 
     it("can start a webview instance", function () {
@@ -180,6 +192,88 @@ describe("framework", function () {
                 jasmine.any(Function),
                 jasmine.any(Function)
             );
+        });
+    });
+
+    describe('shows the webinspector dialog', function () {
+        it('show the webinspector dialog', function () {
+            var flag = false;
+            spyOn(overlayWebView, "showDialog");
+
+            window.qnx.webplatform.device.getNetworkInterfaces = function (callback) {
+                callback();
+                flag = true;
+            };
+            config.debugEnabled = true;
+            framework.start();
+            waitsFor(function () {
+                return flag;
+            });
+            runs(function () {
+                expect(overlayWebView.showDialog).toHaveBeenCalled();
+            });
+        });
+
+        it('show the webinspector dialog with the correct IP address', function () {
+            var flag = false,
+            messageObj;
+            spyOn(overlayWebView, "showDialog");
+
+            window.qnx.webplatform.device.getNetworkInterfaces = function (callback) {
+                var dummyData = {
+                    asix0i : null,
+                    bb0 : null,
+                    bptp0 : null,
+                    cellular0 : null,
+                    cellular1 : null,
+                    cellular2 : null,
+                    cellular3 : null,
+                    cellular4 : null,
+                    ecm0 : {
+                        connected : true,
+                        ipv4Address : "169.254.0.1",
+                        ipv6Address : "fe80::70aa:b2ff:fef9:b374",
+                        type : "usb"
+                    },
+                    ipsec0 : null,
+                    ipsec1 : null,
+                    lo0 : null,
+                    lo2 : null,
+                    nap0 : null,
+                    pan0 : null,
+                    pflog0 : null,
+                    ppp0 : null,
+                    rndis0 : null,
+                    smsc0 : null,
+                    tiw_drv0 : null,
+                    tiw_ibss0 : null,
+                    tiw_p2pdev0 : null,
+                    tiw_p2pgrp0 : null,
+                    tiw_sta0 : {
+                        connected : true,
+                        ipv4Address : "192.168.2.2",
+                        ipv6Address : "fe80::72aa:b2ff:fef9:b374",
+                        type : "wifi"
+                    },
+                    vlan0 : null,
+                    vpn0 : null
+                };
+                callback(dummyData);
+                flag = true;
+            };
+            config.debugEnabled = true;
+            framework.start();
+            waitsFor(function () {
+                return flag;
+            });
+            runs(function () {
+                messageObj = {
+                    title : "Web Inspector Enabled",
+                    htmlmessage : "\n ip4:    169.254.0.1:1337<br/> ip6:    fe80::70aa:b2ff:fef9:b374:1337",
+                    dialogType : "JavaScriptAlert"
+                };
+                expect(overlayWebView.showDialog).toHaveBeenCalledWith(messageObj);
+            });
         });
     });
 });

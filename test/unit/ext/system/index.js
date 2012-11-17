@@ -33,7 +33,7 @@ describe("system index", function () {
     });
 
     afterEach(function () {
-        delete GLOBAL.qnx;
+        delete GLOBAL.window;
         sysIndex = null;
     });
 

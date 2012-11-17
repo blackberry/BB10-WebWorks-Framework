@@ -37,6 +37,7 @@ describe("lib/events/applicationEvents", function () {
 
     afterEach(function () {
         mockedApplication = null;
+        delete GLOBAL.window.qnx;
         delete GLOBAL.window;
         appEvents = null;
     });
