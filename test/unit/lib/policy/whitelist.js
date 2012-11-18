@@ -695,15 +695,35 @@ describe("whitelist", function () {
             it("can access file if rule specifed was file:///", function () {
                 var whitelist = new Whitelist({
                     hasMultiAccess : false,
-                    accessList : [{
-                        uri : "file:///accounts/1000/shared/documents/textData.txt",
-                        allowSubDomain : false,
-                        features : null
-                    }]
+                    accessList : [
+                        {
+                            uri : "file:///accounts/1000/shared/documents/textData.txt",
+                            allowSubDomain : false,
+                            features: [{"id":"jpps"},{"id":"blackberry.event"},{"id":"blackberry.notification"},{"id":"internal.automation"},{"id":"internal.pps"}]
+                        }
+                    ]
                 });
 
                 expect(whitelist.isAccessAllowed("file:///accounts/1000/shared/documents/textData.txt")).toEqual(true);
                 expect(whitelist.isAccessAllowed("file:///etc/passwd")).toEqual(false);
+            });
+
+            it("can access file if rule specifed was file:///", function () {
+                var whitelist = new Whitelist({
+                    "hasMultiAccess": false,
+                    "accessList": [
+                        {
+                            "features": [],
+                            "uri": "WIDGET_LOCAL",
+                            "allowSubDomain": true
+                        },
+                        {
+                            "features": [],
+                            "uri": "file:///accounts/1000/shared/documents/textData.txt"
+                        }
+                    ]
+                });
+                expect(whitelist.isAccessAllowed("file:///etc/passwd", false)).toEqual(false);
             });
 
             it("can deny file access when access file:/// with no rule", function () {
