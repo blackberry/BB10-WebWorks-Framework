@@ -59,7 +59,7 @@ function _handle(func) {
     };
 }
 
-module.exports = function (pathToPackager, pathToApp, packagerOptions, pathToWebWorksJs) {
+module.exports = function (pathToPackager, pathToApp, packagerOptions) {
 
     var zipFileData,
         webworksJsData,
@@ -87,18 +87,6 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions, pathToWeb
     if (!packagerOptions) {
         packagerOptions = conf.PACKAGE_COMMAND_DEFAULT_OPTIONS;
         util.puts("No packager options specified, using default from build/conf.js - " + packagerOptions);
-    }
-
-    //If the path to webworks is specified, then update the webworks in the zip
-    if (pathToWebWorksJs) {
-        zipFileData = fs.readFileSync(pathToApp).toString('base64');
-        wwVersion = fs.readFileSync("version", "utf-8").trim();
-        wwVersionPath = path.join(conf.CLIENTFILES, "webworks-" + wwVersion + ".js");
-        webworksJsData = fs.readFileSync(wwVersionPath).toString('base64');
-        appJsZip = new JSZip(zipFileData, {base64: true});
-        appJsZip.remove(pathToWebWorksJs);
-        appJsZip.file(pathToWebWorksJs, webworksJsData, {base64: true});
-        fs.writeFileSync(pathToApp, appJsZip.generate({base64: true, compression: 'DEFLATE'}), "base64");
     }
 
     //First delete the old directory
