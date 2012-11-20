@@ -6,8 +6,12 @@
         rim:header="RIM:WebWorks/App">
 
     <name>WebWorks Test Application</name>
+    <name xml:lang="fr-FR">French application name</name>
+    <name xml:lang="en">English application name</name>
 
     <description>This application tests a wide range of WebWorks functionalities.</description>
+    <description xml:lang="fr-FR">French description</description>
+    <description xml:lang="en">English description</description>
 
     <content src="index.htm"/>
 

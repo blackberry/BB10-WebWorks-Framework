@@ -22,11 +22,19 @@ var _extDir = __dirname + "./../../../../ext",
         authorEmail: "testEmail",
         authorURL: "testURL",
         copyright: "testCopyright",
-        description: "testDescription",
+        description: {
+            "default": "testDescription",
+            "fr-FR": "testDescription-FR",
+            "en": "testDescription-en"
+        },
         id : "testId",
         license: "testLicense",
         licenseURL: "testLicenseURL",
-        name: "testName",
+        name: {
+            "default": "testName",
+            "fr-FR": "testName-FR",
+            "en": "testName-EN"
+        },
         version: "testVersion",
         orientation: "portrait-primary"
     },
@@ -76,8 +84,19 @@ describe("app client", function () {
     });
 
     describe("description", function () {
-        it("should be populated", function () {
-            expect(client.description === mockData.description);
+        it("should be populated with default localized value", function () {
+            GLOBAL.window.navigator = {language: "IDoNotExist"};
+            expect(client.description === mockData.description["default"]);
+        });
+
+        it("should be populated with localized value when provided", function () {
+            GLOBAL.window.navigator = {language: "fr-FR"};
+            expect(client.description === mockData.description["fr-FR"]);
+        });
+
+        it("should be populated with localized language value, when region value not available", function () {
+            GLOBAL.window.navigator = {language: "en-FR"};
+            expect(client.description === mockData.description["en"]);
         });
     });
 
@@ -100,8 +119,19 @@ describe("app client", function () {
     });
 
     describe("name", function () {
-        it("should be populated", function () {
-            expect(client.name === mockData.name);
+        it("should be populated with default localized value", function () {
+            GLOBAL.window.navigator = {language: "IDoNotExist"};
+            expect(client.name === mockData.name["default"]);
+        });
+
+        it("should be populated with localized value when provided", function () {
+            GLOBAL.window.navigator = {language: "fr-FR"};
+            expect(client.name === mockData.name["fr-FR"]);
+        });
+
+        it("should be populated with localized language value, when region value not availble", function () {
+            GLOBAL.window.navigator = {language: "en-FR"};
+            expect(client.name === mockData.name["en"]);
         });
     });
 

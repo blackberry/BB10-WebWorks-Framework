@@ -21,13 +21,30 @@ _self.exit = function () {
     return window.webworks.execSync(ID, "exit");
 };
 
-function defineReadOnlyField(field) {
-    var value;
+function getReadOnlyFields() {
     if (!readOnlyValues) {
         readOnlyValues = window.webworks.execSync(ID, "getReadOnlyFields", null);
     }
+}
+
+function defineReadOnlyField(field) {
+    var value;
+    getReadOnlyFields();
     value = readOnlyValues ? readOnlyValues[field] : null;
     Object.defineProperty(_self, field, {"value": value, "writable": false});
+}
+
+function getLocalizedText(data) {
+    var locale = navigator.language.toLowerCase();
+
+    if (data[locale]) {
+        return data[locale];
+    } else if (data[locale.split("-")[0]]) {
+        //Default to language specific locale [i.e. fr]
+        return data[locale.split("-")[0]];
+    } else {
+        return data["default"];
+    }
 }
 
 Object.defineProperty(_self, "orientation", {
@@ -42,6 +59,20 @@ Object.defineProperty(_self, "orientation", {
     }
 });
 
+Object.defineProperty(_self, "name", {
+    get: function () {
+        getReadOnlyFields();
+        return getLocalizedText(readOnlyValues["name"]);
+    }
+});
+
+Object.defineProperty(_self, "description", {
+    get: function () {
+        getReadOnlyFields();
+        return getLocalizedText(readOnlyValues["description"]);
+    }
+});
+
 defineReadOnlyField("author");
 
 defineReadOnlyField("authorEmail");
@@ -50,15 +81,11 @@ defineReadOnlyField("authorURL");
 
 defineReadOnlyField("copyright");
 
-defineReadOnlyField("description");
-
 defineReadOnlyField("id");
 
 defineReadOnlyField("license");
 
 defineReadOnlyField("licenseURL");
-
-defineReadOnlyField("name");
 
 defineReadOnlyField("version");
 
