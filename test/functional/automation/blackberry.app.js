@@ -124,7 +124,7 @@ describe("blackberry.app", function () {
         });
 
         it("should invoke callback with landscape-primary when user rotates the phone counter-clockwise from within application", function () {
-            internal.automation.rotate("RIGHT_UP");
+            internal.automation.rotate("LEFT_UP");
             waitsFor(function () {
                 return onOrientationChange.callCount;
             }, "event never fired", waitForTimeout * 2);
@@ -135,7 +135,7 @@ describe("blackberry.app", function () {
         });
 
         it("should invoke callback with landscape-secondary when user rotates the phone clockwise from within application", function () {
-            internal.automation.rotate("LEFT_UP");
+            internal.automation.rotate("RIGHT_UP");
 
             waitsFor(function () {
                 return onOrientationChange.callCount;
@@ -166,7 +166,7 @@ describe("blackberry.app", function () {
             waits(4000);
 
             runs(function () {
-                internal.automation.rotate("LEFT_UP");
+                internal.automation.rotate("RIGHT_UP");
                 waitsFor(function () {
                     return onOrientationChange.callCount;
                 }, "event never fired", waitForTimeout * 2);
@@ -193,7 +193,7 @@ describe("blackberry.app", function () {
                     expect(blackberry.app.orientation).toBe("landscape-secondary");
                     waits(4000);
                     runs(function () {
-                        expect(window.orientation).toBe(-90);
+                        expect(window.orientation).toBe(90);
                     });
                 });
             });
@@ -203,6 +203,19 @@ describe("blackberry.app", function () {
             waits(2000);
             runs(function () {
                 internal.automation.rotate("LEFT_UP");
+                waits(2000);
+                runs(function () {
+                    expect(blackberry.app.orientation).toBe("landscape-primary");
+                    internal.automation.rotate("TOP_UP");
+                });
+            });
+
+        });
+
+        it("should have the correct orientation set", function () {
+            waits(2000);
+            runs(function () {
+                internal.automation.rotate("RIGHT_UP");
                 waits(2000);
                 runs(function () {
                     expect(blackberry.app.orientation).toBe("landscape-secondary");
@@ -252,7 +265,7 @@ describe("blackberry.app", function () {
 
             waitsFor(function () {
                 return onKeyboardOpening.callCount && onKeyboardOpened.callCount;
-            }, "event never fired", waitForTimeout * 2);
+            }, "event never fired", waitForTimeout * 3);
 
             runs(function () {
                 expect(onKeyboardOpening).toHaveBeenCalled();
@@ -268,7 +281,7 @@ describe("blackberry.app", function () {
 
             waitsFor(function () {
                 return onKeyboardClosing.callCount && onKeyboardClosed.callCount;
-            }, "event never fired", waitForTimeout * 2);
+            }, "event never fired", waitForTimeout * 3);
 
             runs(function () {
                 expect(onKeyboardClosing).toHaveBeenCalled();
