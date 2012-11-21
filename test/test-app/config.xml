@@ -18,7 +18,7 @@
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
     <feature id="blackberry.app" required="true" version="1.0.0.0">
-        <param name="backgroundColor" value="0xFFEFD5" />
+        <param name="backgroundColor" value="0xFFFFEFD5" />
     </feature>
     <feature id="blackberry.system" required="true" version="1.0.0.0"/>
     <feature id="blackberry.connection" required="true" version="1.0.0.0"/>
