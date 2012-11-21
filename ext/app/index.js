@@ -86,14 +86,14 @@ function angleToOrientation(angle) {
         orientation = 'portrait-primary';
         break;
     case 90:
-        orientation = 'landscape-primary';
+        orientation = 'landscape-secondary';
         break;
     case 180:
         orientation = 'portrait-secondary';
         break;
     case -90:
     case 270:
-        orientation = 'landscape-secondary';
+        orientation = 'landscape-primary';
         break;
     default:
         orientation = "unknown";
@@ -105,13 +105,13 @@ function angleToOrientation(angle) {
 
 function edgeToOrientation(edge) {
     switch (edge) {
-    case "right_up":
+    case "left_up":
         return "landscape-primary";
     case "top_up":
         return "portrait-primary";
     case "bottom_up":
         return "portrait-secondary";
-    case "left_up":
+    case "right_up":
         return "landscape-secondary";
     default:
         return "unknown";
@@ -133,7 +133,7 @@ function translateToDeviceOrientation(orientation, fail) {
         return 'bottom_up';
 
     case 'landscape-secondary':
-        return 'left_up';
+        return 'right_up';
 
     default:
         // Invalid orientation type

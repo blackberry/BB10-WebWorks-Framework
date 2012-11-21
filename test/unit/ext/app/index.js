@@ -105,13 +105,13 @@ describe("app index", function () {
                 expectedReturn = {
                     author : "Me",
                     authorEmail : "guocat@gmail.com",
-                    authorURL : "http://bbtools_win7_01/yui", 
-                    copyright : "@Rebecca", 
-                    description : "this is the description", 
-                    id : "", 
-                    license : "This is a license", 
-                    licenseURL : "", 
-                    name : "wwTest", 
+                    authorURL : "http://bbtools_win7_01/yui",
+                    copyright : "@Rebecca",
+                    description : "this is the description",
+                    id : "",
+                    license : "This is a license",
+                    licenseURL : "",
+                    name : "wwTest",
                     version : "1.0.0.0"
                 };
             index.getReadOnlyFields(success, null, null, null);
@@ -172,7 +172,7 @@ describe("app index", function () {
             GLOBAL.window.orientation = 90;
 
             index.currentOrientation(success, fail, null, null);
-            expect(success).toHaveBeenCalledWith("landscape-primary");
+            expect(success).toHaveBeenCalledWith("landscape-secondary");
         });
 
         it("converts 180 degrees from window.orientation to portrait-primary", function () {
@@ -190,7 +190,7 @@ describe("app index", function () {
             GLOBAL.window.orientation = -90;
 
             index.currentOrientation(success, fail, null, null);
-            expect(success).toHaveBeenCalledWith("landscape-secondary");
+            expect(success).toHaveBeenCalledWith("landscape-primary");
         });
 
         it("converts 270 degrees from window.orientation to portrait-primary", function () {
@@ -198,7 +198,7 @@ describe("app index", function () {
                 fail = jasmine.createSpy();
             GLOBAL.window.orientation = 270;
             index.currentOrientation(success, fail, null, null);
-            expect(success).toHaveBeenCalledWith("landscape-secondary");
+            expect(success).toHaveBeenCalledWith("landscape-primary");
         });
     });
 
