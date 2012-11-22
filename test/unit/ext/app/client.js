@@ -38,24 +38,35 @@ var _extDir = __dirname + "./../../../../ext",
         version: "testVersion",
         orientation: "portrait-primary"
     },
-    mockedWebworks = {
-        execSync: jasmine.createSpy().andReturn(mockData)
-    };
+    mockedWebworks;
 
-beforeEach(function () {
-    GLOBAL.window = GLOBAL;
-    GLOBAL.window.webworks = mockedWebworks;
-    GLOBAL.window.orientation = 0;
-    client = require(_apiDir + "/client");
-});
-
-afterEach(function () {
-    delete GLOBAL.window;
-    client = null;
-});
 
 describe("app client", function () {
+
+    beforeEach(function () {
+        mockedWebworks = {
+            execSync: jasmine.createSpy("ext/app/client mockWebworks").andReturn(mockData)
+        };
+        GLOBAL.window = {
+            webworks: mockedWebworks,
+            orientation: 0
+        };
+        GLOBAL.navigator = {
+            language: ""
+        };
+        delete require.cache[require.resolve(_apiDir + "/client")];
+        client = require(_apiDir + "/client");
+    });
+
+    afterEach(function () {
+        mockedWebworks = null;
+        delete GLOBAL.window;
+        delete GLOBAL.navigator;
+        client = null;
+    });
+
     it("execSync should have been called once for all app fields", function () {
+        expect(mockedWebworks.execSync).toHaveBeenCalled();
         expect(mockedWebworks.execSync.callCount).toEqual(2); // +1 to account for the call to execSync for events
     });
 
@@ -85,17 +96,17 @@ describe("app client", function () {
 
     describe("description", function () {
         it("should be populated with default localized value", function () {
-            GLOBAL.window.navigator = {language: "IDoNotExist"};
+            navigator.language = "IDoNotExist";
             expect(client.description === mockData.description["default"]);
         });
 
         it("should be populated with localized value when provided", function () {
-            GLOBAL.window.navigator = {language: "fr-FR"};
+            navigator.language = "fr-FR";
             expect(client.description === mockData.description["fr-FR"]);
         });
 
         it("should be populated with localized language value, when region value not available", function () {
-            GLOBAL.window.navigator = {language: "en-FR"};
+            navigator.language = "en-FR";
             expect(client.description === mockData.description["en"]);
         });
     });
@@ -143,8 +154,6 @@ describe("app client", function () {
 
     describe("exit", function () {
         it("should call execSync", function () {
-            mockedWebworks.execSync = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
             client.exit();
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "exit");
         });
@@ -159,7 +168,6 @@ describe("app client", function () {
     describe("lockOrientation", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
             client.lockOrientation('portrait-primary');
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "lockOrientation", { orientation: 'portrait-primary' });
         });
@@ -168,7 +176,6 @@ describe("app client", function () {
     describe("unlockOrientation", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
             client.unlockOrientation();
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "unlockOrientation");
         });
@@ -177,7 +184,6 @@ describe("app client", function () {
     describe("rotate", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
             client.rotate('landscape');
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "rotate", {orientation: 'landscape'});
         });

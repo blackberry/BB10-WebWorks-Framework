@@ -24,13 +24,13 @@ describe("bbm.platform BBMEvents", function () {
             createObject: jasmine.createSpy().andReturn("1"),
             invoke: jasmine.createSpy().andReturn(2),
             registerEvents: jasmine.createSpy().andReturn(true),
-            BBM: function () {},
+            BBM: function () {}
         };
         BBMEvents = require(_apiDir + "BBMEvents");
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         BBMEvents = null;
     });
 

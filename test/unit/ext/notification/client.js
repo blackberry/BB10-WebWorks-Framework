@@ -39,10 +39,12 @@ describe("notification client creates Notification object attached to window", f
                 once : jasmine.createSpy("webworks.event.once")
             }
         };
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks,
+            isFinite: isFinite
+        };
         client = require(_apiDir + "/client");
-        Notification = GLOBAL.window.Notification;
+        Notification = window.Notification;
         onShow = jasmine.createSpy("Notification onshow");
         onError = jasmine.createSpy("Notification onerror");
     });
@@ -53,6 +55,7 @@ describe("notification client creates Notification object attached to window", f
         unloadClient();
         onShow = null;
         onError = null;
+        delete GLOBAL.window;
     });
 
     describe("Namespace, methods and properties", function () {

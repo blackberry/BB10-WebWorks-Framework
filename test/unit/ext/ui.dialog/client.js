@@ -37,9 +37,14 @@ var root = __dirname + "/../../../../",
 describe("ui.dialog", function () {
     beforeEach(function () {
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     it("should return constant for appropriate dialog styles", function () {
@@ -47,7 +52,7 @@ describe("ui.dialog", function () {
         Object.getOwnPropertyNames(constants).forEach(function (c) {
             defineROFieldArgs.push([client, c, constants[c]]);
         });
-            
+
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_OK")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_SAVE")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_DELETE")]);
@@ -55,24 +60,24 @@ describe("ui.dialog", function () {
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_OK_CANCEL")]);
         expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("D_PROMPT")]);
     });
-    
+
     it("creates a dialog", function () {
         var message = "hello world",
             buttons = [ ],
             callback,
             settings = {};
-            
+
         client.customAskAsync(message, buttons, callback, settings);
         expect(mockedWebworks.event.once).toHaveBeenCalledWith(ID, "ui.dialogEventId", callback);
         expect(mockedWebworks.execAsync).toHaveBeenCalledWith(ID, "customAskAsync", { "eventId" : "ui.dialogEventId", "message" : message, "buttons" : buttons, "callback" : callback, "settings" : settings });
     });
-    
+
     it("creates a standard dialog", function () {
         var message = "hello world",
             type = 0,
             callback,
             settings = {};
-            
+
         client.standardAskAsync(message, type, callback, settings);
         expect(mockedWebworks.event.once).toHaveBeenCalledWith(ID, "ui.dialogEventId", callback);
         expect(mockedWebworks.execAsync).toHaveBeenCalledWith(ID, "standardAskAsync", { "eventId" : "ui.dialogEventId", "message" : message, "type" : type, "callback" : callback, "settings" : settings });

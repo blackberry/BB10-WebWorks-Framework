@@ -31,7 +31,7 @@ describe("sensors index", function () {
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         index = null;
     });
 
@@ -50,7 +50,7 @@ describe("sensors index", function () {
             it("can call call with invalid parameters", function () {
                 var fail = jasmine.createSpy(),
                     args = {};
-                
+
                 index.setOptions(null, fail, args, null);
                 expect(fail).toHaveBeenCalledWith(-1, "Need to specify arguments");
             });

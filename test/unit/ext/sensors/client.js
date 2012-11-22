@@ -25,8 +25,14 @@ var _extDir = __dirname + "./../../../../ext",
 
 describe("sensors", function () {
     beforeEach(function () {
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(_apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     describe("setOptions", function () {

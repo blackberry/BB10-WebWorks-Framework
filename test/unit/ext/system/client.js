@@ -26,12 +26,15 @@ var extDir = __dirname + "./../../../../ext",
 
 describe("system client", function () {
     beforeEach(function () {
-        //Create window object like in DOM and have it act the same way
-        GLOBAL.window = GLOBAL;
-
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         sysClient = require(apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     it("hasPermission", function () {
@@ -105,11 +108,11 @@ describe("system client", function () {
         };
 
         beforeEach(function () {
-
-            GLOBAL.window = GLOBAL;
             mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(mockDeviceProperties);
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
+            GLOBAL.window = {
+                webworks: mockedWebworks
+            };
             // client needs to be required for each test
             delete require.cache[require.resolve(apiDir + "/client")];
             sysClient = require(apiDir + "/client");
@@ -140,7 +143,6 @@ describe("system client", function () {
 
         describe("region", function () {
             beforeEach(function () {
-                GLOBAL.window = GLOBAL;
                 mockedWebworks.execSync = jasmine.createSpy("execSync").andCallFake(function (namespace, field) {
                     if (field === "language") {
                         return "fr_CA";
@@ -149,7 +151,9 @@ describe("system client", function () {
                     }
                 });
                 mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-                GLOBAL.window.webworks = mockedWebworks;
+                GLOBAL.window = {
+                    webworks: mockedWebworks
+                };
                 // client needs to be required for each test
                 delete require.cache[require.resolve(apiDir + "/client")];
                 sysClient = require(apiDir + "/client");

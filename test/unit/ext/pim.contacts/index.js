@@ -41,7 +41,7 @@ describe("pim.contacts index", function () {
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         index = null;
     });
 
@@ -58,7 +58,7 @@ describe("pim.contacts index", function () {
                 filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                     fieldValue: "John"
-                }], 
+                }],
                 limit: 5
             };
 
@@ -85,7 +85,7 @@ describe("pim.contacts index", function () {
                 filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                     fieldValue: "John"
-                }], 
+                }],
                 limit: 5
             };
 

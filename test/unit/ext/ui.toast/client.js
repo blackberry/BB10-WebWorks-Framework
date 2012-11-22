@@ -24,9 +24,6 @@ var root = __dirname + "/../../../../",
 
 describe("ui.toast", function () {
     beforeEach(function () {
-        //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window = GLOBAL;
-
         danielCraig = jasmine.createSpy();
 
         mockedWebworks = {
@@ -39,8 +36,14 @@ describe("ui.toast", function () {
             }
         };
 
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     it("creates a simple toast", function () {

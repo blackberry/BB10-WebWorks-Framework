@@ -15,9 +15,8 @@
  */
 
 var srcPath = __dirname + '/../../../lib/',
-    framework = require(srcPath + 'framework'),
     config = require(srcPath + "config"),
-    util = require(srcPath + "utils"),
+    framework,
     webview,
     overlayWebView,
     controllerWebView,
@@ -27,6 +26,7 @@ var srcPath = __dirname + '/../../../lib/',
     mockedApplication,
     mockedBlackberry,
     mockedDevice,
+    mockedQnx,
     mock_request = {
         url: "http://www.dummy.com",
         allow: jasmine.createSpy(),
@@ -48,7 +48,8 @@ describe("framework", function () {
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
             addEventListener: jasmine.createSpy(),
-            uiWebView: undefined
+            uiWebView: undefined,
+            onChildWindowOpen: undefined
         };
         mockedApplicationWindow = {
             visible: undefined
@@ -60,23 +61,27 @@ describe("framework", function () {
         mockedDevice = {
             getNetworkInterfaces : jasmine.createSpy()
         };
-        GLOBAL.window.qnx = {
-                callExtensionMethod : function () {
-                    return 42;
+        mockedQnx = {
+            callExtensionMethod : function () {
+                return 42;
+            },
+            webplatform : {
+                getController : function () {
+                    return mockedWebview;
                 },
-                webplatform : {
-                    getController : function () {
-                        return mockedWebview;
-                    },
-                    getApplication : function () {
-                        return mockedApplication;
-                    },
-                    getApplicationWindow : function () {
-                        return mockedApplicationWindow;
-                    },
-                    device : mockedDevice
-                }
-            };
+                getApplication : function () {
+                    return mockedApplication;
+                },
+                getApplicationWindow : function () {
+                    return mockedApplicationWindow;
+                },
+                device : mockedDevice
+            }
+        };
+        GLOBAL.window = {
+            qnx: mockedQnx
+        };
+        GLOBAL.qnx = mockedQnx;
         mockedBlackberry = {
             invoke: {
                 invoke: jasmine.createSpy()
@@ -84,15 +89,22 @@ describe("framework", function () {
         };
         GLOBAL.blackberry = mockedBlackberry;
         GLOBAL.NamedNodeMap = function () {};
-        webview = util.requireWebview();
+
+        delete require.cache[require.resolve(srcPath + "webview")];
+        webview = require(srcPath + "webview");
+        delete require.cache[require.resolve(srcPath + "overlayWebview")];
         overlayWebView = require(srcPath + "overlayWebView");
+        delete require.cache[require.resolve(srcPath + "controllerWebview")];
         controllerWebView = require(srcPath + "controllerWebView");
+
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
+
         spyOn(overlayWebView, "create").andCallFake(function (done) {
             done();
         });
+
         spyOn(controllerWebView, "init");
         spyOn(controllerWebView, "dispatchEvent");
         spyOn(webview, "destroy");
@@ -103,6 +115,7 @@ describe("framework", function () {
             callback();
         });
         spyOn(webview, "removeEventListener");
+
         spyOn(overlayWebView, "setURL");
         spyOn(overlayWebView, "renderContextMenuFor");
         spyOn(overlayWebView, "handleDialogFor");
@@ -111,11 +124,16 @@ describe("framework", function () {
         });
         spyOn(overlayWebView, "removeEventListener");
         spyOn(overlayWebView, "bindAppWebViewToChildWebViewControls");
+
+        delete require.cache[require.resolve(srcPath + "framework")];
+        framework = require(srcPath + 'framework');
     });
 
     afterEach(function () {
         delete GLOBAL.blackberry;
-        delete GLOBAL.window.qnx;
+        delete GLOBAL.window;
+        delete GLOBAL.qnx;
+        delete GLOBAL.NamedNodeMap;
     });
 
     it("can start a webview instance", function () {
@@ -173,20 +191,44 @@ describe("framework", function () {
 
     describe('configuring OpenChildWindow events', function () {
         it('delegates to childWebViewControls on the overlay webview', function () {
-            config.enableChildWebView = true;
+            config.enableChildWebView = false;
+
+            //reload config in framework
+            delete require.cache[require.resolve(srcPath + "framework")];
+            framework = require(srcPath + 'framework');
+
+            this.after(function () {
+                delete require.cache[require.resolve(srcPath + "config")];
+                config = require(srcPath + 'config');
+            });
+
             framework.start();
             expect(overlayWebView.bindAppWebViewToChildWebViewControls).toHaveBeenCalledWith(webview);
+            expect(webview.onChildWindowOpen).not.toBeDefined();
         });
 
         it('binds to OpenChildWindow and invokes the browser', function () {
-            var openChildWindowHandler;
-            webview.__defineSetter__('onChildWindowOpen', function (input) {
-                openChildWindowHandler = input;
-            });
+            var handler;
+
             config.enableChildWebView = false;
+
+            webview.__defineSetter__('onChildWindowOpen', function (input) {
+                handler = input;
+            });
+
+            //reload config in framework
+            delete require.cache[require.resolve(srcPath + "framework")];
+            framework = require(srcPath + 'framework');
+
+            this.after(function () {
+                delete require.cache[require.resolve(srcPath + "config")];
+                config = require(srcPath + 'config');
+            });
+
             framework.start();
-            expect(openChildWindowHandler).toEqual(jasmine.any(Function));
-            openChildWindowHandler({url: 'http://www.google.com'});
+            expect(overlayWebView.bindAppWebViewToChildWebViewControls).not.toHaveBeenCalledWith(webview);
+            expect(handler).toEqual(jasmine.any(Function));
+            handler({url: 'http://www.google.com'});
             expect(mockedBlackberry.invoke.invoke).toHaveBeenCalledWith(
                 {uri: 'http://www.google.com', target: "sys.browser" },
                 jasmine.any(Function),

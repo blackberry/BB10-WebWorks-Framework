@@ -35,6 +35,10 @@ describe("connection index", function () {
         index = require(_apiDir + "index");
     });
 
+    afterEach(function () {
+        delete GLOBAL.qnx;
+    });
+
     describe("connection", function () {
         describe("type", function () {
             it("can call success", function () {

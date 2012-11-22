@@ -49,14 +49,6 @@ var _extDir = __dirname + "./../../../../ext",
     constantsLength = 0,
     defineROFieldArgs = [];
 
-beforeEach(function () {
-    GLOBAL.window = GLOBAL;
-});
-
-afterEach(function () {
-    delete GLOBAL.window;
-});
-
 function unloadClient() {
     // explicitly unload client for it to be loaded again
     delete require.cache[require.resolve(_apiDir + "/client")];
@@ -69,7 +61,9 @@ describe("push", function () {
         mockedWebworks.event = { once : jasmine.createSpy().andReturn(3),
                                  isOn : jasmine.createSpy().andReturn(4) };
         mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         // client needs to be required for each test
         client = require(_apiDir + "/client");
         Object.getOwnPropertyNames(constants).forEach(function (c) {
@@ -82,6 +76,7 @@ describe("push", function () {
     afterEach(function () {
         unloadClient();
         defineROFieldArgs = [];
+        delete GLOBAL.window;
     });
 
     describe("push constants", function () {

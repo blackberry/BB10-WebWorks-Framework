@@ -25,10 +25,12 @@ describe("lib/events/applicationEvents", function () {
             addEventListener: jasmine.createSpy("application addEventListener"),
             removeEventListener: jasmine.createSpy("application removeEventListener")
         };
-        GLOBAL.window.qnx = {
-            webplatform: {
-                getApplication: function () {
-                    return mockedApplication;
+        GLOBAL.window = {
+            qnx: {
+                webplatform: {
+                    getApplication: function () {
+                        return mockedApplication;
+                    }
                 }
             }
         };
@@ -37,9 +39,9 @@ describe("lib/events/applicationEvents", function () {
 
     afterEach(function () {
         mockedApplication = null;
-        delete GLOBAL.window.qnx;
         delete GLOBAL.window;
         appEvents = null;
+        delete require.cache[require.resolve(_libDir + "events/applicationEvents")];
     });
 
     describe("addEventListener", function () {

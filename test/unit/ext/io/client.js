@@ -37,8 +37,9 @@ var _extDir = __dirname + "./../../../../ext",
     };
 
 beforeEach(function () {
-    GLOBAL.window = GLOBAL;
-    GLOBAL.window.webworks = mockedWebworks;
+    GLOBAL.window = {
+        webworks: mockedWebworks
+    };
 });
 
 afterEach(function () {

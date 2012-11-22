@@ -20,11 +20,13 @@ var _libDir = __dirname + "./../../../../lib/",
 
 describe("lib/events/deviceEvents", function () {
     beforeEach(function () {
-        GLOBAL.window.qnx = {
-            webplatform: {
-                device: {
-                    addEventListener: jasmine.createSpy(),
-                    removeEventListener: jasmine.createSpy()
+        GLOBAL.window = {
+            qnx: {
+                webplatform: {
+                    device: {
+                        addEventListener: jasmine.createSpy(),
+                        removeEventListener: jasmine.createSpy()
+                    }
                 }
             }
         };
@@ -32,10 +34,9 @@ describe("lib/events/deviceEvents", function () {
     });
 
     afterEach(function () {
-
-        delete GLOBAL.window.qnx;
         delete GLOBAL.window;
         deviceEvents = null;
+        delete require.cache[require.resolve(_libDir + "events/deviceEvents")];
     });
 
     describe("addEventListener", function () {

@@ -45,7 +45,9 @@ describe("blackberry.ui.contextmenu index", function () {
 
     beforeEach(function () {
         GLOBAL.qnx = mockedQnx;
-        GLOBAL.window = {qnx: mockedQnx};
+        GLOBAL.window = {
+            qnx: mockedQnx
+        };
         contextmenu = require(_extDir + "ui.contextmenu");
         overlayWebView = require(_libDir + "overlayWebView");
         overlayWebView.create();
@@ -53,6 +55,8 @@ describe("blackberry.ui.contextmenu index", function () {
     });
 
     afterEach(function () {
+        delete GLOBAL.qnx;
+        delete GLOBAL.window;
         success.reset();
         fail.reset();
     });

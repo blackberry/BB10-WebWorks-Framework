@@ -19,14 +19,6 @@ var _extDir = __dirname + "./../../../../ext",
     client,
     mockedWebworks = {};
 
-beforeEach(function () {
-    GLOBAL.window = GLOBAL;
-});
-
-afterEach(function () {
-    delete GLOBAL.window;
-});
-
 function unloadClient() {
     // explicitly unload client for it to be loaded again
     delete require.cache[require.resolve(_apiDir + "/client")];
@@ -38,7 +30,7 @@ describe("identity client", function () {
         beforeEach(function () {
             mockedWebworks.execSync = jasmine.createSpy().andCallFake(function (service, action, args) {
                 var result = "Unsupported action";
-                
+
                 if (action === "getFields") {
                     result = {
                         uuid: "0x12345678",
@@ -50,12 +42,17 @@ describe("identity client", function () {
                 return result;
             });
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
+            GLOBAL.window = {
+                webworks: mockedWebworks
+            };
             // client needs to be required for each test
             client = require(_apiDir + "/client");
         });
 
-        afterEach(unloadClient);
+        afterEach(function () {
+            unloadClient();
+            delete GLOBAL.window;
+        });
 
         it("execSync should have been called once for all fields", function () {
             expect(mockedWebworks.execSync.callCount).toEqual(1);
@@ -82,8 +79,16 @@ describe("identity client", function () {
         beforeEach(function () {
             spyOn(console, "error");
             mockedWebworks.execSync = jasmine.createSpy().andThrow("Cannot read PPS object");
-            GLOBAL.window.webworks = mockedWebworks;
+            GLOBAL.window = {
+                webworks: mockedWebworks
+            };
+            // client needs to be required for each test
             client = require(_apiDir + "/client");
+        });
+
+        afterEach(function () {
+            unloadClient();
+            delete GLOBAL.window;
         });
 
         afterEach(unloadClient);

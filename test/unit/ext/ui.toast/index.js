@@ -57,6 +57,11 @@ describe("ui.toast index", function () {
         index = require(root + "ext/ui.toast/index");
     });
 
+    afterEach(function () {
+        delete GLOBAL.window;
+        delete GLOBAL.qnx;
+    });
+
     it("shows toast", function () {
         var success = jasmine.createSpy(),
             fail = jasmine.createSpy(),

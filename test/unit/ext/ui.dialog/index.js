@@ -23,7 +23,7 @@ var root = __dirname + "/../../../../",
 describe("ui.dialog index", function () {
     beforeEach(function () {
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        
+
         GLOBAL.JNEXT = {
             invoke : jasmine.createSpy(),
             require : jasmine.createSpy()
@@ -32,11 +32,15 @@ describe("ui.dialog index", function () {
         index = require(root + "ext/ui.dialog/index");
     });
 
+    afterEach(function () {
+        delete GLOBAL.JNEXT;
+    });
+
     it("makes sure that the dialog is called properly", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
-        
+
         spyOn(webview, "windowGroup").andReturn(42);
         args.eventId = "12345";
         args.message = "Hello World";
@@ -45,34 +49,34 @@ describe("ui.dialog index", function () {
         args.message = encodeURIComponent(args.message);
         args.buttons = encodeURIComponent(JSON.stringify(args.buttons));
         args.settings = encodeURIComponent(JSON.stringify(args.settings));
-    
+
         spyOn(overlayWebView, "showDialog");
         index.customAskAsync(successCB, failCB, args);
-        
+
         expect(overlayWebView.showDialog).toHaveBeenCalled();
     });
-    
+
     it("makes sure that a message is specified", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
-            
-        args.eventId = "12345";       
+
+        args.eventId = "12345";
         index.customAskAsync(successCB, failCB, args);
-        
+
         expect(failCB).toHaveBeenCalled();
     });
-    
+
     it("makes sure that buttons are specified", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
 
-        args.eventId = "12345";        
+        args.eventId = "12345";
         args.message = "Hello World";
         args.message = encodeURIComponent(args.message);
         index.customAskAsync(successCB, failCB, args);
-        
+
         expect(failCB).toHaveBeenCalled();
     });
     it("makes sure that buttons is an array", function () {
@@ -80,11 +84,11 @@ describe("ui.dialog index", function () {
             failCB = jasmine.createSpy(),
             args = {buttons : 3};
 
-        args.eventId = "12345";        
+        args.eventId = "12345";
         args.message = "Hello World";
         args.message = encodeURIComponent(args.message);
         index.customAskAsync(successCB, failCB, args);
-        
+
         expect(failCB).toHaveBeenCalledWith(-1, "buttons is not an array");
     });
 
@@ -92,7 +96,7 @@ describe("ui.dialog index", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
-       
+
         spyOn(webview, "windowGroup").andReturn(42);
         args.eventId = "12345";
         args.message = "Hello World";
@@ -102,14 +106,14 @@ describe("ui.dialog index", function () {
         args.message = encodeURIComponent(args.message);
         args.type = encodeURIComponent(args.type);
         args.settings = encodeURIComponent(JSON.stringify(args.settings));
-        
+
         spyOn(overlayWebView, "showDialog").andCallFake(function (messageObj, callback) {
             callback({
                 "ok": true
             });
         });
         index.standardAskAsync(successCB, failCB, args);
-        
+
         expect(overlayWebView.showDialog).toHaveBeenCalled();
         expect(successCB).toHaveBeenCalledWith();
         expect(events.trigger).toHaveBeenCalledWith("12345", {
@@ -129,17 +133,17 @@ describe("ui.dialog index", function () {
 
         expect(failCB).toHaveBeenCalledWith(-1, "message is undefined");
     });
-    
+
     it("makes sure the type is specified for standard dialogs", function () {
         var successCB = jasmine.createSpy(),
             failCB = jasmine.createSpy(),
             args = {};
-        
+
         args.eventId = "12345";
         args.message = "Hello World";
         args.message = encodeURIComponent(args.message);
         index.standardAskAsync(successCB, failCB, args);
-        
+
         expect(failCB).toHaveBeenCalledWith(-1, "type is undefined");
     });
 
