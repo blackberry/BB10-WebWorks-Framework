@@ -79,8 +79,7 @@ describe("controllerWebView", function () {
     describe("id", function () {
         it("can get the id for the webiew", function () {
             controllerWebView.init({debugEnabled: true});
-            controllerWebView.id();
-            expect(mockedController.id).toEqual(42);
+            expect(controllerWebView.id).toEqual(mockedController.id);
         });
     });
 

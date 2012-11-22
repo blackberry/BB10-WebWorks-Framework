@@ -56,7 +56,7 @@ std::string Push::InvokeMethod(const std::string& command)
     // Parse JSON object
     Json::Value obj;
 
-    if (command.length() > index) {
+    if (static_cast<int>(command.length()) > index && index != -1) {
         std::string jsonObject = command.substr(index + 1, command.length());
         Json::Reader reader;
 

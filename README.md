@@ -5,10 +5,7 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
 ##Prerequisites
 1. Install [node[v0.6.10] and npm](http://nodejs.org/dist/v0.6.10/) and add to path.
 2. Install [BlackBerry Native SDK](https://bdsc.webapps.blackberry.com/native/).
-3. Install [BlackBerry 10 WebWorks SDK](https://developer.blackberry.com/html5/download/sdk).
-4. Install [CMake](http://www.cmake.org/cmake/resources/software.html).
-5. [*Windows*] Add CMake bin to path. i.e.`\*Installation Directory\*\bin`
-6. [*Windows*] Add Git bin to PATH. i.e. `\*Installation Directory\*\bin`
+3. [*Windows*] Add Git bin to PATH. i.e. `*Installation Directory*\bin`
 
 ##Setup and Build
 1. `git clone https://github.com/blackberry-webworks/BB10-WebWorks-Framework.git`
@@ -18,12 +15,9 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
     - [*Mac/Linux*] `./configure` [from terminal]
     - [*Windows*] `bash configure` [from command prompt]
 5. **Setup bbndk environment variables:** (must be done within each session, prior to jake)
-    - [*Mac/Linux*] `source \*BBNDK installation directory\*/bbndk-env.sh`
-    - [*Windows*] `\*BBNDK installation directory\*\bbndk-env.bat`
-6. **Webplatform setup:**<br />
-    Copy the following webplatform files from the latest [BlackBerry 10 WebWorks SDK](https://developer.blackberry.com/html5/download/sdk) into `./dependencies/webplatform/framework/clientFiles/`. For more details on how to install go [here](https://developer.blackberry.com/html5/documentation/install_and_configure_ww_bb10_2007535_11.html).
-    - `Framework/dependencies/bootstrap/webplatform.js`
-7. Run `jake` or `jake build` and check that the output folder is created under the "target/zip" subfolder. If on windows, run jake from command prompt.
+    - [*Mac/Linux*] `source *BBNDK installation directory*/bbndk-env.sh`
+    - [*Windows*] `*BBNDK installation directory*\bbndk-env.bat`
+6. Run `jake` or `jake build` and check that the output folder is created under the "target/zip" subfolder. If on windows, run jake from command prompt.
 8. Run `jake test` and check that jake runs and completes
 
 ##Running Tests

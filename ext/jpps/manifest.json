@@ -1,0 +1,5 @@
+{
+    "global": true,
+    "namespace": "jpps",
+    "dependencies": ["utils"]
+}

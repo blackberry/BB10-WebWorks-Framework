@@ -13,3 +13,4 @@ ext/blackberry.example.test
 lib/pps/ppsUtils.js
 lib/jnext.js
 test/test-app
+test/functional/Apps

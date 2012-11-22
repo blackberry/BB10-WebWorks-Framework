@@ -32,17 +32,18 @@ describe("invoke.card index", function () {
         mockedFile = {
             open: jasmine.createSpy("file.open")
         };
-        GLOBAL.window = {};
-        GLOBAL.window.qnx = {
-            callExtensionMethod : function () {},
-            webplatform: {
-                getApplication: function () {
-                    return {
-                        cards: {
-                            camera: mockedCamera,
-                            file: mockedFile
-                        }
-                    };
+        GLOBAL.window = {
+            qnx: {
+                callExtensionMethod : function () {},
+                webplatform: {
+                    getApplication: function () {
+                        return {
+                            cards: {
+                                camera: mockedCamera,
+                                file: mockedFile
+                            }
+                        };
+                    }
                 }
             }
         };
@@ -54,8 +55,9 @@ describe("invoke.card index", function () {
 
     afterEach(function () {
         mockedCamera = null;
-        GLOBAL.window.qnx = null;
+        delete GLOBAL.window;
         index = null;
+        delete require.cache[require.resolve(_apiDir + "index")];
         successCB = null;
         failCB = null;
     });

@@ -39,22 +39,15 @@ var _extDir = __dirname + "./../../../../ext",
         "CREATE_CHANNEL_NOT_DONE" : 10106,
         "MISSING_PORT_FROM_PPG" : 10107,
         "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG" : 10108,
+        "PPG_SERVER_ERROR" : 10110,
         "MISSING_INVOKE_TARGET_ID" : 10111,
         "SESSION_ALREADY_EXISTS" : 10112,
-        "INVALID_PPG_URL_OR_PPG_UNAVAILABLE" : 10113,
+        "INVALID_PPG_URL" : 10114,
         "CREATE_CHANNEL_OPERATION" : 1,
         "DESTROY_CHANNEL_OPERATION" : 2
     },
     constantsLength = 0,
     defineROFieldArgs = [];
-
-beforeEach(function () {
-    GLOBAL.window = GLOBAL;
-});
-
-afterEach(function () {
-    delete GLOBAL.window;
-});
 
 function unloadClient() {
     // explicitly unload client for it to be loaded again
@@ -68,7 +61,9 @@ describe("push", function () {
         mockedWebworks.event = { once : jasmine.createSpy().andReturn(3),
                                  isOn : jasmine.createSpy().andReturn(4) };
         mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         // client needs to be required for each test
         client = require(_apiDir + "/client");
         Object.getOwnPropertyNames(constants).forEach(function (c) {
@@ -81,6 +76,7 @@ describe("push", function () {
     afterEach(function () {
         unloadClient();
         defineROFieldArgs = [];
+        delete GLOBAL.window;
     });
 
     describe("push constants", function () {
@@ -109,9 +105,10 @@ describe("push", function () {
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CREATE_CHANNEL_NOT_DONE")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_PORT_FROM_PPG")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("PPG_SERVER_ERROR")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("MISSING_INVOKE_TARGET_ID")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("SESSION_ALREADY_EXISTS")]);
-            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("INVALID_PPG_URL_OR_PPG_UNAVAILABLE")]);
+            expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("INVALID_PPG_URL")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("CREATE_CHANNEL_OPERATION")]);
             expect(mockedWebworks.defineReadOnlyField.argsForCall).toContain(defineROFieldArgs[Object.getOwnPropertyNames(constants).indexOf("DESTROY_CHANNEL_OPERATION")]);
         });

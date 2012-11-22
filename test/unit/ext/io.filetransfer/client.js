@@ -35,8 +35,9 @@ describe("io.filetransfer client", function () {
             isOn : jasmine.createSpy()
         };
 
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
 
         client = require(_apiDir + "client");
     });
@@ -120,7 +121,7 @@ describe("io.filetransfer client", function () {
 
             client.upload(filePath, server, success, failure, options);
             mockedWebworks.event.once.argsForCall[0][2](mocked_args);
-    
+
             expect(success).not.toHaveBeenCalled();
             expect(failure).toHaveBeenCalledWith(expected_args);
         });

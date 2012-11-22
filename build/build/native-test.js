@@ -27,11 +27,10 @@ function _getCmd(ext, device, ip) {
         testDir;
 
     //unit tests directories
-    deviceDir = path.join(_c.UNIT_TEST_DEVICE_BUILD, "ext", ext, "native/unitTests/test");
-    simDir = path.join(_c.UNIT_TEST_SIM_BUILD, "ext", ext, "native/unitTests/test");
-
+    deviceDir = path.join(_c.UNIT_TEST_DEVICE_BUILD, ext, "native/arm/o.le-v7/test");
+    simDir = path.join(_c.UNIT_TEST_SIM_BUILD, ext, "native/x86/o/test");
     testDir = device === "device" ? deviceDir : simDir;
-
+    
     //If the folder exists, grab the test
     if (path.existsSync(testDir)) {
         console.log("Running Unit tests for " + ext);
@@ -39,7 +38,6 @@ function _getCmd(ext, device, ip) {
             "scp " + testDir  + " root@" + ip + ":/tmp/test && " +
             "ssh root@" + ip + " '. /base/scripts/env.sh; cd ../tmp; chmod 755 test; ./test'";
     }
-
     return cmd;
 }
 
@@ -50,10 +48,9 @@ module.exports = function (prev, baton) {
         device = args[0] === "simulator" ? "simulator" : "device",
         ip = utils.isValidIPAddress(args[1]) ? args[1] : _c.USB_IP,
         omitList = args.slice(2) || [],
-        buildFolder = (device === "device" ? _c.UNIT_TEST_DEVICE_BUILD : _c.UNIT_TEST_SIM_BUILD),
-        exts = fs.readdirSync(path.join(buildFolder, "ext")),
+        exts = fs.readdirSync(path.join(_c.ROOT, "ext")),
         i;
-
+    
     thisBaton.take();
     for (i = 0; i < exts.length; i++) {
         if (!utils.arrayContains(omitList, exts[i])) {

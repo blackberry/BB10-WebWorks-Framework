@@ -15,16 +15,17 @@
  */
 
 var srcPath = __dirname + '/../../../lib/',
-    framework = require(srcPath + 'framework'),
-    util = require(srcPath + "utils"),
+    config = require(srcPath + "config"),
+    framework,
     webview,
     overlayWebView,
     controllerWebView,
-    rotationHelper,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mockedWebview,
     mockedApplicationWindow,
     mockedApplication,
+    mockedDevice,
+    mockedQnx,
     mock_request = {
         url: "http://www.dummy.com",
         allow: jasmine.createSpy(),
@@ -45,63 +46,96 @@ describe("framework", function () {
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
             windowGroup: undefined,
-            addEventListener: jasmine.createSpy()
+            addEventListener: jasmine.createSpy(),
+            uiWebView: undefined,
+            onChildWindowOpen: undefined
         };
         mockedApplicationWindow = {
             visible: undefined
         };
         mockedApplication = {
-            addEventListener: jasmine.createSpy()
-        };
-        GLOBAL.window = {
-            qnx: {
-                callExtensionMethod : function () {
-                    return 42;
-                },
-                webplatform : {
-                    getController : function () {
-                        return mockedWebview;
-                    },
-                    getApplication : function () {
-                        return mockedApplication;
-                    },
-                    getApplicationWindow : function () {
-                        return mockedApplicationWindow;
-                    }
-                }
+            addEventListener: jasmine.createSpy(),
+            webInspectorPort : "1337",
+            invocation: {
+                invoke: jasmine.createSpy()
             }
         };
-        webview = util.requireWebview();
+        mockedDevice = {
+            getNetworkInterfaces : jasmine.createSpy()
+        };
+        mockedQnx = {
+            callExtensionMethod : function () {
+                return 42;
+            },
+            webplatform : {
+                getController : function () {
+                    return mockedWebview;
+                },
+                getApplication : function () {
+                    return mockedApplication;
+                },
+                getApplicationWindow : function () {
+                    return mockedApplicationWindow;
+                },
+                device : mockedDevice
+            }
+        };
+        GLOBAL.window = {
+            qnx: mockedQnx
+        };
+        GLOBAL.qnx = mockedQnx;
+        GLOBAL.NamedNodeMap = function () {};
+
+        delete require.cache[require.resolve(srcPath + "webview")];
+        webview = require(srcPath + "webview");
+        delete require.cache[require.resolve(srcPath + "overlayWebview")];
         overlayWebView = require(srcPath + "overlayWebView");
+        delete require.cache[require.resolve(srcPath + "controllerWebview")];
         controllerWebView = require(srcPath + "controllerWebView");
-        rotationHelper = require(srcPath + 'rotationHelper');
-        spyOn(rotationHelper, "addWebview");
+
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
+
         spyOn(overlayWebView, "create").andCallFake(function (done) {
             done();
         });
+
         spyOn(controllerWebView, "init");
         spyOn(controllerWebView, "dispatchEvent");
         spyOn(webview, "destroy");
         spyOn(webview, "executeJavascript");
         spyOn(webview, "setURL");
+        spyOn(webview, "setUIWebViewObj");
+        spyOn(webview, "addEventListener").andCallFake(function (eventName, callback) {
+            callback();
+        });
+        spyOn(webview, "removeEventListener");
+
         spyOn(overlayWebView, "setURL");
-        spyOn(console, "log");
+        spyOn(overlayWebView, "renderContextMenuFor");
+        spyOn(overlayWebView, "handleDialogFor");
+        spyOn(overlayWebView, "addEventListener").andCallFake(function (eventName, callback) {
+            callback();
+        });
+        spyOn(overlayWebView, "removeEventListener");
+        spyOn(overlayWebView, "bindAppWebViewToChildWebViewControls");
+
+        delete require.cache[require.resolve(srcPath + "framework")];
+        framework = require(srcPath + 'framework');
+    });
+
+    afterEach(function () {
+        delete GLOBAL.blackberry;
+        delete GLOBAL.window;
+        delete GLOBAL.qnx;
+        delete GLOBAL.NamedNodeMap;
     });
 
     it("can start a webview instance", function () {
         framework.start();
         expect(controllerWebView.init).toHaveBeenCalled();
         expect(webview.create).toHaveBeenCalled();
-    });
-
-    it("adds all three webviews to the rotationHandler", function () {
-        framework.start();
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(webview);
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(overlayWebView);
-        expect(rotationHelper.addWebview).toHaveBeenCalledWith(controllerWebView);
     });
 
     it("on start passing callback and setting object parameters to create method of webview", function () {
@@ -126,4 +160,156 @@ describe("framework", function () {
         expect(webview.destroy).toHaveBeenCalled();
     });
 
+    describe('creating the overlay webview', function () {
+        beforeEach(function () {
+            framework.start();
+        });
+        it('calls overlayWebView.create', function () {
+            expect(overlayWebView.create).toHaveBeenCalled();
+        });
+
+        it('sets the overlayWebView URL', function () {
+            expect(overlayWebView.setURL).toHaveBeenCalledWith("local:///chrome/ui.html");
+        });
+
+        it('calls renderContextMenuFor passing the webview', function () {
+            expect(overlayWebView.renderContextMenuFor).toHaveBeenCalledWith(webview);
+        });
+
+        it('calls handleDialogFor passing the webview', function () {
+            expect(overlayWebView.handleDialogFor).toHaveBeenCalledWith(webview);
+        });
+
+        it('dispatches the ui.init event on the controllerWebView', function () {
+            expect(controllerWebView.dispatchEvent).toHaveBeenCalledWith('ui.init', null);
+        });
+    });
+
+    describe('configuring OpenChildWindow events', function () {
+        it('delegates to childWebViewControls on the overlay webview', function () {
+            config.enableChildWebView = false;
+
+            //reload config in framework
+            delete require.cache[require.resolve(srcPath + "framework")];
+            framework = require(srcPath + 'framework');
+
+            this.after(function () {
+                delete require.cache[require.resolve(srcPath + "config")];
+                config = require(srcPath + 'config');
+            });
+
+            framework.start();
+            expect(overlayWebView.bindAppWebViewToChildWebViewControls).toHaveBeenCalledWith(webview);
+            expect(webview.onChildWindowOpen).not.toBeDefined();
+        });
+
+        it('binds to OpenChildWindow and invokes the browser', function () {
+            var handler;
+
+            config.enableChildWebView = false;
+
+            webview.__defineSetter__('onChildWindowOpen', function (input) {
+                handler = input;
+            });
+
+            //reload config in framework
+            delete require.cache[require.resolve(srcPath + "framework")];
+            framework = require(srcPath + 'framework');
+
+            this.after(function () {
+                delete require.cache[require.resolve(srcPath + "config")];
+                config = require(srcPath + 'config');
+            });
+
+            framework.start();
+            expect(overlayWebView.bindAppWebViewToChildWebViewControls).not.toHaveBeenCalledWith(webview);
+            expect(handler).toEqual(jasmine.any(Function));
+            handler(JSON.stringify({url: 'http://www.google.com'}));
+            expect(mockedApplication.invocation.invoke).toHaveBeenCalledWith(
+                {uri: 'http://www.google.com', target: "sys.browser" }
+            );
+        });
+    });
+
+    describe('shows the webinspector dialog', function () {
+        it('show the webinspector dialog', function () {
+            var flag = false;
+            spyOn(overlayWebView, "showDialog");
+
+            window.qnx.webplatform.device.getNetworkInterfaces = function (callback) {
+                callback();
+                flag = true;
+            };
+            config.debugEnabled = true;
+            framework.start();
+            waitsFor(function () {
+                return flag;
+            });
+            runs(function () {
+                expect(overlayWebView.showDialog).toHaveBeenCalled();
+            });
+        });
+
+        it('show the webinspector dialog with the correct IP address', function () {
+            var flag = false,
+            messageObj;
+            spyOn(overlayWebView, "showDialog");
+
+            window.qnx.webplatform.device.getNetworkInterfaces = function (callback) {
+                var dummyData = {
+                    asix0i : null,
+                    bb0 : null,
+                    bptp0 : null,
+                    cellular0 : null,
+                    cellular1 : null,
+                    cellular2 : null,
+                    cellular3 : null,
+                    cellular4 : null,
+                    ecm0 : {
+                        connected : true,
+                        ipv4Address : "169.254.0.1",
+                        ipv6Address : "fe80::70aa:b2ff:fef9:b374",
+                        type : "usb"
+                    },
+                    ipsec0 : null,
+                    ipsec1 : null,
+                    lo0 : null,
+                    lo2 : null,
+                    nap0 : null,
+                    pan0 : null,
+                    pflog0 : null,
+                    ppp0 : null,
+                    rndis0 : null,
+                    smsc0 : null,
+                    tiw_drv0 : null,
+                    tiw_ibss0 : null,
+                    tiw_p2pdev0 : null,
+                    tiw_p2pgrp0 : null,
+                    tiw_sta0 : {
+                        connected : true,
+                        ipv4Address : "192.168.2.2",
+                        ipv6Address : "fe80::72aa:b2ff:fef9:b374",
+                        type : "wifi"
+                    },
+                    vlan0 : null,
+                    vpn0 : null
+                };
+                callback(dummyData);
+                flag = true;
+            };
+            config.debugEnabled = true;
+            framework.start();
+            waitsFor(function () {
+                return flag;
+            });
+            runs(function () {
+                messageObj = {
+                    title : "Web Inspector Enabled",
+                    htmlmessage : "\n ip4:    169.254.0.1:1337<br/> ip6:    fe80::70aa:b2ff:fef9:b374:1337",
+                    dialogType : "JavaScriptAlert"
+                };
+                expect(overlayWebView.showDialog).toHaveBeenCalledWith(messageObj);
+            });
+        });
+    });
 });

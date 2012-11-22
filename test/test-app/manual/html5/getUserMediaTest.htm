@@ -1,0 +1,28 @@
+﻿<html>
+<head>
+    <title>getUserMedia</title>
+	<script src="local:///chrome/webworks.js" type="text/javascript"></script>
+</head>
+<body>
+	<div data-bb-type="screen">
+		<video autoplay controls></video>
+
+		<script type="text/javascript">
+			function onFailSoHard(ex) {
+				console.log(ex);
+			}
+
+			navigator.getUserMedia = navigator.getUserMedia||navigator.webkitGetUserMedia||false;
+
+			if(!!navigator.getUserMedia) {
+			  navigator.getUserMedia({audio: true, video: true}, function(stream) {
+				var video = document.querySelector('video');
+				video.src = ('webkitURL' in window)?window.webkitURL.createObjectURL(stream):stream;
+			  }, onFailSoHard);
+			} else {
+			   alert("not supported"); // fallback.
+			}
+		</script>
+	</div>
+</body>
+</html>

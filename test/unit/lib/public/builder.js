@@ -15,33 +15,44 @@
  */
 
 var libRoot = __dirname + "/../../../../lib/",
-    builder = require(libRoot + "public/builder"),
-    utils = require(libRoot + "utils"),
-    mockedWebworks = {
-        exec : function () {},
-        execSync: function () {
-            return "";
-        },
-        defineReadOnlyField: function () {}
-    };
+    app,
+    io,
+    filetransfer,
+    system,
+    builder,
+    utils;
 
 describe("builder", function () {
 
     beforeEach(function () {
-        //Create window object like in DOM and have it act the same way
-        GLOBAL.window = GLOBAL;
-
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: {
+                execSync: jasmine.createSpy(),
+                defineReadOnlyField: jasmine.createSpy()
+            }
+        };
 
+        app = require(libRoot + "../ext/app/client");
+        io = require(libRoot + "../ext/io/client");
+        filetransfer = require(libRoot + "../ext/io.filetransfer/client");
+        system = require(libRoot + "../ext/system/client");
+
+        delete require.cache[require.resolve(libRoot + "utils")];
+        utils = require(libRoot + "utils");
         spyOn(utils, "loadModule").andCallFake(function (module) {
             module = module.replace("blackberry.", "");
-            return require(__dirname + "/../../../../" +  module.replace(/local:\/\//, "").replace(/\.js$/, ""));
+            module =  libRoot + "../" +  module.replace(/local:\/\//, "").replace(/\.js$/, "");
+            return require(module);
         });
+
+        delete require.cache[require.resolve(libRoot + "public/builder")];
+        builder = require(libRoot + "public/builder");
     });
 
     afterEach(function () {
-        delete GLOBAL.window;        
+        delete GLOBAL.window;
+        builder = null;
     });
 
     it("can build an object with a single member", function () {
@@ -50,53 +61,44 @@ describe("builder", function () {
 
         builder.build(featureIds).into(target);
 
-        expect(target.blackberry.app).toBeDefined();
+        expect(target.blackberry.app).toEqual(app);
         expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeTruthy();
         expect(Object.hasOwnProperty.call(target.blackberry.app, "version")).toBeTruthy();
     });
 
-    // blackberry.app.event is removed since it does not contain any functional API
-    // there is no nested namespace at this point, comment out test case for now
-    xit("can build an object with a nested member", function () {
-        var featureIds = ['blackberry.app', 'blackberry.app.event'],
+    it("can build an object with a nested member", function () {
+        var featureIds = ['blackberry.io', 'blackberry.io.filetransfer'],
             target = {};
 
         builder.build(featureIds).into(target);
-        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeTruthy();
-        expect(target.blackberry.app.event).toBeDefined();
-        expect(target.blackberry.app.event.onExit).toBeDefined();
+        expect(target.blackberry.io.filetransfer).toEqual(filetransfer);
+        expect(target.blackberry.io.sandbox).toEqual(io.sandbox);
     });
 
-    // blackberry.app.event is removed since it does not contain any functional API
-    // there is no nested namespace at this point, comment out test case for now
-    xit("can build with feature IDs provided in any order", function () {
-        var featureIds = ['blackberry.app.event', 'blackberry.app'],
+    it("can build with feature IDs provided in any order", function () {
+        var featureIds = ['blackberry.io.filetransfer', 'blackberry.io'],
             target = {};
 
         builder.build(featureIds).into(target);
-        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeTruthy();
-        expect(target.blackberry.app.event).toBeDefined();
-        expect(target.blackberry.app.event.onExit).toBeDefined();
+        expect(target.blackberry.io.filetransfer).toEqual(filetransfer);
+        expect(target.blackberry.io.sandbox).toEqual(io.sandbox);
     });
 
-    // blackberry.app.event is removed since it does not contain any functional API
-    // there is no nested namespace at this point, comment out test case for now
-    xit("can build an object with only the nested member", function () {
-        var featureIds = ['blackberry.app.event'],
+    it("can build an object with only the nested member", function () {
+        var featureIds = ['blackberry.io.filetransfer'],
             target = {};
 
         builder.build(featureIds).into(target);
-        expect(Object.hasOwnProperty.call(target.blackberry.app, "name")).toBeFalsy();
-        expect(target.blackberry.app.event).toBeDefined();
-        expect(target.blackberry.app.event.onExit).toBeDefined();
+        expect(target.blackberry.io.filetransfer).toEqual(filetransfer);
     });
 
     it("can build an object with multiple members", function () {
         var featureIds = ['blackberry.app', 'blackberry.system'],
-            target = {};
+            target = {},
+            app = require(libRoot + "../ext/app/client");
 
         builder.build(featureIds).into(target);
-        expect(target.blackberry.app).toBeDefined();
-        expect(target.blackberry.system).toBeDefined();
+        expect(target.blackberry.app).toEqual(app);
+        expect(target.blackberry.system).toEqual(system);
     });
 });

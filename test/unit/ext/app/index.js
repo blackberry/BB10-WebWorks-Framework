@@ -19,12 +19,31 @@ var _apiDir = __dirname + "./../../../../ext/app/",
     eventExt = require(__dirname + "./../../../../ext/event/index"),
     index,
     mockedExit,
+    mockedRotate,
+    mockedLockRotation,
+    mockedUnlockRotation,
     config;
+
+function getWebPlatformEventName(e) {
+    switch (e) {
+    case "pause":
+        return "inactive";
+    case "resume":
+        return "active";
+    case "orientationchange":
+        return [ 'rotate', 'rotateWhenLocked' ];
+    default:
+        return e;
+    }
+}
 
 function testRegisterEvent(e) {
     var args = {eventName : encodeURIComponent(e)},
         success = jasmine.createSpy(),
-        utils = require(_libDir + "utils");
+        utils = require(_libDir + "utils"),
+        appEvents = require(_libDir + "events/applicationEvents");
+
+    spyOn(appEvents, "addEventListener");
 
     spyOn(utils, "loadExtensionModule").andCallFake(function () {
         return eventExt;
@@ -34,7 +53,7 @@ function testRegisterEvent(e) {
     eventExt.add(null, null, args);
     expect(success).toHaveBeenCalled();
     expect(events.add).toHaveBeenCalled();
-    expect(events.add.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.add.mostRecentCall.args[0].event).toEqual(getWebPlatformEventName(e));
     expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
 }
 
@@ -43,7 +62,7 @@ function testUnRegisterEvent(e) {
 
     eventExt.remove(null, null, args);
     expect(events.remove).toHaveBeenCalled();
-    expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
+    expect(events.remove.mostRecentCall.args[0].event).toEqual(getWebPlatformEventName(e));
     expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
 }
 
@@ -53,12 +72,18 @@ describe("app index", function () {
         config = require(_libDir + "config");
         index = require(_apiDir + "index");
         mockedExit = jasmine.createSpy("exit");
+        mockedRotate = jasmine.createSpy();
+        mockedLockRotation = jasmine.createSpy();
+        mockedUnlockRotation = jasmine.createSpy();
         GLOBAL.window = GLOBAL;
         GLOBAL.window.qnx = {
             webplatform: {
                 getApplication: function () {
                     return {
-                        exit: mockedExit
+                        exit: mockedExit,
+                        rotate: mockedRotate,
+                        lockRotation: mockedLockRotation,
+                        unlockRotation: mockedUnlockRotation
                     };
                 }
             }
@@ -69,85 +94,111 @@ describe("app index", function () {
         config = null;
         index = null;
         mockedExit = null;
+        mockedRotate = null;
+        mockedLockRotation = null;
+        mockedUnlockRotation = null;
     });
 
-    describe("author", function () {
-        it("can call success with author", function () {
-            var success = jasmine.createSpy();
-            index.author(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.author);
+    describe("getReadOnlyFields", function () {
+        it("can call success", function () {
+            var success = jasmine.createSpy(),
+                expectedReturn = {
+                    author : "Me",
+                    authorEmail : "guocat@gmail.com",
+                    authorURL : "http://bbtools_win7_01/yui",
+                    copyright : "@Rebecca",
+                    description : "this is the description",
+                    id : "",
+                    license : "This is a license",
+                    licenseURL : "",
+                    name : "wwTest",
+                    version : "1.0.0.0"
+                };
+            index.getReadOnlyFields(success, null, null, null);
+            expect(success).toHaveBeenCalledWith(expectedReturn);
         });
     });
 
-    describe("authorEmail", function () {
-        it("can call success with authorEmail", function () {
-            var success = jasmine.createSpy();
-            index.authorEmail(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.authorEmail);
+    describe("lockOrientation", function () {
+        it("calls webplatform rotate and lock methods", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                mockArgs = { orientation : encodeURIComponent("\"landscape-primary\"") };
+
+            index.lockOrientation(success, fail, mockArgs, null);
+            expect(fail).not.toHaveBeenCalled();
+            expect(success).toHaveBeenCalledWith(true);
+            expect(mockedRotate).toHaveBeenCalledWith("left_up");
         });
     });
 
-    describe("authorURL", function () {
-        it("can call success with authorURL", function () {
-            var success = jasmine.createSpy();
-            index.authorURL(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.authorURL);
+    describe("unlockOrientation", function () {
+        it("calls webplatform unlockRotation method", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+
+            index.unlockOrientation(success, fail, null, null);
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+            expect(mockedUnlockRotation).toHaveBeenCalled();
         });
     });
 
-    describe("copyright", function () {
-        it("can call success with copyright", function () {
-            var success = jasmine.createSpy();
-            index.copyright(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.copyright);
+    describe("rotate", function () {
+        it("calls webplatform rotate method", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+
+            index.rotate(success, fail, {orientation: encodeURIComponent("\"landscape\"")}, null);
+            expect(success).toHaveBeenCalled();
+            expect(fail).not.toHaveBeenCalled();
+            expect(mockedRotate).toHaveBeenCalledWith('left_up');
         });
     });
 
-    describe("description", function () {
-        it("can call success with description", function () {
-            var success = jasmine.createSpy();
-            index.description(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.description);
-        });
-    });
+    describe("currentOrientation", function () {
+        it("converts 0 degrees from window.orientation to portrait-primary", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+            GLOBAL.window.orientation = 0;
 
-    describe("id", function () {
-        it("can call success with id", function () {
-            var success = jasmine.createSpy();
-            index.id(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.id);
+            index.currentOrientation(success, fail, null, null);
+            expect(success).toHaveBeenCalledWith("portrait-primary");
         });
-    });
 
-    describe("license", function () {
-        it("can call success with license", function () {
-            var success = jasmine.createSpy();
-            index.license(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.license);
+        it("converts 90 degrees from window.orientation to portrait-primary", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+            GLOBAL.window.orientation = 90;
+
+            index.currentOrientation(success, fail, null, null);
+            expect(success).toHaveBeenCalledWith("landscape-secondary");
         });
-    });
 
-    describe("licenseURL", function () {
-        it("can call success with licenseURL", function () {
-            var success = jasmine.createSpy();
-            index.licenseURL(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.licenseURL);
+        it("converts 180 degrees from window.orientation to portrait-primary", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+            GLOBAL.window.orientation = 180;
+
+            index.currentOrientation(success, fail, null, null);
+            expect(success).toHaveBeenCalledWith("portrait-secondary");
         });
-    });
 
-    describe("name", function () {
-        it("can call success with name", function () {
-            var success = jasmine.createSpy();
-            index.name(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.name);
+        it("converts -90 degrees from window.orientation to portrait-primary", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+            GLOBAL.window.orientation = -90;
+
+            index.currentOrientation(success, fail, null, null);
+            expect(success).toHaveBeenCalledWith("landscape-primary");
         });
-    });
 
-    describe("version", function () {
-        it("can call success with version", function () {
-            var success = jasmine.createSpy();
-            index.version(success, null, null, null);
-            expect(success).toHaveBeenCalledWith(config.version);
+        it("converts 270 degrees from window.orientation to portrait-primary", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
+            GLOBAL.window.orientation = 270;
+            index.currentOrientation(success, fail, null, null);
+            expect(success).toHaveBeenCalledWith("landscape-primary");
         });
     });
 

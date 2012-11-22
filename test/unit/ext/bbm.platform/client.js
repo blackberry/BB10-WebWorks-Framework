@@ -26,9 +26,16 @@ var root = __dirname + "/../../../../",
 
 describe("bbm.platform", function () {
     beforeEach(function () {
-        //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
+        client = null;
+        delete require.cache[require.resolve(apiDir + "/client")];
     });
 
     describe("bbm.platform.register", function () {
@@ -40,12 +47,12 @@ describe("bbm.platform", function () {
         });
     });
 
-    describe("bbm.platform.self", function () { 
+    describe("bbm.platform.self", function () {
         it("getDisplayPicture calls execAsync", function () {
             client.self.getDisplayPicture(function (img) { });
             expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "self/getDisplayPicture", { "eventId" : "bbm.self.displayPicture" });
         });
-        
+
         it("setStatus calls execAsync", function () {
             client.self.setStatus("available", "Hello");
             expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "self/setStatus", { "status" : "available", "statusMessage" : "Hello" });

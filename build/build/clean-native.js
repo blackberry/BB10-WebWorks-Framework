@@ -13,14 +13,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var wrench = require("../../node_modules/wrench"),
-    path = require("path"),
-    _c = require("./conf");
+
+var utils = require("./utils"),
+    jWorkflow = require("jWorkflow");
 
 module.exports = function (prev, baton) {
-    [_c.SIM_BUILD, _c.DEVICE_BUILD, _c.UNIT_TEST_SIM_BUILD, _c.UNIT_TEST_DEVICE_BUILD].forEach(function (element, index, array) {
-        if (path.existsSync(element)) {
-            wrench.rmdirSyncRecursive(element, true);
+    var cleanNative;
+
+    baton.take();
+
+    cleanNative = jWorkflow.order()
+    .andThen(utils.execCommandWithJWorkflow("make clean"))
+    .andThen(function () {
+        baton.pass(prev);
+    }).start(function (error) {
+        if (error) {
+            baton.drop(error);
         }
     });
+
 };

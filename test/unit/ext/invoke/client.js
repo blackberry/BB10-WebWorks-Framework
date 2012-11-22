@@ -18,25 +18,30 @@ var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/invoke",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
-    mockedWebworks = {
-        execSync: jasmine.createSpy("webworks.execSync"),
-        execAsync: jasmine.createSpy("webworks.execAsync"),
-        defineReadOnlyField: jasmine.createSpy(),
-        event: {
-            isOn: jasmine.createSpy("webworks.event.isOn")
-        }
-    };
+    mockedWebworks;
 
 describe("invoke client", function () {
     beforeEach(function () {
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.btoa = jasmine.createSpy("window.btoa").andReturn("base64 string");
-        mockedWebworks.event.once = jasmine.createSpy("webworks.event.once");
-        GLOBAL.window.webworks = mockedWebworks;
+        mockedWebworks = {
+            execSync: jasmine.createSpy("webworks.execSync"),
+            execAsync: jasmine.createSpy("webworks.execAsync"),
+            defineReadOnlyField: jasmine.createSpy(),
+            event: {
+                isOn: jasmine.createSpy("webworks.event.isOn"),
+                once: jasmine.createSpy("webworks.event.once")
+            }
+        };
+
+        GLOBAL.window = {
+            btoa: jasmine.createSpy("window.btoa").andReturn("base64 string"),
+            webworks: mockedWebworks
+        };
+        delete require.cache[require.resolve(_apiDir + "/client")];
         client = require(_apiDir + "/client");
     });
 
     afterEach(function () {
+        delete GLOBAL.window.webworks;
         delete GLOBAL.window;
         client = null;
     });
@@ -94,7 +99,7 @@ describe("invoke client", function () {
                 },
                 onError = jasmine.createSpy("client onError");
 
-            GLOBAL.window.btoa = jasmine.createSpy("window.btoa").andThrow("bad string");
+            window.btoa.andThrow("bad string");
             client.invoke(request, null, onError);
             expect(onError).toHaveBeenCalledWith("bad string");
         });
@@ -205,13 +210,13 @@ describe("invoke client", function () {
         it("should call execSync for closeChildCard", function () {
             expect(client.closeChildCard).toBeDefined();
             client.closeChildCard();
-            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "closeChildCard");
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "closeChildCard");
         });
     });
 
     describe("registerEvents", function () {
         it("should call registerEvents to enable events map for the extension", function () {
-            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "registerEvents", null);
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "registerEvents", null);
         });
     });
 });

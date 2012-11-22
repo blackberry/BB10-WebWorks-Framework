@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var wrench = require("../../node_modules/wrench"),
+var wrench = require("wrench"),
     utils = require("./utils"),
     _c = require("./conf"),
     fs = require("fs"),
@@ -33,11 +33,12 @@ function copyExtensions(extPath, extDest) {
         //Iterate over extensions directory
         fs.readdirSync(extPath).forEach(function (extension) {
             var apiDir = path.normalize(path.resolve(extPath, extension)),
+                apiDirDeviceSO = path.normalize(path.join(apiDir, 'native', 'arm', 'so.le-v7')),
+                apiDirSimulatorSO = path.normalize(path.join(apiDir, 'native', 'x86', 'so')),
                 apiDest = path.join(extDest, extension),
                 extensionStats = fs.lstatSync(apiDir),
                 soPath,
                 soDest,
-                apiNativeDir,
                 jsFiles,
                 soFiles;
 
@@ -56,15 +57,16 @@ function copyExtensions(extPath, extDest) {
                     utils.copyFile(jsFile, apiDest, apiDir);
                 });
 
-                //find and copy each .so file to the extension folder
-                [{src: _c.DEVICE_BUILD, dst: "device"}, {src: _c.SIM_BUILD, dst: "simulator"}].forEach(function (target) {
-                    soPath = path.normalize(path.join(target.src, "ext", extension, "native"));
-                    soDest = path.join(apiDest, target.dst);
-                    apiNativeDir = path.normalize(path.join(apiDir, "native"));
+                // Copy the .so file for this extension
+                [{ src: apiDirDeviceSO, dst: "device" }, { src: apiDirSimulatorSO, dst: "simulator"}].forEach(function (target) {
+                    if (path.existsSync(target.src)) {
+                        soDest = path.join(apiDest, target.dst);
 
-                    //If this is a native extension, copy all .so files
-                    if (path.existsSync(soPath) && path.existsSync(apiNativeDir)) {
-                        soFiles = utils.listFiles(soPath, function (file) {
+                        if (!path.exists(soDest)) {
+                            fs.mkdirSync(soDest);
+                        }
+
+                        soFiles = utils.listFiles(target.src, function (file) {
                             return path.extname(file) === ".so";
                         });
 
@@ -84,8 +86,6 @@ module.exports = function (src, baton) {
         clientFilesDest = path.join(_c.DEPLOY, 'clientFiles'),
         bootstrapDest = path.join(_c.DEPLOY, 'dependencies/bootstrap'),
         jnextDest = path.join(_c.DEPLOY, 'dependencies/jnext'),
-        browserRequireDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
-        webplatformDest = path.join(_c.DEPLOY, 'dependencies/bootstrap/'),
 
         //files
         readmeFile = path.join(_c.ROOT, 'README.md'),
@@ -100,19 +100,10 @@ module.exports = function (src, baton) {
     copyFolder(_c.DEPENDENCIES_BOOTSTRAP, bootstrapDest);
     copyFolder(_c.DEPENDENCIES_JNEXT, jnextDest);
 
-    //Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
+	//Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
     utils.copyFile(readmeFile, _c.DEPLOY);
     utils.copyFile(licenseFile, _c.DEPLOY);
-
-    //Copy webplatform files/folders if they exist
-    if (path.existsSync(_c.DEPENDENCIES_WEBPLATFORM)) {
-        utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_REQUIRE, browserRequireDest);
-        utils.copyFile(_c.DEPENDENCIES_WEBPLATFORM_FRAMEWORK_LIB, webplatformDest);
-    } else {
-        console.log("\n****ERROR: Webplatform could not be found.****");
-        console.log("Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation.\n");
-
-    }
+    utils.copyFile(_c.DEPENDENCIES_REQUIRE, bootstrapDest);
 
     //Remove public folder
     wrench.rmdirSyncRecursive(_c.DEPLOY + 'lib/public', true);

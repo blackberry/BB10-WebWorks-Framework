@@ -67,6 +67,7 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions, pathToWeb
         wwVersionPath,
         appJsZip,
         frameworkPath,
+        intExtPath,
         cmd;
 
 
@@ -106,6 +107,12 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions, pathToWeb
     }
     //Now replace with current framework
     wrench.copyDirSyncRecursive(conf.DEPLOY, frameworkPath);
+
+    //Include internal extensions
+    intExtPath = path.normalize(__dirname + "/../ext-internal/");
+    fs.readdirSync(intExtPath).forEach(function (ext) {
+        wrench.copyDirSyncRecursive(path.join(intExtPath, ext), path.join(frameworkPath, "ext", ext));
+    });
 
     //Call bbwp using node
     cmd = "node " + path.join(pathToPackager, "lib/bbwp.js") + " " + pathToApp + " " + packagerOptions;

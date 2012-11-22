@@ -26,8 +26,14 @@ var _ID = "blackberry.ui.contextmenu",
 describe("blackberry.ui.contextmenu client", function () {
 
     beforeEach(function () {
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(_apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     it("enabled context menu calls execSync", function () {

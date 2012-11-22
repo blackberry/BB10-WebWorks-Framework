@@ -21,27 +21,31 @@ function testBBMProfileReadOnly(field) {
 }
 
 describe("blackberry.bbm.platform", function () {
-        
     describe("onacccesschange", function () {
         var onChange,
-            waitForTimeout = 15000;
+            waitForTimeout = 15000,
+            flag = false;
 
         it('should invoke callback when BBM access is registered', function () {
             runs(function () {
-                onChange = jasmine.createSpy();
+                onChange = jasmine.createSpy().andCallFake(function (allowed, reason) {
+                    if (reason === "unregistered") {
+                        blackberry.bbm.platform.register({ uuid : "68de53d0-e701-11e1-aff1-0800200c9a66" });
+                    } else if (reason === "allowed") {
+                        flag = true;
+                    }
+                });
                 blackberry.event.addEventListener("onaccesschanged", onChange);
-                blackberry.bbm.platform.register({ uuid : "68de53d0-e701-11e1-aff1-0800200c9a66" });
             });
 
             waitsFor(function () {
-                return onChange.callCount;
+                return flag;
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onChange).toHaveBeenCalled();
+                expect(onChange).toHaveBeenCalledWith(true, "allowed");
             });
         });
-
     });
     
 });

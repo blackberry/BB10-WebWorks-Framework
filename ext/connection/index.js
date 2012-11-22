@@ -14,21 +14,73 @@
 * limitations under the License.
 */
 
-var connection = require("./connectionJNEXT").connection,
-    _event = require("../../lib/event"),
+var _event = require("../../lib/event"),
     _utils = require("../../lib/utils"),
-    _actionMap = {
-        connectionchange: {
-            context: require("./connectionEvents"),
-            event: "connectionchange",
-            trigger: function (args) {
-                _event.trigger("connectionchange", args);
-            }
+    connectionChangeOldType,
+    _actionMap;
+
+function mapConnectionType(type, technology) {
+    switch (type) {
+    case 'wired':
+        return 'ethernet';
+    case 'wifi':
+        return 'wifi';
+    case 'bluetooth_dun':
+        return 'bluetooth_dun';
+    case 'usb':
+        return 'usb';
+    case 'vpn':
+        return 'vpn';
+    case 'bb':
+        return 'rim-bb';
+    case 'unknown':
+        return 'unknown';
+    case 'none':
+        return 'none';
+    case 'cellular':
+        switch (technology) {
+        case 'edge':
+            return '2g';
+        case 'evdo':
+            return '3g';
+        case 'umts':
+            return '3g';
+        case 'lte':
+            return '4g';
         }
-    };
+    }
+    return '';
+}
+
+function currentConnectionType() {
+    var connInfo = qnx.webplatform.device.activeConnection;
+    if (connInfo === null) {
+        connInfo = {
+            type: 'none'
+        };
+    }
+    return mapConnectionType(connInfo.type, connInfo.technology);
+}
+
+_actionMap = {
+    connectionchange: {
+        context: require("../../lib/events/deviceEvents"),
+        event: "connectionChange",
+        trigger: function (args) {
+            var currentType = currentConnectionType();
+            if (currentType ===  connectionChangeOldType) {
+                return;
+            }
+            args.oldType = connectionChangeOldType;
+            args.newType = connectionChangeOldType = currentType;
+            _event.trigger("connectionchange", args);
+        }
+    }
+};
 
 module.exports = {
     registerEvents: function (success, fail, args, env) {
+        connectionChangeOldType = currentConnectionType();
         try {
             var _eventExt = _utils.loadExtensionModule("event", "index");
             _eventExt.registerEvents(_actionMap);
@@ -40,7 +92,7 @@ module.exports = {
 
     type: function (success, fail, args) {
         try {
-            success(connection.getType());
+            success(currentConnectionType());
         } catch (e) {
             fail(-1, e);
         }

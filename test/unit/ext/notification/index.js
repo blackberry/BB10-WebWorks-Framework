@@ -17,57 +17,53 @@
 var _apiDir = __dirname + "./../../../../ext/notification/",
     _libDir = __dirname + "./../../../../lib/",
     index,
-    mockedPPS,
+    mockNotification,
     successCB,
-    failCB,
-    getPPSForWrite;
+    failCB;
 
 describe("notification index", function () {
     beforeEach(function () {
-        mockedPPS = {
-            write : jasmine.createSpy("PPS 'write' method"),
-            open: jasmine.createSpy("PPS 'open' Method"),
-            onNewData: jasmine.createSpy("PPS 'onNewData' Method"),
-            onOpenFailed: jasmine.createSpy("PPS 'onOpenFailed' Method"),
-            onWriteFailed: jasmine.createSpy("PPS 'onWriteFailed' Method")
+        mockNotification = {
+            notify: jasmine.createSpy("Notification 'notify' method"),
+            remove: jasmine.createSpy("Notification 'remove' method")
         };
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.qnx = {
+        GLOBAL.qnx = {
             webplatform: {
-                pps: {
-                    create: function () {
-                        return mockedPPS;
-                    },
-                    PPSMode: {
-                        FULL: 0
-                    },
-                    FileMode: {
-                        RDWR: 2
-                    }
-                }
+                notification: mockNotification
             }
         };
-
         index = require(_apiDir + "index");
         successCB = jasmine.createSpy("success callback");
         failCB = jasmine.createSpy("fail callback");
-        getPPSForWrite = jasmine.createSpy().andReturn(mockedPPS);
     });
 
     afterEach(function () {
-        mockedPPS = null;
-        GLOBAL.window.qnx = null;
+        delete GLOBAL.qnx;
+        mockNotification = null;
         index = null;
         successCB = null;
         failCB = null;
         delete require.cache[require.resolve(_apiDir + "index")];
-        getPPSForWrite = null;
     });
 
     describe("methods", function () {
+        var args;
+
+        beforeEach(function () {
+            args = {
+                id : 100,
+                title : JSON.stringify(encodeURIComponent("TheTitle")),
+                options: JSON.stringify({tag: encodeURIComponent("TheTag")})
+            };
+        });
+
+        afterEach(function () {
+            args = null;
+        });
+
         it("Should have 'notify' method defined", function () {
-            expect(index.remove).toBeDefined();
-            expect(typeof index.remove).toEqual("function");
+            expect(index.notify).toBeDefined();
+            expect(typeof index.notify).toEqual("function");
         });
 
         it("Should have 'remove' method defined", function () {
@@ -75,147 +71,108 @@ describe("notification index", function () {
             expect(typeof index.remove).toEqual("function");
         });
 
-        it("Should have 'close' method defined", function () {
-            expect(index.close).toBeDefined();
-            expect(typeof index.close).toEqual("function");
-        });
-
         describe("notify method", function () {
-            var config;
-
-            beforeEach(function () {
-                config = require(_libDir + "config");
-            });
-
             afterEach(function () {
+                expect(mockNotification.remove).toHaveBeenCalledWith(args.options);
                 delete require.cache[require.resolve(_libDir + "config")];
-                config = null;
             });
 
-            it("Should invoke write method for notify of pps when calling notification notify with required parameters", function () {
-                var args = {
-                    id : 100,
-                    title : JSON.stringify(encodeURIComponent("TheTitle")),
-                    options: JSON.stringify({tag: encodeURIComponent("TheTag")})
-                };
-
+            it("Should invoke notification notify method when making a call with required parameters", function () {
                 index.notify(successCB, failCB, args);
-                expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'notify', 'id': args.id, dat: {'title': args.title, 'itemid': args.options.tag}});
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
                 expect(failCB).not.toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
             });
 
-            it("Should invoke write method for notify of pps when calling notification notify with all parameters", function () {
-                var args = {
-                    id : 100,
-                    title : JSON.stringify(encodeURIComponent("TheTitle")),
-                    options: JSON.stringify({tag: encodeURIComponent("TheTag"), 'body': encodeURIComponent("TheSubtitle"), 'target': encodeURIComponent("The.Target"), 'targetAction': encodeURIComponent("The.Target.Action"),
-                          'payload': encodeURIComponent("Payload"), 'payloadType': encodeURIComponent("PayloadType"), 'payloadURI': encodeURIComponent("http://www.payload.uri")})
-                };
+            it("Should invoke notification notify method when making a call with all parameters", function () {
+                args.options = JSON.stringify({tag: encodeURIComponent("TheTag"), 'body': encodeURIComponent("TheSubtitle"), 'target': encodeURIComponent("The.Target"), 'targetAction': encodeURIComponent("The.Target.Action"),
+                      'payload': encodeURIComponent("Payload"), 'payloadType': encodeURIComponent("PayloadType"), 'payloadURI': encodeURIComponent("http://www.payload.uri")});
 
                 index.notify(successCB, failCB, args);
-                expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'notify', 'id': args.id, dat: {'title': args.title, 'itemid': args.options.tag, 'subtitle': args.options.body,
-                'target': args.options.target, 'targetAction': args.options.targetAction, 'payload': args.options.payload, 'payloadType': args.options.payloadType, 'payloadURI': args.options.payloadURI}});
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
                 expect(failCB).not.toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
             });
 
-            it("Should invoke write with default targetAction if target is provided but no targetAction", function () {
-                var args = {
-                        id : 100,
-                        title : JSON.stringify(encodeURIComponent("TheTitle")),
-                        options: JSON.stringify({tag: encodeURIComponent("TheTag"), 'target': encodeURIComponent("The.Target")})
-                    },
-                    defaultTargetAction = "bb.action.OPEN";
+            it("Should invoke notification notify with default targetAction if target is provided but no targetAction wasn't", function () {
+                var defaultTargetAction = "bb.action.OPEN";
+
+                args.options = JSON.stringify({tag: encodeURIComponent("TheTag"), 'target': encodeURIComponent("The.Target")});
 
                 index.notify(successCB, failCB, args);
-                expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'notify', 'id': args.id, dat: {'title': args.title, 'itemid': args.options.tag, 'target': args.options.target, 'targetAction': defaultTargetAction}});
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
+                expect(args.options.targetAction).toEqual(defaultTargetAction);
                 expect(failCB).not.toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
             });
 
-            it("Should invoke write with no default targetAction if target is an empty string", function () {
-                var args = {
-                        id : 100,
-                        title : JSON.stringify(encodeURIComponent("TheTitle")),
-                        options: JSON.stringify({tag: encodeURIComponent("TheTag"), 'target': ""})
-                    };
+            it("Should invoke notificatoin notify with no default targetAction if target is an empty string", function () {
+                args.options = JSON.stringify({tag: encodeURIComponent("TheTag"), 'target': ""});
 
                 index.notify(successCB, failCB, args);
-                expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'notify', 'id': args.id, dat: {'title': args.title, 'itemid': args.options.tag, 'target' : args.options.target}});
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
+                expect(args.options.target).toBeDefined();
+                expect(args.options.target).toEqual("");
+                expect(args.options.targetAction).not.toBeDefined();
                 expect(failCB).not.toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
             });
 
-            it("Should invoke write with no default targetAction if target is not provided", function () {
-                var args = {
-                        id : 100,
-                        title : JSON.stringify(encodeURIComponent("TheTitle")),
-                        options: JSON.stringify({tag: encodeURIComponent("TheTag")})
-                    };
-
+            it("Should invoke notification notify with no default targetAction if target is not provided", function () {
                 index.notify(successCB, failCB, args);
-                expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'notify', 'id': args.id, dat: {'title': args.title, 'itemid': args.options.tag}});
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
+                expect(args.options.target).not.toBeDefined();
+                expect(args.options.targetAction).not.toBeDefined();
                 expect(failCB).not.toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
             });
 
-            it("Should set target from first occurence of applicaiton type target in config and pass to write", function () {
-                var args = {
-                        id : 100,
-                        title : JSON.stringify(encodeURIComponent("TheTitle")),
-                        options: JSON.stringify({tag: encodeURIComponent("TheTag")})
-                    };
+            it("Should set target from first occurrence of applicaiton type target in config and pass it to notify method", function () {
+                var viewerTarget = "bb.notification.target.viewer",
+                    appTargetFirst = "bb.notification.target.app.first",
+                    appTargetSecond = "bb.notification.target.app.second",
+                    defaultTargetAction = "bb.action.OPEN",
+                    config = require(_libDir + "config");
+
 
                 config["invoke-target"] = [{
-                    "@": {"id": "bb.notification.index.unittest"},
+                    "@": {"id": viewerTarget},
+                    "type": "VIEWER"
+                },
+                {
+                    "@": {"id": appTargetFirst},
+                    "type": "APPLICATION"
+                },
+                {
+                    "@": {"id": appTargetSecond},
                     "type": "APPLICATION"
                 }];
 
                 index.notify(successCB, failCB, args);
-                expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'notify', 'id': args.id, dat: {'title': args.title, 'itemid': args.options.tag, 'target': config["invoke-target"][0]["@"].id, 'targetAction': "bb.action.OPEN"}});
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
+                expect(args.options.target).toEqual(appTargetFirst);
+                expect(args.options.targetAction).toEqual(defaultTargetAction);
+                expect(failCB).not.toHaveBeenCalled();
+                expect(successCB).toHaveBeenCalled();
+            });
+
+            it("Should not set target and targetAction if not provided and no in config", function () {
+                index.notify(successCB, failCB, args);
+                expect(mockNotification.notify).toHaveBeenCalledWith(args, jasmine.any(Function));
+                expect(args.options.target).not.toBeDefined();
+                expect(args.options.targetAction).not.toBeDefined();
                 expect(failCB).not.toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
             });
         });
-
-        it("Should invoke write for delete method of pps when calling notification notify", function () {
-            var args = {
-                id : 100,
-                title : JSON.stringify(encodeURIComponent("TheTitle")),
-                options: JSON.stringify({tag: encodeURIComponent("TheTag")})
-            };
-
-            index.notify(successCB, failCB, args);
-            expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'delete', dat: {'itemid': args.options.tag}});
-            expect(failCB).not.toHaveBeenCalled();
-            expect(successCB).toHaveBeenCalled();
-        });
-
-        it("Should invoke write method for delete of pps when calling notification remove", function () {
-            var args = {
-                id : 100,
-                tag : JSON.stringify(encodeURIComponent("TheTag"))
-            };
-
-            index.remove(successCB, failCB, args);
-
-            expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'delete', dat: {'itemid': args.tag}});
-            expect(failCB).not.toHaveBeenCalled();
-            expect(successCB).toHaveBeenCalled();
-        });
-
-        it("Should invoke write for delete method of pps when calling notification close", function () {
-            var args = {
-                id : 100,
-                tag : JSON.stringify(encodeURIComponent("TheTag"))
-            };
-
-            index.close(successCB, failCB, args);
-
-            expect(mockedPPS.write).toHaveBeenCalledWith({'msg': 'delete', 'id': args.id, dat: {'itemid': args.tag}});
-            expect(failCB).not.toHaveBeenCalled();
-            expect(successCB).toHaveBeenCalled();
+        describe("remove method", function () {
+            it("Should call notification remove method when remove is called.", function () {
+                args.tag = JSON.stringify(encodeURIComponent("TheTag"));
+                index.remove(successCB, failCB, args);
+                expect(mockNotification.remove).toHaveBeenCalledWith(args.tag);
+                expect(failCB).not.toHaveBeenCalled();
+                expect(successCB).toHaveBeenCalled();
+            });
         });
     });
 });

@@ -2,33 +2,41 @@
 <widget xmlns=" http://www.w3.org/ns/widgets"
         xmlns:rim="http://www.blackberry.com/ns/widgets"
         version="1.0.0"
-        id="WebWorksTest">
+        id="WebWorksTest"
+        rim:header="RIM:WebWorks/App">
 
     <name>WebWorks Test Application</name>
+    <name xml:lang="fr-FR">French application name</name>
+    <name xml:lang="en">English application name</name>
 
     <description>This application tests a wide range of WebWorks functionalities.</description>
+    <description xml:lang="fr-FR">French description</description>
+    <description xml:lang="en">English description</description>
 
     <content src="index.htm"/>
 
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
     <feature id="blackberry.app" required="true" version="1.0.0.0">
-        <param name="backgroundColor" value="0xFFEFD5" />
+        <param name="backgroundColor" value="0xFFFFEFD5" />
     </feature>
     <feature id="blackberry.system" required="true" version="1.0.0.0"/>
     <feature id="blackberry.connection" required="true" version="1.0.0.0"/>
     <feature id="blackberry.identity" required="true" version="1.0.0.0"/>
     <feature id="blackberry.event" required="true" version="1.0.0.0"/>
     <feature id="blackberry.ui.dialog" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.ui.toast" required="true" version="1.0.0.0"/>
     <feature id="blackberry.io" required="true" version="1.0.0.0"/>
     <feature id="blackberry.io.filetransfer" required="true" version="1.0.0.0" />
     <feature id="blackberry.push" required="true" version="1.0.0.0" />
     <feature id="blackberry.bbm.platform" required="true" version="1.0.0.0" />
+    <feature id="blackberry.pim.calendar" required="true" version="1.0.0.0" />
     <feature id="blackberry.pim.contacts" required="true" version="1.0.0.0" />
     <feature id="blackberry.invoke.card" required="true" version="1.0.0.0" />
     <feature id="blackberry.invoke" required="true" version="1.0.0.0" />
     <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
     <feature id="blackberry.notification" required="true" version="1.0.0.0" />
+    <feature id="blackberry.sensors" required="true" version="1.0.0.0" />
     <feature id="enable-flash" />
 
     <access uri="http://www.rim.com">
@@ -36,6 +44,7 @@
     </access>
     <access uri="http://atg05-yyz.labyyz.testnet.rim.net" />
     <access uri="http://10.137.251.215/" />
+    <access uri="http://10.137.251.65/" subdomains="true"/>
     <access uri="http://html5demos.com/" />
     <access uri="http://maps.google.com/" subdomains="true"/>
     <access uri="http://googleapis.com/" subdomains="true" />
@@ -52,25 +61,60 @@
     <access uri="http://jquery.com/" subdomains="true"/>
     <access uri="http://www.wikipedia.org//" subdomains="true"/>
     <access uri="http://wikimedia.org//" subdomains="true"/>
-    <access uri="http://Smoketest8-vmyyz.labyyz.testnet.rim.net/" subdomains="true">
+
+    <access uri="http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/" subdomains="false">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest3-vmyyz.labyyz.testnet.rim.net:8080/index.html?*" subdomains="false"/>
+    <access uri="http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/a/index.html" subdomains="false"/>
+    <access uri="http://smoketest4-vmyyz.labyyz.testnet.rim.net:8080/parent/child/index.html" subdomains="false"/>
+    <access uri="http://smoketest5-vmyyz.labyyz.testnet.rim.net:8080/"/>
+    <access uri="http://smoketest6-vmyyz.labyyz.testnet.rim.net:8080/" subdomains="false"/>
+    <access uri="http://www.smoketest6-vmyyz.labyyz.testnet.rim.net:8080/"/>
+    <access uri="http://smoketest7-vmyyz.labyyz.testnet.rim.net:8080" subdomains="true">
         <feature id="blackberry.app"/>
     </access>
-    <access uri="http://Smoketest1-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
-    <access uri="http://Smoketest3-vmyyz.labyyz.testnet.rim.net/index.html?*" subdomains="false"/>
-    <access uri="http://Smoketest4-vmyyz.labyyz.testnet.rim.net/a/index.html" subdomains="false"/>
-    <access uri="http://Smoketest5-vmyyz.labyyz.testnet.rim.net/"/>
-    <access uri="http://Smoketest6-vmyyz.labyyz.testnet.rim.net/" subdomains="false"/>
-    <access uri="http://www.Smoketest6-vmyyz.labyyz.testnet.rim.net/"/>
-    <access uri="http://Smoketest7-vmyyz.labyyz.testnet.rim.net">
-        <feature id="blackberry.identity"/>
-    </access>
-    <access uri="http://www.Smoketest7-vmyyz.labyyz.testnet.rim.net">
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net:8080/" subdomains="true">
         <feature id="blackberry.app"/>
     </access>
-    <access uri="http://Smoketest8-vmyyz.labyyz.testnet.rim.net/a/">
-        <feature id="blackberry.app"/>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net:8080/d" subdomains="false">
+        <feature id="blackberry.app" />
     </access>
-    <access uri="file:///accounts/1000/shared/photos"></access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net:8080/e/webworks.html" subdomains="false">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net:8080/e/webworks2.html" subdomains="false">
+        <feature id="blackberry.system" />
+    </access>
+    <access uri="http://smoketest8-vmyyz.labyyz.testnet.rim.net:8080/webapi_whitelisted.js?*" subdomains="false">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080" subdomains="true" />
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080/d" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080/e/webworks.html" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080/e/webworks2.html" subdomains="true">
+        <feature id="blackberry.system" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080/webapi_whitelisted.js?*" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080/webapi_blacklisted.js?*" subdomains="true" />
+    <access uri="http://smoketest10-vmyyz.labyyz.testnet.rim.net:8080/" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+    <access uri="http://smoketest10-vmyyz.labyyz.testnet.rim.net:8080/d" subdomains="true">
+        <feature id="blackberry.app" />
+    </access>
+
+
+
+
+    <access uri="file:///accounts/1000/shared/documents/textData.txt" />
+    <access uri="file:///accounts/1000/shared/documents/subdir/textData.txt" />
 
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
         Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,7 +162,10 @@
         <rim:permit>use_camera</rim:permit>
         <rim:permit>read_device_identifying_information</rim:permit>
         <rim:permit>bbm_connect</rim:permit>
+        <rim:permit>access_pimdomain_calendars</rim:permit>
         <rim:permit>access_pimdomain_contacts</rim:permit>
         <rim:permit>post_notification</rim:permit>
+        <rim:permit system="true">_sys_use_consumer_push</rim:permit>
+        <rim:permit>run_when_backgrounded</rim:permit>
     </rim:permissions>
 </widget>

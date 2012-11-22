@@ -105,7 +105,7 @@ std::string FileTransfer::StartUploadThread(const std::string& jsonObject)
     const Json::Value paramsObject = optionsObject["params"];
     const Json::Value::Members paramsKeys = paramsObject.getMemberNames();
 
-    for (int i = 0; i < paramsKeys.size(); ++i) {
+    for (unsigned int i = 0; i < paramsKeys.size(); ++i) {
         const std::string key = paramsKeys[i];
         upload_info->params.push_back(key);
         upload_info->params.push_back(paramsObject[key].asString());

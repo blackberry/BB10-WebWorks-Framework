@@ -32,13 +32,14 @@ describe("invoked invocationEvents", function () {
             getRequest: jasmine.createSpy("invocation getRequest"),
             LAUNCH: 0
         };
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.qnx = {
-            webplatform: {
-                getApplication: function () {
-                    return {
-                        invocation: mockedInvocation
-                    };
+        GLOBAL.window = {
+            qnx: {
+                webplatform: {
+                    getApplication: function () {
+                        return {
+                            invocation: mockedInvocation
+                        };
+                    }
                 }
             }
         };
@@ -52,7 +53,8 @@ describe("invoked invocationEvents", function () {
 
     afterEach(function () {
         mockedInvocation = null;
-        GLOBAL.window.qnx = null;
+        delete GLOBAL.window.qnx;
+        delete GLOBAL.window;
     });
 
     describe("addEventListener", function () {

@@ -1,69 +1,146 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jasmine Spec Runner</title>
-
-  <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
-  <script type="text/javascript" src="../js/jasmine.js"></script>
-  <script type="text/javascript" src="../js/jasmine-html.js"></script>
-  <script type="text/javascript" src="../js/webworks.js"></script>
-
-
-  <!-- include spec files here... -->
-  <script type="text/javascript" src="spec/blackberry.app.js"></script>
-  <script type="text/javascript" src="spec/blackberry.connection.js"></script>
-  <script type="text/javascript" src="spec/blackberry.event.js"></script>
-  <script type="text/javascript" src="spec/blackberry.identity.js"></script>
-  <script type="text/javascript" src="spec/blackberry.invoke.js"></script>
-  <script type="text/javascript" src="spec/blackberry.invoke.card.js"></script>
-  <script type="text/javascript" src="spec/blackberry.invoked.js"></script>
-  <script type="text/javascript" src="spec/blackberry.io.filetransfer.js"></script>
-  <script type="text/javascript" src="spec/blackberry.io.js"></script>
-  <script type="text/javascript" src="spec/blackberry.js"></script>
-  <script type="text/javascript" src="spec/blackberry.pim.contacts.js"></script>
-  <script type="text/javascript" src="spec/blackberry.push.js"></script>
-  <script type="text/javascript" src="spec/blackberry.system.js"></script>
-  <script type="text/javascript" src="spec/blackberry.ui.dialog.js"></script>
-  <script type="text/javascript" src="spec/blackberry.bbm.platform.js"></script>
-  <script type="text/javascript" src="spec/crossOrigin.js"></script>
-  <script type="text/javascript" src="spec/remoteFunctionCall.js"></script>
-  <script type="text/javascript" src="spec/blackberry.notification.js"></script>
-
-  <script type="text/javascript">
-      var jasmineEnv = jasmine.getEnv();
-      jasmineEnv.updateInterval = 1000;
-
-      var htmlReporter = new jasmine.HtmlReporter();
-
-      jasmineEnv.addReporter(htmlReporter);
-
-      jasmineEnv.specFilter = function(spec) {
-        return htmlReporter.specFilter(spec);
-      };
-
-      var currentWindowOnload = window.onload;
-
-      window.onload = function() {
-        if (currentWindowOnload) {
-          currentWindowOnload();
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jasmine Spec Runner</title>
+    <style type="text/css">
+        #overlay {
+            z-index:1000;
+            position:absolute;
+            top:0;
+            bottom:0;
+            left:0;
+            width:100%;
+            background:#fff;
+            visibility:hidden;
         }
-        //execJasmine();
-      };
 
-      function execJasmine() {
-        jasmineEnv.execute();
-      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
+    <script type="text/javascript" src="../js/jasmine.js"></script>
+    <script type="text/javascript" src="../js/jasmine-html.js"></script>
+    <script type="text/javascript" src="../js/webworks.js"></script>
 
-      document.addEventListener("webworksready", function () {
-        execJasmine();
-      });
+    <script type="text/javascript">
+        var jasmineEnv = jasmine.getEnv();
+        jasmineEnv.updateInterval = 1000;
+
+        var htmlReporter = new jasmine.HtmlReporter();
+
+        jasmineEnv.addReporter(htmlReporter);
+
+        jasmineEnv.specFilter = function(spec) {
+            return htmlReporter.specFilter(spec);
+        };
+
+        function execJasmine() {
+            jasmineEnv.execute();
+        }
+
+        function addChosenSpecs() {
+            var checkBoxes = document.getElementById('featureList').elements;
+            for (var i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].checked)
+                {
+                    addScript("local:///automatic/spec/" + checkBoxes[i].value + ".js");
+                }
+            }
+            alert("The selected tests have been added, click the Run Jasmine button to execute the SpecRunner");
+        }
+
+        function addScript(filePath) {
+            var script = document.createElement("script");
+                head = document.getElementsByTagName("head")[0];
+            script.type = "text/javascript";
+            script.src = filePath;
+            head.appendChild(script);
+        }
+
+        function setAllBoxes(value) {
+            var checkBoxes = document.getElementById('featureList').elements;
+            for (var i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].hasOwnProperty('checked')) {
+                    checkBoxes[i].checked = value;
+                }
+            }
+        }
+
+        document.addEventListener("webworksready", function () {
+            document.getElementById('addSpecs').onclick = addChosenSpecs;
+            document.getElementById('selectAll').onclick = function () {
+                setAllBoxes(true);
+            };
+            document.getElementById('deselectAll').onclick = function () {
+                setAllBoxes(false);
+            }
+            document.getElementById('start').onclick = function () {
+                var oldTests = document.getElementsByClassName('jasmine_reporter');
+                for (var i = 0; i < oldTests.length; i++)
+                {
+                    oldTests[i].parentNode.removeChild(oldTests[i]);
+                }
+                execJasmine();
+            };
+            });
+
+        function showOverlay() {
+            var o = document.getElementById('overlay');
+            o.style.visibility = 'visible';
+            window.scrollTo(0,0);
+        }
+        function hideOverlay() {
+            var o = document.getElementById('overlay');
+            o.style.visibility = 'hidden';
+        }
+
+    function takeScreenshot() {
+       internal.automation.takeScreenshot("/accounts/1000/shared/camera/WebWorksScreenShot.bmp");
+    }
 
   </script>
 
 </head>
 
 <body>
-    <input id="backButton "type="button" value="Back" onclick="history.back();" />
+    <input id="backButton" type="button" value="Back" onclick="history.back();"/>
+    <input id="reloadPage" type="button" value="Reload Page" onclick="window.location.reload(true);"><br /><br />
+
+    <form id="featureList">
+        <!--include spec files here-->
+        <input type="checkbox" value="blackberry.app">blackberry.app</input><br />
+        <input type="checkbox" value="automation/blackberry.app">blackberry.app (automation)</input><br />
+        <input type="checkbox" value="blackberry.connection">blackberry.connection</input><br />
+        <input type="checkbox" value="blackberry.event">blackberry.event</input><br />
+        <input type="checkbox" value="blackberry.identity">blackberry.identity</input><br />
+        <input type="checkbox" value="invokeRequestEvent">invokeRequestEvent</input><br />
+        <input type="checkbox" value="blackberry.invoke">blackberry.invoke</input><br />
+        <input type="checkbox" value="blackberry.invoke.card">blackberry.invoke.card</input><br />
+        <input type="checkbox" value="blackberry.invoked">blackberry.invoked</input><br />
+        <input type="checkbox" value="blackberry.io.filetransfer">blackberry.io.filetransfer</input><br />
+        <input type="checkbox" value="blackberry.io">blackberry.io</input><br />
+        <input type="checkbox" value="blackberry">blackberry</input><br />
+        <input type="checkbox" value="blackberry.pim.contacts">blackberry.pim.contacts</input><br />
+        <input type="checkbox" value="blackberry.pim.calendar">blackberry.pim.calendar</input><br />
+        <input type="checkbox" value="blackberry.push">blackberry.push</input><br />
+        <input type="checkbox" value="blackberry.system">blackberry.system</input><br />
+        <input type="checkbox" value="blackberry.ui.dialog">blackberry.ui.dialog</input><br />
+        <input type="checkbox" value="blackberry.ui.toast">blackberry.ui.toast</input><br />
+        <input type="checkbox" value="automation/blackberry.ui.toast">blackberry.ui.toast (automation)</input><br />
+        <input type="checkbox" value="blackberry.bbm.platform">blackberry.bbm.platform</input><br />
+        <input type="checkbox" value="crossOrigin">crossOrigin</input><br />
+        <input type="checkbox" value="remoteFunctionCall">remoteFunctionCall</input><br />
+        <input type="checkbox" value="blackberry.notification">blackberry.notification</input><br />
+        <input type="checkbox" value="blackberry.sensors">blackberry.sensors</input><br />
+    </form>
+    <br />
+
+    <input id="selectAll" type="button" value="Select All" />
+    <input id="deselectAll" type="button" value="De-select All" />
+    <input id="addSpecs" type="button" value="Add Specs" />
+    <input id="start" type="button" value="Run Jasmine" /><br />
+    <div id="overlay">
+        <button onclick="takeScreenshot()" > Take ScreenShot </button>
+    </div>
+
 </body>
 </html>

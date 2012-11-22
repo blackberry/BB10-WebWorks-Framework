@@ -1,6 +1,3 @@
-[submodule "dependencies/webplatform"]
-	path = dependencies/webplatform
-	url = http://github.rim.net/webworks/webplatform.git
 [submodule "dependencies/jasmine"]
 	path = dependencies/jasmine
 	url = https://github.com/pivotal/jasmine.git
