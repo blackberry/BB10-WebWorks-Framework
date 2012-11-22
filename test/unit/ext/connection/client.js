@@ -46,14 +46,6 @@ var _extDir = __dirname + "./../../../../ext",
     ],
     defineROFieldArgs = [];
 
-beforeEach(function () {
-    GLOBAL.window = GLOBAL;
-});
-
-afterEach(function () {
-    delete GLOBAL.window;
-});
-
 function unloadClient() {
     // explicitly unload client for it to be loaded again
     delete require.cache[require.resolve(_apiDir + "/client")];
@@ -64,7 +56,9 @@ describe("connection", function () {
     beforeEach(function () {
         mockedWebworks.execSync = jasmine.createSpy().andReturn("wifi");
         mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         // client needs to be required for each test
         client = require(_apiDir + "/client");
         fields.forEach(function (field, index) {
@@ -76,6 +70,7 @@ describe("connection", function () {
     afterEach(function () {
         unloadClient();
         defineROFieldArgs = [];
+        delete GLOBAL.window;
     });
 
     describe("connection constants", function () {

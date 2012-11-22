@@ -80,7 +80,7 @@ module.exports = {
             }
         }
 
-        filetransfer.upload(params);
+        filetransfer.getInstance().upload(params);
         success();
     },
 
@@ -110,7 +110,7 @@ module.exports = {
 
         args.windowGroup = _webview.windowGroup();
 
-        filetransfer.download(args);
+        filetransfer.getInstance().download(args);
         success();
     }
 };
@@ -121,7 +121,8 @@ module.exports = {
 ///////////////////////////////////////////////////////////////////
 
 JNEXT.FileTransfer = function () {
-    var self = this;
+    var self = this,
+        hasInstance = false;
 
     self.upload = function (args) {
         return JNEXT.invoke(self.m_id, "upload " + JSON.stringify(args));
@@ -178,11 +179,11 @@ JNEXT.FileTransfer = function () {
     };
 
     self.init = function () {
-        if (!JNEXT.require("filetransfer")) {
+        if (!JNEXT.require("libfiletransfer")) {
             return false;
         }
 
-        self.m_id = JNEXT.createObject("filetransfer.FileTransfer");
+        self.m_id = JNEXT.createObject("libfiletransfer.FileTransfer");
 
         if (self.m_id === "") {
             return false;
@@ -193,7 +194,13 @@ JNEXT.FileTransfer = function () {
 
     self.m_id = "";
 
-    self.init();
+    self.getInstance = function () {
+        if (!hasInstance) {
+            self.init();
+            hasInstance = true;
+        }
+        return self;
+    };
 };
 
 filetransfer = new JNEXT.FileTransfer();

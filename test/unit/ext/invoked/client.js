@@ -24,8 +24,9 @@ var _extDir = __dirname + "./../../../../ext",
 
 describe("invoked client", function () {
     beforeEach(function () {
-        GLOBAL.window = GLOBAL;
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(_apiDir + "/client");
     });
 

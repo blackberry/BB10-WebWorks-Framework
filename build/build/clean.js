@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var wrench = require("../../node_modules/wrench"),
+var wrench = require("wrench"),
     path = require("path"),
     _c = require("./conf");
 

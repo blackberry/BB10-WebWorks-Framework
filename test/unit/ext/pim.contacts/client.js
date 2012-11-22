@@ -53,14 +53,13 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find(["name"], new ContactFindOptions(
-                [{
+            client.find(["name"], {
+                filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                     fieldValue: "John"
                 }], // filter
-                null, // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
             expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "find", jasmine.any(Object));
             expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), jasmine.any(Function));
             expect(successCb).toHaveBeenCalledWith([]);
@@ -71,14 +70,13 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find([], new ContactFindOptions(
-                [{
+            client.find([], {
+                filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                     fieldValue: "John"
                 }], // filter
-                null, // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
@@ -88,13 +86,12 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find(["name"], new ContactFindOptions(
-                [{
+            client.find(["name"], {
+                filter: [{
                     fieldValue: "John"
                 }], // filter
-                null, // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
@@ -104,14 +101,13 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find(["name"], new ContactFindOptions(
-                [{
+            client.find(["name"], {
+                filter: [{
                     fieldName: 2343,
                     fieldValue: "John"
                 }], // filter
-                null, // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
@@ -121,13 +117,12 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find(["name"], new ContactFindOptions(
-                [{
+            client.find(["name"], {
+                filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME
                 }], // filter
-                null, // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
@@ -154,16 +149,16 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find(["name"], new ContactFindOptions(
-                [{
+            client.find(["name"], {
+                filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                     fieldValue: "John"
                 }], // filter
-                [{
+                sort: [{
                     desc: true
                 }], // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
@@ -173,16 +168,16 @@ describe("pim.contacts client", function () {
             var successCb = jasmine.createSpy(),
                 errorCb = jasmine.createSpy();
 
-            client.find(["name"], new ContactFindOptions(
-                [{
+            client.find(["name"], {
+                filter: [{
                     fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                     fieldValue: "John"
                 }], // filter
-                [{
+                sort: [{
                     fieldName: ContactFindOptions.SORT_FIELD_GIVEN_NAME
                 }], // sort
-                5 // limit
-            ), successCb, errorCb);
+                limit: 5 // limit
+            }, successCb, errorCb);
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
@@ -192,35 +187,35 @@ describe("pim.contacts client", function () {
     describe("create", function () {
         it("pim.contacts.create() returns a Contact object with all specified properties set", function () {
             var contact = client.create({
-                name: new ContactName({
+                name: {
                     familyName: "Smith",
                     givenName: "John",
                     middleName: "Francis"
-                }),
+                },
                 addresses: [
-                    new ContactAddress({
+                    {
                         streetAddress: "200 University Ave W",
                         locality: "Waterloo",
                         country: "Canada",
                         postalCode: "N2L3G1"
-                    })
+                    }
                 ],
                 note: "This is a test",
                 emails: [
-                    new ContactField(ContactField.HOME, "jsmith@blah.com"),
-                    new ContactField(ContactField.WORK, "jsmith@work.com")
+                    { type: ContactField.HOME, value: "jsmith@blah.com" },
+                    { type: ContactField.WORK, value: "jsmith@work.com" }
                 ],
                 organizations: [
-                    new ContactOrganization({
+                    {
                         name: "RIM",
                         department: "R&D",
                         title: "Software Developer"
-                    })
+                    }
                 ],
                 favorite: true,
                 photos: [
-                    new ContactPhoto("path/to/pic", true),
-                    new ContactPhoto("path/to/anotherpic", false)
+                    { originalFilePath: "path/to/pic", pref: true },
+                    { originalFilePath: "path/to/anotherpic", pref: false }
                 ],
                 random: "hahaha"
             });

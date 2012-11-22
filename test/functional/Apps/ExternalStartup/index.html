@@ -1,0 +1,19 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Local External Startup Page</title>
+
+    <script type="text/javascript" src="local:///chrome/webworks.js"></script>
+    <script type="text/javascript">
+        function postBlackberryId(e) {
+            e.source.postMessage(blackberry.app.id, event.origin);
+        }
+
+        document.addEventListener('webworksready', function () {
+            // Post to parent to indicate we are ready
+            window.addEventListener('message', postBlackberryId, false);
+            parent.postMessage('wwready', "*"); 
+        });
+    </script>
+</head>
+</html>

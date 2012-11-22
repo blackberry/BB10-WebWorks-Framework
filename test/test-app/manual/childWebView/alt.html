@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Child Webview</title>
+</head>
+<body>
+    <h1>LUKE I AM YOUR (_self, _top AND _parent)</h1>
+    <p>
+        If everything worked, this page should have loaded in the same webview.
+
+        Please click the <strong>back</strong> button to return to the
+        test page.
+    </p>
+    <button id="backButton"> Back </button>
+    <script>
+    (function() {
+        var button = document.getElementById('backButton');
+        button.addEventListener('click', function(e) {
+            history.go(-1);
+        });
+    }());
+    </script>
+</body>
+</html>

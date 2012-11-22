@@ -5,7 +5,8 @@ describe("webview", function () {
         webview,
         mockedController,
         mockedWebview,
-        mockedApplication;
+        mockedApplication,
+        globalCreate;
 
     beforeEach(function () {
         webview = require(libPath + "lib/webview");
@@ -14,7 +15,9 @@ describe("webview", function () {
             enableCrossSiteXHR: undefined,
             visible: undefined,
             active: undefined,
-            setGeometry: jasmine.createSpy()
+            setGeometry: jasmine.createSpy(),
+            dispatchEvent : jasmine.createSpy(),
+            addEventListener : jasmine.createSpy()
         };
         mockedWebview = {
             id: 42,
@@ -23,7 +26,9 @@ describe("webview", function () {
             active: undefined,
             zOrder: undefined,
             url: undefined,
+            extraHttpHeaders: undefined,
             setFileSystemSandbox: undefined,
+            addOriginAccessWhitelistEntry: jasmine.createSpy(),
             setGeometry: jasmine.createSpy(),
             setApplicationOrientation: jasmine.createSpy(),
             setExtraPluginDirectory: jasmine.createSpy(),
@@ -31,6 +36,7 @@ describe("webview", function () {
             getEnablePlugins: jasmine.createSpy(),
             notifyApplicationOrientationDone: jasmine.createSpy(),
             onContextMenuRequestEvent: undefined,
+            onContextMenuCancelEvent: undefined,
             onNetworkResourceRequested: undefined,
             destroy: jasmine.createSpy(),
             executeJavaScript: jasmine.createSpy(),
@@ -38,10 +44,16 @@ describe("webview", function () {
             addEventListener: jasmine.createSpy(),
             enableWebEventRedirect: jasmine.createSpy(),
             addKnownSSLCertificate: jasmine.createSpy(),
-            continueSSLHandshaking: jasmine.createSpy()
+            continueSSLHandshaking: jasmine.createSpy(),
+            setSensitivity: jasmine.createSpy(),
+            getSensitivity: jasmine.createSpy(),
+            setBackgroundColor: jasmine.createSpy(),
+            getBackgroundColor: jasmine.createSpy(),
+            allowWebEvent: jasmine.createSpy(),
+            allowUserMedia: jasmine.createSpy(),
+            disallowUserMedia: jasmine.createSpy()
         };
         mockedApplication = {
-            windowVisible: undefined
         };
         GLOBAL.qnx = {
             callExtensionMethod: jasmine.createSpy(),
@@ -54,9 +66,11 @@ describe("webview", function () {
                     //setTimeout(createFunction,0);
                     if (typeof options === 'function') {
                         runs(options);
+                        globalCreate = options;
                     }
                     else {
                         runs(createFunction);
+                        globalCreate = createFunction;
                     }
                     return mockedWebview;
                 },
@@ -84,17 +98,18 @@ describe("webview", function () {
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(0);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-                expect(mockedWebview.enableWebEventRedirect.argsForCall[0]).toEqual(['ContextMenuRequestEvent', 3]);
-                expect(mockedWebview.enableWebEventRedirect.argsForCall[1]).toEqual(['ContextMenuCancelEvent', 3]);
-                expect(mockedWebview.enableWebEventRedirect.argsForCall[2]).toEqual(['PropertyCurrentContextEvent', 3]);
                 expect(request.init).toHaveBeenCalledWith(mockedWebview);
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
+                expect(Object.getOwnPropertyDescriptor(webview, 'onContextMenuRequestEvent')).toEqual(jasmine.any(Object));
+                expect(Object.getOwnPropertyDescriptor(webview, 'onContextMenuCancelEvent')).toEqual(jasmine.any(Object));
 
+                expect(mockedWebview.allowWebEvent).toHaveBeenCalledWith("DialogRequested");
+                expect(mockedController.dispatchEvent).toHaveBeenCalledWith("webview.initialized", jasmine.any(Array));
                 //The default config.xml only has access to WIDGET_LOCAL
                 //and has permission for two apis
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'local://', false);
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', utils.getURIPrefix(), true);
-                expect(qnx.callExtensionMethod).toHaveBeenCalledWith('webview.addOriginAccessWhitelistEntry', mockedWebview.id, 'local://', 'file://', true);
+                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('local://', utils.getURIPrefix(), true);
+                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('local://', 'file://', true);
+                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('file://', 'local://', true);
             });
         });
 
@@ -126,8 +141,7 @@ describe("webview", function () {
     describe("id", function () {
         it("can get the id for the webiew", function () {
             webview.create();
-            webview.id();
-            expect(mockedWebview.id).toEqual(42);
+            expect(webview.id).toEqual(mockedWebview.id);
         });
     });
 
@@ -136,6 +150,12 @@ describe("webview", function () {
             webview.create();
             webview.setGeometry(0, 0, 100, 200);
             expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, 100, 200);
+        });
+
+        it("can get geometry", function () {
+            webview.create();
+            webview.setGeometry(0, 0, 100, 100);
+            expect(webview.getGeometry()).toEqual({x: 0, y: 0, w: 100, h: 100});
         });
     });
 
@@ -193,6 +213,35 @@ describe("webview", function () {
         });
     });
 
+    describe("User Media", function () {
+        it("has allowUserMedia defined", function () {
+            webview.create();
+            expect(webview.allowUserMedia).toBeDefined();
+        });
+
+        it("has disallowUserMedia defined", function () {
+            webview.create();
+            expect(webview.disallowUserMedia).toBeDefined();
+        });
+
+        it("calls allowUserMedia on WebView", function () {
+            var evtId = 10,
+                cameraName = "CAMERA_UNIT_FRONT";
+
+            webview.create();
+            webview.allowUserMedia(evtId, cameraName);
+            expect(mockedWebview.allowUserMedia).toHaveBeenCalledWith(evtId, cameraName);
+        });
+
+        it("calls disallowUserMedia on WebView", function () {
+            var evtId = 10;
+
+            webview.create();
+            webview.disallowUserMedia(evtId);
+            expect(mockedWebview.disallowUserMedia).toHaveBeenCalledWith(evtId);
+        });
+    });
+
     describe("methods other than create", function () {
 
         it("calls the underlying destroy", function () {
@@ -218,6 +267,34 @@ describe("webview", function () {
             webview.create(mockedWebview);
             expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
+
+        it("expect the config to set the extraHttpHeader", function () {
+            webview.create();
+            waits(1);
+            runs(function () {
+                expect(mockedWebview.extraHttpHeaders).toEqual({"rim-header": "RIM-Widget:rim/widget"});
+            });
+        });
+    });
+
+    describe("methods for sensitivity", function () {
+
+        it("setter getter for sensitivity", function () {
+            webview.create(mockedWebview);
+            webview.setSensitivity("Something");
+            expect(mockedWebview.setSensitivity).toHaveBeenCalled();
+            webview.getSensitivity();
+            expect(mockedWebview.getSensitivity).toHaveBeenCalled();
+        });
+
+        it("setter getter for background", function () {
+            webview.create(mockedWebview);
+            webview.setBackgroundColor("Something");
+            expect(mockedWebview.setBackgroundColor).toHaveBeenCalled();
+            webview.getBackgroundColor();
+            expect(mockedWebview.getBackgroundColor).toHaveBeenCalled();
+        });
+
     });
 
 });

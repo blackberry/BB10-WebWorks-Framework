@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>blackberry.invoke.card manual tests</title>
 </head>
-<script src="local:///js/webworks.js" type="text/javascript"></script>
+<script src="local:///chrome/webworks.js" type="text/javascript"></script>
 <body>
 
     <script type="text/javascript">
@@ -74,7 +74,7 @@
       function invokeFileInPickerMode5() {
             var details = {
                     mode: blackberry.invoke.card.FILEPICKER_MODE_PICKER,
-                    directory: [blackberry.io.home, blackberry.io.sharedFolder]
+                    directory: [blackberry.io.sharedFolder + "/camera", blackberry.io.sharedFolder + "/photos"]
                 };
             invokeFilePicker(details);
         }
@@ -82,7 +82,7 @@
       function invokeFileInPickerMode6() {
             var details = {
                     mode: blackberry.invoke.card.FILEPICKER_MODE_PICKER_MULTIPLE,
-                    directory: [blackberry.io.home, blackberry.io.sharedFolder]
+                    directory: [blackberry.io.sharedFolder + "/camera", blackberry.io.sharedFolder + "/photos"]
                 };
             invokeFilePicker(details);
         }
@@ -255,7 +255,7 @@
     <br />
    <p> Case 12</p>
     <p>
-     open file picker starting at two directories - APP HOME and SHARED FOLDER
+     open file picker starting at two directories - Photos and Camera
     <br />
     <input id="Button12" type="button" value="file picker card " onclick='invokeFileInPickerMode5()'/>
     <br />

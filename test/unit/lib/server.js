@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var ROOT = "../../../";
 
 describe("server", function () {
-    var server = require('../../../lib/server'),
-        plugin = require("../../../lib/plugins/default"),
-        extensionPlugin = require("../../../lib/plugins/extensions"),
-        Whitelist = require("../../../lib/policy/whitelist").Whitelist,
-        applicationAPIServer = require("../../../ext/app/index"),
-        utils = require("../../../lib/utils"),
+    var server = require(ROOT + "lib/server"),
+        plugin = require(ROOT + "lib/plugins/default"),
+        extensionPlugin = require(ROOT + "lib/plugins/extensions"),
+        Whitelist = require(ROOT + "lib/policy/whitelist").Whitelist,
+        applicationAPIServer,
+        utils,
         DEFAULT_SERVICE = "default",
         DEFAULT_ACTION = "exec";
 
     beforeEach(function () {
-        spyOn(console, "log");
+        applicationAPIServer = require(ROOT + "ext/app/index");
+        delete require.cache[require.resolve(ROOT + "lib/utils")];
+        utils = require("../../../lib/utils");
         spyOn(utils, "loadModule").andCallFake(function (module) {
             if (module.indexOf("ext/") >= 0) {
                 // on device, "ext/blackberry.app/index.js" would exist since packager would
@@ -85,17 +88,22 @@ describe("server", function () {
             req.params.service = "default";
             req.params.action = "ThisActionDoesNotExist";
 
+            spyOn(console, "log");
+
             server.handle(req, res);
             expect(res.send).toHaveBeenCalledWith(404, jasmine.any(String));
+            expect(console.log).toHaveBeenCalledWith(jasmine.any(Error));
         });
-        
+
         it("calls the action method on the plugin", function () {
             spyOn(extensionPlugin, "get");
 
             req.params.service = "extensions";
             req.params.action = "get";
 
-            server.handle(req, res);
+            expect(function () {
+                return server.handle(req, res);
+            }).not.toThrow();
             expect(extensionPlugin.get).toHaveBeenCalled();
         });
 
@@ -130,8 +138,8 @@ describe("server", function () {
             })));
         });
     });
-    
-    describe("when handling feature requests", function () {       
+
+    describe("when handling feature requests", function () {
         var req, res;
 
         beforeEach(function () {
@@ -140,7 +148,7 @@ describe("server", function () {
                     service: "default",
                     action: "exec",
                     ext: "blackberry.app",
-                    method: "author",
+                    method: "getReadOnlyFields",
                     args: null,
                     origin: null
                 },
@@ -149,7 +157,7 @@ describe("server", function () {
                 },
                 url: "",
                 body: "",
-                origin: "" 
+                origin: ""
             };
             res = {
                 send: jasmine.createSpy()
@@ -166,46 +174,52 @@ describe("server", function () {
             server.handle(req, res);
             expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalled();
         });
-        
+
         it("returns 403 if the feature is not white listed", function () {
+            var errMsg = "Feature denied by whitelist";
+
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
+            spyOn(console, "log");
+
             server.handle(req, res);
-            expect(res.send).toHaveBeenCalledWith(403, jasmine.any(String));
+
+            expect(console.log).toHaveBeenCalledWith(errMsg + ": " + {});
+            expect(res.send).toHaveBeenCalledWith(403, encodeURIComponent(JSON.stringify({code: -1, data: null, msg: errMsg})));
         });
-        
+
         it("calls the action method on the feature", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(applicationAPIServer, "author");
-            server.handle(req, res);            
-            expect(applicationAPIServer.author).toHaveBeenCalled();
+            spyOn(applicationAPIServer, "getReadOnlyFields");
+            server.handle(req, res);
+            expect(applicationAPIServer.getReadOnlyFields).toHaveBeenCalled();
         });
-        
+
         it("returns the result and code 1 when success callback called", function () {
-            var expectedResult = {"author": "Yogi bear"};
-            
+            var expectedResult = {"getReadOnlyFields": "Yogi bear"};
+
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
+            spyOn(applicationAPIServer, "getReadOnlyFields").andCallFake(function (success, fail) {
                 success(expectedResult);
             });
-            
+
             server.handle(req, res);
-            
+
             expect(res.send).toHaveBeenCalledWith(200, encodeURIComponent(JSON.stringify({
                 code: 1,
                 data: expectedResult
             })));
         });
-        
+
         it("returns the result and code -1 when fail callback called", function () {
             var expectedResult = "omg";
-            
+
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
-            spyOn(applicationAPIServer, "author").andCallFake(function (success, fail) {
+            spyOn(applicationAPIServer, "getReadOnlyFields").andCallFake(function (success, fail) {
                 fail(-1, expectedResult);
             });
-            
+
             server.handle(req, res);
-            
+
             expect(res.send).toHaveBeenCalledWith(200, encodeURIComponent(JSON.stringify({
                 code: -1,
                 data: null,
@@ -213,4 +227,4 @@ describe("server", function () {
             })));
         });
     });
-});  
+});

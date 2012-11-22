@@ -35,82 +35,25 @@ function invokeCallback(callback, args) {
     }
 }
 
-function validateFindArguments(contactFields, findOptions, onFindSuccess, onFindError) {
-    var tempContact,
-        error = false;
+_self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
+    var callback,
+        tempContact,
+        eventId;
 
-    // contactFields and onFindSuccess are mandatory
     if (!contactFields || !contactFields.length || !onFindSuccess || typeof onFindSuccess !== "function") {
-        error = true;
+        contactUtils.invokeErrorCallback(onFindError, ContactError.INVALID_ARGUMENT_ERROR);
+        return;
     } else {
         tempContact = new Contact();
 
         contactFields.forEach(function (field) {
-            if (!tempContact.hasOwnProperty(field) && !error) {
-                error = true;
+            if (!tempContact.hasOwnProperty(field)) {
+                contactUtils.invokeErrorCallback(onFindError, ContactError.INVALID_ARGUMENT_ERROR);
             }
         });
-
-        if (!error) {
-            // findOptions and findOptions.filter are mandatory
-            if (!findOptions || !findOptions.filter || !findOptions.filter.length ||
-                typeof findOptions.limit !== "number" || typeof findOptions.favorite !== "boolean") {
-                error = true;
-            } else {
-                findOptions.filter.forEach(function (f) {
-                    switch (f.fieldName) {
-                    case ContactFindOptions.SEARCH_FIELD_GIVEN_NAME:
-                    case ContactFindOptions.SEARCH_FIELD_FAMILY_NAME:
-                    case ContactFindOptions.SEARCH_FIELD_ORGANIZATION_NAME:
-                    case ContactFindOptions.SEARCH_FIELD_PHONE:
-                    case ContactFindOptions.SEARCH_FIELD_EMAIL:
-                    case ContactFindOptions.SEARCH_FIELD_BBMPIN:
-                    case ContactFindOptions.SEARCH_FIELD_LINKEDIN:
-                    case ContactFindOptions.SEARCH_FIELD_TWITTER:
-                    case ContactFindOptions.SEARCH_FIELD_VIDEO_CHAT:
-                        break;
-                    default:
-                        error = true;
-                    }
-
-                    if (!f.fieldValue) {
-                        error = true;
-                    }
-                });
-
-                // findOptions.sort is optional
-                if (!error && findOptions.sort && findOptions.sort.length) {
-                    findOptions.sort.forEach(function (s) {
-                        switch (s.fieldName) {
-                        case ContactFindOptions.SORT_FIELD_GIVEN_NAME:
-                        case ContactFindOptions.SORT_FIELD_FAMILY_NAME:
-                        case ContactFindOptions.SORT_FIELD_ORGANIZATION_NAME:
-                            break;
-                        default:
-                            error = true;
-                        }
-
-                        if (s.desc === undefined || typeof s.desc !== "boolean") {
-                            error = true;
-                        }
-                    });
-                }
-            }
-        }
     }
-
-    if (error) {
-        invokeCallback(onFindError, new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
-    }
-
-    return !error;
-}
-
-_self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
-    var callback,
-        eventId;
-
-    if (!validateFindArguments(contactFields, findOptions, onFindSuccess, onFindError)) {
+    if (!contactUtils.validateFindArguments(findOptions)) {
+        contactUtils.invokeErrorCallback(onFindError, ContactError.INVALID_ARGUMENT_ERROR);
         return;
     }
 

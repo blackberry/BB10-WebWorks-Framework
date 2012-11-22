@@ -15,7 +15,8 @@
  */
 
 var _self = {},
-    ID = require("./manifest.json").namespace;
+    ID = require("./manifest.json").namespace,
+    deviceProperties;
 
 function getFieldValue(field) {
     var value = null;
@@ -29,11 +30,24 @@ function getFieldValue(field) {
     return value;
 }
 
-function defineGetter(field) {
+function getDeviceProperty(field) {
+    var value;
+
+    if (!deviceProperties) {
+        deviceProperties = getFieldValue("getDeviceProperties");
+    }
+
+    value = deviceProperties ? deviceProperties[field] : null;
+
+    return value;
+}
+
+function defineGetter(field, getterArg) {
+    var getter = getterArg || function () {
+        return getFieldValue(field);
+    };
     Object.defineProperty(_self, field, {
-        get: function () {
-            return getFieldValue(field);
-        }
+        get: getter
     });
 }
 
@@ -49,14 +63,24 @@ _self.getFontInfo = function () {
     return window.webworks.execSync(ID, "getFontInfo");
 };
 
-defineGetter("language");
+_self.getCurrentTimezone = function () {
+    return window.webworks.execSync(ID, "getCurrentTimezone");
+};
+
+_self.getTimezones = function () {
+    return window.webworks.execSync(ID, "getTimezones");
+};
+
 defineGetter("region");
+defineGetter("language", function () {
+    return navigator.language;
+});
 
 window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
 window.webworks.defineReadOnlyField(_self, "DENY", 1);
-window.webworks.defineReadOnlyField(_self, "hardwareId", getFieldValue("hardwareId"));
-window.webworks.defineReadOnlyField(_self, "softwareVersion", getFieldValue("softwareVersion"));
-window.webworks.defineReadOnlyField(_self, "name", getFieldValue("name"));
+window.webworks.defineReadOnlyField(_self, "hardwareId", getDeviceProperty("hardwareId"));
+window.webworks.defineReadOnlyField(_self, "softwareVersion", getDeviceProperty("softwareVersion"));
+window.webworks.defineReadOnlyField(_self, "name", getDeviceProperty("name"));
 
 window.webworks.execSync(ID, "registerEvents", null);
 

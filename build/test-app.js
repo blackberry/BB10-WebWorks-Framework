@@ -89,7 +89,8 @@ module.exports = function () {
     wrench.copyDirSyncRecursive(path.join(testSrcDir, "automatic"), path.join(TEST_APP_PATH, "automatic", "spec"));
     //Manual functional tests
     wrench.copyDirSyncRecursive(path.join(testSrcDir, "manual"), path.join(TEST_APP_PATH, "manual", "framework", "spec"));
-
+    //Automation functional tests
+    wrench.copyDirSyncRecursive(path.join(testSrcDir, "automation"), path.join(TEST_APP_PATH, "automatic", "spec", "automation"));
     //If the zip exists delete it
     if (path.existsSync(appZipPath)) {
         fs.unlinkSync(appZipPath);

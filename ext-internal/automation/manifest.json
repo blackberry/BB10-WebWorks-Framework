@@ -1,0 +1,5 @@
+{
+    "global": true,
+    "namespace": "internal.automation",
+    "dependencies": ["pps"]
+}

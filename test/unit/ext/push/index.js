@@ -18,30 +18,32 @@ var _apiDir = __dirname + "./../../../../ext/push/",
     successCB,
     failCB,
     args = {},
-    index;
+    index,
+    mockJNEXT;
 
 describe("push index", function () {
     beforeEach(function () {
-        GLOBAL.JNEXT = {
+        mockJNEXT = {
             require: jasmine.createSpy().andReturn(true),
             createObject: jasmine.createSpy().andReturn("0"),
             invoke: jasmine.createSpy().andReturn(2),
             registerEvents: jasmine.createSpy().andReturn(true)
         };
-        
+        GLOBAL.JNEXT = mockJNEXT;
+
         successCB = jasmine.createSpy();
         failCB = jasmine.createSpy();
         index = require(_apiDir + "index");
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         index = null;
         args = {};
     });
 
-    it("makes sure that JNEXT is initalized", function () {
-        expect(GLOBAL.JNEXT.require).toHaveBeenCalled();
+    it("makes sure that JNEXT not is initalized", function () {
+        expect(mockJNEXT.require).not.toHaveBeenCalled();
     });
 
     it("makes sure that JNEXT.invoke startService is called", function () {
@@ -52,24 +54,24 @@ describe("push index", function () {
         args.ppgUrl = encodeURIComponent(JSON.stringify("ppgUrl"));
 
         index.startService(successCB, failCB, args);
-        
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "startService " + JSON.stringify(expected_args));
+
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "startService " + JSON.stringify(expected_args));
         expect(successCB).toHaveBeenCalledWith();
         expect(failCB).not.toHaveBeenCalled();
     });
 
     it("makes sure that JNEXT.invoke createChannel is called", function () {
         index.createChannel(successCB, failCB, args);
-        
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "createChannel");
+
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "createChannel");
         expect(successCB).toHaveBeenCalledWith();
         expect(failCB).not.toHaveBeenCalled();
     });
 
     it("makes sure that JNEXT.invoke destroyChannel is called", function () {
         index.destroyChannel(successCB, failCB, args);
-        
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "destroyChannel");
+
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "destroyChannel");
         expect(successCB).toHaveBeenCalledWith();
         expect(failCB).not.toHaveBeenCalled();
     });
@@ -82,7 +84,7 @@ describe("push index", function () {
 
         index.extractPushPayload(successCB, failCB, args);
 
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "extractPushPayload " + JSON.stringify(expected_args));
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "extractPushPayload " + JSON.stringify(expected_args));
         expect(successCB).toHaveBeenCalledWith(expected_args);
         expect(failCB).not.toHaveBeenCalled();
     });
@@ -92,7 +94,7 @@ describe("push index", function () {
 
         index.launchApplicationOnPush(successCB, failCB, args);
 
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "registerToLaunch");
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "registerToLaunch");
         expect(successCB).toHaveBeenCalledWith();
         expect(failCB).not.toHaveBeenCalled();
     });
@@ -102,7 +104,7 @@ describe("push index", function () {
 
         index.launchApplicationOnPush(successCB, failCB, args);
 
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "unregisterFromLaunch");
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "unregisterFromLaunch");
         expect(successCB).toHaveBeenCalledWith();
         expect(failCB).not.toHaveBeenCalled();
     });
@@ -114,8 +116,8 @@ describe("push index", function () {
         args.shouldAcceptPush = encodeURIComponent(JSON.stringify(true));
 
         index.acknowledge(successCB, failCB, args);
-        
-        expect(GLOBAL.JNEXT.invoke).toHaveBeenCalledWith("0", "acknowledge " + JSON.stringify(expected_args));
+
+        expect(mockJNEXT.invoke).toHaveBeenCalledWith("0", "acknowledge " + JSON.stringify(expected_args));
         expect(successCB).toHaveBeenCalledWith();
         expect(failCB).not.toHaveBeenCalled();
     });
