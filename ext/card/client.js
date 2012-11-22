@@ -33,7 +33,9 @@ var _self = {},
     _calendarComposerInvokeEventId = "invokeCalendarComposer.invokeEventId",
     _emailComposerDoneEventId = "invokeEmailComposer.doneEventId",
     _emailComposerCancelEventId = "invokeEmailComposer.cancelEventId",
-    _emailComposerInvokeEventId = "invokeEmailComposer.invokeEventId";
+    _emailComposerInvokeEventId = "invokeEmailComposer.invokeEventId",
+	_targetPickerSelectedEventId = "invokeTargetPicker.selectedEventId",
+    _targetPickerErrorEventId = "invokeTargetPicker.errorEventId";
 
 _self.invokeMediaPlayer = function (options, done, cancel, invokeCallback) {
     var doneEventId = "invokeMediaPlayer.doneEventId",
@@ -116,6 +118,7 @@ _self.invokeIcsViewer = function (options, done, cancel, invokeCallback) {
     return window.webworks.execAsync(_ID, "invokeIcsViewer", {options: options || ""});
 };
 
+
 _self.invokeCalendarPicker = function (options, done, cancel, invokeCallback) {
    /*
    * options = {
@@ -181,6 +184,32 @@ _self.invokeEmailComposer = function (options, done, cancel, invokeCallback) {
         window.webworks.event.once(_ID, _emailComposerInvokeEventId, invokeCallback);
     }
     return window.webworks.execAsync(_ID, "invokeEmailComposer", {options: options || ""});
+};
+
+_self.invokeTargetPicker = function (request, title, onSuccess, onError) {
+
+    if (!window.webworks.event.isOn(_targetPickerSelectedEventId)) {
+        window.webworks.event.once(_ID, _targetPickerSelectedEventId, onSuccess);
+    }
+
+    if (!window.webworks.event.isOn(_targetPickerErrorEventId)) {
+        window.webworks.event.once(_ID, _targetPickerErrorEventId, onError);
+    }
+
+    try {
+        if (request.hasOwnProperty('data')) {
+            request.data = window.btoa(request.data);
+        }
+
+        window.webworks.execSync(_ID, "invokeTargetPicker", {
+            request: request,
+            title: title,
+            onSuccess: onSuccess,
+            onError : onError,
+        });
+    } catch (e) {
+        onError(e);
+    }
 };
 
 //CAMERA PROPERTIES

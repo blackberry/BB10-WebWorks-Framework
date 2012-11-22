@@ -44,6 +44,9 @@ describe("Overlay Webview", function () {
             allowRpc: undefined,
             contextMenu: {
                 subscribeTo: jasmine.createSpy()
+            },
+            invocationlist: {
+                show: jasmine.createSpy()
             }
         };
         mockedController = {
@@ -169,6 +172,16 @@ describe("Overlay Webview", function () {
 
         it("It has a zOrder propety ", function () {
             expect(webview.zOrder).toBeDefined();
+        });
+
+        it('proxies calls to invocationlist.show()', function () {
+            var request = {},
+                title = {},
+                success = function () {},
+                error = function () {};
+            webview.create();
+            webview.showInvocationList(request, title, success, error);
+            expect(mockedWebview.invocationlist.show).toHaveBeenCalledWith(request, title, success, error);
         });
     });
 });

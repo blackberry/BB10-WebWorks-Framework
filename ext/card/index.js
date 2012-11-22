@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _event = require("../../lib/event");
+var _event = require("../../lib/event"),
+    overlayWebView;
+
+qnx.webplatform.getController().addEventListener('overlayWebView.initialized', function (webviewObj) {
+    overlayWebView = webviewObj;
+});
 
 module.exports = {
     invokeMediaPlayer: function (success, fail, args) {
@@ -80,6 +85,7 @@ module.exports = {
         success();
     },
 
+
     invokeCalendarPicker: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (file) {
@@ -125,6 +131,61 @@ module.exports = {
             };
 
         window.qnx.webplatform.getApplication().cards.email.composer.open(options, done, cancel, invokeCallback);
+        success();
+    },
+
+    invokeTargetPicker: function (success, fail, args) {
+        var title = JSON.parse(decodeURIComponent(args.title)),
+            request = JSON.parse(decodeURIComponent(args.request)),
+            invocation = qnx.webplatform.getApplication().invocation,
+            onError,
+            onSuccess;
+
+        onError = function (error) {
+            _event.trigger("invokeTargetPicker.errorEventId", error);
+        };
+
+        onSuccess = function (result) {
+            _event.trigger("invokeTargetPicker.selectedEventId", result);
+        };
+
+        // Pulled from the query code, we should probably keep a consistent API
+        // allows the developers to define APPLICATION, VIEWER etc in an array
+        if (request["target_type"] && Array.isArray(request["target_type"])) {
+
+            request["target_type"] = request["target_type"].filter(function (element) {
+                var result = false;
+                switch (element)
+                {
+                case "APPLICATION":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_APPLICATION;
+                    break;
+                case "CARD":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_CARD;
+                    break;
+                case "VIEWER":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_VIEWER;
+                    break;
+                case "SERVICE":
+                    request["target_type_mask"] |= invocation.TARGET_TYPE_MASK_SERVICE;
+                    break;
+
+                default:
+                    result = true;
+                    break;
+                }
+                return result;
+            });
+
+            delete request["target_type"];
+        }
+
+        if (request.hasOwnProperty('metadata')) {
+            //Let's stringify it for them
+            request.metadata = JSON.stringify(request.metadata);
+        }
+
+        overlayWebView.invocationlist.show(request, title, onSuccess, onError);
         success();
     }
 };
