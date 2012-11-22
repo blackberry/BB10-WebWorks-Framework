@@ -24,7 +24,6 @@ var srcPath = __dirname + '/../../../lib/',
     mockedWebview,
     mockedApplicationWindow,
     mockedApplication,
-    mockedBlackberry,
     mockedDevice,
     mockedQnx,
     mock_request = {
@@ -56,7 +55,10 @@ describe("framework", function () {
         };
         mockedApplication = {
             addEventListener: jasmine.createSpy(),
-            webInspectorPort : "1337"
+            webInspectorPort : "1337",
+            invocation: {
+                invoke: jasmine.createSpy()
+            }
         };
         mockedDevice = {
             getNetworkInterfaces : jasmine.createSpy()
@@ -82,12 +84,6 @@ describe("framework", function () {
             qnx: mockedQnx
         };
         GLOBAL.qnx = mockedQnx;
-        mockedBlackberry = {
-            invoke: {
-                invoke: jasmine.createSpy()
-            }
-        };
-        GLOBAL.blackberry = mockedBlackberry;
         GLOBAL.NamedNodeMap = function () {};
 
         delete require.cache[require.resolve(srcPath + "webview")];
@@ -228,11 +224,9 @@ describe("framework", function () {
             framework.start();
             expect(overlayWebView.bindAppWebViewToChildWebViewControls).not.toHaveBeenCalledWith(webview);
             expect(handler).toEqual(jasmine.any(Function));
-            handler({url: 'http://www.google.com'});
-            expect(mockedBlackberry.invoke.invoke).toHaveBeenCalledWith(
-                {uri: 'http://www.google.com', target: "sys.browser" },
-                jasmine.any(Function),
-                jasmine.any(Function)
+            handler(JSON.stringify({url: 'http://www.google.com'}));
+            expect(mockedApplication.invocation.invoke).toHaveBeenCalledWith(
+                {uri: 'http://www.google.com', target: "sys.browser" }
             );
         });
     });

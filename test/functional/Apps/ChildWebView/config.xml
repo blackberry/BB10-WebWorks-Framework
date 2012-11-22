@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:rim="http://www.blackberry.com/ns/widgets"
+		version="1.0.0"
+        id="testChildWebView">
+    <name>ChildWebView</name>
+    <content src="local:///main.html"/>
+    <author>
+			Research In Motion Ltd.
+	</author>
+    <description>The example to test child webview</description>
+    <access uri="*"/>
+    <feature id="blackberry.app">
+        <param name="childBrowser" value="disable" />
+    </feature>
+    <license href="http://www.apache.org/licenses/LICENSE-2.0">My License</license>
+</widget>
