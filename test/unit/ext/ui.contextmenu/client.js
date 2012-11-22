@@ -20,6 +20,9 @@ var _ID = "blackberry.ui.contextmenu",
     mockedWebworks = {
         execSync: jasmine.createSpy("execSync").andCallFake(function (service, action, args) {
             return true;
+        }),
+        execAsync: jasmine.createSpy("execAsync").andCallFake(function (service, action, args) {
+            return true;
         })
     };
 
@@ -91,4 +94,16 @@ describe("blackberry.ui.contextmenu client", function () {
         var myItem = {label: 'OpenLink'};
         expect(client.removeItem(undefined, myItem, null)).toEqual('Removing a custom menu item requires a context');
     });
+
+    it("defineCustomContext calls execSync", function () {
+        var options = {
+            includeContextItems: [client.CONTEXT_IMAGE],
+            includePlatformItems: false,
+            includeMenuServiceItems: false
+        };
+
+        client.defineCustomContext("myContext", options);
+        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "defineCustomContext", {context: "myContext", options: options});
+    });
+
 });

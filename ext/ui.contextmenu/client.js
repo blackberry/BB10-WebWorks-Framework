@@ -85,6 +85,10 @@ contextmenu.removeItem = function (contexts, actionId) {
     delete _storedCallbacks[actionId];
 };
 
+contextmenu.defineCustomContext = function (customContext, options) {
+    window.webworks.execAsync(_ID, 'defineCustomContext', {context: customContext, options: options});
+};
+
 defineReadOnlyContext("ALL");
 defineReadOnlyContext("LINK");
 defineReadOnlyContext("IMAGE_LINK");
