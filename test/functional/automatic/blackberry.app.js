@@ -111,12 +111,12 @@ describe("blackberry.app", function () {
 
     it('blackberry.app.name - localized value should exist', function () {
         window.navigator = { language: "fr-FR" };
-        testAppValue("name", "French application name");
+        testAppValue("name", "WebWorks Test App-fr");
     });
 
     it('blackberry.app.name - localized value for regional locale[en-FR] should default to language locale[en] when unprovided', function () {
         window.navigator = { language: "en-FR" };
-        testAppValue("name", "English application name");//[en] locale data
+        testAppValue("name", "WebWorks Test App-en");//[en] locale data
     });
 
     it('blackberry.app.name should be read-only', function () {
