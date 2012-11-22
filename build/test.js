@@ -25,7 +25,7 @@ module.exports = function (done, custom) {
     var jasmine = require('jasmine-node'),
         verbose = false,
         colored = false,
-        specs = __dirname + "/../" + (custom ? custom : "temp/test/unit"),
+        specs = path.join(_c.TEMP, (custom ? custom : "test/unit")),
         key,
         test;
 
