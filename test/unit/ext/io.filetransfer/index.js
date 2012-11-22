@@ -36,9 +36,9 @@ describe("io.filetransfer index", function () {
         index = null;
     });
 
-    it("can access filetransfer module in JNEXT", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("filetransfer");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("filetransfer.FileTransfer");
+    it("makes sure JNEXT was not initialized on require", function () {
+        expect(JNEXT.require).not.toHaveBeenCalledWith("libfiletransfer");
+        expect(JNEXT.createObject).not.toHaveBeenCalledWith("libfiletransfer.FileTransfer");
     });
 
     describe("filetransfer upload", function () {
@@ -72,7 +72,7 @@ describe("io.filetransfer index", function () {
                 },
                 successCB = jasmine.createSpy(),
                 failCB = jasmine.createSpy();
-          
+
             index.upload(successCB, failCB, mocked_args, null);
 
             expect(JNEXT.invoke).toHaveBeenCalledWith("0", "upload " + JSON.stringify(expected_args));

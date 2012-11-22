@@ -25,7 +25,7 @@ function createEventHandler(callback) {
 }
 
 _self.customAskAsync = function (message, buttons, callback, settings) {
-    var args = { "eventId" : _eventId, "message" : message, "buttons" : buttons, "callback" : callback };
+    var args = { "eventId" : _eventId, "message" : message, "buttons" : buttons, "callback" : callback};
     if (settings) {
         args.settings = settings;
     }
@@ -49,5 +49,6 @@ window.webworks.defineReadOnlyField(_self, "D_SAVE", 1);
 window.webworks.defineReadOnlyField(_self, "D_DELETE", 2);
 window.webworks.defineReadOnlyField(_self, "D_YES_NO", 3);
 window.webworks.defineReadOnlyField(_self, "D_OK_CANCEL", 4);
+window.webworks.defineReadOnlyField(_self, "D_PROMPT", 5);
 
 module.exports = _self;

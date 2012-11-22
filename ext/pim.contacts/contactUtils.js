@@ -15,6 +15,8 @@
  */
  
 var self,
+    ContactFindOptions = require("./ContactFindOptions"),
+    ContactError = require("./ContactError"),
     ContactName = require("./ContactName"),
     ContactOrganization = require("./ContactOrganization"),
     ContactAddress = require("./ContactAddress"),
@@ -26,7 +28,7 @@ var self,
 function populateFieldArray(contactProps, field, ClassName) {
     if (contactProps[field]) {
         var list = [],
-            obj;
+        obj;
 
         contactProps[field].forEach(function (args) {
             if (ClassName === ContactField) {
@@ -56,6 +58,72 @@ function populateDate(contactProps, field) {
     }
 }
 
+function validateFindArguments(findOptions) {
+    var error = false;
+    
+    // findOptions is mandatory
+    if (!findOptions) {
+        error = true;
+    } else {
+        // findOptions.filter is optional
+        if (findOptions.filter) {
+            findOptions.filter.forEach(function (f) {
+                switch (f.fieldName) {
+                case ContactFindOptions.SEARCH_FIELD_GIVEN_NAME:
+                case ContactFindOptions.SEARCH_FIELD_FAMILY_NAME:
+                case ContactFindOptions.SEARCH_FIELD_ORGANIZATION_NAME:
+                case ContactFindOptions.SEARCH_FIELD_PHONE:
+                case ContactFindOptions.SEARCH_FIELD_EMAIL:
+                case ContactFindOptions.SEARCH_FIELD_BBMPIN:
+                case ContactFindOptions.SEARCH_FIELD_LINKEDIN:
+                case ContactFindOptions.SEARCH_FIELD_TWITTER:
+                case ContactFindOptions.SEARCH_FIELD_VIDEO_CHAT:
+                    break;
+                default:
+                    error = true;
+                }
+
+                if (!f.fieldValue) {
+                    error = true;
+                }
+            });
+        } 
+
+        //findOptions.limit is optional
+        if (findOptions.limit) {
+            if (typeof findOptions.limit !== "number") {
+                error = true;
+            } 
+        } 
+
+        //findOptions.favorite is optional
+        if (findOptions.favorite) {
+            if (typeof findOptions.favorite !== "boolean") {
+                error = true;
+            }
+        }
+
+        // findOptions.sort is optional
+        if (!error && findOptions.sort && findOptions.sort.length) {
+            findOptions.sort.forEach(function (s) {
+                switch (s.fieldName) {
+                case ContactFindOptions.SORT_FIELD_GIVEN_NAME:
+                case ContactFindOptions.SORT_FIELD_FAMILY_NAME:
+                case ContactFindOptions.SORT_FIELD_ORGANIZATION_NAME:
+                    break;
+                default:
+                    error = true;
+                }
+
+                if (s.desc === undefined || typeof s.desc !== "boolean") {
+                    error = true;
+                }
+            });
+        }
+    }
+    return !error;
+}
+
 self = module.exports = {
     populateContact: function (contact) {
         if (contact.name) {
@@ -78,6 +146,12 @@ self = module.exports = {
 
         populateDate(contact, "birthday");
         populateDate(contact, "anniversary");
-    }
+    },
+    invokeErrorCallback: function (errorCallback, code) {
+        if (errorCallback) {
+            errorCallback(new ContactError(code));
+        }
+    },
+    validateFindArguments: validateFindArguments
 };
 

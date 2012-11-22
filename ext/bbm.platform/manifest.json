@@ -1,5 +1,5 @@
 {
     "global": false,
     "namespace": "blackberry.bbm.platform",
-    "dependencies": []
+    "dependencies": ["utils"]
 }

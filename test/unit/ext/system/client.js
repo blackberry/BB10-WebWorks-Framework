@@ -26,12 +26,15 @@ var extDir = __dirname + "./../../../../ext",
 
 describe("system client", function () {
     beforeEach(function () {
-        //Create window object like in DOM and have it act the same way
-        GLOBAL.window = GLOBAL;
-
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window.webworks = mockedWebworks;
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         sysClient = require(apiDir + "/client");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
     });
 
     it("hasPermission", function () {
@@ -67,6 +70,27 @@ describe("system client", function () {
         expect(result).toBeTruthy();
     });
 
+    it("getCurrentTimezone", function () {
+        spyOn(mockedWebworks, "execSync").andReturn("America/New_York");
+
+        var result = sysClient.getCurrentTimezone();
+
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "getCurrentTimezone");
+        expect(result).toBe("America/New_York");
+    });
+
+    it("getTimezones", function () {
+        var timezones = ["America/New_York", "America/Los_Angeles"],
+            result;
+
+        spyOn(mockedWebworks, "execSync").andReturn(timezones);
+
+        result = sysClient.getTimezones();
+
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "getTimezones");
+        expect(result).toBe(timezones);
+    });
+
     it("ALLOW", function () {
         expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "ALLOW", 0);
     });
@@ -76,92 +100,96 @@ describe("system client", function () {
     });
 
     describe("device properties and registerEvents", function () {
-        var fields = [
-                "hardwareId",
-                "softwareVersion",
-                "name"
-            ],
-            execSyncArgs = [];
+
+        var mockDeviceProperties = {
+            hardwareId: "123",
+            softwareVersion: "456",
+            name: "789"
+        };
 
         beforeEach(function () {
-            delete require.cache[require.resolve(apiDir + "/client")];
-            sysClient = null;
-
-            GLOBAL.window = GLOBAL;
-            fields.forEach(function (field) {
-                execSyncArgs.push([ID, field, null]);
-            });
-            mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(null);
+            mockedWebworks.execSync = mockedWebworks.execSync = jasmine.createSpy().andReturn(mockDeviceProperties);
             mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
+            GLOBAL.window = {
+                webworks: mockedWebworks
+            };
             // client needs to be required for each test
+            delete require.cache[require.resolve(apiDir + "/client")];
             sysClient = require(apiDir + "/client");
         });
 
         afterEach(function () {
-            execSyncArgs = [];
             delete GLOBAL.window;
+            delete require.cache[require.resolve(apiDir + "/client")];
+            sysClient = null;
         });
 
-        it("execSync should have been called once for each system field", function () {
-            expect(mockedWebworks.execSync.callCount).toEqual(fields.length + 1); // the extra call is for registerEvents
+        it("execSync should have been called once for all system fields", function () {
+            expect(mockedWebworks.execSync.callCount).toEqual(2); // the extra call is for registerEvents
         });
 
         it("registerEvents", function () {
             expect(mockedWebworks.execSync.argsForCall).toContain([ID, "registerEvents", null]);
         });
 
-        it("hardwareId", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("hardwareId")]);
-        });
-
-        it("softwareVersion", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("softwareVersion")]);
-        });
-
-        it("name", function () {
-            expect(mockedWebworks.execSync.argsForCall).toContain(execSyncArgs[fields.indexOf("name")]);
-        });
-
         it("readonly fields set", function () {
-            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", null);
-            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", null);
-            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "name", null);
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "hardwareId", "123");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "softwareVersion", "456");
+            expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "name", "789");
         });
     });
 
-    describe("language and region", function () {
+    describe("properties", function () {
 
-        beforeEach(function () {
-            delete require.cache[require.resolve(apiDir + "/client")];
-            sysClient = null;
-
-            GLOBAL.window = GLOBAL;
-            mockedWebworks.execSync = jasmine.createSpy("execSync").andCallFake(function (namespace, field, args) {
-                if (field === "language") {
-                    return "fr_CA";
-                } else if (field === "region") {
-                    return "en_US";
-                }
+        describe("region", function () {
+            beforeEach(function () {
+                mockedWebworks.execSync = jasmine.createSpy("execSync").andCallFake(function (namespace, field) {
+                    if (field === "language") {
+                        return "fr_CA";
+                    } else if (field === "region") {
+                        return "en_US";
+                    }
+                });
+                mockedWebworks.defineReadOnlyField = jasmine.createSpy();
+                GLOBAL.window = {
+                    webworks: mockedWebworks
+                };
+                // client needs to be required for each test
+                delete require.cache[require.resolve(apiDir + "/client")];
+                sysClient = require(apiDir + "/client");
             });
-            mockedWebworks.defineReadOnlyField = jasmine.createSpy();
-            GLOBAL.window.webworks = mockedWebworks;
-            // client needs to be required for each test
-            sysClient = require(apiDir + "/client");
+
+            afterEach(function () {
+                delete GLOBAL.window;
+                delete require.cache[require.resolve(apiDir + "/client")];
+                sysClient = null;
+            });
+
+            it("region", function () {
+                expect(sysClient.region).toEqual("en_US");
+                expect(mockedWebworks.execSync.argsForCall).toContain([ID, "region", null]);
+            });
         });
 
-        afterEach(function () {
-            delete GLOBAL.window;
-        });
+        describe("language", function () {
+            var mockNavigator;
 
-        it("language", function () {
-            expect(sysClient.language).toEqual("fr_CA");
-            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "language", null]);
-        });
+            beforeEach(function () {
+                mockNavigator = {
+                    language: (new Date()).toString()
+                };
+                GLOBAL.navigator = mockNavigator;
+                sysClient = require(apiDir + "/client");
+            });
 
-        it("region", function () {
-            expect(sysClient.region).toEqual("en_US");
-            expect(mockedWebworks.execSync.argsForCall).toContain([ID, "region", null]);
+            afterEach(function () {
+                delete GLOBAL.navigator;
+            });
+
+            it("defines a getter for navigator.language", function () {
+                expect(sysClient.language).toEqual(mockNavigator.language);
+            });
+
         });
     });
 });

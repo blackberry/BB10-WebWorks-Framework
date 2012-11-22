@@ -27,10 +27,12 @@ var contacts,
     foundContact;
 
 function deleteContactWithMatchingLastName(lastName) {
-    var findOptions = new ContactFindOptions([{
-            fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-            fieldValue: lastName
-        }]),
+    var findOptions = {
+            filter: [{
+                fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                fieldValue: lastName
+            }], 
+        },
         numContactsRemoved = 0,
         numContactsFound = 0,
         successCb = function () {
@@ -183,7 +185,7 @@ describe("blackberry.pim.contacts", function () {
 
     describe("Child objects creation", function () {
         it('Can create blackberry.pim.contacts.ContactName object', function () {
-            var name = new ContactName({
+            var name = {
                 "formatted": "John F. Kennedy",
                 "familyName": "Kennedy",
                 "givenName": "John",
@@ -192,7 +194,7 @@ describe("blackberry.pim.contacts", function () {
                 "honorificSuffix": "ABC",
                 "phoneticFamilyName": "Kennedy",
                 "phoneticGivenName": "John"
-            });
+            };
             expect(name).toBeDefined();
             expect(name.formatted).toBe("John F. Kennedy");
             expect(name.familyName).toBe("Kennedy");
@@ -208,7 +210,7 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Can create blackberry.pim.contacts.ContactAddress object', function () {
-            var addr = new ContactAddress({
+            var addr = {
                 "type": "work",
                 "streetAddress": "200 University Ave W",
                 "streetOther": "University of Waterloo",
@@ -216,7 +218,7 @@ describe("blackberry.pim.contacts", function () {
                 "region": "Kitchener-Waterloo",
                 "postalCode": "N2L 3G1",
                 "country": "Canada"
-            });
+            };
             expect(addr).toBeDefined();
             expect(addr.type).toBe("work");
             expect(addr.streetAddress).toBe("200 University Ave W");
@@ -228,18 +230,21 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Can create blackberry.pim.contacts.ContactField object', function () {
-            var email = new ContactField(ContactField.HOME, "abc@rim.com");
+            var email = {
+                    type: ContactField.HOME,
+                    value: "abc@rim.com"
+                };
             expect(email).toBeDefined();
             expect(email.type).toBe(ContactField.HOME);
             expect(email.value).toBe("abc@rim.com");
         });
 
         it('Can create blackberry.pim.contacts.ContactOrganization object', function () {
-            var org = new ContactOrganization({
+            var org = {
                 "name": "Research In Motion",
                 "department": "Research",
                 "title": "Software Developer"
-            });
+            };
             expect(org).toBeDefined();
             expect(org.name).toBe("Research In Motion");
             expect(org.department).toBe("Research");
@@ -247,11 +252,12 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Can create blackberry.pim.contacts.ContactPhoto object', function () {
-            var photo = new ContactPhoto("/accounts/1000/shared/pictures/001.jpg", true);
+            var photo = {
+                originalFilePath: "/accounts/1000/shared/pictures/001.jpg", 
+                pref: true
+            };
             expect(photo.originalFilePath).toBe("/accounts/1000/shared/pictures/001.jpg");
             expect(photo.pref).toBe(true);
-            expect(photo.largeFilePath).toBe("");
-            expect(photo.smallFilePath).toBe("");
         });
 
         it('Can create blackberry.pim.contacts.ContactFindOptions object', function () {
@@ -263,7 +269,12 @@ describe("blackberry.pim.contacts", function () {
                     fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME,
                     desc: false
                 }],
-                findOptions = new ContactFindOptions(filter, sort, 5, false);
+                findOptions = {
+                    filter: filter,
+                    sort: sort,
+                    limit: 5,
+                    favorite: false
+                };
             expect(findOptions).toBeDefined();
             expect(findOptions.filter).toBe(filter);
             expect(findOptions.sort).toBe(sort);
@@ -275,17 +286,29 @@ describe("blackberry.pim.contacts", function () {
     describe("Create and clone contacts (without save)", function () {
         it('Can create Contact object using blackberry.pim.contacts.create()', function () {
             var contactObj,
-                name = new ContactName({
+                name = {
                     familyName: "Kennedy",
                     givenName: "John"
-                }),
-                org = new ContactOrganization({
+                },
+                org = {
                     name: "Research In Motion"
-                }),
-                workEmail = new ContactField(ContactField.WORK, "jfk@rim.com"),
-                homeEmail = new ContactField(ContactField.HOME, "jfk@home.com"),
-                blog = new ContactField("blog", "http://www.jfk.com"),
-                homePhone = new ContactField(ContactField.HOME, "342342333"),
+                },
+                workEmail = {
+                    type: ContactField.WORK, 
+                    value: "jfk@rim.com"
+                },
+                homeEmail = {
+                    type: ContactField.HOME,
+                    value: "jfk@home.com"
+                },
+                blog = {
+                    type: "blog",
+                    value: "http://www.jfk.com"
+                },
+                homePhone = {
+                    type: ContactField.HOME,
+                    value: "342342333"
+                },
                 contactObj2;
 
             contactObj = contacts.create({
@@ -381,34 +404,34 @@ describe("blackberry.pim.contacts", function () {
                 new_contact.displayName = "A. Smith";
                 new_contact.nickname = "Johnny";
 
-                new_contact.name = new contacts.ContactName();
+                new_contact.name = {};
                 new_contact.name.givenName = first_name;
                 new_contact.name.familyName = last_name;
                 new_contact.name.middleName = "Middle";
 
-                new_contact.phoneNumbers = [ new contacts.ContactField("home", "1234567890", true),
-                                             new contacts.ContactField("work", "0987654321", false) ];
+                new_contact.phoneNumbers = [ { type: "home", value: "1234567890" },
+                                             { type: "work", value: "0987654321" } ];
 
-                new_contact.faxNumbers = [ new contacts.ContactField("home", "1111111111", false),
-                                           new contacts.ContactField("direct", "2222222222", true) ];
+                new_contact.faxNumbers = [ { type: "home", value: "1111111111" },
+                                           { type: "direct", value: "2222222222" } ];
 
-                new_contact.emails = [ new contacts.ContactField("home", "abc@person.com", false),
-                                       new contacts.ContactField("work", "fgh@rim.com", true) ];
+                new_contact.emails = [ { type: "home", value: "abc@person.com" },
+                                       { type: "work", value: "fgh@rim.com" } ];
 
-                new_contact.ims = [ new contacts.ContactField("GoogleTalk", "gggggggg", true),
-                                    new contacts.ContactField("Aim", "aaaaa", false) ];
+                new_contact.ims = [ { type: "GoogleTalk", value: "gggggggg" },
+                                    { type: "Aim", value: "aaaaa" } ];
 
-                new_contact.urls = [ new contacts.ContactField("personal", "www.mywebsite.com", true) ];
+                new_contact.urls = [ { type: "personal", value: "www.mywebsite.com" } ];
 
-                new_contact.addresses = [ new contacts.ContactAddress({"type": "home", "streetAddress": "123 Rainbow Rd", "locality": "Toronto", "region": "Ontario", "country": "Canada"}),
-                                          new contacts.ContactAddress({"type": "work", "streetAddress": "4701 Tahoe Blvd", "streetOther": "Tahoe B", "locality": "Mississauga", "region": "Ontario", "country": "Canada", "postalCode": "L4W3B1"}) ];
+                new_contact.addresses = [ {"type": "home", "streetAddress": "123 Rainbow Rd", "locality": "Toronto", "region": "Ontario", "country": "Canada"},
+                                          {"type": "work", "streetAddress": "4701 Tahoe Blvd", "streetOther": "Tahoe B", "locality": "Mississauga", "region": "Ontario", "country": "Canada", "postalCode": "L4W3B1"} ];
 
-                new_contact.organizations = [ new contacts.ContactOrganization({"name": "RIM", "department": "BlackBerry WebWorks", "title": "Developer"}),
-                                              new contacts.ContactOrganization({"name": "IBM", "title": "Manager"}),
-                                              new contacts.ContactOrganization({"name": "The Cool Co.", "department": "Cooler", "title": "Mr. Cool"}) ];
+                new_contact.organizations = [ {"name": "RIM", "department": "BlackBerry WebWorks", "title": "Developer"},
+                                              {"name": "IBM", "title": "Manager"},
+                                              {"name": "The Cool Co.", "department": "Cooler", "title": "Mr. Cool"} ];
 
-                new_contact.photos = [ new contacts.ContactPhoto("/accounts/1000/shared/camera/earth.gif", false),
-                                       new contacts.ContactPhoto("/accounts/1000/shared/camera/twitter.jpg", true) ];
+                new_contact.photos = [ {originalFilePath: "/accounts/1000/shared/camera/earth.gif", pref: false},
+                                       {originalFilePath: "/accounts/1000/shared/camera/twitter.jpg", pref: true} ];
 
                 new_contact.note = "This is a test contact for the PIM WebWorks API";
                 new_contact.videoChat = ["abc", "def"];
@@ -432,13 +455,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Can find the contact that has just been created', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }], 
+                    limit: 1, 
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 successCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -539,13 +566,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Can find the contact that was just edited', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Benjamin"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Benjamin"
+                    }], 
+                    limit: 1,
+                    favorite: false
+                },
                 called = false,
                 successCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
                     called = true;
@@ -659,13 +690,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Can remove a clone without removing the original contact', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }], 
+                    limit: 1,
+                    favorite: false
+                },
                 called = false,
                 successCb = jasmine.createSpy("onRemoveSuccess").andCallFake(function () {
                     called = true;
@@ -736,13 +771,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Search results no longer contain removed contact', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }],
+                    limit: 1,
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 findSuccessCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -816,13 +855,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Find with invalid search field name invokes error callback', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: 107,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: 107,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }],
+                    limit: 1,
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 findSuccessCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -853,12 +896,16 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Find with missing search field value invokes error callback', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }],
+                    limit: 1,
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 findSuccessCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -889,13 +936,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Find with invalid contact field name invokes error callback', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }],
+                    limit: 1, 
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 findSuccessCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -926,16 +977,21 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Find with invalid sort field name invokes error callback', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [{
-                    fieldName: 23423,
-                    desc: false
-                }], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }], 
+                    sort: [{
+                        fieldName: 23423,
+                        desc: false
+                    }], 
+                    limit: 1,
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 findSuccessCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -966,15 +1022,20 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Find with missing desc property in sort spec invokes error callback', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smith"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Alessandro"
-                }], [{
-                    fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME
-                }], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smith"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Alessandro"
+                    }], 
+                    sort: [{
+                        fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME
+                    }], 
+                    limit: 1,
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 findSuccessCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -1005,32 +1066,43 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Setting favorite=true find favorite contacts only', function () {
-            var favContact = contacts.create({
-                    "name": new ContactName({
+            var addr = {
+                    "type": "work",
+                    "streetAddress": "200 University Ave W",
+                    "streetOther": "University of Waterloo",
+                    "locality": "Waterloo",
+                    "region": "Kitchener-Waterloo",
+                    "postalCode": "N2L 3G1",
+                    "country": "Canada"
+                },
+                favContact = contacts.create({
+                    "name": {
                         "familyName": "Smitherman",
                         "givenName": "Clement"
-                    }),
+                    },
                     "favorite": true,
                     "displayName": "csmitherman",
-                    "nickname": "CS"
+                    "nickname": "CS",
+                    "addresses": [addr]
                 }),
                 nonFavContact = contacts.create({
-                    "name": new ContactName({
+                    "name": {
                         "familyName": "Smitherman",
                         "givenName": "Clarence"
-                    }),
+                    },
                     "favorite": false
                 }),
-                findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    "fieldValue": "Cl"
-                }, {
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": "Smitherman"
-                }],
-                null,
-                5,
-                true),
+                findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        "fieldValue": "Cl"
+                    }, {
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": "Smitherman"
+                    }],
+                    limit: 5,
+                    favorite: true
+                },
                 called = false,
                 error = false,
                 findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
@@ -1067,13 +1139,17 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it('Find populates displayName and nickname properly even if name is not included in the list of fields', function () {
-            var findOptions = new ContactFindOptions([{
-                    fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    fieldValue: "Smitherman"
-                }, {
-                    fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    fieldValue: "Clement"
-                }], [], 1, false),
+            var findOptions = {
+                    filter: [{
+                        fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        fieldValue: "Smitherman"
+                    }, {
+                        fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        fieldValue: "Clement"
+                    }],
+                    limit: 1,
+                    favorite: false
+                },
                 error = false,
                 called = false,
                 successCb = jasmine.createSpy("onFindSuccess").andCallFake(function (contacts) {
@@ -1110,37 +1186,40 @@ describe("blackberry.pim.contacts", function () {
 
         it("Sort descending should work in find", function () {
             var daniel = contacts.create({
-                    "name": new ContactName({
+                    "name": {
                         "familyName": "Smitherman",
                         "givenName": "Daniel"
-                    })
+                    }
                 }),
                 dawn = contacts.create({
-                    "name": new ContactName({
+                    "name": {
                         "familyName": "Simpson",
                         "givenName": "Dawn"
-                    })
+                    }
                 }),
                 donna = contacts.create({
-                    "name": new ContactName({
+                    "name": {
                         "familyName": "Smitherman",
                         "givenName": "Donna"
-                    })
+                    }
                 }),
-                findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    "fieldValue": "D"
-                }, {
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": "S"
-                }], [{
-                    "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
-                    "desc": false
-                }, {
-                    "fieldName": ContactFindOptions.SORT_FIELD_GIVEN_NAME,
-                    "desc": true
-                }],
-                5),
+                findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        "fieldValue": "D"
+                    }, {
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": "S"
+                    }], 
+                    sort: [{
+                        "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
+                        "desc": false
+                    }, {
+                        "fieldName": ContactFindOptions.SORT_FIELD_GIVEN_NAME,
+                        "desc": true
+                    }],
+                    limit: 5
+                },
                 called = false,
                 error = false,
                 findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
@@ -1179,20 +1258,23 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it("Limit on search results restrict max number of search results", function () {
-            var findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
-                    "fieldValue": "D"
-                }, {
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": "S"
-                }], [{
-                    "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
-                    "desc": false
-                }, {
-                    "fieldName": ContactFindOptions.SORT_FIELD_GIVEN_NAME,
-                    "desc": true
-                }],
-                2),
+            var findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
+                        "fieldValue": "D"
+                    }, {
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": "S"
+                    }], 
+                    sort: [{
+                        "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
+                        "desc": false
+                    }, {
+                        "fieldName": ContactFindOptions.SORT_FIELD_GIVEN_NAME,
+                        "desc": true
+                    }],
+                    limit: 2
+                },
                 called = false,
                 error = false,
                 findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
@@ -1223,10 +1305,12 @@ describe("blackberry.pim.contacts", function () {
         });
 
         it("Omitting limit return all matching search results", function () {
-            var findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": "Smitherman"
-                }]),
+            var findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": "Smitherman"
+                    }]
+                },
                 called = false,
                 error = false,
                 findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
@@ -1254,11 +1338,92 @@ describe("blackberry.pim.contacts", function () {
             });
         });
 
+        it("Empty find options return all contacts with no particular sort order", function () {
+            var findOptions = {},
+                called = false,
+                error = false,
+                findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
+                    called = true;
+                    expect(contacts.length).not.toBeLessThan(5); // in case there are other contacts not for test purpose
+                }),
+                findErrorCb = jasmine.createSpy().andCallFake(function (error) {
+                    called = true;
+                });
+
+            try {
+                contacts.find(["name", "addresses", "displayName", "nickname"], findOptions, findSuccessCb, findErrorCb);
+            } catch (e) {
+                error = true;
+            }
+
+            waitsFor(function () {
+                return called;
+            }, "success/error callback never called", 15000);
+
+            runs(function () {
+                expect(error).toBe(false);
+                expect(findSuccessCb).toHaveBeenCalled();
+                expect(findErrorCb).not.toHaveBeenCalled();
+            });
+        });
+
+        it("Omitting filters with sort fields specified will return all contacts in a particular sort order", function () {
+            var findOptions = {
+                    sort: [{
+                        fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME,
+                        desc: false
+                    }, {
+                        fieldName: ContactFindOptions.SORT_FIELD_GIVEN_NAME,
+                        desc: true
+                    }]
+                },
+                called = false,
+                error = false,
+                findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
+                    var temp = [];
+                    called = true;
+
+                    contacts.forEach(function (c) {
+                        if (c.name.familyName === "Smitherman" || c.name.familyName === "Simpson") {
+                            temp.push(c.name.givenName + " " + c.name.familyName);
+                        }
+                    });
+
+                    expect(contacts.length).not.toBeLessThan(5); // in case there are other contacts not for test purpose
+                    expect(temp[0]).toBe("Dawn Simpson");
+                    expect(temp[1]).toBe("Donna Smitherman");
+                    expect(temp[2]).toBe("Daniel Smitherman");
+                    expect(temp[3]).toBe("Clement Smitherman");
+                    expect(temp[4]).toBe("Clarence Smitherman");
+                }),
+                findErrorCb = jasmine.createSpy().andCallFake(function (error) {
+                    called = true;
+                });
+
+            try {
+                contacts.find(["name", "addresses", "displayName", "nickname"], findOptions, findSuccessCb, findErrorCb);
+            } catch (e) {
+                error = true;
+            }
+
+            waitsFor(function () {
+                return called;
+            }, "success/error callback never called", 15000);
+
+            runs(function () {
+                expect(error).toBe(false);
+                expect(findSuccessCb).toHaveBeenCalled();
+                expect(findErrorCb).not.toHaveBeenCalled();
+            });
+        });
+
         it("Error callback is optional", function () {
-            var findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": "Smitherman"
-                }]),
+            var findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": "Smitherman"
+                    }]
+                },
                 called = false,
                 error = false,
                 findSuccessCb = jasmine.createSpy().andCallFake(function (contacts) {
@@ -1292,20 +1457,22 @@ describe("blackberry.pim.contacts", function () {
                     expect(contacts.length).toBe(1);
                     expect(contacts[0].name.givenName).toBe("John");
                     expect(contacts[0].name.familyName).toBe("WebWorksTest");
-                    expect(contacts[0].news).not.toBe([]);
+                    expect(contacts[0].news).not.toBe(null);
                     expect(contacts[0].news.length).toBeGreaterThan(0);
                 }),
                 errorCb = jasmine.createSpy("onFindError").andCallFake(function (error) {
                     called = true;
                 }),
-                findOptions = new ContactFindOptions([{
-                    "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
-                    "fieldValue": "WebWorksTest"
-                }]);
+                findOptions = {
+                    filter: [{
+                        "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
+                        "fieldValue": "WebWorksTest"
+                    }]
+                };
 
             contactObj = contacts.create({
-                "name": new ContactName({ familyName: "WebWorksTest", givenName: "John" }),
-                "organizations": [ new ContactOrganization({ name: "Research In Motion" }) ]
+                "name": { familyName: "WebWorksTest", givenName: "John" },
+                "organizations": [ { name: "Research In Motion" } ]
             });
 
             try {

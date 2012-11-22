@@ -118,4 +118,23 @@ describe("blackberry.system", function () {
             testSystemValue("language");
         });
     });
+
+    describe("getCurrentTimezone", function () {
+        it('returns current timezone', function () {
+            var timezone = blackberry.system.getCurrentTimezone();
+            expect(timezone).toBeDefined();
+            expect(timezone).toEqual(jasmine.any(String));
+            expect(timezone).not.toEqual("");
+        });
+    });
+
+    describe("getTimezones", function () {
+        it('return array of timezone ids', function () {
+            var timezone = blackberry.system.getCurrentTimezone(),
+                allTimezones = blackberry.system.getTimezones();
+            expect(timezone).toBeDefined();
+            expect(Array.isArray(allTimezones)).toBeTruthy();
+            expect(allTimezones).toContain(timezone);
+        });
+    });
 });

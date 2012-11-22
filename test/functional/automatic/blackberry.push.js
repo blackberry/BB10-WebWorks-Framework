@@ -35,9 +35,10 @@ describe("blackberry.push.PushService", function () {
                       "CREATE_CHANNEL_NOT_DONE" : 10106,
                       "MISSING_PORT_FROM_PPG" : 10107,
                       "MISSING_SUBSCRIPTION_RETURN_CODE_FROM_PPG" : 10108,
+                      "PPG_SERVER_ERROR" : 10110,
                       "MISSING_INVOKE_TARGET_ID" : 10111,
                       "SESSION_ALREADY_EXISTS" : 10112,
-                      "INVALID_PPG_URL_OR_PPG_UNAVAILABLE" : 10113,
+                      "INVALID_PPG_URL" : 10114,
                       "CREATE_CHANNEL_OPERATION" : 1,
                       "DESTROY_CHANNEL_OPERATION" : 2},
         pushService;

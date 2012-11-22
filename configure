@@ -14,19 +14,4 @@ if [ "$1" != "-scm" ]; then
     git submodule update --init;
 fi
 
-#If webplatform exists, configure and build it.
-if [ -f "./dependencies/webplatform/framework/configure" ]; then
-    cd ./dependencies/webplatform/framework;
-    if [[ "$OS" == *Windows* ]]; then
-        source configure;
-    else
-        ./configure
-    fi
-    jake;
-else if [ ! -f "./dependencies/webplatform/framework/clientFiles/webplatform.js" ]; then
-        mkdir -p ./dependencies/webplatform/framework/clientFiles;
-        echo -e "\n**** WARNING: Webplatform could not be found. ****"
-        echo -e "Please refer to the README for instructions on how to copy the Webplatform from a BB10 Webworks SDK installation before running jake."
-    fi
-fi
 echo -e "\nConfiguring complete. Please proceed with running \"jake\"."

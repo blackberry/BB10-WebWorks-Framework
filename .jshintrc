@@ -1,43 +1,47 @@
 {
     "predef": [
-        "escape", 
+        "escape",
         "unescape",
         //Jasmine
-        "jasmine", 
-        "it", 
+        "jasmine",
+        "it",
         "describe",
-        "xit", 
+        "xit",
         "xdescribe",
-        "beforeEach", 
+        "beforeEach",
         "afterEach",
-        "runs", 
-        "waits", 
+        "runs",
+        "waits",
         "waitsFor",
-        "spyOn", 
-        "expect", 
+        "spyOn",
+        "expect",
         "global",
         //Webworks
-        "qnx", 
+        "qnx",
         "chrome",
-        "blackberry", 
+        "blackberry",
+        "internal",
         "JNEXT",
         "frameworkModules",
         //Node
-        "__dirname", 
+        "__dirname",
         "GLOBAL",
-        "process", 
+        "process",
         "exports",
         "module",
         "NamedNodeMap",
-        "require", 
-        "Node", 
+        "require",
+        "Node",
         "JSZip",
         //UI Components
         "x$",
         "iris",
         //Browser
         "DOMElement",
-        "atob"
+        "atob",
+        //automated tests
+        "showOverlay",
+        "hideOverlay"
     ],
 
     "node" : false,
@@ -66,6 +70,5 @@
     "regexp": false,
     "undef": true,
     "sub": true,
-    "strict": false,
-    "vars": false
+    "strict": false
 }

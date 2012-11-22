@@ -147,18 +147,29 @@ describe("whitelist", function () {
         it("can allow access to whitelisted feature for whitelisted HTTP uris", function () {
             var whitelist = new Whitelist({
                 hasMultiAccess : false,
-                accessList : [{
-                    uri : "http://google.com",
-                    allowSubDomain : false,
-                    features : [{
-                        id : "blackberry.app",
-                        required : true,
-                        version : "1.0.0"
-                    }]
-                }]
+                accessList : [
+                    {
+                        uri : "http://google.com",
+                        allowSubDomain : false,
+                        features : [{
+                            id : "blackberry.app",
+                            required : true,
+                            version : "1.0.0"
+                        }]
+                    }, {
+                        uri: "http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/",
+                        allowSubDomain: false,
+                        features: [{
+                            id : "blackberry.app",
+                            required : true,
+                            version : "1.0.0"
+                        }]
+                    }
+                ]
             });
 
             expect(whitelist.isFeatureAllowed("http://google.com", "blackberry.app")).toEqual(true);
+            expect(whitelist.isFeatureAllowed("http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/a/webworks.html", "blackberry.app")).toEqual(true);
         });
 
         it("can deny access to non-whitelisted feature for whitelisted HTTP uris", function () {
@@ -246,6 +257,40 @@ describe("whitelist", function () {
             });
 
             expect(whitelist.isAccessAllowed("http://www.awesome.com:9000")).toEqual(true);
+        });
+
+        it("allows api access for ports given just the whitelist url", function () {
+            var whitelist = new Whitelist({
+                hasMultiAccess : false,
+                accessList : [{
+                    uri : "http://www.awesome.com",
+                    allowSubDomain : true,
+                    features : [{
+                        id : "blackberry.app",
+                        required : true,
+                        version : "1.0.0"
+                    }]
+                }]
+            });
+
+            expect(whitelist.isFeatureAllowed("http://www.awesome.com:8080", "blackberry.app")).toEqual(true);
+        });
+
+        it("allows api access for child pages with ports given just the whitelist url", function () {
+            var whitelist = new Whitelist({
+                hasMultiAccess : false,
+                accessList : [{
+                    uri : "http://smoketest8-vmyyz.labyyz.testnet.rim.net/",
+                    allowSubDomain : true,
+                    features : [{
+                        id : "blackberry.app",
+                        required : true,
+                        version : "1.0.0"
+                    }]
+                }]
+            });
+
+            expect(whitelist.isFeatureAllowed("http://www.smoketest8-vmyyz.labyyz.testnet.rim.net:8080//webworks.html", "blackberry.app")).toEqual(true);
         });
 
         it("can allow folder level access of whitelisted uris", function () {
@@ -454,14 +499,21 @@ describe("whitelist", function () {
             it("can allow access to subdomains of whitelisted uris", function () {
                 var whitelist = new Whitelist({
                     hasMultiAccess : false,
-                    accessList : [{
-                        uri : "http://awesome.com/",
-                        allowSubDomain : true,
-                        features : null
-                    }]
+                    accessList : [
+                        {
+                            uri : "http://awesome.com/",
+                            allowSubDomain : true,
+                            features : null
+                        }, {
+                            uri: "http://smoketest9-vmyyz.labyyz.testnet.rim.net:8080",
+                            allowSubDomain: true,
+                            features: null
+                        }
+                    ]
                 });
 
                 expect(whitelist.isAccessAllowed("http://subdomain.awesome.com")).toEqual(true);
+                expect(whitelist.isAccessAllowed("http://www.smoketest9-vmyyz.labyyz.testnet.rim.net:8080")).toEqual(true);
             });
 
             it("can disallow access to subdomains of whitelisted uris", function () {
@@ -651,6 +703,95 @@ describe("whitelist", function () {
                 expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);
             });
 
+            it("can access file if rule specifed was file:///", function () {
+                var whitelist = new Whitelist({
+                    hasMultiAccess : false,
+                    accessList : [
+                        {
+                            uri : "file:///accounts/1000/shared/documents/textData.txt",
+                            allowSubDomain : false,
+                            features: []
+                        }
+                    ]
+                });
+
+                expect(whitelist.isAccessAllowed("file:///accounts/1000/shared/documents/textData.txt")).toEqual(true);
+                expect(whitelist.isAccessAllowed("file:///etc/passwd")).toEqual(false);
+            });
+
+            it("can access file if rule specifed was file:///", function () {
+                var whitelist = new Whitelist({
+                    "hasMultiAccess": false,
+                    "accessList": [
+                        {
+                            "features": [],
+                            "uri": "WIDGET_LOCAL",
+                            "allowSubDomain": true
+                        },
+                        {
+                            "features": [],
+                            "uri": "file:///accounts/1000/shared/documents/textData.txt"
+                        }
+                    ]
+                });
+                expect(whitelist.isAccessAllowed("file:///etc/passwd", false)).toEqual(false);
+            });
+
+            it("can deny file access when access file:/// with no rule", function () {
+                var whitelist = new Whitelist({
+                    hasMultiAccess : false,
+                    accessList : null
+                });
+
+                expect(whitelist.isAccessAllowed("file:///accounts/1000/shared/documents/textData.txt")).toEqual(false);
+            });
+
+            it("can allow access to whitelisted file URL from an external startup page", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "file://store/home/user/documents",
+                        allowSubDomain : false,
+                        features : null
+                    }]
+                });
+
+                expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);
+            });
+
+            it("can allow access to whitelisted local URL from an external startup page", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "local://localpage.html",
+                        allowSubDomain : false,
+                        features : null
+                    }]
+                });
+
+                expect(whitelist.isAccessAllowed("local://localpage.html")).toEqual(true);
+            });
+
+            it("can allow access to whitelisted file URL from an external startup page with wildcard access", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : true
+                });
+
+                expect(whitelist.isAccessAllowed("file://store/home/user/documents/file.doc")).toEqual(true);
+            });
+
+            it("can allow access to whitelisted local URL from an external startup page with wildcard access", function () {
+                var whitelist = new Whitelist({
+                    content: "http://www.google.com",
+                    hasMultiAccess : true
+                });
+
+                expect(whitelist.isAccessAllowed("local://localpage.html")).toEqual(true);
+            });
+
             it("can deny file URL access when no file urls are whitelisted", function () {
                 var whitelist = new Whitelist({
                     hasMultiAccess : false,
@@ -698,6 +839,19 @@ describe("whitelist", function () {
                 });
 
                 expect(whitelist.isAccessAllowed("rtsp://media.com/video.avi")).toEqual(true);
+            });
+
+            it("always allows access to data-uris", function () {
+                var whitelist = new Whitelist({
+                    hasMultiAccess : false,
+                    accessList : [{
+                        uri : "http://awesome.com",
+                        allowSubDomain : false,
+                        features : null
+                    }]
+                });
+
+                expect(whitelist.isAccessAllowed("data:image/png;base64,zamagawdbase64string")).toEqual(true);
             });
         });
     });

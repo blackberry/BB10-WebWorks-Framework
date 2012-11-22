@@ -41,6 +41,12 @@ task('test', [], function () {
     require('./build/test')(null, process.argv.length >= 4 ? process.argv[3] : null);
 });
 
+desc("Grabs the latest ScreenShot from the device located at /accounts/1000/shared/camera/WebWorksScreenShot.bmp " +
+    "/test/data/ReferenceImages/<name-of-file> [<ip address>,<name-of-file>]");
+task('grab-image', [], function () {
+    require('./build/grab-image')(Array.prototype.slice.call(arguments));
+});
+
 /**
  * Expected syntax is
  * jake native-test[<device|simulator>,<IP Address of device>,<comma seperated extensions to ignore>..]
@@ -56,6 +62,7 @@ desc("run all native tests on device or sim - jake native-test [<device|simulato
 task('native-test', [], function () {
     require('./build/native-test')(Array.prototype.slice.call(arguments));
 });
+
 
 /**
  * Required jake native-test to avoid continous prompt of the password.
@@ -81,9 +88,9 @@ task('lint', [], function () {
 desc("show various codebase stats");
 task('stats', [], require('./build/stats'));
 
-desc("Packages an app using the framework produced by this repo." + DESC_NEW_LINE + 
-     " This will replace the framework folder in the packager specified." + DESC_NEW_LINE + 
-     " This will replace webworks.js in the zip if you specify the path." + DESC_NEW_LINE + 
+desc("Packages an app using the framework produced by this repo." + DESC_NEW_LINE +
+     " This will replace the framework folder in the packager specified." + DESC_NEW_LINE +
+     " This will replace webworks.js in the zip if you specify the path." + DESC_NEW_LINE +
      " The packager path MUST be absolute (ie no ~)" + DESC_NEW_LINE +
      " Expected usage - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>,<{OPTIONAL}pathToWebWorks.js>]" + DESC_NEW_LINE +
      " Example - jake package[/Users/jheifets/Downloads/BB10webworks-next-42/,test/test-app/wwTest.zip,-d,js/webworks.js]");
@@ -100,3 +107,6 @@ desc("Builds the framework, creates the test-app, packages it and deploys it" + 
      " Expected usage - jake deploy-tests[<pathToPackager>,<packageroptions>,<device|simulator>,<device ip>,<device password>]" + DESC_NEW_LINE +
      " Example - jake deploy-tests[/Users/jheifetz/Downloads/BB10webworks-next-42/,-d,device,169.254.0.1,qaqa]");
 task("deploy-tests", [], require("./build/deploy-tests"));
+
+desc("Deploys and runs QNX automation agents (internal only) - jake deploy-automation[<deviceIP>,<domainUserName>]");
+task("deploy-automation", [], require("./build/deploy-automation"));

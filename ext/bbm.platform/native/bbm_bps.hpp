@@ -56,18 +56,20 @@ public:
     void StopContactEvents();
     // BBM related functions
     void Register(const std::string& uuid);
-    int GetGid();
     std::string GetProfile(BBMField field);
     void GetDisplayPicture();
     void SetStatus(int status, const std::string& personalMessage);
     void SetPersonalMessage(const std::string& personalMessage);
     void SetDisplayPicture(const std::string& imgPath);
     std::string GetContact(bbmsp_contact_t *contact, BBMField field);
+    void InviteToDownload();
 
 private:
     BBM *m_pParent;
     void processAccessCode(int code);
+    void processProfileUpdate(bbmsp_event_t *event);
     void processContactUpdate(bbmsp_event_t *event);
+    std::string getFullProfile();
     std::string getFullContact(bbmsp_contact_t *contact);
     static bool contactEventsEnabled;
     static pthread_mutex_t m_lock;

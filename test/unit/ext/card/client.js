@@ -18,27 +18,31 @@ var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/card",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
-    mockedWebworks = {
-        execSync: jasmine.createSpy("webworks.execSync"),
-        execAsync: jasmine.createSpy("webworks.execAsync"),
-        defineReadOnlyField: jasmine.createSpy(),
-        event: {
-            isOn: jasmine.createSpy("webworks.event.isOn"),
-            once: jasmine.createSpy("webworks.event.once")
-        }
-    };
+    mockedWebworks;
 
 describe("invoke.card client", function () {
     beforeEach(function () {
-        GLOBAL.window = GLOBAL;
-        mockedWebworks.event.once = jasmine.createSpy("webworks.event.once");
-        GLOBAL.window.webworks = mockedWebworks;
+        mockedWebworks = {
+            execSync: jasmine.createSpy("webworks.execSync"),
+            execAsync: jasmine.createSpy("webworks.execAsync"),
+            defineReadOnlyField: jasmine.createSpy(),
+            event: {
+                isOn: jasmine.createSpy("webworks.event.isOn"),
+                once: jasmine.createSpy("webworks.event.once")
+            }
+        };
+
+        GLOBAL.window = {
+            webworks: mockedWebworks
+        };
         client = require(_apiDir + "/client");
     });
 
     afterEach(function () {
+        mockedWebworks = undefined;
         delete GLOBAL.window;
         client = null;
+        delete require.cache[require.resolve(_apiDir + "/client")];
     });
 
 

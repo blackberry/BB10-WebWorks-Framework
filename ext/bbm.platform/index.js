@@ -62,49 +62,49 @@ module.exports = {
                 return;
             }
 
-            bbm.register(args.options);
+            bbm.getInstance().register(args.options);
             success();
         }
     },
 
     self : {
         appVersion : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_APP_VERSION));
+            success(bbm.getInstance().self.getProfile(BBM_APP_VERSION));
         },
 
         bbmsdkVersion : function (success, fail, args, env) {
-            success(parseInt(bbm.self.getProfile(BBM_SDK_VERSION), 10));
+            success(parseInt(bbm.getInstance().self.getProfile(BBM_SDK_VERSION), 10));
         },
 
         displayName : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_DISPLAY_NAME));
+            success(bbm.getInstance().self.getProfile(BBM_DISPLAY_NAME));
         },
 
         handle : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_HANDLE));
+            success(bbm.getInstance().self.getProfile(BBM_HANDLE));
         },
 
         personalMessage : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_PERSONAL_MESSAGE));
+            success(bbm.getInstance().self.getProfile(BBM_PERSONAL_MESSAGE));
         },
 
         ppid : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_PPID));
+            success(bbm.getInstance().self.getProfile(BBM_PPID));
         },
 
         status : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_STATUS));
+            success(bbm.getInstance().self.getProfile(BBM_STATUS));
         },
 
         statusMessage : function (success, fail, args, env) {
-            success(bbm.self.getProfile(BBM_STATUS_MESSAGE));
+            success(bbm.getInstance().self.getProfile(BBM_STATUS_MESSAGE));
         },
 
         getDisplayPicture : function (success, fail, args, env) {
             if (args) {
                 args.eventId = JSON.parse(decodeURIComponent(args.eventId));
 
-                bbm.self.getDisplayPicture(args.eventId);
+                bbm.getInstance().self.getDisplayPicture(args.eventId);
                 success();
             }
         },
@@ -120,7 +120,7 @@ module.exports = {
                 }
             }
 
-            bbm.self.setStatus(args);
+            bbm.getInstance().self.setStatus(args);
             success();
         },
 
@@ -134,7 +134,7 @@ module.exports = {
                 }
             }
 
-            bbm.self.setPersonalMessage(args.personalMessage);
+            bbm.getInstance().self.setPersonalMessage(args.personalMessage);
             success();
         },
 
@@ -148,29 +148,15 @@ module.exports = {
                 }
             }
 
-            bbm.self.setDisplayPicture(args.displayPicture);
+            bbm.getInstance().self.setDisplayPicture(args.displayPicture);
             success();
         }
     },
 
     users : {
         inviteToDownload : function (success, fail, args) {
-            var gid,
-                done,
-                cancel,
-                details =  {},
-                callback = function (e) {
-                    if (e) {
-                        fail(-1, "invocation failure: " + e);
-                    }
-                    else {
-                        success();
-                    }
-                };
-
-            gid = bbm.getgid();
-            details.gid = gid;
-            qnx.webplatform.getApplication().cards.bbm.inviteToDownload.open(details, done, cancel, callback);
+            bbm.getInstance().users.inviteToDownload();
+            success();
         }
     }
 };

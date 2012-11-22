@@ -24,27 +24,27 @@ module.exports = {
                             "appId" : JSON.parse(decodeURIComponent(args.appId)),
                             "ppgUrl" : JSON.parse(decodeURIComponent(args.ppgUrl)) };
 
-        _push.startService(pushOptions);
+        _push.getInstance().startService(pushOptions);
         success();
     },
 
     createChannel: function (success, fail, args) {
-        _push.createChannel(args);
+        _push.getInstance().createChannel(args);
         success();
     },
 
     destroyChannel: function (success, fail, args) {
-        _push.destroyChannel(args);
+        _push.getInstance().destroyChannel(args);
         success();
     },
 
     extractPushPayload: function (success, fail, args) {
         var invokeData = { "data" : JSON.parse(decodeURIComponent(args.data)) };
-        success(_push.extractPushPayload(invokeData));
+        success(_push.getInstance().extractPushPayload(invokeData));
     },
 
     launchApplicationOnPush: function (success, fail, args) {
-        _push.launchApplicationOnPush(JSON.parse(decodeURIComponent(args.shouldLaunch)));
+        _push.getInstance().launchApplicationOnPush(JSON.parse(decodeURIComponent(args.shouldLaunch)));
         success();
     },
 
@@ -52,7 +52,7 @@ module.exports = {
         var acknowledgeData = { "id" : JSON.parse(decodeURIComponent(args.id)),
                                 "shouldAcceptPush" : JSON.parse(decodeURIComponent(args.shouldAcceptPush)) };
 
-        _push.acknowledge(acknowledgeData);
+        _push.getInstance().acknowledge(acknowledgeData);
         success();
     }
 };
@@ -62,7 +62,8 @@ module.exports = {
 ///////////////////////////////////////////////////////////////////
 
 JNEXT.Push = function () {
-    var self = this;
+    var self = this,
+        hasInstance = false;
 
     self.startService = function (args) {
         JNEXT.invoke(self.m_id, "startService " + JSON.stringify(args));
@@ -100,11 +101,11 @@ JNEXT.Push = function () {
     };
 
     self.init = function () {
-        if (!JNEXT.require("pushJNext")) {
+        if (!JNEXT.require("libpushjnext")) {
             return false;
         }
 
-        self.m_id = JNEXT.createObject("pushJNext.Push");
+        self.m_id = JNEXT.createObject("libpushjnext.Push");
 
         if (self.m_id === "") {
             return false;
@@ -145,7 +146,13 @@ JNEXT.Push = function () {
 
     self.m_id = "";
 
-    self.init();
+    self.getInstance = function () {
+        if (!hasInstance) {
+            hasInstance = true;
+            self.init();
+        }
+        return self;
+    };
 };
 
 _push = new JNEXT.Push();
