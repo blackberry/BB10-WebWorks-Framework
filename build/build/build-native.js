@@ -20,43 +20,20 @@ var utils = require("./utils"),
     _c = require("./conf");
 
 module.exports = function (isForUnitTest) {
-    var MAKE_CMD = "make " + "-j " + _c.COMPILER_THREADS,
-        simDir = (isForUnitTest ? _c.UNIT_TEST_SIM_BUILD : _c.SIM_BUILD),
-        deviceDir = (isForUnitTest ? _c.UNIT_TEST_DEVICE_BUILD : _c.DEVICE_BUILD),
+    var MAKE_CMD = "make " + "JLEVEL=" + _c.COMPILER_THREADS,
         buildEnv = process.env;
 
     return function (prev, baton) {
-        var SH_CMD = "bash ",
-            build = jWorkflow.order(),
-            thisBaton = baton,
-            configurePrefix,
-            configureX86,
-            configureARM;
+        var build = jWorkflow.order(),
+            thisBaton = baton;
 
         thisBaton.take();
-
-        //Create build directories if necessary
-        if (!path.existsSync(simDir)) {
-            fs.mkdirSync(simDir);
-        }
-
-        if (!path.existsSync(deviceDir)) {
-            fs.mkdirSync(deviceDir);
-        }
-
-        //configure-qsk commands
-        configurePrefix = utils.isWindows() ? SH_CMD : "";
-        configureX86 = configurePrefix + _c.DEPENDENCIES_CONFIGURE_QSK + " x86";
-        configureARM = configurePrefix + _c.DEPENDENCIES_CONFIGURE_QSK + " arm a9";
 
         if (isForUnitTest) {
             buildEnv.UNIT_TESTS = "1";
         }
 
-        build = build.andThen(utils.execCommandWithJWorkflow(configureX86, {cwd: simDir, env: buildEnv}))
-        .andThen(utils.execCommandWithJWorkflow(MAKE_CMD, {cwd: simDir}))
-        .andThen(utils.execCommandWithJWorkflow(configureARM, {cwd: deviceDir, env: buildEnv}))
-        .andThen(utils.execCommandWithJWorkflow(MAKE_CMD, {cwd: deviceDir}))
+        build = build.andThen(utils.execCommandWithJWorkflow(MAKE_CMD))
         .andThen(function () {
             //catch the success case
             thisBaton.pass(prev);

@@ -29,7 +29,9 @@ var bbm,
 
 JNEXT.BBM = function ()
 {
-    var _self = this;
+    var _self = this,
+        hasInstance = false;
+
     _self.self = {};
     _self.users = {};
 
@@ -61,10 +63,6 @@ JNEXT.BBM = function ()
         JNEXT.invoke(_self.m_id, "register " + JSON.stringify(options));
     };
 
-    _self.getgid = function () {
-        return JNEXT.invoke(_self.m_id, "getgid");
-    };
-
     _self.self.getProfile = function (field) {
         return JNEXT.invoke(_self.m_id, "self.getProfile " + field);
     };
@@ -86,16 +84,20 @@ JNEXT.BBM = function ()
         JNEXT.invoke(_self.m_id, "self.setDisplayPicture " + displayPicture);
     };
 
+    _self.users.inviteToDownload = function () {
+        JNEXT.invoke(_self.m_id, "users.inviteToDownload");
+    };
+
     _self.getId = function () {
         return _self.m_id;
     };
 
     _self.init = function () {
-        if (!JNEXT.require("bbm")) {   
+        if (!JNEXT.require("libbbm")) {   
             return false;
         }
 
-        _self.m_id = JNEXT.createObject("bbm.BBM");
+        _self.m_id = JNEXT.createObject("libbbm.BBM");
 
         if (_self.m_id === "") {   
             return false;
@@ -128,7 +130,13 @@ JNEXT.BBM = function ()
     _self.m_id = "";
     _self.displayPictureEventId = "";
 
-    _self.init();
+    _self.getInstance = function () {
+        if (!hasInstance) {
+            _self.init();
+            hasInstance = true;
+        }
+        return _self;
+    };
 };
 
 bbm = new JNEXT.BBM();

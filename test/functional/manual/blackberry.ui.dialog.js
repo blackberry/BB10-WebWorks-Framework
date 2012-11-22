@@ -52,97 +52,168 @@ describe("blackberry.ui.dialog", function () {
             settings = {title : "Dialog"},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.customAskAsync("Click the button, this dialog is not a global dialog and should have one button", buttons, dialogCallback, settings);
-        
+        blackberry.ui.dialog.customAskAsync("Click the button, this dialog should have one button", buttons, dialogCallbackCheckOption, settings);
+
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option).toEqual(0);
+        });
     });
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a dialog with two buttons and a title', function () {
-		var buttons = ["Hello", "World"],
+		var buttons = ["Hello", "Ok"],
             settings = {title : "Dialog"},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.customAskAsync("Click the button, this dialog is not a global dialog and should have two buttons, click the pass button to proceed", buttons, dialogCallback, settings);
+        blackberry.ui.dialog.customAskAsync("Click the button, this dialog should have two buttons, click the Ok button to proceed", buttons, dialogCallbackCheckOption, settings);
         
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option).toEqual(1);
+        });
     });
     
     it('blackerry.ui.dialog.customAskAsync should be able to create a global dialog with three buttons and a title', function () {
-		var buttons = ["OK", "Hello", "World"],
+		var buttons = ["Hello", "World", "Ok"],
             settings = {title : "Dialog", global: true},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.customAskAsync("Click the button, this dialog is not a global dialog and should have three buttons and should be a global dialog, click the pass button to proceed", buttons, dialogCallback, settings);
+        blackberry.ui.dialog.customAskAsync("Click the button, this dialog should have three buttons, click the Ok button to proceed", buttons, dialogCallbackCheckOption, settings);
         
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option).toEqual(2);
+        });
     });
     
-    it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok dialog', function () {
+    it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok dialog and return Ok', function () {
         var type = blackberry.ui.dialog.D_OK,
             settings = {title : "Ok Dialog"},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have an OK button", type, dialogCallback, settings);
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have an OK button", type, dialogCallbackCheckOption, settings);
         
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('Ok');
+        });
     });
 
-    it('blackberry.ui.dialog.standardAskAsync should be able to create a Save dialog', function () {
-        var type = blackberry.ui.dialog.D_SAVE,
-            settings = {title : "Save Dialog"},
-            callback = jasmine.createSpy();
-
-        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Save/Discard)", type, dialogCallback, settings);
-
-        waitsFor(function () {
-            return checkForCallback(callback);
-        }, "dialog callback was never called", 10000);
-    });
-
-    it('blackberry.ui.dialog.standardAskAsync should be able to create a Delete dialog', function () {
+    it('blackberry.ui.dialog.standardAskAsync should be able to create a Delete dialog and return Delete', function () {
         var type = blackberry.ui.dialog.D_DELETE,
-            settings = {title : "Delete Dialog"},
+            settings = {title : "Delete Dialog, Click Delete"},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Delete/Cancel)", type, dialogCallback, settings);
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Delete/Cancel). Click the Delete button", type, dialogCallbackCheckOption, settings);
 
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('Delete');
+        });
     });
 
-    it('blackberry.ui.dialog.standardAskAsync should be able to create a Yes/No dialog', function () {
-        var type = blackberry.ui.dialog.D_YES_NO,
-            settings = {title : "Yes/No Dialog"},
+    it('blackberry.ui.dialog.standardAskAsync should be able to create a Delete dialog and return Cancel', function () {
+        var type = blackberry.ui.dialog.D_DELETE,
+            settings = {title : "Delete Dialog, Click Cancel"},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Yes/No)", type, dialogCallback, settings);
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Delete/Cancel). Click the Cancel button", type, dialogCallbackCheckOption, settings);
+
+        waitsFor(function () {
+            return checkForCallback(callback);
+        }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('Cancel');
+        });
+    });
+
+    it('blackberry.ui.dialog.standardAskAsync should be able to create a Yes/No dialog and return Yes', function () {
+        var type = blackberry.ui.dialog.D_YES_NO,
+            settings = {title : "Yes/No Dialog, Click Yes"},
+            callback = jasmine.createSpy();
+
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Yes/No). Click the Yes button", type, dialogCallbackCheckOption, settings);
         
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('Yes');
+        });
     });
 
-    it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok/Cancel dialog', function () {
-        var type = blackberry.ui.dialog.D_OK_CANCEL,
-            settings = {title : "Ok/Cancel Dialog"},
+    it('blackberry.ui.dialog.standardAskAsync should be able to create a Yes/No dialog and return No', function () {
+        var type = blackberry.ui.dialog.D_YES_NO,
+            settings = {title : "Yes/No Dialog, Click No"},
             callback = jasmine.createSpy();
 
-        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Ok/Cancel)", type, dialogCallback, settings);
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Yes/No). Click the No button", type, dialogCallbackCheckOption, settings);
+        
         waitsFor(function () {
             return checkForCallback(callback);
         }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('No');
+        });
     });
 
-    it('blackberry.ui.dialog.standardAskAsync should return the correct option index', function () {
+    it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok/Cancel dialog and return Ok', function () {
+        var type = blackberry.ui.dialog.D_OK_CANCEL,
+            settings = {title : "Ok/Cancel Dialog, Click Ok"},
+            callback = jasmine.createSpy();
+
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Ok/Cancel). Click the Ok button", type, dialogCallbackCheckOption, settings);
+        waitsFor(function () {
+            return checkForCallback(callback);
+        }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('Ok');
+        });
+    });
+
+    it('blackberry.ui.dialog.standardAskAsync should be able to create an Ok/Cancel dialog and return Cancel', function () {
+        var type = blackberry.ui.dialog.D_OK_CANCEL,
+            settings = {title : "Ok/Cancel Dialog, Click Cancel"},
+            callback = jasmine.createSpy();
+
+        blackberry.ui.dialog.standardAskAsync("Click the button, this dialog is not a global dialog and should have two buttons (Ok/Cancel). Click the Cancel button", type, dialogCallbackCheckOption, settings);
+        waitsFor(function () {
+            return checkForCallback(callback);
+        }, "dialog callback was never called", 10000);
+        runs(function () {
+            expect(option.return).toEqual('Cancel');
+        });
+    });
+
+    it('blackberry.ui.dialog.standardAskAsync should return the correct option index and return Save', function () {
+        var type = blackberry.ui.dialog.D_SAVE,
+            settings = {title : "Save Dialog, Click Save"},
+            callback = jasmine.createSpy();
+
+        runs(function () {
+            blackberry.ui.dialog.standardAskAsync("This dialog is not a global dialog and should have two buttons (Save/Discard).  Click the Save button.", type, dialogCallbackCheckOption, settings);
+        });
+
+        waitsFor(function () {
+            return checkForCallback(callback);
+        }, "dialog callback was never called", 10000);
+
+        runs(function () {
+            expect(option.return).toEqual('Save');
+        });
+    });  
+
+    it('blackberry.ui.dialog.standardAskAsync should return the correct option index and return Discard', function () {
         var type = blackberry.ui.dialog.D_SAVE,
             settings = {title : "Save Dialog, Click Discard"},
             callback = jasmine.createSpy();
@@ -156,7 +227,45 @@ describe("blackberry.ui.dialog", function () {
         }, "dialog callback was never called", 10000);
 
         runs(function () {
-            expect(option).toEqual('1');
+            expect(option.return).toEqual('Discard');
+        });
+    });
+
+    it('blackberry.ui.dialog.standardAskAsync should return the correct option for Prompt dialog and return when Ok', function () {
+        var type = blackberry.ui.dialog.D_PROMPT,
+            settings = {title : "Prompt Dialog, Insert and click Ok"},
+            callback = jasmine.createSpy();
+
+        runs(function () {
+            blackberry.ui.dialog.standardAskAsync("This dialog is not a global dialog and should have two buttons (Save/Discard).  Insert 'test' and click the Ok button.", type, dialogCallbackCheckOption, settings);
+        });
+
+        waitsFor(function () {
+            return checkForCallback(callback);
+        }, "dialog callback was never called", 10000);
+
+        runs(function () {
+            expect(option.return).toEqual('Ok');
+            expect(option.promptText).toEqual('test');
+        });
+    });
+    
+    it('blackberry.ui.dialog.standardAskAsync should return the correct option for Prompt dialog and return when Cancel', function () {
+        var type = blackberry.ui.dialog.D_PROMPT,
+            settings = {title : "Prompt Dialog, Insert and click Cancel"},
+            callback = jasmine.createSpy();
+
+        runs(function () {
+            blackberry.ui.dialog.standardAskAsync("This dialog is not a global dialog and should have two buttons (Save/Discard).  Insert 'test' and click the Cancel button.", type, dialogCallbackCheckOption, settings);
+        });
+
+        waitsFor(function () {
+            return checkForCallback(callback);
+        }, "dialog callback was never called", 10000);
+
+        runs(function () {
+            expect(option.return).toEqual('Cancel');
+            expect(option.promptText).toEqual(null);
         });
     });
 

@@ -40,8 +40,17 @@ describe("Overlay Webview", function () {
             addEventListener: jasmine.createSpy(),
             enableWebEventRedirect: jasmine.createSpy(),
             notifyContextMenuCancelled: jasmine.createSpy(),
-            allowQnxObject: undefined
+            allowQnxObject: undefined,
+            allowRpc: undefined,
+            contextMenu: {
+                subscribeTo: jasmine.createSpy()
+            }
         };
+        mockedController = {
+            dispatchEvent : jasmine.createSpy(),
+            addEventListener : jasmine.createSpy()
+        };
+
         mockedApplication = {
             windowVisible: undefined
         };
@@ -51,9 +60,7 @@ describe("Overlay Webview", function () {
                 getController: function () {
                     return mockedController;
                 },
-                createWebView: function (createFunction) {
-                    //process.nextTick(createFunction);
-                    //setTimeout(createFunction,0);
+                createUIWebView: function (createFunction) {
                     runs(createFunction);
                     return mockedWebview;
                 },
@@ -78,11 +85,13 @@ describe("Overlay Webview", function () {
             runs(function () {
                 expect(mockedWebview.visible).toEqual(true);
                 expect(mockedWebview.active).toEqual(true);
-                expect(mockedWebview.zOrder).toEqual(1);
+                expect(mockedWebview.zOrder).toEqual(2);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
                 expect(mockedWebview.backgroundColor).toEqual(0x00FFFFFF);
                 expect(mockedWebview.sensitivity).toEqual("SensitivityTest");
                 expect(mockedWebview.allowQnxObject).toEqual(true);
+                expect(mockedWebview.allowRpc).toEqual(true);
+                expect(mockedController.dispatchEvent).toHaveBeenCalledWith("overlayWebView.initialized", jasmine.any(Array));
             });
         });
 
@@ -123,22 +132,9 @@ describe("Overlay Webview", function () {
             expect(webview.windowGroup()).toEqual(mockedWebview.windowGroup);
         });
 
-        it("sets the onPropertyCurrentContextEvent on the underlying overlay obj", function () {
-            webview.create(mockedWebview);
-            webview.onPropertyCurrentContextEvent = 'Marco';
-            expect(mockedWebview.onPropertyCurrentContextEvent).toEqual('Marco');
-        });
-
-        it("sets the onContextMenuRequestEvent on the underlying overlay obj", function () {
-            webview.create(mockedWebview);
-            webview.onContextMenuRequestEvent = 'Polo';
-            expect(mockedWebview.onContextMenuRequestEvent).toEqual('Polo');
-        });
-
         it("can get the id for the webiew", function () {
             webview.create();
-            webview.id();
-            expect(mockedWebview.id).toEqual(42);
+            expect(webview.id).toEqual(mockedWebview.id);
         });
 
         it("can set geometry", function () {
@@ -165,5 +161,14 @@ describe("Overlay Webview", function () {
             expect(mockedWebview.notifyContextMenuCancelled).toHaveBeenCalled();
         });
 
+        it("can render the ccm for another webview ", function () {
+            webview.create();
+            webview.renderContextMenuFor(webview);
+            expect(mockedWebview.contextMenu.subscribeTo).toHaveBeenCalledWith(webview);
+        });
+
+        it("It has a zOrder propety ", function () {
+            expect(webview.zOrder).toBeDefined();
+        });
     });
 });

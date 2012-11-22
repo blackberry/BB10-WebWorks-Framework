@@ -14,16 +14,64 @@
  * limitations under the License.
  */
 var _self = {},
-    ID = require("./manifest.json").namespace;
+    ID = require("./manifest.json").namespace,
+    readOnlyValues;
 
 _self.exit = function () {
     return window.webworks.execSync(ID, "exit");
 };
 
+function getReadOnlyFields() {
+    if (!readOnlyValues) {
+        readOnlyValues = window.webworks.execSync(ID, "getReadOnlyFields", null);
+    }
+}
+
 function defineReadOnlyField(field) {
-    var value = window.webworks.execSync(ID, field, null);
+    var value;
+    getReadOnlyFields();
+    value = readOnlyValues ? readOnlyValues[field] : null;
     Object.defineProperty(_self, field, {"value": value, "writable": false});
 }
+
+function getLocalizedText(data) {
+    var locale = navigator.language.toLowerCase();
+
+    if (data[locale]) {
+        return data[locale];
+    } else if (data[locale.split("-")[0]]) {
+        //Default to language specific locale [i.e. fr]
+        return data[locale.split("-")[0]];
+    } else {
+        return data["default"];
+    }
+}
+
+Object.defineProperty(_self, "orientation", {
+    get: function () {
+        var orientation;
+        try {
+            orientation = window.webworks.execSync(ID, "currentOrientation");
+        } catch (e) {
+            console.error(e);
+        }
+        return orientation;
+    }
+});
+
+Object.defineProperty(_self, "name", {
+    get: function () {
+        getReadOnlyFields();
+        return getLocalizedText(readOnlyValues["name"]);
+    }
+});
+
+Object.defineProperty(_self, "description", {
+    get: function () {
+        getReadOnlyFields();
+        return getLocalizedText(readOnlyValues["description"]);
+    }
+});
 
 defineReadOnlyField("author");
 
@@ -33,17 +81,30 @@ defineReadOnlyField("authorURL");
 
 defineReadOnlyField("copyright");
 
-defineReadOnlyField("description");
-
 defineReadOnlyField("id");
 
 defineReadOnlyField("license");
 
 defineReadOnlyField("licenseURL");
 
-defineReadOnlyField("name");
-
 defineReadOnlyField("version");
+
+function lockOrientation(orientation, receiveRotateEvents) {
+    return window.webworks.execSync(ID, "lockOrientation", { orientation: orientation });
+}
+
+function unlockOrientation() {
+    window.webworks.execSync(ID, "unlockOrientation");
+}
+
+function rotate(orientation) {
+    window.webworks.execSync(ID, "rotate", {orientation: orientation});
+}
+
+// Orientation Properties
+Object.defineProperty(_self, "lockOrientation", {"value": lockOrientation, "writable": false});
+Object.defineProperty(_self, "unlockOrientation", {"value": unlockOrientation, "writable": false});
+Object.defineProperty(_self, "rotate", {"value": rotate, "writable": false});
 
 window.webworks.execSync(ID, "registerEvents", null);
 

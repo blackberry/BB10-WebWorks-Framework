@@ -27,7 +27,6 @@ describe("invoke invocationEvents", function () {
             addEventListener: jasmine.createSpy("invocation addEventListener"),
             removeEventListener: jasmine.createSpy("invocation removeEventListener"),
         };
-        GLOBAL.window = GLOBAL;
         GLOBAL.window.qnx = {
             webplatform: {
                 getApplication: function () {

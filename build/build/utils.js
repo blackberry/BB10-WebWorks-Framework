@@ -15,7 +15,7 @@
 */
 var os = require("os"),
     fs = require('fs'),
-    wrench = require("../../node_modules/wrench"),
+    wrench = require("wrench"),
     path = require('path'),
     childProcess = require("child_process");
 
@@ -92,6 +92,8 @@ module.exports = {
         return function (prev, baton) {
             baton.take();
             console.log("EXECUTING " + command);
+            options = options || {};
+            options.maxBuffer = 1024 * 1024;
             var c = childProcess.exec(command, options, function (error, stdout, stderr) {
                 if (error && !neverDrop) {
                     baton.drop(error.code);
@@ -108,5 +110,18 @@ module.exports = {
                 displayOutput(data);
             });
         };
+    },
+
+    copyFolder: function (source, destination) {
+        //create the destination folder if it does not exist
+        if (!path.existsSync(destination)) {
+            wrench.mkdirSyncRecursive(destination, "0755");
+        }
+
+        wrench.copyDirSyncRecursive(source, destination);
+    },
+
+    isDirectory: function (source) {
+        return fs.statSync(source).isDirectory();
     }
 };

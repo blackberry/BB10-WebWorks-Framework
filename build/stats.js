@@ -16,9 +16,12 @@
 module.exports = function () {
     var util = require('util'),
         libs = [],
+        exts = [],
         tests = [],
         total_lines = 0,
         total_loc = 0,
+        ext_loc = 0,
+        ext_lines = 0,
         lib_loc = 0,
         lib_lines = 0,
         test_loc = 0,
@@ -38,7 +41,7 @@ module.exports = function () {
         var lines = 0,
             loc = 0;
 
-        if (file.match(/\.js$/)) {
+        if (file.match(/\.cpp$/) || file.match(/\.hpp$/) || file.match(/\.js$/)) {
             // hack!
             require('fs').readFileSync(file, "utf-8").replace(/\n$/, '').split("\n").forEach(function (line) {
                 lines++;
@@ -48,8 +51,8 @@ module.exports = function () {
             });
 
             file = file.replace(/\.js$/, '')
-                        .replace(/^.*lib\/ripple$/, 'ripple')
-                        .replace(/^.*lib\/ripple\/?/, '')
+                        .replace(/\.hpp$/, '')
+                        .replace(/\.cpp$/, '')
                         .replace(/^.*test\//, '');
 
             util.puts("| " + file + spaces(59 - file.length) + "| " +
@@ -66,16 +69,18 @@ module.exports = function () {
             fs.readdirSync(path).forEach(function (item) {
                 collect(require('path').join(path, item), files);
             });
-        } else if (path.match(/\.js$/)) {
+        } else if (path.match(/\.cpp$/) || path.match(/\.hpp$/) || path.match(/\.js$/)) {
             files.push(path);
         }
     }
 
     collect(__dirname + "/../lib/", libs);
     collect(__dirname + "/../test/", tests);
+    collect(__dirname + "/../ext/", exts);
 
     libs.sort();
     tests.sort();
+    exts.sort();
 
     util.puts("+------------------------------------------------------------+--------+--------+");
     util.puts("| Lib                                                        | Lines  | LOC    |");
@@ -92,6 +97,23 @@ module.exports = function () {
     util.print("| Total                                                      |");
     util.print(" " + lib_lines + spaces(7 - String(lib_lines).length) + "|");
     util.puts(" " + lib_loc + spaces(7 - String(lib_loc).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Exts                                                        | Lines  | LOC   |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+
+    exts.forEach(function (ext) {
+        parseFile(ext, function (lines, loc) {
+            ext_lines += lines;
+            ext_loc += loc;
+        });
+    });
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.print("| Total                                                      |");
+    util.print(" " + ext_lines + spaces(7 - String(ext_lines).length) + "|");
+    util.puts(" " + ext_loc + spaces(7 - String(ext_loc).length) + "|");
     util.puts("+------------------------------------------------------------+--------+--------+");
 
     util.puts("+------------------------------------------------------------+--------+--------+");

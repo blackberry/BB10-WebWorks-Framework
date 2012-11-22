@@ -26,17 +26,17 @@ var libDir = __dirname + "./../../../../lib/",
     successCB,
     failCB;
 
-beforeEach(function () {
-    GLOBAL.JNEXT = {};
-    sysIndex = require(apiDir + "index");
-});
-
-afterEach(function () {
-    delete GLOBAL.JNEXT;
-    sysIndex = null;
-});
 
 describe("system index", function () {
+    beforeEach(function () {
+        sysIndex = require(apiDir + "index");
+    });
+
+    afterEach(function () {
+        delete GLOBAL.window;
+        sysIndex = null;
+    });
+
     it("hasPermission", function () {
         var success = jasmine.createSpy(),
             env = {
@@ -63,438 +63,290 @@ describe("system index", function () {
         expect(success).toHaveBeenCalledWith(true);
     });
 
-    describe("battery events", function () {
+    describe("qnx.webplatform.device properties", function () {
         beforeEach(function () {
-            successCB = jasmine.createSpy("Success Callback");
-            failCB = jasmine.createSpy("Fail Callback");
-            spyOn(utils, "loadExtensionModule").andCallFake(function () {
-                return eventExt;
-            });
-        });
-
-        afterEach(function () {
-            successCB = null;
-            failCB = null;
-        });
-
-        it("responds to 'batterycritical' events", function () {
-            var eventName = "batterycritical",
-                args = {eventName : encodeURIComponent(eventName)};
-            spyOn(events, "add");
-            sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.add(null, null, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-        });
-
-        it("removes 'batterycritical' events", function () {
-            var eventName = "batterycritical",
-                args = {eventName : encodeURIComponent(eventName)};
-            spyOn(events, "remove");
-            eventExt.remove(null, null, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-        });
-
-        it("responds to 'batterylow' events", function () {
-            var eventName = "batterylow",
-                args = {eventName : encodeURIComponent(eventName)};
-            spyOn(events, "add");
-            sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.add(null, null, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-        });
-
-        it("removes 'batterylow' events", function () {
-            var eventName = "batterylow",
-                args = {eventName : encodeURIComponent(eventName)};
-            spyOn(events, "remove");
-            eventExt.remove(null, null, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-        });
-
-        it("responds to 'batterystatus' events", function () {
-            var eventName = "batterystatus",
-                args = {eventName: encodeURIComponent(eventName)};
-
-            spyOn(events, "add");
-            sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.add(successCB, failCB, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
-            expect(successCB).toHaveBeenCalled();
-            expect(failCB).not.toHaveBeenCalled();
-        });
-
-        it("removes 'batterystatus' events", function () {
-            var eventName = "batterystatus",
-                args = {eventName: encodeURIComponent(eventName)};
-
-            spyOn(events, "remove");
-            eventExt.remove(successCB, failCB, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(successCB).toHaveBeenCalled();
-            expect(failCB).not.toHaveBeenCalled();
-        });
-
-        it("invokes success callback when battery event name with not defined", function () {
-            var eventName = "batteryeventnotdefined",
-                args = {eventName: encodeURIComponent(eventName)};
-
-            spyOn(events, "add");
-            sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.add(successCB, failCB, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(successCB).toHaveBeenCalled();
-            expect(failCB).not.toHaveBeenCalled();
-        });
-
-        it("invokes success callback when tring to remove battery event with name not defined", function () {
-            var eventName = "batteryeventnotdefined",
-                args = {eventName: encodeURIComponent(eventName)};
-
-            spyOn(events, "remove");
-            eventExt.remove(successCB, failCB, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(successCB).toHaveBeenCalled();
-            expect(failCB).not.toHaveBeenCalled();
-        });
-
-        it("invokes fail callback when exception occured", function () {
-            var eventName = "batteryeventnotdefined",
-                args = {eventName: encodeURIComponent(eventName)};
-
-            spyOn(events, "add").andCallFake(function () {
-                throw "";
-            });
-
-            sysIndex.registerEvents(jasmine.createSpy());
-            eventExt.add(successCB, failCB, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(successCB).not.toHaveBeenCalled();
-            expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
-        });
-
-        it("invokes fail callback when exception occured", function () {
-            var eventName = "batteryeventnotdefined",
-                args = {eventName: encodeURIComponent(eventName)};
-
-            spyOn(events, "remove").andCallFake(function () {
-                throw "";
-            });
-            eventExt.remove(successCB, failCB, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(successCB).not.toHaveBeenCalled();
-            expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
-        });
-    });
-
-    describe("device properties", function () {
-        var ppsUtils,
-            mockedPPS,
-            path = "/pps/services/deviceproperties",
-            mode = "0";
-
-        beforeEach(function () {
-            GLOBAL.JNEXT = {};
-            ppsUtils = require(libDir + "pps/ppsUtils");
             sysIndex = require(apiDir + "index");
-            mockedPPS = {
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy().andReturn(true),
-                read: jasmine.createSpy().andReturn({
-                    "hardwareid" : "0x8500240a",
-                    "scmbundle" : "10.0.6.99",
-                    "devicename": "Device"
-                }),
-                close: jasmine.createSpy()
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        device: {
+                        }
+                    }
+                }
             };
         });
 
         afterEach(function () {
-            GLOBAL.JNEXT = null;
-            ppsUtils = null;
+            delete GLOBAL.window;
             sysIndex = null;
-            mockedPPS = null;
         });
 
-        it("can call fail if failed to open PPS object for hardwareId", function () {
-            var fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.hardwareId(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+        it("can call fail if a property isn't present", function () {
+            ["hardwareid", "scmbundle", "devicename"].forEach(function (propertyName) {
+                var fail = jasmine.createSpy();
+                sysIndex.getDeviceProperties(null, fail, null, null);
+                expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+            });
         });
 
-        it("can call fail if failed to open PPS object for softwareVersion", function () {
-            var fail = jasmine.createSpy();
+        it("can call success with getDeviceProperties", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                hardwareId = "0x8500240a",
+                softwareVersion = "10.0.6.99",
+                name = "Device";
 
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+            window.qnx.webplatform.device.hardwareId = hardwareId;
+            window.qnx.webplatform.device.scmBundle = softwareVersion;
+            window.qnx.webplatform.device.deviceName = name;
 
-            sysIndex.softwareVersion(null, fail, null, null);
+            sysIndex.getDeviceProperties(success, fail, null, null);
 
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+            expect(success).toHaveBeenCalledWith({
+                "hardwareId" : hardwareId,
+                "softwareVersion" : softwareVersion,
+                "name": name
+            });
         });
 
-        it("can call fail if failed to open PPS object for device name", function () {
-            var fail = jasmine.createSpy(),
-                success = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.name(success, fail, null, null);
-
-            expect(success).not.toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, "Cannot open PPS object");
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-        });
-
-        it("can call success with hardwareId", function () {
-            var success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.hardwareId(success, null, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("0x8500240a");
-        });
-
-        it("can call success with softwareVersion", function () {
-            var success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.softwareVersion(success, null, null, null);
-
-            // The PPS objects should have been init in the test above; once the PPS has been read it is cached
-            expect(mockedPPS.init).not.toHaveBeenCalled();
-            expect(mockedPPS.open).not.toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).not.toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("10.0.6.99");
-        });
-
-        it("can call success with name", function () {
-            var fail = jasmine.createSpy(),
-                success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.name(success, fail, null, null);
-
-            // The PPS objects should have been init in the test above; once the PPS has been read it is cached
-            expect(mockedPPS.init).not.toHaveBeenCalled();
-            expect(mockedPPS.open).not.toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).not.toHaveBeenCalled();
-            expect(fail).not.toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("Device");
-        });
     });
 
-    describe("device language", function () {
-        var ppsUtils,
-            mockedPPS,
-            path = "/pps/services/confstr/_CS_LOCALE",
-            mode = "0";
-
-        beforeEach(function () {
-            GLOBAL.JNEXT = {};
-            ppsUtils = require(libDir + "pps/ppsUtils");
-            sysIndex = require(apiDir + "index");
-            mockedPPS = {
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy().andReturn(true),
-                read: jasmine.createSpy().andReturn({"_CS_LOCALE" : "en_US"}),
-                close: jasmine.createSpy()
-            };
-        });
-
-        afterEach(function () {
-            GLOBAL.JNEXT = null;
-            ppsUtils = null;
-            sysIndex = null;
-            mockedPPS = null;
-        });
-
-        it("can call fail if failed to open PPS object for language", function () {
-            var fail = jasmine.createSpy();
-
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.language(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
-        });
-
-        it("can call success with language", function () {
-            var success = jasmine.createSpy();
-
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
-
-            sysIndex.language(success, null, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("en_US");
-        });
-    });
 
     describe("device region", function () {
-        var ppsUtils,
-            mockedPPS,
-            path = "/pps/services/locale/settings",
-            mode = "0";
-
+        var mockApplication;
         beforeEach(function () {
-            GLOBAL.JNEXT = {};
-            ppsUtils = require(libDir + "pps/ppsUtils");
             sysIndex = require(apiDir + "index");
-            mockedPPS = {
-                init: jasmine.createSpy(),
-                open: jasmine.createSpy().andReturn(true),
-                read: jasmine.createSpy().andReturn({"region" : "en_US"}),
-                close: jasmine.createSpy()
+            mockApplication = {};
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        getApplication: jasmine.createSpy().andReturn(mockApplication)
+                    }
+                }
             };
         });
 
         afterEach(function () {
-            GLOBAL.JNEXT = null;
-            ppsUtils = null;
+            delete GLOBAL.window;
             sysIndex = null;
-            mockedPPS = null;
         });
 
-        it("can call fail if failed to open PPS object for region", function () {
-            var fail = jasmine.createSpy();
+        it("calls success when there is no error retrieving data", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy();
 
-            mockedPPS.open = jasmine.createSpy().andReturn(false);
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+            mockApplication.systemRegion = (new Date()).getTime();
 
-            sysIndex.region(null, fail, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).not.toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String));
+            sysIndex.region(success, fail);
+            expect(success).toHaveBeenCalledWith(window.qnx.webplatform.getApplication().systemRegion);
+            expect(fail).not.toHaveBeenCalled();
         });
 
-        it("can call success with region", function () {
-            var success = jasmine.createSpy();
+        it("calls fail when there is an error", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                errMsg = "Something bad happened";
 
-            spyOn(ppsUtils, "createObject").andReturn(mockedPPS);
+            Object.defineProperty(mockApplication, "systemRegion", {
+                get: function () {
+                    throw new Error(errMsg);
+                }
+            });
 
-            sysIndex.region(success, null, null, null);
-
-            expect(mockedPPS.init).toHaveBeenCalled();
-            expect(mockedPPS.open).toHaveBeenCalledWith(path, mode);
-            expect(mockedPPS.read).toHaveBeenCalled();
-            expect(mockedPPS.close).toHaveBeenCalled();
-            expect(success).toHaveBeenCalledWith("en_US");
+            sysIndex.region(success, fail);
+            expect(success).not.toHaveBeenCalled();
+            expect(fail).toHaveBeenCalledWith(-1, errMsg);
         });
     });
 
     describe("languagechanged event", function () {
+        var appEvents;
         beforeEach(function () {
-            successCB = jasmine.createSpy("Success Callback");
-            failCB = jasmine.createSpy("Fail Callback");
             spyOn(utils, "loadExtensionModule").andCallFake(function () {
                 return eventExt;
             });
-        });
-
-        afterEach(function () {
-            successCB = null;
-            failCB = null;
+            appEvents = require(libDir + "events/applicationEvents");
         });
 
         it("responds to 'languagechanged' events", function () {
-            var eventName = "languagechanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "languagechanged",
+                eventName = "systemLanguageChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
             eventExt.add(null, null, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            expect(events.add).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
 
         it("removes 'languagechanged' event", function () {
-            var eventName = "languagechanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "languagechanged",
+                eventName = "systemLanguageChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "remove");
             eventExt.remove(null, null, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
     });
 
     describe("regionchanged event", function () {
+        var appEvents;
         beforeEach(function () {
-            successCB = jasmine.createSpy("Success Callback");
-            failCB = jasmine.createSpy("Fail Callback");
             spyOn(utils, "loadExtensionModule").andCallFake(function () {
                 return eventExt;
             });
-        });
-
-        afterEach(function () {
-            successCB = null;
-            failCB = null;
+            appEvents = require(libDir + "events/applicationEvents");
         });
 
         it("responds to 'regionchanged' events", function () {
-            var eventName = "regionchanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "regionchanged",
+                eventName = "systemRegionChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "add");
             sysIndex.registerEvents(jasmine.createSpy());
             eventExt.add(null, null, args);
-            expect(events.add).toHaveBeenCalled();
-            expect(events.add.mostRecentCall.args[0].event.eventName).toEqual(eventName);
-            expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+            expect(events.add).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
 
         it("removes 'regionchanged' event", function () {
-            var eventName = "regionchanged",
-                args = {eventName : encodeURIComponent(eventName)};
+            var clientEventName = "regionchanged",
+                eventName = "systemRegionChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
             spyOn(events, "remove");
             eventExt.remove(null, null, args);
-            expect(events.remove).toHaveBeenCalled();
-            expect(events.remove.mostRecentCall.args[0].event.eventName).toEqual(eventName);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: appEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("batterystatus event", function () {
+        var deviceEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            deviceEvents = require(libDir + "events/deviceEvents");
+        });
+
+        it("responds to 'batterystatus' events", function () {
+            var clientEventName = "batterystatus",
+                eventName = "battery.statusChange",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'batterystatus' event", function () {
+            var clientEventName = "batterystatus",
+                eventName = "battery.statusChange",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("batterylow event", function () {
+        var deviceEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            deviceEvents = require(libDir + "events/deviceEvents");
+        });
+
+        it("responds to 'batterylow' events", function () {
+            var clientEventName = "batterylow",
+                eventName = "battery.chargeLow",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'batterylow' event", function () {
+            var clientEventName = "batterylow",
+                eventName = "battery.chargeLow",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("batterycritical event", function () {
+        var deviceEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            deviceEvents = require(libDir + "events/deviceEvents");
+        });
+
+        it("responds to 'batterycritical' events", function () {
+            var clientEventName = "batterycritical",
+                eventName = "battery.chargeCritical",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'batterycritical' event", function () {
+            var clientEventName = "batterycritical",
+                eventName = "battery.chargeCritical",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: deviceEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
         });
     });
 
@@ -551,10 +403,12 @@ describe("system index", function () {
         });
 
         describe("fontchanged event", function () {
+            var appEvents;
             beforeEach(function () {
                 spyOn(utils, "loadExtensionModule").andCallFake(function () {
                     return eventExt;
                 });
+                appEvents = require(libDir + "events/applicationEvents");
             });
 
             it("responds to 'fontchanged' events", function () {
@@ -564,9 +418,11 @@ describe("system index", function () {
                 spyOn(events, "add");
                 sysIndex.registerEvents(jasmine.createSpy());
                 eventExt.add(null, null, args);
-                expect(events.add).toHaveBeenCalled();
-                expect(events.add.mostRecentCall.args[0].event).toEqual(eventName);
-                expect(events.add.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
+                expect(events.add).toHaveBeenCalledWith({
+                    context: appEvents,
+                    event: eventName,
+                    trigger: jasmine.any(Function)
+                });
             });
 
             it("removes 'fontchanged' event", function () {
@@ -575,9 +431,58 @@ describe("system index", function () {
 
                 spyOn(events, "remove");
                 eventExt.remove(null, null, args);
-                expect(events.remove).toHaveBeenCalled();
-                expect(events.remove.mostRecentCall.args[0].event).toEqual(eventName);
+                expect(events.remove).toHaveBeenCalledWith({
+                    context: appEvents,
+                    event: eventName,
+                    trigger: jasmine.any(Function)
+                });
             });
+        });
+    });
+
+    describe("getCurrentTimezone", function () {
+        beforeEach(function () {
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        device: {
+                            timezone: "hello123"
+                        }
+                    }
+                }
+            };
+        });
+
+        it("return timezone from PPS", function () {
+            var successCb = jasmine.createSpy();
+
+            sysIndex.getCurrentTimezone(successCb);
+
+            expect(successCb).toHaveBeenCalledWith("hello123");
+        });
+    });
+
+    describe("getTimezones", function () {
+        beforeEach(function () {
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        device: {
+                            getTimezones: jasmine.createSpy().andCallFake(function (callback) {
+                                callback(["America/New_York", "America/Los_Angeles"]);
+                            })
+                        }
+                    }
+                }
+            };
+        });
+
+        it("return timezones from native", function () {
+            var successCb = jasmine.createSpy();
+
+            sysIndex.getTimezones(successCb);
+
+            expect(successCb).toHaveBeenCalledWith(["America/New_York", "America/Los_Angeles"]);
         });
     });
 });

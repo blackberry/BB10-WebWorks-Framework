@@ -13,55 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _ppsUtils = require("../../lib/pps/ppsUtils"),
-    ERROR_ID = -1,
-    ERRON_MSG_PPS = "Cannot open PPS object";
-
-function getPPSField(path, field) {
-    var ppsObj = _ppsUtils.createObject(),
-        ppsContent;
-
-    ppsObj.init();
-
-    if (ppsObj.open(path, "0")) {
-        ppsContent = ppsObj.read();
-    }
-
-    ppsObj.close();
-
-    if (ppsContent) {
-        return (ppsContent[field]);
-    } else {
-        return ppsContent;
-    }
-}
+var ERROR_ID = -1,
+    ERRON_MSG_PPS = "Cannot retrieve data from system";
 
 module.exports = {
-    uuid: function (success, fail, args, env) {
-        var result = getPPSField("/pps/services/private/deviceproperties", "devicepin");
+    getFields: function (success, fail, args, env) {
+        var fields = { };
 
-        if (result) {
-            success(result);
-        } else {
-            fail(ERROR_ID, ERRON_MSG_PPS);
+        //IMSI is likely to fail since few devs will have access
+        //TO compensate we will eat the error
+        try {
+            fields.IMSI = window.qnx.webplatform.device.IMSI;
+        } catch (e) {
+            //DO NOTHING
         }
-    },
-    IMSI: function (success, fail, args, env) {
-        var result = getPPSField("/pps/services/cellular/uicc/card0/status_restricted", "imsi");
 
-        if (result) {
-            success(result);
-        } else {
-            fail(ERROR_ID, ERRON_MSG_PPS);
-        }
-    },
-    IMEI: function (success, fail, args, env) {
-        var result = getPPSField("/pps/services/private/deviceproperties", "IMEI");
+        try {
+            fields.uuid = window.qnx.webplatform.device.devicePin;
+            fields.IMEI = window.qnx.webplatform.device.IMEI;
 
-        if (result) {
-            success(result);
-        } else {
-            fail(ERROR_ID, ERRON_MSG_PPS);
+            if (fields.uuid || fields.IMSI || fields.IMEI) {
+                success(fields);
+            } else {
+                fail(ERROR_ID, ERRON_MSG_PPS);
+            }
+        } catch (err) {
+            fail(ERROR_ID, err.message);
         }
     }
 };

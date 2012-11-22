@@ -24,19 +24,19 @@ describe("bbm.platform BBMEvents", function () {
             createObject: jasmine.createSpy().andReturn("1"),
             invoke: jasmine.createSpy().andReturn(2),
             registerEvents: jasmine.createSpy().andReturn(true),
-            BBM: function () {},
+            BBM: function () {}
         };
         BBMEvents = require(_apiDir + "BBMEvents");
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         BBMEvents = null;
     });
 
-    it("can access bbm module in JNEXT", function () {
-        expect(JNEXT.require).toHaveBeenCalledWith("bbm");
-        expect(JNEXT.createObject).toHaveBeenCalledWith("bbm.BBM");
+    it("checks that JNEXT was not initialized on require", function () {
+        expect(JNEXT.require).not.toHaveBeenCalledWith("libbbm");
+        expect(JNEXT.createObject).not.toHaveBeenCalledWith("libbbm.BBM");
     });
 
     describe("onaccesschanged event", function () {

@@ -47,7 +47,7 @@ describe("blackberry.invoke", function () {
                         expect(target.icon).toBeDefined();
                         expect(target.icon).not.toEqual(iconPath);
                         expect(target.label).toBeDefined();
-                        expect(target.label).toEqual("WebWorks Test Application");
+                        expect(target.label).toEqual("English application name");//Localized application name [en]
                         expect(target.type).toBeDefined();
                         expect(target.type).toEqual("APPLICATION");
                         expect(target.perimeter).toBeDefined();

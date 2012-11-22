@@ -249,7 +249,7 @@ describe("bbm.platform index", function () {
             index.users.inviteToDownload(success, fail, null);
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
-            expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "getgid");
+            expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "users.inviteToDownload");
         });
     });
 

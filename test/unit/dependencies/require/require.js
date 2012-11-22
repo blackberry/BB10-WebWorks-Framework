@@ -12,7 +12,7 @@ describe("webworks require", function () {
         var testObj = {test: "TEST"};
         webworksRequire.define("test", function (require, exports, module) {
             module.exports = testObj;
-        }); 
+        });
         expect(webworksRequire.require("test")).toEqual(testObj);
     });
 
@@ -20,11 +20,11 @@ describe("webworks require", function () {
         var testObj = {test: "TEST"};
         webworksRequire.define("namespace/test", function (require, exports, module) {
             module.exports = testObj;
-        }); 
+        });
         webworksRequire.define("namespace/test2", function (require, exports, module) {
             var nsTest = require('./test');
             module.exports = nsTest;
-        }); 
+        });
         expect(webworksRequire.require("namespace/test2")).toEqual(testObj);
     });
 
@@ -32,11 +32,11 @@ describe("webworks require", function () {
         var testObj = {test: "TEST"};
         webworksRequire.define("namespace2/test/test", function (require, exports, module) {
             module.exports = testObj;
-        }); 
+        });
         webworksRequire.define("namespace3/test/test", function (require, exports, module) {
             var nsTest = require('./../../namespace2/test/test');
             module.exports = nsTest;
-        }); 
+        });
         expect(webworksRequire.require("namespace3/test/test")).toEqual(testObj);
     });
 
@@ -45,10 +45,10 @@ describe("webworks require", function () {
             module2 = "ARRRG";
         webworksRequire.define("module1", function (require, exports, module) {
             module.exports = module1;
-        }); 
+        });
         webworksRequire.define("module2", function (require, exports, module) {
             module.exports = module2;
-        }); 
+        });
         webworksRequire.require(["module1", "module2"], function (mod1, mod2) {
             expect(mod1).toEqual(module1);
             expect(mod2).toEqual(module2);
@@ -58,14 +58,17 @@ describe("webworks require", function () {
     describe("js file tests", function () {
         var mockRequest;
         beforeEach(function () {
-            GLOBAL.XMLHttpRequest = function () {};
             mockRequest = {
                 open: jasmine.createSpy(),
                 send: jasmine.createSpy(),
                 responseText: null
             };
-            spyOn(GLOBAL, "XMLHttpRequest").andReturn(mockRequest);
+            GLOBAL.XMLHttpRequest = jasmine.createSpy().andReturn(mockRequest);
 
+        });
+
+        afterEach(function () {
+            delete GLOBAL.XMLHttpRequest;
         });
         it("will attempt to load the file when it ends with .js", function () {
             var moduleURI = "ext/blackberry.app/client.js",

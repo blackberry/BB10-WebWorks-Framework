@@ -19,6 +19,12 @@ var srcPath = __dirname + '/../../../lib/';
 describe("Utils", function () {
     var utils = require(srcPath + 'utils.js');
 
+    describe("endsWith", function () {
+        it("returns true when a string ends with another", function () {
+            expect(utils.endsWith("www.smoketest9-vmyyz.labyyz.testnet.rim.net:8080", ".smoketest9-vmyyz.labyyz.testnet.rim.net:8080")).toEqual(true);
+        });
+    });
+
     it("Verify that the filenameToImageMIME is defined", function () {
         expect(utils.fileNameToImageMIME).toBeDefined();
     });

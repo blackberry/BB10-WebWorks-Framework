@@ -118,7 +118,7 @@ CURLcode FileTransferCurl::openDialog(CURL *curl, const std::string &windowGroup
 
     int button = dialog->Show(dialogConfig);
 
-    CURLcode result;
+    CURLcode result = CURLE_OK;
 
     if (dialogConfig) {
         delete dialogConfig;
@@ -153,7 +153,7 @@ CURLcode FileTransferCurl::openDialog(CURL *curl, const std::string &windowGroup
 
 std::string FileTransferCurl::Upload(FileUploadInfo *uploadInfo)
 {
-    CURL *curl;
+    CURL *curl = NULL;
     CURLcode result;
     std::string result_string;
 
@@ -320,8 +320,8 @@ std::string FileTransferCurl::Upload(FileUploadInfo *uploadInfo)
 
 std::string FileTransferCurl::Download(FileDownloadInfo *downloadInfo)
 {
-    CURL *curl;
-    FILE *fp;
+    CURL *curl = NULL;
+    FILE *fp = NULL;
     CURLcode result;
     std::string result_string;
     bool error = 0;
@@ -488,7 +488,6 @@ size_t FileTransferCurl::DownloadWriteCallback(void *ptr, size_t size, size_t nm
 
 size_t FileTransferCurl::UploadReadCallback(void *ptr, size_t size, size_t nmemb, void *userdata)
 {
-    char *read_data = static_cast<char *>(ptr);
     uploadAttributes *uploadAtt = static_cast<uploadAttributes *>(userdata);
 
     FILE *file = uploadAtt->file;
@@ -521,7 +520,7 @@ int FileTransferCurl::mkdir_p (const char *pathname, mode_t mode)
     char *sp = NULL;
     char path[PATH_MAX+1] = { 0 };
     char tmp[PATH_MAX+1]  = { 0 };
-    struct stat st = { 0 };
+    struct stat st;
     int len = 0;
 
     // invalid pathname

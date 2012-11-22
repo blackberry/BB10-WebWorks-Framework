@@ -30,101 +30,13 @@ function testSystemReadOnly(field) {
 describe("blackberry.system", function () {
     var waitForTimeout = 15000;
 
-    it("name should have a valid value", function () {
+    xit("name should have a valid value", function () {
         var message = "Device Name: " + blackberry.system.name + "\n\n" +
                 "Is the device name valid?",
             confirm = window.confirm(message);
 
         expect(confirm).toBeTruthy();
     });
-
-    describe("EventListener", function () {
-
-        afterEach(function () {
-            window.confirm("Unplug unit from power source OR make sure ChargingState is 'NC'");
-        });
-
-        it("should not be called when the EventListener is removed", function () {
-            var onBatteryStatusChange = jasmine.createSpy("onBatteryStatusChange");
-
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
-
-            waitsFor(function () {
-                return (onBatteryStatusChange.callCount === 0);
-            }, "Battery event fired", waitForTimeout);
-
-            runs(function () {
-                expect(onBatteryStatusChange).not.toHaveBeenCalled();
-            });
-        });
-
-        it("should call two eventListeners listening to the same event", function () {
-            var onBatteryStatusChangeA = jasmine.createSpy("onBatteryStatusChangeA"),
-                onBatteryStatusChangeB = jasmine.createSpy("onBatteryStatusChangeB");
-
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChangeA);
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChangeB);
-
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
-
-            waitsFor(function () {
-                return onBatteryStatusChangeA.callCount && onBatteryStatusChangeB.callCount;
-            }, "Battery event fired", waitForTimeout);
-
-            runs(function () {
-                expect(onBatteryStatusChangeA).toHaveBeenCalled();
-                expect(onBatteryStatusChangeB).toHaveBeenCalled();
-                blackberry.event.removeEventListener('batterystatus', onBatteryStatusChangeA);
-                blackberry.event.removeEventListener('batterystatus', onBatteryStatusChangeB);
-            });
-        });
-
-        it("should fire event once even if same eventListeners called multiple times", function () {
-            var onBatteryStatusChange = jasmine.createSpy("onBatteryStatusChange");
-
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
-
-            waitsFor(function () {
-                return onBatteryStatusChange.callCount;
-            }, "Battery event fired", waitForTimeout);
-
-            runs(function () {
-                expect(onBatteryStatusChange.callCount).toEqual(1);
-                blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-            });
-        });
-
-        it("should fire event even when re-register it 3 times and more", function () {
-            var onBatteryStatusChange = jasmine.createSpy("onBatteryStatusChange");
-
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-            blackberry.event.addEventListener('batterystatus', onBatteryStatusChange);
-
-            window.confirm("[Device]Connect to a power source. [SIM]Change 'ChargingState' to 'DC' in charger PPS Object");
-
-            waitsFor(function () {
-                return onBatteryStatusChange.callCount;
-            }, "Battery event fired", waitForTimeout);
-
-            runs(function () {
-                expect(onBatteryStatusChange.callCount).toEqual(1);
-                blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange);
-            });
-        });
-    });
-
 
     describe("batterystatus", function () {
         var onBatteryStatusChange;
@@ -320,7 +232,7 @@ describe("blackberry.system", function () {
         });
     });
 
-    describe("regionchanged", function () {
+    xdescribe("regionchanged", function () {
         var onRegionChanged = null;
 
         beforeEach(function () {
@@ -341,7 +253,7 @@ describe("blackberry.system", function () {
             }, "event never fired", waitForTimeout);
 
             runs(function () {
-                expect(onRegionChanged).toHaveBeenCalledWith("en_GB");
+                //expect(onRegionChanged).toHaveBeenCalledWith("en-GB");
             });
         });
 
@@ -364,7 +276,7 @@ describe("blackberry.system", function () {
         });
     });
 
-    describe("languagechanged", function () {
+    xdescribe("languagechanged", function () {
         var onLanguageChanged = null;
 
         beforeEach(function () {
@@ -385,7 +297,7 @@ describe("blackberry.system", function () {
             }, "event to fire", waitForTimeout);
 
             runs(function () {
-                expect(onLanguageChanged).toHaveBeenCalledWith("en_GB");
+                expect(onLanguageChanged).toHaveBeenCalledWith("en-GB");
             });
         });
 
@@ -407,8 +319,8 @@ describe("blackberry.system", function () {
             });
         });
     });
-    
-    describe("fontchanged event", function () {
+
+    xdescribe("fontchanged event", function () {
         it("should call fontchanged callback when it registered to listend for the event", function () {
             var fontChangedCB = jasmine.createSpy("fontchanged");
 
@@ -425,7 +337,7 @@ describe("blackberry.system", function () {
                 blackberry.event.removeEventListener('fontchanged', fontChangedCB);
             });
         });
-        
+
         it("should not call fontchanged callback when it was un-registered", function () {
             var fontChangedCB = jasmine.createSpy("fontchanged");
 

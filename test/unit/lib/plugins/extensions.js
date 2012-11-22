@@ -20,11 +20,9 @@ describe("extensions", function () {
         req,
         res,
         succ,
-        fail;
+        fail,
+        mockXHR;
 
-    beforeEach(function () {
-        spyOn(console, "log");
-    });
 
     describe("when handling get requests", function () {
         beforeEach(function () {
@@ -34,31 +32,31 @@ describe("extensions", function () {
             succ = jasmine.createSpy();
             fail = jasmine.createSpy();
         });
-        
+
         it("gets the list of features for the request url", function () {
             spyOn(Whitelist.prototype, "getFeaturesForUrl");
 
             extensions.get(req, succ, fail);
             expect(Whitelist.prototype.getFeaturesForUrl).toHaveBeenCalled();
         });
-        
+
         it("calls the success callback with featureIds", function () {
             spyOn(Whitelist.prototype, "getFeaturesForUrl").andReturn(["MyFeatureId"]);
-            
+
             req.params.ext = "blackberry.identity";
             req.params.method = "uuid";
 
             extensions.get(req, succ, fail);
             expect(succ).toHaveBeenCalledWith(["MyFeatureId"]);
         });
-        
+
         it("returns 412 when the client webworks.js is incompatible with the framework", function () {
             var reqWithHash = {
                 params: {
                     ext: "?hash=2af67c1a4739f6f3f307dcc7601d35fc&version=1.0.0.7"//random hash/version for client webworks.js
                 }
             };
-            
+
             extensions.get(reqWithHash, succ, fail);
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 412);
         });
@@ -66,10 +64,13 @@ describe("extensions", function () {
 
     describe("load client", function () {
         beforeEach(function () {
-            GLOBAL.XMLHttpRequest = function () {};
-            GLOBAL.XMLHttpRequest.prototype.open = jasmine.createSpy();
-            GLOBAL.XMLHttpRequest.prototype.send = jasmine.createSpy();
-            GLOBAL.XMLHttpRequest.prototype.responseText = "blah";
+            mockXHR = function () {};
+            mockXHR.prototype = {
+                open: jasmine.createSpy(),
+                send: jasmine.createSpy(),
+                responseText: "blah"
+            };
+            GLOBAL.XMLHttpRequest = mockXHR;
             req = {
                 params: {
                     ext: "blackberry.app"
@@ -81,6 +82,9 @@ describe("extensions", function () {
             };
             succ = jasmine.createSpy();
             fail = jasmine.createSpy();
+        });
+        afterEach(function () {
+            delete GLOBAL.XMLHttpRequest;
         });
 
         it("sends xhr response text if feature is whitelisted", function () {
@@ -124,21 +128,26 @@ describe("extensions", function () {
 
         it("calls fail callback with HTTP 404 if whitelisted feature does not exist", function () {
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(console, "log");
             GLOBAL.XMLHttpRequest.prototype.send = jasmine.createSpy().andThrow("TOO BAD");
 
             extensions.load(req, succ, fail, undefined, {request: req, response: res});
 
             expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
+            expect(console.log).toHaveBeenCalledWith("TOO BAD");
         });
 
         it("calls fail callback with HTTP 403 if feature is NOT whitelisted", function () {
+            var errMsg = "Feature denied by whitelist";
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
+            spyOn(console, "log");
 
             extensions.load(req, succ, fail, undefined, {request: req, response: res});
 
             expect(Whitelist.prototype.isFeatureAllowed).toHaveBeenCalledWith("abc", "blackberry.app");
-            expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 403);
+            expect(fail).toHaveBeenCalledWith(-1, errMsg, 403);
+            expect(console.log).toHaveBeenCalledWith(errMsg + ": blackberry.app");
         });
     });
-});  
+});

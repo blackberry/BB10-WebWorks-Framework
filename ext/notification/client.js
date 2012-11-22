@@ -92,7 +92,7 @@ Notification.remove = function (tag) {
 
 Notification.prototype.close = function () {
     if (this.options && this.options.tag) {
-        window.webworks.execAsync(_ID, "close", {'id': this.getId(), 'tag': this.options.tag});
+        window.webworks.execAsync(_ID, "remove", {'tag': this.options.tag});
     }
 };
 

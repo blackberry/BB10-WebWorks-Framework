@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebWorks Smoke Test for BB10</title>
+</head>
+<body>
+    <h1>Test Child Web Views</h1>
+    <p>
+        A new web view should be created when a link with target=_blank is clicked,
+        or when window.open() is called in response to a user's click event.
+
+        When target is _self the content should be loaded in the current webview
+    </p>
+
+    <h1>Declarative API</h1>
+
+    <h2>1. target=_blank</h2>
+    <h3><a href="child.html" target="_blank">Click here</a></h3>
+    <p>
+        The above link has a <em>target=_blank</em> attribute and should load
+        a new page in a separate web view when clicked.
+    </p>
+
+    <h2>2. target=_self</h2>
+    <h3><a href="alt.html" target="_self">Click here</a></h3>
+    <p>
+        The above link has a <em>target=_self</em> attribute and should load the
+        child page in this webview
+    </p>
+
+    <h2>3. target=_top</h2>
+    <h3><a href="alt.html" target="_top">Click here</a></h3>
+    <p>
+        The above link has a <em>target=_top</em> attribute and should load the
+        child page in this webview
+    </p>
+
+    <h2>3. target=_parent</h2>
+    <h3><a href="alt.html" target="_top">Click here</a></h3>
+    <p>
+        The above link has a <em>target=_parent</em> attribute and should load the
+        child page in this webview
+    </p>
+
+    <h1>Programmatic API</h1>
+
+
+    <h2>1. window.open()</h2>
+    <h3><a href="child.html" id="launchChildWebview" >Click here</a></h3>
+    <p>
+        1a. The above link has a click handler which calls window.open() and should load
+        a new page in a separate web view when clicked.
+    </p>
+    <p>
+        1b. After closing the window, you should see a reference to the opened window
+        inside the following grey box:
+    </p>
+    <div style="background-color: grey; padding: .25em 0;" id="childWebviewResults">&nbsp;</div>
+    <p>
+        <strong>Note!</strong> window.open() does not work without an actual user click
+        due to popup blocking.
+    </p>
+    <script>
+    (function() {
+        var link = document.getElementById('launchChildWebview'),
+            childWindow,
+            results = document.getElementById('childWebviewResults');
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            childWindow = window.open(link.href);
+            results.textContent = childWindow ? 'Success! ' + childWindow.toString() : 'Failed to get child window reference';
+        });
+    }());
+    </script>
+
+
+    <h2>2. window.open(url, "_blank")</h2>
+    <h3><a href="child.html" id="launchChildWebview2" >Click here</a></h3>
+    <p>
+        2a. The above link has a click handler which calls window.open() and should load
+        a new page in a separate web view when clicked.
+    </p>
+    <p>
+        2b. After closing the window, you should see a reference to the opened window
+        inside the following grey box:
+    </p>
+    <div style="background-color: grey; padding: .25em 0;" id="childWebviewResults2">&nbsp;</div>
+    <p>
+        <strong>Note!</strong> window.open() does not work without an actual user click
+        due to popup blocking.
+    </p>
+    <script>
+    (function() {
+        var link = document.getElementById('launchChildWebview2'),
+            childWindow,
+            results = document.getElementById('childWebviewResults2');
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            childWindow = window.open(link.href, "_blank");
+            results.textContent = childWindow ? 'Success! ' + childWindow.toString() : 'Failed to get child window reference';
+        });
+    }());
+    </script>
+
+
+    <h2>3. window.open(url, "_self")</h2>
+    <h3><a href="alt.html" id="launchChildWebview3" >Click here</a></h3>
+    <p>
+        3a. The above link has a click handler which calls window.open() and should load
+        a new page in a separate web view when clicked.
+    </p>
+    <p>
+        3b. After closing the window, you should see a reference to the opened window
+        inside the following grey box:
+    </p>
+    <div style="background-color: grey; padding: .25em 0;" id="childWebviewResults3">&nbsp;</div>
+    <p>
+        <strong>Note!</strong> window.open() does not work without an actual user click
+        due to popup blocking.
+    </p>
+    <script>
+    (function() {
+        var link = document.getElementById('launchChildWebview3'),
+            childWindow,
+            results = document.getElementById('childWebviewResults3');
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            childWindow = window.open(link.href, "_self");
+            results.textContent = childWindow ? 'Success! ' + childWindow.toString() : 'Failed to get child window reference';
+        });
+    }());
+    </script>
+
+
+    <h2>4. window.open(url, "_top")</h2>
+    <h3><a href="alt.html" id="launchChildWebview4" >Click here</a></h3>
+    <p>
+        4a. The above link has a click handler which calls window.open() and should load
+        a new page in a separate web view when clicked.
+    </p>
+    <p>
+        4b. After closing the window, you should see a reference to the opened window
+        inside the following grey box:
+    </p>
+    <div style="background-color: grey; padding: .25em 0;" id="childWebviewResults4">&nbsp;</div>
+    <p>
+        <strong>Note!</strong> window.open() does not work without an actual user click
+        due to popup blocking.
+    </p>
+    <script>
+    (function() {
+        var link = document.getElementById('launchChildWebview4'),
+            childWindow,
+            results = document.getElementById('childWebviewResults4');
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            childWindow = window.open(link.href, "_top");
+            results.textContent = childWindow ? 'Success! ' + childWindow.toString() : 'Failed to get child window reference';
+        });
+    }());
+    </script>
+
+
+    <h2>5. window.open(url, "_parent")</h2>
+    <h3><a href="alt.html" id="launchChildWebview5" >Click here</a></h3>
+    <p>
+        5a. The above link has a click handler which calls window.open() and should load
+        a new page in a separate web view when clicked.
+    </p>
+    <p>
+        5b. After closing the window, you should see a reference to the opened window
+        inside the following grey box:
+    </p>
+    <div style="background-color: grey; padding: .25em 0;" id="childWebviewResults5">&nbsp;</div>
+    <p>
+        <strong>Note!</strong> window.open() does not work without an actual user click
+        due to popup blocking.
+    </p>
+    <script>
+    (function() {
+        var link = document.getElementById('launchChildWebview5'),
+            childWindow,
+            results = document.getElementById('childWebviewResults5');
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            childWindow = window.open(link.href, "_parent");
+            results.textContent = childWindow ? 'Success! ' + childWindow.toString() : 'Failed to get child window reference';
+        });
+    }());
+    </script>
+</body>
+</html>
