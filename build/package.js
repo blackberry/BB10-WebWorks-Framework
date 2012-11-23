@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 var wrench = require("wrench"),
-    zip = require("node-zip"),
     childProcess = require('child_process'),
     util = require("util"),
     utils = require("./build/utils"),
@@ -61,12 +60,7 @@ function _handle(func) {
 
 module.exports = function (pathToPackager, pathToApp, packagerOptions) {
 
-    var zipFileData,
-        webworksJsData,
-        wwVersion,
-        wwVersionPath,
-        appJsZip,
-        frameworkPath,
+    var frameworkPath,
         intExtPath,
         cmd;
 

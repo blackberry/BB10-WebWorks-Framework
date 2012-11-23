@@ -87,7 +87,7 @@ module.exports = function (pathToPackager, packagerOptions, target, deviceIp, pa
 
     deployTests = jWorkflow.order(_exec("jake build[test]", {cwd: jakeDir}))
                            .andThen(_exec("jake test-app", {cwd: jakeDir}))
-                           .andThen(_exec("jake package['" + pathToPackager + "','test/test-app/wwTest.zip','" + packagerOptions + "','js/webworks.js']",  {cwd: jakeDir}))
+                           .andThen(_exec("jake package['" + pathToPackager + "','test/test-app/wwTest.zip','" + packagerOptions + "']",  {cwd: jakeDir}))
                            .andThen(_exec("jake deploy[" + barPath + "," + deviceIp + "," + password + "]",  {cwd: jakeDir}));
 
     deployTests.start(function () {
