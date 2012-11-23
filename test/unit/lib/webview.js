@@ -275,6 +275,14 @@ describe("webview", function () {
                 expect(mockedWebview.extraHttpHeaders).toEqual({"rim-header": "RIM-Widget:rim/widget"});
             });
         });
+
+        it("expect the config to set the user agent", function () {
+            webview.create();
+            waits(1);
+            runs(function () {
+                expect(mockedWebview.userAgent).toEqual("Some extremely long user agent (with) spe/cial, characters");
+            });
+        });
     });
 
     describe("methods for sensitivity", function () {
