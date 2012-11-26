@@ -19,6 +19,7 @@ var srcPath = __dirname + '/../../../lib/',
     framework,
     webview,
     overlayWebView,
+    overlayWebViewObj,
     controllerWebView,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
     mockedWebview,
@@ -98,6 +99,10 @@ describe("framework", function () {
         });
 
         spyOn(overlayWebView, "create").andCallFake(function (done) {
+            overlayWebViewObj = overlayWebView.getWebViewObj();
+            overlayWebViewObj.formcontrol = {
+                subscribeTo: jasmine.createSpy()
+            };
             done();
         });
 
@@ -311,5 +316,22 @@ describe("framework", function () {
                 expect(overlayWebView.showDialog).toHaveBeenCalledWith(messageObj);
             });
         });
+
     });
+
+    describe('enabling form control', function () {
+
+        it('subscribes webview to formcontrol', function () {
+            config.enableFormControl = true;
+            framework.start();
+            expect(overlayWebViewObj.formcontrol.subscribeTo).toHaveBeenCalledWith(webview);
+        });
+
+        it('does not subscribe webview to formcontrol is enableFormControl is false', function () {
+            config.enableFormControl = false;
+            framework.start();
+            expect(overlayWebViewObj.formcontrol.subscribeTo).not.toHaveBeenCalled();
+        });
+    });
+
 });
