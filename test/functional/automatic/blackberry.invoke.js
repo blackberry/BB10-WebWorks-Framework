@@ -292,7 +292,7 @@ describe("blackberry.invoke", function () {
             errorSpy = jasmine.createSpy();
 
         // Register the handler function
-        blackberry.invoke.registerInterrupter(handler);
+        blackberry.invoke.interrupter = handler;
 
         blackberry.invoke.invoke({
             action: "bb.action.VIEW",
