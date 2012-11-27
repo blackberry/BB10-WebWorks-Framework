@@ -77,11 +77,41 @@ describe("blackberry.app", function () {
 
             runs(function () {
                 expect(onResume).toHaveBeenCalled();
+                waits(2000);
             });
 
             internal.automation.touch(300, 300);
         });
     });
+
+    describe("minimize", function () {
+        var onPause;
+
+        beforeEach(function () {
+            onPause = jasmine.createSpy();
+            blackberry.event.addEventListener("pause", onPause);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("pause", onPause);
+            onPause = null;
+        });
+
+        it("should invoke pause when application is minimzied", function () {
+            waitsFor(function () {
+                return onPause.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onPause).toHaveBeenCalled();
+                internal.automation.touch(300, 300);
+                waits(2000);
+            });
+
+            blackberry.app.minimize();
+        });
+    });
+
 
     describe("swipedown", function () {
         var onSwipeDown;

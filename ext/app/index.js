@@ -211,7 +211,13 @@ module.exports = {
         success(orientation);
     },
 
-    exit: function () {
+    minimize: function (success) {
+        qnx.webplatform.getApplication().minimizeWindow();
+        success();
+    },
+
+    exit: function (success) {
         window.qnx.webplatform.getApplication().exit();
+        success();
     }
 };

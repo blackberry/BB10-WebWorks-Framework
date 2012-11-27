@@ -18,6 +18,7 @@ var _apiDir = __dirname + "./../../../../ext/app/",
     events = require(_libDir + "event"),
     eventExt = require(__dirname + "./../../../../ext/event/index"),
     index,
+    mockedMinimize,
     mockedExit,
     mockedRotate,
     mockedLockRotation,
@@ -71,6 +72,7 @@ describe("app index", function () {
     beforeEach(function () {
         config = require(_libDir + "config");
         index = require(_apiDir + "index");
+        mockedMinimize = jasmine.createSpy("minimize");
         mockedExit = jasmine.createSpy("exit");
         mockedRotate = jasmine.createSpy();
         mockedLockRotation = jasmine.createSpy();
@@ -80,6 +82,7 @@ describe("app index", function () {
             webplatform: {
                 getApplication: function () {
                     return {
+                        minimizeWindow: mockedMinimize,
                         exit: mockedExit,
                         rotate: mockedRotate,
                         lockRotation: mockedLockRotation,
@@ -93,6 +96,7 @@ describe("app index", function () {
     afterEach(function () {
         config = null;
         index = null;
+        mockedMinimize = null;
         mockedExit = null;
         mockedRotate = null;
         mockedLockRotation = null;
@@ -199,6 +203,14 @@ describe("app index", function () {
             GLOBAL.window.orientation = 270;
             index.currentOrientation(success, fail, null, null);
             expect(success).toHaveBeenCalledWith("landscape-primary");
+        });
+    });
+
+    describe("minimize", function () {
+        it("can call minimize on the qnx.weblplatform Application", function () {
+            var success = jasmine.createSpy();
+            index.minimize(success, null, null, null);
+            expect(mockedMinimize).toHaveBeenCalled();
         });
     });
 

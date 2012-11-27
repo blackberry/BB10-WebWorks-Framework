@@ -152,6 +152,13 @@ describe("app client", function () {
         });
     });
 
+    describe("minimize", function () {
+        it("should call execSync", function () {
+            client.minimize();
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "minimize");
+        });
+    });
+
     describe("exit", function () {
         it("should call execSync", function () {
             client.exit();

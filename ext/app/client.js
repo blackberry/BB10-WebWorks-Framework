@@ -17,8 +17,12 @@ var _self = {},
     ID = require("./manifest.json").namespace,
     readOnlyValues;
 
+_self.minimize = function () {
+    window.webworks.execSync(ID, "minimize");
+};
+
 _self.exit = function () {
-    return window.webworks.execSync(ID, "exit");
+    window.webworks.execSync(ID, "exit");
 };
 
 function getReadOnlyFields() {
