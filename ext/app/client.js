@@ -63,6 +63,18 @@ Object.defineProperty(_self, "orientation", {
     }
 });
 
+Object.defineProperty(_self, "windowState", {
+    get: function () {
+        var windowState;
+        try {
+            windowState = window.webworks.execSync(ID, "windowState");
+        } catch (e) {
+            console.error(e);
+        }
+        return windowState;
+    }
+});
+
 Object.defineProperty(_self, "name", {
     get: function () {
         getReadOnlyFields();

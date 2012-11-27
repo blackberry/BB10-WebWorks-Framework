@@ -36,7 +36,8 @@ var _extDir = __dirname + "./../../../../ext",
             "en": "testName-EN"
         },
         version: "testVersion",
-        orientation: "portrait-primary"
+        orientation: "portrait-primary",
+        windowState: "fullscreen"
     },
     mockedWebworks;
 
@@ -172,6 +173,12 @@ describe("app client", function () {
         });
     });
 
+    describe("windowState", function () {
+        it("should be populated", function () {
+            expect(client.windowState === mockData.windowState);
+        });
+    });
+    
     describe("lockOrientation", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();

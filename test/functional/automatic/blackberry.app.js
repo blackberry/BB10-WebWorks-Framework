@@ -131,4 +131,11 @@ describe("blackberry.app", function () {
         testAppReadOnly("version");
     });
 
+    it('blackberry.app.windowState should exist', function () {
+        expect(blackberry.app.windowState).toBeDefined();
+    });
+
+    it('blackberry.app.windowState should be read-only', function () {
+        testAppReadOnly("windowState");
+    });    
 });
