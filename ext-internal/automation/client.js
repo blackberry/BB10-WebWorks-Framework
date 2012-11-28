@@ -25,7 +25,7 @@ _self.SWIPE_DURATION = "500";
 
 // Return approximate width of footer's icon depend of what device orientation is
 _self.getFooterMenuIconWidth = function () {
-    return screen.availWidth < screen.availHeight? 150 : 250;
+    return screen.availWidth < screen.availHeight ? 150 : 250;
 };
 
 _self.swipeDown = function () {
@@ -129,11 +129,11 @@ _self.touchCenter = function () {
 };
 
 _self.touchContextMenuShare = function () {
-    _self.touch(screen.availWidth - 10 , _self.CONTEXTMENU_SHARE_ITEM);
+    _self.touch(screen.availWidth - 10, _self.CONTEXTMENU_SHARE_ITEM);
 };
 
 _self.touchInvocationListItem = function (index) {
-    _self.touch(screen.availWidth / 2 ,  (_self.INVOCATIONLIST_TITLE_HEIGHT - 25) + _self.INVOCATIONLIST_ITEM_HEIGHT * index);
+    _self.touch(screen.availWidth / 2,  (_self.INVOCATIONLIST_TITLE_HEIGHT - 25) + _self.INVOCATIONLIST_ITEM_HEIGHT * index);
     // touch past the cancel bar, plus each item width, with a 5 offset to actually touch the item
 };
 

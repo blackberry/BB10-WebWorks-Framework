@@ -95,6 +95,11 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions) {
     fs.readdirSync(intExtPath).forEach(function (ext) {
         wrench.copyDirSyncRecursive(path.join(intExtPath, ext), path.join(frameworkPath, "ext", ext));
     });
+    //Include experimental extensions
+    intExtPath = path.normalize(__dirname + "/../ext-experimental/");
+    fs.readdirSync(intExtPath).forEach(function (ext) {
+        wrench.copyDirSyncRecursive(path.join(intExtPath, ext), path.join(frameworkPath, "ext", ext));
+    });
 
     //Call bbwp using node
     cmd = "node " + path.join(pathToPackager, "lib/bbwp.js") + " " + pathToApp + " " + packagerOptions;
