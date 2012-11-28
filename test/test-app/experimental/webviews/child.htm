@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <script src="local:///chrome/webworks.js"></script>
+        <style type="text/css">
+            body {color: white; background: black;}
+        </style>
+        <script>
+            (function () {
+                window.addEventListener("load", function (e) {
+                    document.addEventListener("webworksready", function () {
+                        document.body.innerHTML += (new Date()) + ":\n blackberry.app.name = " + blackberry.app.name + "<br />";
+
+                        blackberry.event.addEventListener("webviewready", function (e) {
+                            var now = new Date();
+                            document.body.innerHTML += now.toLocaleTimeString() + ": webviewready event received for webview with id " + e.id + "<br />";
+                        });
+
+                    });
+                }, false);
+            }())
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
+

@@ -55,7 +55,6 @@ describe("default plugin", function () {
                 }
             };
 
-
             testExtension = require(ROOT + "ext/app/index");
 
             delete require.cache[require.resolve(ROOT + "lib/utils")];
@@ -114,17 +113,18 @@ describe("default plugin", function () {
 
 
         it("returns 403 if the feature is not white listed", function () {
-            var errMsg = "Feature denied by whitelist";
-            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
-            spyOn(console, "warn");
-
             req.params.ext = "blackberry.app";
             req.params.method = "getReadOnlyFields";
 
+            var errMsg = "Feature " + req.params.ext + " denied access by whitelist for origin " + req.origin;
+
+            spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
+            spyOn(console, "warn");
+
             defaultPlugin.exec(req, succ, fail, args);
 
+            expect(console.warn).toHaveBeenCalledWith(errMsg);
             expect(fail).toHaveBeenCalledWith(-1, errMsg, 403);
-            expect(console.warn).toHaveBeenCalledWith("Feature denied by whitelist");
         });
 
         it("calls the method of the extension", function () {
