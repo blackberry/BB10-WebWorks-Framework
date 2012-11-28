@@ -71,6 +71,10 @@ _self.getTimezones = function () {
     return window.webworks.execSync(ID, "getTimezones");
 };
 
+_self.setWallpaper = function (path) {
+    window.webworks.execSync(ID, "setWallpaper", {"wallpaper": path});
+};
+
 defineGetter("region");
 defineGetter("language", function () {
     return navigator.language;
