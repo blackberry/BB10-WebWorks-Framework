@@ -1,15 +1,15 @@
 describe("webview", function () {
-    var libPath = "./../../../",
-        request = require(libPath + "lib/request"),
-        utils = require(libPath + "lib/utils"),
+    var libPath = "./../../../lib/",
+        networkResourceRequested = require(libPath + "webkitHandlers/networkResourceRequested"),
+        webkitOriginAccess = require(libPath + "policy/webkitOriginAccess"),
         webview,
         mockedController,
         mockedWebview,
-        mockedApplication,
+        mockedQnx,
         globalCreate;
 
     beforeEach(function () {
-        webview = require(libPath + "lib/webview");
+        webview = require(libPath + "webview");
         mockedController = {
             enableWebInspector: undefined,
             enableCrossSiteXHR: undefined,
@@ -54,9 +54,7 @@ describe("webview", function () {
             allowUserMedia: jasmine.createSpy(),
             disallowUserMedia: jasmine.createSpy()
         };
-        mockedApplication = {
-        };
-        GLOBAL.qnx = {
+        mockedQnx = {
             callExtensionMethod: jasmine.createSpy(),
             webplatform: {
                 getController: function () {
@@ -75,13 +73,12 @@ describe("webview", function () {
                     }
                     return mockedWebview;
                 },
-                getApplication: function () {
-                    return mockedApplication;
-                }
+                getApplication: jasmine.createSpy()
             }
         };
+        GLOBAL.qnx = mockedQnx;
         GLOBAL.window = {
-            qnx: qnx
+            qnx: mockedQnx
         };
         GLOBAL.screen = {
             width : 1024,
@@ -89,9 +86,18 @@ describe("webview", function () {
         };
     });
 
+    afterEach(function () {
+        delete GLOBAL.qnx;
+        delete GLOBAL.window;
+        delete GLOBAL.screen;
+    });
+
     describe("create", function () {
         it("sets up the visible webview", function () {
-            spyOn(request, "init").andCallThrough();
+            var mockNetworkHandler = { networkResourceRequestedHandler: function onNetworkResourceRequested() {} };
+
+            spyOn(networkResourceRequested, "createHandler").andReturn(mockNetworkHandler);
+            spyOn(webkitOriginAccess, "addWebView");
             webview.create();
             waits(1);
             runs(function () {
@@ -99,20 +105,19 @@ describe("webview", function () {
                 expect(mockedWebview.active).toEqual(true);
                 expect(mockedWebview.zOrder).toEqual(0);
                 expect(mockedWebview.setGeometry).toHaveBeenCalledWith(0, 0, screen.width, screen.height);
-                expect(request.init).toHaveBeenCalledWith(mockedWebview);
-                expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
                 expect(Object.getOwnPropertyDescriptor(webview, 'onContextMenuRequestEvent')).toEqual(jasmine.any(Object));
                 expect(Object.getOwnPropertyDescriptor(webview, 'onContextMenuCancelEvent')).toEqual(jasmine.any(Object));
                 expect(Object.getOwnPropertyDescriptor(webview, 'onGeolocationPermissionRequest')).toEqual(jasmine.any(Object));
 
 
+                expect(networkResourceRequested.createHandler).toHaveBeenCalledWith(mockedWebview);
+                expect(mockedWebview.onNetworkResourceRequested).toEqual(mockNetworkHandler.networkResourceRequestedHandler);
+
                 expect(mockedWebview.allowWebEvent).toHaveBeenCalledWith("DialogRequested");
                 expect(mockedController.dispatchEvent).toHaveBeenCalledWith("webview.initialized", jasmine.any(Array));
                 //The default config.xml only has access to WIDGET_LOCAL
                 //and has permission for two apis
-                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('local://', utils.getURIPrefix(), true);
-                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('local://', 'file://', true);
-                expect(mockedWebview.addOriginAccessWhitelistEntry).toHaveBeenCalledWith('file://', 'local://', true);
+                expect(webkitOriginAccess.addWebView).toHaveBeenCalledWith(mockedWebview);
             });
         });
 

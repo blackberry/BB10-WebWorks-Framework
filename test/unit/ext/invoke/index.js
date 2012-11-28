@@ -58,7 +58,7 @@ describe("invoke index", function () {
                 },
                 getController : function () {
                     return mockedController;
-                },
+                }
             }
         };
 
@@ -108,7 +108,7 @@ describe("invoke index", function () {
         it("can invoke with uri using the file_transfer_mode property", function () {
             var successCB = jasmine.createSpy(),
                 mockedArgs = {
-                    "request": encodeURIComponent(JSON.stringify({uri: "http://www.rim.com", file_transfer_mode: "PRESERVE"})),
+                    "request": encodeURIComponent(JSON.stringify({uri: "http://www.rim.com", file_transfer_mode: "PRESERVE"}))
                 };
 
             index.invoke(successCB, null, mockedArgs);
@@ -312,14 +312,15 @@ describe("invoke index", function () {
 
             it("can register for events", function () {
                 var evts = ["onChildCardStartPeek", "onChildCardEndPeek", "onChildCardClosed"],
-                    args;
+                    args,
+                    env = {webviewId: 42};
 
                 spyOn(events, "add");
 
                 evts.forEach(function (e) {
                     args = {eventName : encodeURIComponent(e)};
                     index.registerEvents(successCB);
-                    eventExt.add(null, null, args);
+                    eventExt.add(null, null, args, env);
                     expect(successCB).toHaveBeenCalled();
                     expect(events.add).toHaveBeenCalled();
                     expect(events.add.mostRecentCall.args[0].event).toEqual(e);
@@ -329,11 +330,12 @@ describe("invoke index", function () {
 
             it("call successCB when all went well", function () {
                 var eventName = "onChildCardClosed",
-                    args = {eventName: encodeURIComponent(eventName)};
+                    args = {eventName: encodeURIComponent(eventName)},
+                    env = {webviewId: 42};
 
                 spyOn(events, "add");
                 index.registerEvents(jasmine.createSpy(), jasmine.createSpy());
-                eventExt.add(successCB, failCB, args);
+                eventExt.add(successCB, failCB, args, env);
                 expect(events.add).toHaveBeenCalled();
                 expect(successCB).toHaveBeenCalled();
                 expect(failCB).not.toHaveBeenCalled();
@@ -341,29 +343,39 @@ describe("invoke index", function () {
 
             it("call errorCB when there was an error", function () {
                 var eventName = "onChildCardClosed",
-                    args = {eventName: encodeURIComponent(eventName)};
+                    args = {eventName: encodeURIComponent(eventName)},
+                    env = {webview: {id: (new Date()).getTime()}};
 
                 spyOn(events, "add").andCallFake(function () {
                     throw "";
                 });
 
                 index.registerEvents(jasmine.createSpy(), jasmine.createSpy());
-                eventExt.add(successCB, failCB, args);
-                expect(events.add).toHaveBeenCalled();
+                eventExt.add(successCB, failCB, args, env);
+                expect(events.add).toHaveBeenCalledWith({
+                    context: require(_apiDir + "invocationEvents"),
+                    event: eventName,
+                    trigger: jasmine.any(Function)
+                }, env.webview);
                 expect(successCB).not.toHaveBeenCalled();
                 expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
             });
 
             it("can un-register from events", function () {
                 var evts = ["onChildCardStartPeek", "onChildCardEndPeek", "onChildCardClosed"],
-                    args;
+                    args,
+                    env = {webview: {id: (new Date()).getTime()}};
 
                 spyOn(events, "remove");
 
                 evts.forEach(function (e) {
                     args = {eventName : encodeURIComponent(e)};
-                    eventExt.remove(null, null, args);
-                    expect(events.remove).toHaveBeenCalled();
+                    eventExt.remove(null, null, args, env);
+                    expect(events.remove).toHaveBeenCalledWith({
+                        context: require(_apiDir + "invocationEvents"),
+                        event: e,
+                        trigger: jasmine.any(Function)
+                    }, env.webview);
                     expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
                     expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
                 });
@@ -371,25 +383,31 @@ describe("invoke index", function () {
 
             it("call successCB when all went well even when event is not defined", function () {
                 var eventName = "eventnotdefined",
-                    args = {eventName: encodeURIComponent(eventName)};
+                    args = {eventName: encodeURIComponent(eventName)},
+                    env = {webview: {id: (new Date()).getTime()}};
 
                 spyOn(events, "remove");
-                eventExt.remove(successCB, failCB, args);
-                expect(events.remove).toHaveBeenCalled();
+                eventExt.remove(successCB, failCB, args, env);
+                expect(events.remove).toHaveBeenCalledWith(undefined, env.webview);
                 expect(successCB).toHaveBeenCalled();
                 expect(failCB).not.toHaveBeenCalled();
             });
 
             it("call errorCB when there was exception occured", function () {
                 var eventName = "onChildCardClosed",
-                    args = {eventName: encodeURIComponent(eventName)};
+                    args = {eventName: encodeURIComponent(eventName)},
+                    env = {webview: {id: (new Date()).getTime()}};
 
                 spyOn(events, "remove").andCallFake(function () {
                     throw "";
                 });
 
-                eventExt.remove(successCB, failCB, args);
-                expect(events.remove).toHaveBeenCalled();
+                eventExt.remove(successCB, failCB, args, env);
+                expect(events.remove).toHaveBeenCalledWith({
+                    context: require(_apiDir + "invocationEvents"),
+                    event: eventName,
+                    trigger: jasmine.any(Function)
+                }, env.webview);
                 expect(successCB).not.toHaveBeenCalled();
                 expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
             });

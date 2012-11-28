@@ -26,14 +26,15 @@ describe("bbm.platform index", function () {
             createObject: jasmine.createSpy().andReturn("1"),
             invoke: jasmine.createSpy().andReturn(2),
             registerEvents: jasmine.createSpy().andReturn(true),
-            getgid: jasmine.createSpy().andReturn(jasmine.any(String)) 
+            getgid: jasmine.createSpy().andReturn(jasmine.any(String))
         };
         index = require(_apiDir + "index");
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         index = null;
+        delete require.cache[require.resolve(_apiDir + "index")];
     });
 
     describe("bbm.platform", function () {
@@ -42,7 +43,7 @@ describe("bbm.platform index", function () {
                 var success = jasmine.createSpy(),
                 args,
                 options;
-                
+
                 options = { "uuid": "464d3ba0-caba-11e1-9b23-0800200c9a66" };
                 args = { "options": encodeURIComponent(JSON.stringify(options)) };
 
@@ -56,9 +57,9 @@ describe("bbm.platform index", function () {
                 var fail = jasmine.createSpy(),
                 args,
                 options;
-                
+
                 options = { "uuid": "9b23-0800200c9a66" };
-                args = { "options": JSON.stringify(options) };
+                args = { "options": encodeURIComponent(JSON.stringify(options)) };
 
                 index.register(null, fail, args, null);
 
@@ -377,10 +378,36 @@ describe("bbm.platform index", function () {
     });
 
     describe("bbm.platform.users", function () {
+        beforeEach(function () {
+            GLOBAL.window = {};
+            GLOBAL.qnx = {
+                webplatform: {
+                    getApplication: function () {
+                        return {
+                            cards: {
+                                bbm: {
+                                    inviteToDownload: {
+                                        open: function (details, done, cancel, callback) {
+                                            callback();
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                    }
+                }
+            };
+        });
+
+        afterEach(function () {
+            delete GLOBAL.window;
+            delete GLOBAL.qnx;
+        });
+
         it("calls users inviteToDownload", function () {
             var success = jasmine.createSpy("success"),
                 fail = jasmine.createSpy("fail");
-            
+
             index.users.inviteToDownload(success, fail, null);
             expect(success).toHaveBeenCalled();
             expect(fail).not.toHaveBeenCalled();
@@ -394,6 +421,7 @@ describe("bbm.platform index", function () {
             it("can register the 'onaccesschanged' event", function () {
                 var eventName = "onaccesschanged",
                 args = { "eventName": encodeURIComponent(eventName) },
+                env = {webviewId: 42},
                 success = jasmine.createSpy(),
                 utils = require(_libDir + "utils");
 
@@ -403,7 +431,7 @@ describe("bbm.platform index", function () {
 
                 spyOn(events, "add");
                 index.registerEvents(success);
-                eventExt.add(null, null, args);
+                eventExt.add(null, null, args, env);
                 expect(success).toHaveBeenCalled();
                 expect(events.add).toHaveBeenCalled();
                 expect(events.add.mostRecentCall.args[0].event).toEqual(eventName);
@@ -412,10 +440,11 @@ describe("bbm.platform index", function () {
 
             it("can un-register the 'onaccesschanged' event", function () {
                 var eventName = "onaccesschanged",
-                args = {eventName : encodeURIComponent(eventName)};
+                args = {eventName : encodeURIComponent(eventName)},
+                env = {webviewId: 42};
 
                 spyOn(events, "remove");
-                eventExt.remove(null, null, args);
+                eventExt.remove(null, null, args, env);
                 expect(events.remove).toHaveBeenCalled();
                 expect(events.remove.mostRecentCall.args[0].event).toEqual(eventName);
                 expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));

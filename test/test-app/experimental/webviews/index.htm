@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="local:///chrome/webworks.js"></script>
+    </head>
+    <body>
+        <button onclick="document.location.href='local:///experimental/index.htm'">Back</button><br />
+        <h2>WebView API Tests</h2>
+        <p>
+        The test will proove that webviews can be created and that they can use APIs and receive events.
+        <br />
+        On Page load you will see two webviews created that will print the app name and everytime a webview is created
+        </p>
+        <button id="webviewCreator">Press Me To Load an invisible webview </button>
+        <button id="webviewDestroyer">Press Me To destroy the webviews </button>
+        <script>
+            (function () {
+                var webviews = [];
+                window.addEventListener("load", function (e) {
+                    document.addEventListener("webworksready", function () {
+                        var MARGIN = 50,
+                            Y_OFFSET = 630,
+                            width = (screen.width - MARGIN *3)/2,
+                            height = (screen.height - Y_OFFSET - MARGIN);
+                        webviews.push(qnx.webviews.create({x: MARGIN, y: Y_OFFSET, w: width , h: height, z: 2, url: "local:///experimental/webviews/child.htm"}));
+                        window.setTimeout(function () {
+                            webviews.push(qnx.webviews.create({x: 2*MARGIN + width, y: Y_OFFSET, w: width, h: height, z: 2, url: "local:///experimental/webviews/child.htm"}));
+                        }, 1000);
+
+                        var btn = document.getElementById("webviewCreator");
+                        btn.addEventListener("click", function (e) {
+                            webviews.push(qnx.webviews.create());
+                        }, false);
+
+                        var btn2 = document.getElementById("webviewDestroyer");
+                        btn2.addEventListener("click", cleanUp, false);
+                        function cleanUp() {
+                            webviews.forEach(function (webviewId) {
+                                qnx.webviews.destroy(webviewId);
+                            });
+                        }
+
+                        window.addEventListener("onbeforeunload", cleanUp, false);
+                        window.addEventListener("onunload", cleanUp, false);
+                    });
+                }, false);
+            }())
+        </script>
+    </body>
+</html>
