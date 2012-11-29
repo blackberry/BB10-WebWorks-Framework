@@ -86,6 +86,23 @@ _self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
     });
 };
 
+_self.getContact = function (contactId) {
+    if (!contactId) {
+        return null;
+    }
+    
+    var obj = window.webworks.execSync(_ID, "getContact", {
+            "contactId": contactId
+        });
+    if (obj) {
+        obj.id = obj.id.toString();
+        contactUtils.populateContact(obj);
+        return new Contact(obj);
+    } else {
+        return null;
+    }
+};
+
 _self.create = function (properties) {
     var args = {},
         key;

@@ -33,7 +33,9 @@ describe("pim.contacts index", function () {
             createObject: jasmine.createSpy("JNEXT.createObject").andCallFake(function () {
                 return mockJnextObjId;
             }),
-            invoke: jasmine.createSpy("JNEXT.invoke"),
+            invoke: jasmine.createSpy("JNEXT.invoke").andCallFake(function () {
+                return JSON.stringify({_success: "astrign"});
+            }),
             registerEvents: jasmine.createSpy("JNEXT.registerEvent")
         };
         spyOn(events, "trigger");
@@ -211,4 +213,24 @@ describe("pim.contacts index", function () {
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
+
+    it("getContact", function () {
+        var successCb = jasmine.createSpy(),
+            failCb = jasmine.createSpy(),
+            args = {
+                contactId: encodeURIComponent(JSON.stringify("123"))
+            };
+
+        index.getContact(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
+        });
+
+        expect(events.trigger).not.toHaveBeenCalled();
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "getContact " + JSON.stringify(args));
+        expect(successCb).toHaveBeenCalled();
+        expect(failCb).not.toHaveBeenCalled();
+    });
+
 });

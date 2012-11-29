@@ -260,6 +260,46 @@ Json::Value PimContactsQt::CloneContact(bbpim::Contact& contact, const Json::Val
     return returnObj;
 }
 
+Json::Value PimContactsQt::GetContact(const Json::Value& args)
+{
+    Json::Value returnObj;
+    Json::Value fields;
+    bbpim::ContactService contactService;
+    StringToKindMap::const_iterator it;
+    int loop = 0;
+
+    for (it = _attributeKindMap.begin(); it != _attributeKindMap.end(); ++it) {
+        fields[loop] = it->first;
+        loop++;
+    }
+
+    if (args.isMember("contactId")) {
+        bbpim::Contact contact;
+        bbpim::ContactId contactId = Utils::strToInt(args["contactId"].asString());
+
+        if (contactId == -1) {
+            returnObj["_success"] = false;
+            returnObj["code"] = INVALID_ARGUMENT_ERROR;
+        } else {
+            contact = contactService.contactDetails(contactId);
+            returnObj["_success"] = true;
+            if (contact.isValid()) {
+                returnObj["contact"] = populateContact(contact, fields);
+            }
+        }
+    } else {
+        returnObj["_success"] = false;
+        returnObj["code"] = INVALID_ARGUMENT_ERROR;
+    }
+
+    if (returnObj.empty()) {
+        returnObj["_success"] = false;
+        returnObj["code"] = UNKNOWN_ERROR;
+    }
+
+    return returnObj;
+}
+
 /****************************************************************
  * Helper functions for Find
  ****************************************************************/

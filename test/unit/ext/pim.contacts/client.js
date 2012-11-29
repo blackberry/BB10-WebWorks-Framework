@@ -26,6 +26,7 @@ var _extDir = __dirname + "./../../../../ext",
     ContactPhoto = client.ContactPhoto,
     mockedWebworks = {
         execAsync: jasmine.createSpy("webworks.execAsync"),
+        execSync: jasmine.createSpy("webworks.execSync"),
         event: {
             once: jasmine.createSpy("webworks.event.once").andCallFake(function (service, eventId, callback) {
                 callback({
@@ -181,6 +182,17 @@ describe("pim.contacts client", function () {
 
             expect(errorCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
             expect(successCb).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("Testing getContact", function () {
+        it("has method getContact", function () {
+            expect(client.getContact).toBeDefined();
+        });
+
+        it("returns the contact with specific contactId", function () {
+            var contact = client.getContact();
+            expect(contact).toBeDefined();
         });
     });
 

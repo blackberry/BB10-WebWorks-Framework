@@ -66,6 +66,10 @@ std::string PimContacts::InvokeMethod(const std::string& command)
 
     } else if (strCommand == "remove") {
         startThread(RemoveThread, obj);
+    } else if (strCommand == "getContact") {
+        std::string result = Json::FastWriter().write(webworks::PimContactsQt().GetContact(*obj));
+        delete obj;
+        return result;
     }
 
     return "";

@@ -67,6 +67,23 @@ module.exports = {
         success();
     },
 
+    getContact: function (success, fail, args) {
+        var findOptions = {},
+            results;
+        findOptions.contactId = JSON.parse(decodeURIComponent(args.contactId));
+
+        results = pimContacts.getInstance().getContact(findOptions);
+        if (results._success) {
+            if (results.contact && results.contact.id) {
+                success(results.contact);
+            } else {
+                success(null);
+            }
+        } else {
+            success(null);
+        }
+    },
+
     save: function (success, fail, args) {
         var attributes = {},
             key;
@@ -110,6 +127,10 @@ JNEXT.PimContacts = function ()
     self.find = function (args) {
         JNEXT.invoke(self.m_id, "find " + JSON.stringify(args));
         return "";
+    };
+
+    self.getContact = function (args) {
+        return JSON.parse(JNEXT.invoke(self.m_id, "getContact " + JSON.stringify(args)));
     };
 
     self.save = function (args) {

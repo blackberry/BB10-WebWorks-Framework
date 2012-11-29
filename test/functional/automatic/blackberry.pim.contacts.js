@@ -839,6 +839,48 @@ describe("blackberry.pim.contacts", function () {
         });
     });
 
+    describe("blackberry.pim.contacts.getContact", function () {
+        var contactToFind = null;
+        afterEach(function () {
+            deleteContactWithMatchingLastName("WebWorksTest");
+        });
+
+        it('can get the contact with specified contactId', function () {
+            var contactFound,
+                name = {
+                "familyName": "WebWorksTest",
+                "givenName": "John"
+            },
+                workPhone = { type: ContactField.WORK, value: "123-456-789" },
+                workEmail = { type: ContactField.WORK, value: "abc@blah.com" },
+                contact = contacts.create({
+                    "name": name,
+                    "phoneNumbers": [workPhone],
+                    "emails": [workEmail]
+                }),
+                successCreateContact = jasmine.createSpy().andCallFake(function (contact) {
+                    contactToFind = contact;
+                }),
+                errorCreateContact = jasmine.createSpy();
+
+            runs(function () {
+                contact.save(successCreateContact, errorCreateContact);
+            });
+
+            waitsFor(function () {
+                return !!contactToFind;
+            }, "create new contact was failed", 15000);
+            runs(function () {
+                contactFound = contacts.getContact(contactToFind.id);
+                expect(contactFound.id).toBe(contactToFind.id);
+                expect(contactFound.name).toEqual(contactToFind.name);
+                expect(contactFound.phoneNumbers).toEqual([workPhone]);
+                expect(contactFound.emails).toEqual([workEmail]);
+            
+            });
+        });
+    });
+
     describe("Find contacts", function () {
         var doneTestingFind = false;
 

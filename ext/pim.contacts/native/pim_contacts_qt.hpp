@@ -31,6 +31,7 @@
 #include <bb/pim/contacts/ContactListFilters.hpp>
 #include <bb/pim/account/AccountService.hpp>
 #include <bb/pim/account/Account.hpp>
+#include <webworks_utils.hpp>
 
 #include <string>
 #include <utility>
@@ -76,6 +77,7 @@ public:
     Json::Value DeleteContact(const Json::Value& contactObj);
     Json::Value EditContact(bbpim::Contact& contact, const Json::Value& attributeObj);
     Json::Value CloneContact(bbpim::Contact& contact, const Json::Value& attributeObj);
+    Json::Value GetContact(const Json::Value& argsObj);
 
 private:
     // Helper functions for Find
