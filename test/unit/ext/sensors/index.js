@@ -37,6 +37,7 @@ describe("sensors index", function () {
 
     describe("sensors", function () {
         describe("setOptions", function () {
+
             it("can call success", function () {
                 var success = jasmine.createSpy(),
                     options = { "sensor" : "devicecompass", "delay" : 10000 },
@@ -47,13 +48,26 @@ describe("sensors index", function () {
                 expect(success).toHaveBeenCalled();
             });
 
-            it("can call call with invalid parameters", function () {
+            it("can call with invalid parameters", function () {
                 var fail = jasmine.createSpy(),
-                    args = {};
+                    options = { "sensor" : "devicecompass", "delay" : "10000", background : 0 },
+                    args = { options : JSON.stringify(options) };
 
                 index.setOptions(null, fail, args, null);
-                expect(fail).toHaveBeenCalledWith(-1, "Need to specify arguments");
+                expect(fail).toHaveBeenCalled(); 
             });
         });
+
+        describe("supportedSensors", function () {
+
+            it("can get a list of supported sensors", function () {
+                var success = jasmine.createSpy();
+
+                index.supportedSensors(success, null, null, null);
+                expect(JNEXT.invoke).toHaveBeenCalledWith(jasmine.any(String), "supportedSensors");
+                expect(success).toHaveBeenCalled();
+            });
+        });
+
     });
 });

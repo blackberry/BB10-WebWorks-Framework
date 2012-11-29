@@ -28,27 +28,17 @@ class Sensors;
 
 namespace webworks {
 
-struct SensorConfig {
-    std::string sensor;
-    int delay;
-    char background;
-    char batching;
-    char queue;
-    char reducedReporting;
-};
-
-typedef std::map<std::string, std::pair<int, SensorConfig> > SensorTypeMap;
+typedef std::map<std::string, std::pair<int, Json::Value> > SensorTypeMap;
 typedef std::map<int, sensor_t*> ActiveSensorMap;
 
 class SensorsNDK {
 public:
     explicit SensorsNDK(Sensors *parent = NULL);
     ~SensorsNDK();
-    void StartEvents();
-    void StopEvents();
-    void SetSensorOptions(const SensorConfig& config);
+    void SetSensorOptions(const Json::Value& config);
     void StartSensor(const std::string& sensor);
     void StopSensor(const std::string& sensor);
+    std::string SupportedSensors();
     static void* SensorThread(void *args);
 private:
     Sensors *m_pParent;
@@ -60,7 +50,10 @@ private:
     static int m_coid;
     static bool m_sensorsEnabled;
     static pthread_mutex_t m_lock;
-    static void stopActiveSensor(sensor_type_e sensorType);
+    static void stopActiveSensor(const sensor_type_e sensorType);
+    void startEvents();
+    void stopEvents();
+    void applySensorOptions(sensor_t *sensor, const Json::Value& config);
     void createSensorMap();
 };
 

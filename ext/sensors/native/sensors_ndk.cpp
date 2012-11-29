@@ -50,7 +50,8 @@ SensorsNDK::SensorsNDK(Sensors *parent) : m_pParent(parent)
 
 SensorsNDK::~SensorsNDK()
 {
-    StopEvents();
+    stopEvents();
+
     if (m_pActiveSensors) {
         delete m_pActiveSensors;
     }
@@ -58,35 +59,17 @@ SensorsNDK::~SensorsNDK()
     pthread_mutex_destroy(&m_lock);
 }
 
-void SensorsNDK::StartEvents()
-{
-    if (!m_thread) {
-        int error = pthread_create(&m_thread, NULL, SensorThread, static_cast<void *>(m_pParent));
-
-        if (error) {
-            m_thread = 0;
-        } else {
-            MUTEX_LOCK();
-        }
-    }
-}
-
-void SensorsNDK::StopEvents()
-{
-    MsgSendPulse(m_coid, SIGEV_PULSE_PRIO_INHERIT, SENSOR_MSG_PULSE, 0);
-    if (m_thread) {
-        pthread_join(m_thread, NULL);
-        m_thread = 0;
-        m_sensorsEnabled = false;
-    }
-}
-
-void SensorsNDK::SetSensorOptions(const SensorConfig& config)
+void SensorsNDK::SetSensorOptions(const Json::Value& config)
 {
     MUTEX_LOCK();
-    const SensorTypeMap::iterator findSensor = _sensorTypeMap.find(config.sensor);
+    const SensorTypeMap::iterator findSensor = _sensorTypeMap.find(config["sensor"].asString());
     if (findSensor != _sensorTypeMap.end()) {
-        findSensor->second.second = config;
+        const ActiveSensorMap::iterator findActiveSensor = m_pActiveSensors->find(findSensor->second.first);
+        if (findActiveSensor != m_pActiveSensors->end()) {
+            applySensorOptions((*m_pActiveSensors)[findSensor->second.first], config);
+        } else {
+            findSensor->second.second = config;
+        }
     }
     MUTEX_UNLOCK();
 }
@@ -94,7 +77,7 @@ void SensorsNDK::SetSensorOptions(const SensorConfig& config)
 void SensorsNDK::StartSensor(const std::string& sensorString)
 {
     if (!m_sensorsEnabled) {
-        StartEvents();
+        startEvents();
     }
 
     MUTEX_LOCK();
@@ -105,31 +88,11 @@ void SensorsNDK::StartSensor(const std::string& sensorString)
         const ActiveSensorMap::iterator findActiveSensor = m_pActiveSensors->find(sensorType);
         if (findActiveSensor == m_pActiveSensors->end()) {
             sensor_t *sensor = NULL;
-            SensorConfig *config = &findSensor->second.second;
+            Json::Value config = *(&findSensor->second.second);
             sensor = sensor_new(sensorType);
             SIGEV_PULSE_INIT(&m_sigEvent, m_coid, SIGEV_PULSE_PRIO_INHERIT, SENSOR_BASE_PULSE + sensorType, sensor);
             sensor_event_notify(sensor, &m_sigEvent);
-
-            if (config->delay != SENSOR_CONFIG_UNDEFINED) {
-                sensor_set_delay(sensor, config->delay);
-            }
-
-            if (config->queue != SENSOR_CONFIG_UNDEFINED) {
-                sensor_set_queue(sensor, config->queue);
-            }
-
-            if (config->batching != SENSOR_CONFIG_UNDEFINED) {
-                sensor_set_batching(sensor, config->batching);
-            }
-
-            if (config->background != SENSOR_CONFIG_UNDEFINED) {
-                sensor_set_background(sensor, config->background);
-            }
-
-            if (config->reducedReporting != SENSOR_CONFIG_UNDEFINED) {
-                sensor_set_reduced_reporting(sensor, config->reducedReporting);
-            }
-
+            applySensorOptions(sensor, config);
             m_pActiveSensors->insert(std::make_pair(sensorType, sensor));
         }
     }
@@ -146,6 +109,19 @@ void SensorsNDK::StopSensor(const std::string& sensor)
         }
     }
     MUTEX_UNLOCK();
+}
+
+std::string SensorsNDK::SupportedSensors()
+{
+    Json::Value root;
+
+    for (SensorTypeMap::iterator sensor = _sensorTypeMap.begin(); sensor != _sensorTypeMap.end(); sensor++) {
+        if (sensor_exists(static_cast<sensor_type_e>(sensor->second.first))) {
+            root.append(sensor->first);
+        }
+    }
+
+    return Json::FastWriter().write(root);
 }
 
 void *SensorsNDK::SensorThread(void *args)
@@ -295,8 +271,53 @@ void *SensorsNDK::SensorThread(void *args)
     return NULL;
 }
 
+void SensorsNDK::startEvents()
+{
+    if (!m_thread) {
+        int error = pthread_create(&m_thread, NULL, SensorThread, static_cast<void *>(m_pParent));
 
-void SensorsNDK::stopActiveSensor(sensor_type_e sensorType)
+        if (error) {
+            m_thread = 0;
+        } else {
+            MUTEX_LOCK();
+        }
+    }
+}
+
+void SensorsNDK::stopEvents()
+{
+    MsgSendPulse(m_coid, SIGEV_PULSE_PRIO_INHERIT, SENSOR_MSG_PULSE, 0);
+    if (m_thread) {
+        pthread_join(m_thread, NULL);
+        m_thread = 0;
+        m_sensorsEnabled = false;
+    }
+}
+
+void SensorsNDK::applySensorOptions(sensor_t *sensor, const Json::Value &config)
+{
+    if (config.isMember("delay")) {
+        sensor_set_delay(sensor, config["delay"].asInt());
+    }
+
+    if (config.isMember("queue")) {
+        sensor_set_queue(sensor, config["queue"].asInt());
+    }
+
+    if (config.isMember("batching")) {
+        sensor_set_batching(sensor, config["batching"].asInt());
+    }
+
+    if (config.isMember("background")) {
+        sensor_set_background(sensor, config["background"].asInt());
+    }
+
+    if (config.isMember("reducedReporting")) {
+        sensor_set_reduced_reporting(sensor, config["reducedReporting"].asInt());
+    }
+}
+
+void SensorsNDK::stopActiveSensor(const sensor_type_e sensorType)
 {
     const ActiveSensorMap::iterator findActiveSensor = m_pActiveSensors->find(sensorType);
     if (findActiveSensor != m_pActiveSensors->end()) {
@@ -308,7 +329,7 @@ void SensorsNDK::stopActiveSensor(sensor_type_e sensorType)
 
 void SensorsNDK::createSensorMap()
 {
-    SensorConfig config;
+    Json::Value config;
     _sensorTypeMap["deviceaccelerometer"] = std::make_pair(SENSOR_TYPE_ACCELEROMETER, config);
     _sensorTypeMap["devicemagnetometer"] = std::make_pair(SENSOR_TYPE_MAGNETOMETER, config);
     _sensorTypeMap["devicegyroscope"] = std::make_pair(SENSOR_TYPE_GYROSCOPE, config);

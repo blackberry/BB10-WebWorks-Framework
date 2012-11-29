@@ -59,59 +59,24 @@ std::string Sensors::InvokeMethod(const std::string& command)
     std::string arg = command.substr(index + 1, command.length());
 
     if (strCommand == "setOptions") {
-        Json::Reader reader;
         Json::Value obj;
 
-        bool parse = reader.parse(arg, obj);
+        bool parse = Json::Reader().parse(arg, obj);
 
         if (!parse)
             return "";
 
-        webworks::SensorConfig sensorConfig;
-        sensorConfig.sensor = obj["sensor"].asString();
-
-        if (obj.isMember("delay")) {
-            sensorConfig.delay = obj["delay"].asInt();
-        } else {
-            sensorConfig.delay = SENSOR_CONFIG_UNDEFINED;
-        }
-
-        if (obj.isMember("background")) {
-            sensorConfig.background = static_cast<bool>(obj["background"].asBool());
-        } else {
-            sensorConfig.background = SENSOR_CONFIG_UNDEFINED;
-        }
-
-        if (obj.isMember("queue")) {
-            sensorConfig.queue = obj["queue"].asInt();
-        } else {
-            sensorConfig.queue = SENSOR_CONFIG_UNDEFINED;
-        }
-
-        if (obj.isMember("reducedReporting")) {
-            sensorConfig.reducedReporting = obj["reducedReporting"].asBool();
-        } else {
-            sensorConfig.reducedReporting = SENSOR_CONFIG_UNDEFINED;
-        }
-
-        m_pSensorsController->SetSensorOptions(sensorConfig);
-        return "";
+        m_pSensorsController->SetSensorOptions(obj);
     } else if (strCommand == "startSensor") {
         m_pSensorsController->StartSensor(arg);
-        return "";
     } else if (strCommand == "stopSensor") {
         m_pSensorsController->StopSensor(arg);
-        return "";
-    } else if (strCommand == "startEvents") {
-        m_pSensorsController->StartEvents();
-        return "";
-    } else if (strCommand == "stopEvents") {
-        m_pSensorsController->StopEvents();
-        return "";
+    } else if (strCommand == "supportedSensors") {
+        return m_pSensorsController->SupportedSensors();
     }
 #endif
 #ifndef __X86__
-    return NULL;
+    return "";
 #else
     return command;
 #endif
