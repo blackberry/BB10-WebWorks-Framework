@@ -167,6 +167,35 @@ describe("invoke.card client", function () {
         });
     });
 
+
+    describe("invoke calendarPicker", function () {
+        var details,
+            done,
+            cancel,
+            invokeCallback;
+
+        beforeEach(function () {
+            details = {
+                filepath : "/path/to/save/the/file/to.vcs"
+            };
+            done = jasmine.createSpy("done");
+            cancel = jasmine.createSpy("cancel");
+            invokeCallback = jasmine.createSpy("invokeCallback");
+        });
+
+        it("should call execAsync with the correct options", function () {
+            client.invokeCalendarPicker(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeCalendarPicker", {options: details});
+        });
+
+        it("should register all necessary events", function () {
+            client.invokeCalendarPicker(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+        });
+    });
+
     describe("invoke Media Player", function () {
         var details,
             done,
@@ -195,7 +224,71 @@ describe("invoke.card client", function () {
             expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
             expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
         });
+    });
 
+    describe("invoke calendarComposer", function () {
+        var details,
+            done,
+            cancel,
+            invokeCallback;
+
+        beforeEach(function () {
+            details = {
+                subject: "Some event",
+                body: "something about this event",
+                location: "here and there",
+                startTime: "Wed Jun 21 11:00:01 3412",
+                endTime: "Mon Jun 22 11:00:01 3423",
+                attendees: ["a@a.com", "b@b.com"]
+            };
+            done = jasmine.createSpy("done");
+            cancel = jasmine.createSpy("cancel");
+            invokeCallback = jasmine.createSpy("invokeCallback");
+        });
+
+        it("should call execAsync with the correct options", function () {
+            client.invokeCalendarComposer(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeCalendarComposer", {options: details});
+        });
+
+        it("should register all necessary events", function () {
+            client.invokeCalendarComposer(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+        });
+    });
+
+    describe("invoke emailComposer", function () {
+        var details,
+            done,
+            cancel,
+            invokeCallback;
+
+        beforeEach(function () {
+            details = {
+                to: "mission-control@nasa.gov",
+                cc: "obama@whitehouse.org",
+                subject: "[STATUS] Manned Mission to Mars",
+                body: "It worked...",
+                attachment : ["/pictures/mission/astronauts-playing-hockey-on-mars.png"]
+            };
+            done = jasmine.createSpy("done");
+            cancel = jasmine.createSpy("cancel");
+            invokeCallback = jasmine.createSpy("invokeCallback");
+        });
+
+        it("should call execAsync with the correct options", function () {
+            client.invokeEmailComposer(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeEmailComposer", {options: details});
+        });
+
+        it("should register all necessary events", function () {
+            client.invokeEmailComposer(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+        });
     });
 
     describe("invoke ics viewer", function () {

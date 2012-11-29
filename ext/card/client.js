@@ -24,7 +24,16 @@ var _self = {},
     _filePickerInvokeEventId = "invokeFilePicker.invokeEventId",
     _icsDoneEventId = "invokeIcsViewer.doneEventId",
     _icsCancelEventId = "invokeIcsViewer.cancelEventId",
-    _icsInvokeEventId = "invokeIcsViewer.invokeEventId";
+    _icsInvokeEventId = "invokeIcsViewer.invokeEventId",
+    _calendarPickerDoneEventId = "invokeCalendarPicker.doneEventId",
+    _calendarPickerCancelEventId = "invokeCalendarPicker.cancelEventId",
+    _calendarPickerInvokeEventId = "invokeCalendarPicker.invokeEventId",
+    _calendarComposerDoneEventId = "invokeCalendarComposer.doneEventId",
+    _calendarComposerCancelEventId = "invokeCalendarComposer.cancelEventId",
+    _calendarComposerInvokeEventId = "invokeCalendarComposer.invokeEventId",
+    _emailComposerDoneEventId = "invokeEmailComposer.doneEventId",
+    _emailComposerCancelEventId = "invokeEmailComposer.cancelEventId",
+    _emailComposerInvokeEventId = "invokeEmailComposer.invokeEventId";
 
 _self.invokeMediaPlayer = function (options, done, cancel, invokeCallback) {
     var doneEventId = "invokeMediaPlayer.doneEventId",
@@ -107,6 +116,72 @@ _self.invokeIcsViewer = function (options, done, cancel, invokeCallback) {
     return window.webworks.execAsync(_ID, "invokeIcsViewer", {options: options || ""});
 };
 
+_self.invokeCalendarPicker = function (options, done, cancel, invokeCallback) {
+   /*
+   * options = {
+   *    filepath: path to file where .vcs will be saved
+   * }
+   */
+    if (!window.webworks.event.isOn(_calendarPickerDoneEventId)) {
+        window.webworks.event.once(_ID, _calendarPickerDoneEventId, done);
+    }
+    if (!window.webworks.event.isOn(_calendarPickerCancelEventId)) {
+        window.webworks.event.once(_ID, _calendarPickerCancelEventId, cancel);
+    }
+    if (!window.webworks.event.isOn(_calendarPickerInvokeEventId)) {
+        window.webworks.event.once(_ID, _calendarPickerInvokeEventId, invokeCallback);
+    }
+    return window.webworks.execAsync(_ID, "invokeCalendarPicker", {options: options || ""});
+};
+
+_self.invokeCalendarComposer = function (options, done, cancel, invokeCallback) {
+   /*
+   * options = {
+   *    accountId : account ID //used with syncId or folderId to identify a specific account
+   *    syncId : sync ID
+   *    folderId : folder ID
+   *    subject : event subject
+   *    body : event body
+   *    startTime : event start time e.g: Wed Jun 13 09:39:56 2012
+   *    duration : event duration
+   *    participants : array of pariticipant email addresses
+   * }
+   */
+    if (!window.webworks.event.isOn(_calendarComposerDoneEventId)) {
+        window.webworks.event.once(_ID, _calendarComposerDoneEventId, done);
+    }
+    if (!window.webworks.event.isOn(_calendarComposerCancelEventId)) {
+        window.webworks.event.once(_ID, _calendarComposerCancelEventId, cancel);
+    }
+    if (!window.webworks.event.isOn(_calendarComposerInvokeEventId)) {
+        window.webworks.event.once(_ID, _calendarComposerInvokeEventId, invokeCallback);
+    }
+    return window.webworks.execAsync(_ID, "invokeCalendarComposer", {options: options || ""});
+};
+
+_self.invokeEmailComposer = function (options, done, cancel, invokeCallback) {
+   /*
+   * options = {
+   *    from : accountId this message should be sent from
+   *    subject : message subject
+   *    body : plaintext message body
+   *    calendarevent : calendar event ID
+   *    to : array of recipient emails
+   *    cc : array of emails
+   *    attachment : array of attachment filepaths
+   * }
+   */
+    if (!window.webworks.event.isOn(_emailComposerDoneEventId)) {
+        window.webworks.event.once(_ID, _emailComposerDoneEventId, done);
+    }
+    if (!window.webworks.event.isOn(_emailComposerCancelEventId)) {
+        window.webworks.event.once(_ID, _emailComposerCancelEventId, cancel);
+    }
+    if (!window.webworks.event.isOn(_emailComposerInvokeEventId)) {
+        window.webworks.event.once(_ID, _emailComposerInvokeEventId, invokeCallback);
+    }
+    return window.webworks.execAsync(_ID, "invokeEmailComposer", {options: options || ""});
+};
 
 //CAMERA PROPERTIES
 window.webworks.defineReadOnlyField(_self, "CAMERA_MODE_PHOTO", 'photo');

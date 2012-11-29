@@ -21,6 +21,9 @@ var _apiDir = __dirname + "./../../../../ext/card/",
     mockedCamera,
     mockedFile,
     mockedIcs,
+    mockedCalPicker,
+    mockedCalComposer,
+    mockedEmailComposer,
     index,
     successCB,
     failCB;
@@ -40,6 +43,18 @@ describe("invoke.card index", function () {
         mockedIcs = {
             open: jasmine.createSpy("ics.open")
         };
+        mockedCalPicker = {
+            open: jasmine.createSpy("calendarPicker.open")
+        };
+        mockedCalComposer = {
+            open: jasmine.createSpy("calendarComposer.open")
+        };
+        mockedEmailComposer = {
+            open: jasmine.createSpy("emailComposer.open")
+        };
+        index = require(_apiDir + "index");
+        successCB = jasmine.createSpy("success callback");
+        failCB = jasmine.createSpy("fail callback");
         GLOBAL.window = {
             qnx: {
                 callExtensionMethod : function () {},
@@ -50,17 +65,20 @@ describe("invoke.card index", function () {
                                 mediaplayerPreviewer: mockedMediaPlayer,
                                 camera: mockedCamera,
                                 filePicker: mockedFile,
-                                icsViewer: mockedIcs
+                                icsViewer: mockedIcs,
+                                email: {
+                                    composer: mockedEmailComposer
+                                },
+                                calendar: {
+                                    picker: mockedCalPicker,
+                                    composer: mockedCalComposer
+                                }
                             }
                         };
                     }
                 }
             }
         };
-
-        index = require(_apiDir + "index");
-        successCB = jasmine.createSpy("success callback");
-        failCB = jasmine.createSpy("fail callback");
     });
 
     afterEach(function () {
@@ -68,6 +86,10 @@ describe("invoke.card index", function () {
         mockedCamera = null;
         delete GLOBAL.window;
         mockedFile = null;
+        mockedCalPicker = null;
+        mockedCalComposer = null;
+        mockedEmailComposer = null;
+        mockedIcs = null;
         index = null;
         delete require.cache[require.resolve(_apiDir + "index")];
         successCB = null;
@@ -136,8 +158,64 @@ describe("invoke.card index", function () {
             expect(mockedIcs.open).toHaveBeenCalledWith({
                 options: { uri : "file://path/to/file.ics" }
             }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
+        });
+    });
+
+    describe("invoke calendar picker", function () {
+        it("can invoke calendar picker with options", function () {
+            var successCB = jasmine.createSpy(),
+                mockedArgs = {
+                    options: encodeURIComponent(JSON.stringify({options: {filepath: "/path/to/file.vcs"}}))
+                };
+            index.invokeCalendarPicker(successCB, null, mockedArgs);
+            expect(mockedCalPicker.open).toHaveBeenCalledWith({
+                options: { filepath : "/path/to/file.vcs" }
+            }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
             expect(successCB).toHaveBeenCalled();
         });
     });
 
+    describe("invoke calendar composer", function () {
+        it("can invoke calendar composer with", function () {
+            var subject = "Subject",
+                body = "Body",
+                startTime = "Wed Jun 21 12:21:21 2012",
+                duration = '20',
+                mockedArgs = {
+                    "subject": subject,
+                    "body": body,
+                    "startTime": startTime,
+                    "duration": duration
+                };
+
+            index.invokeCalendarComposer(successCB, null, {options: encodeURIComponent(JSON.stringify(mockedArgs))});
+
+            expect(mockedCalComposer.open).toHaveBeenCalledWith({
+                    subject: decodeURIComponent(subject),
+                    body: decodeURIComponent(body),
+                    startTime: decodeURIComponent(startTime),
+                    duration: decodeURIComponent(duration)
+                }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+    });
+
+    describe("invoke email composer", function () {
+        it("can invoke email composer with", function () {
+            var subject = "Subject",
+                body = "Body",
+                mockedArgs = {
+                    "subject": subject,
+                    "body": body,
+                };
+
+            index.invokeEmailComposer(successCB, null, {options: encodeURIComponent(JSON.stringify(mockedArgs))});
+
+            expect(mockedEmailComposer.open).toHaveBeenCalledWith({
+                    subject: decodeURIComponent(subject),
+                    body: decodeURIComponent(body),
+                }, jasmine.any(Function), jasmine.any(Function), jasmine.any(Function));
+            expect(successCB).toHaveBeenCalled();
+        });
+    });
 });

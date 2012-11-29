@@ -63,6 +63,7 @@ module.exports = {
         window.qnx.webplatform.getApplication().cards.filePicker.open(options, done, cancel, invokeCallback);
         success();
     },
+
     invokeIcsViewer: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (path) {
@@ -76,6 +77,54 @@ module.exports = {
             };
 
         window.qnx.webplatform.getApplication().cards.icsViewer.open(options, done, cancel, invokeCallback);
+        success();
+    },
+
+    invokeCalendarPicker: function (success, fail, args) {
+        var options = JSON.parse(decodeURIComponent(args["options"])),
+            done = function (file) {
+                _event.trigger("invokeCalendarPicker.doneEventId", file);
+            },
+            cancel = function (reason) {
+                _event.trigger("invokeCalendarPicker.cancelEventId", reason);
+            },
+            invokeCallback = function (error) {
+                _event.trigger("invokeCalendarPicker.invokeEventId", error);
+            };
+
+        window.qnx.webplatform.getApplication().cards.calendar.picker.open(options, done, cancel, invokeCallback);
+        success();
+    },
+
+    invokeCalendarComposer: function (success, fail, args) {
+        var options = JSON.parse(decodeURIComponent(args["options"])),
+            done = function (file) {
+                _event.trigger("invokeCalendarComposer.doneEventId", file);
+            },
+            cancel = function (reason) {
+                _event.trigger("invokeCalendarComposer.cancelEventId", reason);
+            },
+            invokeCallback = function (error) {
+                _event.trigger("invokeCalendarComposer.invokeEventId", error);
+            };
+
+        window.qnx.webplatform.getApplication().cards.calendar.composer.open(options, done, cancel, invokeCallback);
+        success();
+    },
+
+    invokeEmailComposer: function (success, fail, args) {
+        var options = JSON.parse(decodeURIComponent(args["options"])),
+            done = function (file) {
+                _event.trigger("invokeEmailComposer.doneEventId", file);
+            },
+            cancel = function (reason) {
+                _event.trigger("invokeEmailComposer.cancelEventId", reason);
+            },
+            invokeCallback = function (error) {
+                _event.trigger("invokeEmailComposer.invokeEventId", error);
+            };
+
+        window.qnx.webplatform.getApplication().cards.email.composer.open(options, done, cancel, invokeCallback);
         success();
     }
 };

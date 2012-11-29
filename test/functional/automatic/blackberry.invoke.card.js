@@ -18,6 +18,9 @@ describe("blackberry.invoke.card", function () {
         expect(blackberry.invoke.card).toBeDefined();
         expect(blackberry.invoke.card.invokeCamera).toBeDefined();
         expect(blackberry.invoke.card.invokeFilePicker).toBeDefined();
+        expect(blackberry.invoke.card.invokeCalendarPicker).toBeDefined();
+        expect(blackberry.invoke.card.invokeCalendarComposer).toBeDefined();
+        expect(blackberry.invoke.card.invokeEmailComposer).toBeDefined();
     });
 
     it('blackberry.invoke should exist', function () {
@@ -124,9 +127,8 @@ describe("blackberry.invoke.card", function () {
     it('open the mediaplayer card, close it and check for response reason to be equal closed .', function () {
         var delay = 20000,
             flag = false,
-            errorSpy = jasmine.createSpy("Callback when error happens"),
-            reason,
-            callback;
+            errorSpy = jasmine.createSpy(),
+            reason;
 
         blackberry.invoke.card.invokeMediaPlayer({contentTitle: "Test Title"}, function (path) {
         },
@@ -140,26 +142,21 @@ describe("blackberry.invoke.card", function () {
 
         runs(function () {
             flag = false;
-            callback = function (request) {
-                blackberry.event.removeEventListener("onChildCardClosed", callback);
 
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
                 reason = request.reason;
                 flag = true;
-            };
-
-            blackberry.event.addEventListener("onChildCardClosed", callback);
+            });
 
             blackberry.invoke.closeChildCard();
             waitsFor(function () {
                 return flag;
             }, delay);
             runs(function () {
-                // Currently the response that comes onChildCardClosed is not informative or just emtpy.
                 expect(reason).toBe("closed");
             });
         });
     });
-
 
     it('open the ICS viewer card and then close to make sure it actually opens.', function () {
         var delay = 20000,
@@ -195,4 +192,105 @@ describe("blackberry.invoke.card", function () {
         });
     });
 
+    it('open the calendarPicker card and then close to make sure it actually opens.', function () {
+        var delay = 20000,
+            flag = false,
+            errorSpy = jasmine.createSpy(),
+            reason;
+
+        blackberry.invoke.card.invokeCalendarPicker({}, function (data) {
+        },
+        function (reason) {
+            flag = true;
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay / 4);
+
+        runs(function () {
+            flag = false;
+
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+    it('open the calendarComposer card and then close to make sure it actually opens.', function () {
+        var delay = 20000,
+            flag = false,
+            errorSpy = jasmine.createSpy(),
+            reason;
+
+        blackberry.invoke.card.invokeCalendarComposer({}, function (data) {
+        },
+        function (reason) {
+            flag = true;
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay / 4);
+
+        runs(function () {
+            flag = false;
+
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
+
+    it('open the emailComposer card and then close to make sure it actually opens.', function () {
+        var delay = 20000,
+            flag = false,
+            errorSpy = jasmine.createSpy(),
+            reason;
+
+        blackberry.invoke.card.invokeEmailComposer({}, function (data) {
+        },
+        function (reason) {
+            flag = true;
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay / 4);
+
+        runs(function () {
+            flag = false;
+
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+    });
 });

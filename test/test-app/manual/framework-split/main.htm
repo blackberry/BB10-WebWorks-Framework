@@ -7,7 +7,7 @@
         <script src="local:///js/jquery-1.7.2.min.js"></script>
         <script src="local:///js/jquery.mobile-1.1.1.min.js"></script>
         <link rel="stylesheet" href="local:///css/jquery.mobile-1.1.1.min.css" />
-	<script language="javascript" type="text/javascript">
+	    <script language="javascript" type="text/javascript">
             function do_camera_Test() {
                 document.location.href = "local:///manual/framework-split/cameraCard.htm";
             }
@@ -20,6 +20,15 @@
             function do_icsViewer_Test() {
                 document.location.href = "local:///manual/framework-split/icsViewerCard.htm";
             }
+            function do_calendarPicker_Test() {
+                document.location.href = "local:///manual/framework-split/calendarPicker.htm";
+            }
+            function do_calendarComposer_Test() {
+                document.location.href = "local:///manual/framework-split/calendarComposer.htm";
+            }
+            function do_emailComposer_Test() {
+                document.location.href = "local:///manual/framework-split/emailComposer.htm";
+            }
         </script>
 	</head>
 	<body>
@@ -30,5 +39,8 @@
         <p><input type="button" value="File Picker Card" onclick="return do_filePicker_Test()" /></p>
         <p><input type="button" value="ICS Viewer Card" onclick="return do_icsViewer_Test()" /></p>
         <p><input type="button" value="Media Player Card" onclick="return do_mediaplayer_Test()" /></p>
+        <p><input type="button" value="Calendar Event Picker" onclick="return do_calendarPicker_Test()" /></p>
+        <p><input type="button" value="Calendar Event Composer" onclick="return do_calendarComposer_Test()" /></p>
+        <p><input type="button" value="Email Composer" onclick="return do_emailComposer_Test()" /></p>
     </body>
 </html>
