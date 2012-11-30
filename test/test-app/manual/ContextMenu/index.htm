@@ -1,51 +1,167 @@
 ﻿<!DOCTYPE html>
 <!--
- * Copyright 2012 Research In Motion Limited.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2012 Research In Motion Limited.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 -->
 <html>
-	<head>
-		<title>Context Menu API test</title>
-		<script src="local:///chrome/webworks.js" type="text/javascript"></script>
-		<script src="script.js" type="text/javascript"></script>
-	</head>
-	<body bgcolor="Teal">
-		<h2 align="center">Hi, this is a simple Context Menu test</h2>
+    <head>
+        <title>Context Menu API test</title>
+        <script src="local:///chrome/webworks.js" type="text/javascript"></script>
+        <script src="script.js" type="text/javascript"></script>
+        <style type="text/css">
+            Button {
+                width: 600px;
+                height: 100px;
+                font-size: 200%;
+            }
+        </style>
+    </head>
+    <body bgcolor="Teal">
+        <h1 align="center">Context Menu tests</h1>
+        <a href="http://www.google.com">This is a link</a>
         <br />
-        <img src="https://developer.blackberry.com/html5/webroot/img/frontpage/carousel_webworks.jpg" />
         <br />
-        <a href="http://google.com">This is a link</a>
+        Input box: <input type="text" name="input" />
+        <br />
+        <br />
+        <label for="mysearch">Search box:</label>
+        <input id="mysearch" type="search" placeholder="search">
+        <br />
+        <h2>Text-in-a-h2</h2>
+
+        <h4>Image:</h4>
+        <img border="0" src="../../img/blackberry10.jpg" alt="Pulpit rock" width="304" height="228" />
+        <br />
+        <br />
+        <h4>Local image link:</h4>
+        <a href="http://www.cnn.com"><img src="../../img/barney.jpg" width="250" height="150"></a>
+        <br />
+        <br />
+        <h4>Remote Image Link (w3):</h4>
+        <a href="http://www.w3.org"><img src="http://www.w3.org/2008/site/images/logo-w3c-mobile-lg.png"></a>
+        <br />
+        <br />
+
+        <div align="left">
+            <br />
+            <br />
+            <button onclick="overridePlatform()">Add a custom Item that overrides the "Copy action"</button>
+            <br />
+            <br />
+            <button onclick="overrideMenuService()">Add a custom Item that overrides a "Menu Service" action</button>
+            <br />
+            <br />
+            <br />
+            <br />
+            <button onclick="blackberry.ui.contextmenu.enabled = true">Enable Context Menu</button>
+            <br />
+            <br />
+            <button onclick="blackberry.ui.contextmenu.enabled = false">Disable Context Menu</button>
+            <br />
+            <br />
+            <button onclick="addMenuItemContextAll()">Add custom item [CONTEXT_ALL]</button>
+            <button onclick="removeMenuItemContextAll()">Remove custom item [CONTEXT_ALL]</button>
+            <br />
+            <br />
+            <button onclick="addMenuItemContextLink()">Add custom item [CONTEXT_LINK]</button>
+            <button onclick="removeMenuItemContextLink()">Remove custom item [CONTEXT_LINK]</button>
+            <br />
+            <br />
+            <button onclick="addMenuItemContextInput()">Add custom item [CONTEXT_INPUT]</button>
+            <button onclick="removeMenuItemContextInput()">Remove custom item [CONTEXT_INPUT]</button>
+            <br />
+            <br />
+            <button onclick="addMenuItemContextIText()">Add custom item [CONTEXT_TEXT]</button>
+            <button onclick="removeMenuItemContextIText()">Remove custom item [CONTEXT_TEXT]</button>
+            <br />
+            <br />
+            <button onclick="addMenuItemContextImage()">Add custom item [CONTEXT_IMAGE]</button>
+            <button onclick="removeMenuItemContextImage()">Remove custom item [CONTEXT_IMAGE]</button>
+            <br />
+            <br />
+            <button onclick="addMenuItemContextImageLink()">Add custom item [CONTEXT_IMAGE_LINK]</button>
+            <button onclick="removeMenuItemContextImageLink()">Remove custom item [CONTEXT_IMAGE_LINK]</button>
+            <br />
+            <br />
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <br />
         <div align="left">
-			<br/>
-			<br/>
-		<div align="left">
-			<br/>
-			<br/>
-			<button style="width: 600px; height: 100px; font-size: 200%" onclick="addCustomItem()">
-                Add a custom item to the context menu
-            </button>
-			<br />
-			<br />
-			<button style="width: 600px; height: 100px; font-size: 200%" onclick="overridePlatform()">
-                Add a custom Item that overrides the "Copy action"
-            </button>
-			<br />
-			<br />
-			<button style="width: 600px; height: 100px; font-size: 200%" onclick="overrideMenuService()">
-                Add a custom Item that overrides a "Menu Service" action
-            </button>
-		</div>
-	</body>
+            <h1 align="center">Context menu tests - Custom contexts</h1>
+            <div align="left" data-webworks-context="myContext">
+                <a href="http://www.google.com">This is a link with customContext</a>
+                <br />
+                <br />
+                Input box: with customContext<input type="text" name="input" />
+                <br />
+                <br />
+                <label for="mysearch">Search box: with customContext</label>
+                <input id="mysearch" type="search" placeholder="search">
+                <br />
+                <button onclick="alert('clicked')">Button with customContext</button>
+                <h2>Text-in-a-h2 with customContext</h2>
+                <h4>Image: with customContext</h4>
+                <img border="0" src="../../img/blackberry10.jpg" alt="Pulpit rock" width="304" height="228" />
+                <br />
+                <br />
+                <h4>Local image link: with customContext</h4>
+                <a href="http://www.cnn.com"><img src="../../img/barney.jpg" width="250" height="150"></a>
+                <br />
+                <br />
+                <h4>Remote Image Link (w3): with customContext</h4>
+                <a href="http://www.w3.org"><img src="http://www.w3.org/2008/site/images/logo-w3c-mobile-lg.png"></a>
+                <br />
+                <br />
+                <h4>Empty div: with customContext</h4>
+            </div>
+            <button onclick="addMenuItemContextCustom()">Add custom item to custom context ["myContext"]</button>
+            <button onclick="removeMenuItemContextCustom()">Remove custom item from custom context ["myContext"]</button>
+            <br />
+            <br />
+            <br />
+            <h2>Manipulate customContext with defineCustomContext API</h2>
+            <button onclick="addLinkContextToCustom()">add LINK</button>
+            <br />
+            <br />
+            <button onclick="addInputContextToCustom()">add INPUT</button>
+            <br />
+            <br />
+            <button onclick="addTextContextToCustom()">add TEXT</button>
+            <br />
+            <br />
+            <button onclick="addImageContextToCustom()">add IMAGE</button>
+            <br />
+            <br />
+            <button onclick="addImageLinkContextToCustom()">add IMAGE_LINK</button>
+            <br />
+            <br />
+            <button onclick="addMenuServiceToCustom()">add Menu Service Items</button>
+            <br />
+            <br />
+            <button onclick="addPlatformToCustom()">Add Platform Items</button>
+            <br />
+            <br />
+            <button onclick="addAllContextAndMenuServiceAndPlatformToCustom()">Add Menu Service, Platform and ALL</button>
+            <br />
+            <br />
+            <button onclick="removeAdditionalContextsFromCustom()">Remove additional contexts</button>
+            <br />
+            <br />
+        </div>
+    </body>
 </html>

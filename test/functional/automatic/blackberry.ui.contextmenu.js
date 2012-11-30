@@ -5,6 +5,18 @@ describe('blackberry.ui.contextmenu', function () {
         expect(blackberry.ui.contextmenu).toBeDefined();
     });
 
+    it('expect addItem to exist', function () {
+        expect(blackberry.ui.contextmenu.addItem).toBeDefined();
+    });
+
+    it('expect removeItem to exist', function () {
+        expect(blackberry.ui.contextmenu.removeItem).toBeDefined();
+    });
+
+    it('expect defineCustomContext to exist', function () {
+        expect(blackberry.ui.contextmenu.defineCustomContext).toBeDefined();
+    });
+
     it('expect context menu contexts to be defined properly', function () {
         expect(blackberry.ui.contextmenu.CONTEXT_ALL).toEqual("ALL");
         expect(blackberry.ui.contextmenu.CONTEXT_IMAGE).toEqual("IMAGE");
