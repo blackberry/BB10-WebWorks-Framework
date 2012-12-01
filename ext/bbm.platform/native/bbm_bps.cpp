@@ -16,6 +16,7 @@
 
 #include "bbm_bps.hpp"
 #include "bbm_js.hpp"
+#include <webworks_utils.hpp>
 #include <bbmsp/bbmsp.h>
 #include <bbmsp/bbmsp_contactlist.h>
 #include <bbmsp/bbmsp_context.h>
@@ -430,13 +431,8 @@ std::string BBMBPS::GetProfile(const BBMField field)
         }
         case BBM_SDK_VERSION:
         {
-            int val;
-            if (bbmsp_profile_get_platform_version(profile, &val) == BBMSP_SUCCESS)
-            {
-                std::stringstream ss;
-                ss << val;
-                value = ss.str();
-            }
+            value = Utils::intToStr(BBMSP_VERSION);
+            break;
         }
     }
     bbmsp_profile_destroy(&profile);
@@ -581,12 +577,7 @@ std::string BBMBPS::GetContact(bbmsp_contact_t *contact, BBMField field)
         }
         case BBM_SDK_VERSION:
         {
-            int val;
-            if (bbmsp_contact_get_platform_version(contact, &val) == BBMSP_SUCCESS) {
-                std::stringstream ss;
-                ss << val;
-                value = ss.str();
-            }
+            value = Utils::intToStr(BBMSP_VERSION);
             break;
         }
     }
