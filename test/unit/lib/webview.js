@@ -145,6 +145,16 @@ describe("webview", function () {
         });
     });
 
+    describe("enableCrossSiteXHR", function () {
+        it("can set enableCrossSiteXHR", function () {
+            webview.create();
+            webview.enableCrossSiteXHR = true;
+            expect(mockedWebview.enableCrossSiteXHR).toBe(true);
+            webview.enableCrossSiteXHR = false;
+            expect(mockedWebview.enableCrossSiteXHR).toBe(false);
+        });
+    });
+
     describe("geometry", function () {
         it("can set geometry", function () {
             webview.create();
