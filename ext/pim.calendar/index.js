@@ -157,21 +157,20 @@ module.exports = {
     getEvent: function (success, fail, args) {
         var findOptions = {},
             results,
-            event = {};
+            event = null;
 
         findOptions.eventId = JSON.parse(decodeURIComponent(args.eventId));
-        findOptions.accountId = JSON.parse(decodeURIComponent(args.folder)).accountId;
+        findOptions.accountId = JSON.parse(decodeURIComponent(args.accountId));
 
         results = pimCalendar.getInstance().getEvent(findOptions);
 
         if (results._success) {
             if (results.event && results.event.id) {
                 event = results.event;
-                success(event);
-            } else {
-                success(null);
             }
         }
+
+        success(event);
     },
 
     getCalendarFolders: function (success, fail, args) {

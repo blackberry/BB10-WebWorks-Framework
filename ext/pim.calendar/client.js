@@ -110,9 +110,13 @@ _self.getDefaultCalendarFolder = function () {
 };
 
 _self.getEvent = function (eventId, folder) {
+    if (!eventId || !folder || !folder.accountId) {
+        return null;
+    }
+
     var obj = window.webworks.execSync(_ID, "getEvent", {
             "eventId": eventId,
-            "folder": folder
+            "accountId": folder.accountId
         });
 
     if (obj) {

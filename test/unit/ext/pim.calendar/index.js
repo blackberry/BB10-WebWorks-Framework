@@ -64,19 +64,27 @@ describe("pim.calendar/index", function () {
     it("find - with correct permission specified", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
-            findOptions = {};
+            findOptions = {
+                limit: 5,
+                detail: CalendarFindOptions.DETAIL_AGENDA
+            },
+            args = {
+                _eventId: encodeURIComponent(JSON.stringify("abc")),
+                options: encodeURIComponent(JSON.stringify(findOptions))
+            };
 
         spyOn(utils, "hasPermission").andReturn(true);
 
-        index.find(successCb, failCb, {
-            _eventId: encodeURIComponent(JSON.stringify("abc")),
-            options: encodeURIComponent(JSON.stringify(findOptions))
+        index.find(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
         });
 
+        args["options"]["sourceTimezone"] = window.qnx.webplatform.device.timezone;
+
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("find");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "find " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -129,10 +137,15 @@ describe("pim.calendar/index", function () {
 
         index.save(successCb, failCb, args);
 
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
+        });
+
+        args["sourceTimezone"] = window.qnx.webplatform.device.timezone;
+        args["targetTimezone"] = "";
+
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("save");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "save " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -173,21 +186,26 @@ describe("pim.calendar/index", function () {
     });
     it("remove - with correct permission specified", function () {
         var successCb = jasmine.createSpy(),
-            failCb = jasmine.createSpy();
+            failCb = jasmine.createSpy(),
+            args = {
+                accountId : encodeURIComponent(JSON.stringify(1)),
+                calEventId : encodeURIComponent(JSON.stringify(2)),
+                _eventId : encodeURIComponent(JSON.stringify("abc")),
+                removeAll : encodeURIComponent(JSON.stringify(true))
+            };
 
         spyOn(utils, "hasPermission").andReturn(true);
 
-        index.remove(successCb, failCb, {
-            accountId : encodeURIComponent(JSON.stringify(1)),
-            calEventId : encodeURIComponent(JSON.stringify(2)),
-            _eventId : encodeURIComponent(JSON.stringify("abc")),
-            removeAll : encodeURIComponent(JSON.stringify(true))
+        index.remove(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
         });
 
+        args["sourceTimezone"] = window.qnx.webplatform.device.timezone;
+
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("remove");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "remove " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -224,9 +242,7 @@ describe("pim.calendar/index", function () {
         index.getDefaultCalendarAccount(successCb, failCb, args);
 
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("getDefaultCalendarAccount");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "getDefaultCalendarAccount");
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -239,9 +255,7 @@ describe("pim.calendar/index", function () {
         index.getCalendarAccounts(successCb, failCb, args);
 
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("getCalendarAccounts");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "getCalendarAccounts");
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -249,17 +263,19 @@ describe("pim.calendar/index", function () {
     it("getEvent", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
-            folder = {accountId: "abc"};
+            args = {
+                eventId: encodeURIComponent(JSON.stringify("123")),
+                accountId: encodeURIComponent(JSON.stringify("1"))
+            };
  
-        index.getEvent(successCb, failCb, { 
-                eventId : encodeURIComponent(JSON.stringify("abc")),
-                folder: encodeURIComponent(JSON.stringify(folder))
-            } 
-        );
+        index.getEvent(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
+        });
+
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("getEvent");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "getEvent " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -272,9 +288,7 @@ describe("pim.calendar/index", function () {
  
         index.getDefaultCalendarFolder(successCb, failCb, {});
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("getDefaultCalendarFolder");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "getDefaultCalendarFolder");
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
