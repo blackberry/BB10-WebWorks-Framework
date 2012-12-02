@@ -24,10 +24,10 @@ module.exports = {
     invokeMediaPlayer: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (data) {
-                _event.trigger("invokeMediaPlayer.doneEventId", data);
+                _event.trigger("invokeMediaPlayer.eventId", "done", data);
             },
             cancel = function (reason) {
-                _event.trigger("invokeMediaPlayer.cancelEventId", reason);
+                _event.trigger("invokeMediaPlayer.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeMediaPlayer.invokeEventId", error);
@@ -40,10 +40,10 @@ module.exports = {
     invokeCamera: function (success, fail, args) {
         var mode = JSON.parse(decodeURIComponent(args["mode"])),
             done = function (path) {
-                _event.trigger("invokeCamera.doneEventId", path);
+                _event.trigger("invokeCamera.eventId", "done", path);
             },
             cancel = function (reason) {
-                _event.trigger("invokeCamera.cancelEventId", reason);
+                _event.trigger("invokeCamera.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeCamera.invokeEventId", error);
@@ -56,10 +56,10 @@ module.exports = {
     invokeFilePicker: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (path) {
-                _event.trigger("invokeFilePicker.doneEventId", path);
+                _event.trigger("invokeFilePicker.eventId", "done", path);
             },
             cancel = function (reason) {
-                _event.trigger("invokeFilePicker.cancelEventId", reason);
+                _event.trigger("invokeFilePicker.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeFilePicker.invokeEventId", error);
@@ -72,10 +72,10 @@ module.exports = {
     invokeIcsViewer: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (path) {
-                _event.trigger("invokeIcsViewer.doneEventId", path);
+                _event.trigger("invokeIcsViewer.eventId", "done", path);
             },
             cancel = function (reason) {
-                _event.trigger("invokeIcsViewer.cancelEventId", reason);
+                _event.trigger("invokeIcsViewer.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeIcsViewer.invokeEventId", error);
@@ -89,10 +89,10 @@ module.exports = {
     invokeCalendarPicker: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (file) {
-                _event.trigger("invokeCalendarPicker.doneEventId", file);
+                _event.trigger("invokeCalendarPicker.eventId", "done", file);
             },
             cancel = function (reason) {
-                _event.trigger("invokeCalendarPicker.cancelEventId", reason);
+                _event.trigger("invokeCalendarPicker.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeCalendarPicker.invokeEventId", error);
@@ -105,10 +105,10 @@ module.exports = {
     invokeCalendarComposer: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (file) {
-                _event.trigger("invokeCalendarComposer.doneEventId", file);
+                _event.trigger("invokeCalendarComposer.eventId", "done", file);
             },
             cancel = function (reason) {
-                _event.trigger("invokeCalendarComposer.cancelEventId", reason);
+                _event.trigger("invokeCalendarComposer.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeCalendarComposer.invokeEventId", error);
@@ -121,10 +121,10 @@ module.exports = {
     invokeEmailComposer: function (success, fail, args) {
         var options = JSON.parse(decodeURIComponent(args["options"])),
             done = function (file) {
-                _event.trigger("invokeEmailComposer.doneEventId", file);
+                _event.trigger("invokeEmailComposer.eventId", "done", file);
             },
             cancel = function (reason) {
-                _event.trigger("invokeEmailComposer.cancelEventId", reason);
+                _event.trigger("invokeEmailComposer.eventId", "cancel", reason);
             },
             invokeCallback = function (error) {
                 _event.trigger("invokeEmailComposer.invokeEventId", error);
@@ -142,11 +142,11 @@ module.exports = {
             onSuccess;
 
         onError = function (error) {
-            _event.trigger("invokeTargetPicker.errorEventId", error);
+            _event.trigger("invokeTargetPicker.eventId", "error", error);
         };
 
         onSuccess = function (result) {
-            _event.trigger("invokeTargetPicker.selectedEventId", result);
+            _event.trigger("invokeTargetPicker.eventId", "success", result);
         };
 
         // Pulled from the query code, we should probably keep a consistent API

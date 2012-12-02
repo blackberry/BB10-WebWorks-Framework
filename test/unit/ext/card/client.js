@@ -18,17 +18,22 @@ var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/card",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
+    events,
     mockedWebworks;
 
 describe("invoke.card client", function () {
     beforeEach(function () {
+        events = {};
         mockedWebworks = {
             execSync: jasmine.createSpy("webworks.execSync"),
             execAsync: jasmine.createSpy("webworks.execAsync"),
             defineReadOnlyField: jasmine.createSpy(),
             event: {
-                isOn: jasmine.createSpy("webworks.event.isOn"),
-                once: jasmine.createSpy("webworks.event.once")
+                isOn: jasmine.createSpy("webworks.event.isOn"), 
+                once: jasmine.createSpy("webworks.event.once").andCallFake(function (id, key, func) {
+                    events[key] = func;
+                }),
+                remove: jasmine.createSpy("webworks.event.remove")
             }
         };
 
@@ -42,6 +47,7 @@ describe("invoke.card client", function () {
         mockedWebworks = undefined;
         delete GLOBAL.window;
         client = null;
+        events = null;
         delete require.cache[require.resolve(_apiDir + "/client")];
     });
 
@@ -65,24 +71,33 @@ describe("invoke.card client", function () {
         });
         it("should register all the events", function () {
             client.invokeCamera("photo", done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCamera.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCamera.invokeEventId", jasmine.any(Function));
+            mockedWebworks.event.once.reset();
 
             client.invokeCamera("video", done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCamera.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCamera.invokeEventId", jasmine.any(Function));
+            mockedWebworks.event.once.reset();
 
             client.invokeCamera("full", done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCamera.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCamera.invokeEventId", jasmine.any(Function));
         });
         it("should define photo|video|full", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "CAMERA_MODE_PHOTO", "photo");
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "CAMERA_MODE_VIDEO", "video");
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "CAMERA_MODE_FULL", "full");
+        });
+        it("should remove event listener on invoke error", function () {
+            client.invokeCamera("error", done, cancel, invokeCallback);
+            events["invokeCamera.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeCamera.eventId", jasmine.any(Function));
+        });
+        it("should not remove event listener on invoke success", function () {
+            client.invokeCamera("error", done, cancel, invokeCallback);
+            events["invokeCamera.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
         });
     });
 
@@ -119,27 +134,26 @@ describe("invoke.card client", function () {
         it("should register all the events", function () {
             details = { mode: "Picker" };
             client.invokeFilePicker(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.invokeEventId", jasmine.any(Function));
+            mockedWebworks.event.once.reset();
 
             details = { mode: "PickerMultiple" };
             client.invokeFilePicker(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.invokeEventId", jasmine.any(Function));
+            mockedWebworks.event.once.reset();
 
             details = { mode: "Saver" };
             client.invokeFilePicker(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.invokeEventId", jasmine.any(Function));
+            mockedWebworks.event.once.reset();
 
             details = { mode: "SaverMultiple" };
             client.invokeFilePicker(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeFilePicker.invokeEventId", jasmine.any(Function));
         });
         it("should define all file picker constants", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILEPICKER_MODE_PICKER", "Picker");
@@ -165,6 +179,16 @@ describe("invoke.card client", function () {
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILEPICKER_TYPE_VIDEO", 'video');
             expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(client, "FILEPICKER_TYPE_OTHER", 'other');
         });
+        it("should remove event listener on invoke error", function () {
+            client.invokeFilePicker({}, done, cancel, invokeCallback);
+            events["invokeFilePicker.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeFilePicker.eventId", jasmine.any(Function));
+        });
+        it("should not remove event listener on invoke success", function () {
+            client.invokeFilePicker({}, done, cancel, invokeCallback);
+            events["invokeFilePicker.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
+        });
     });
 
     describe("invoke target picker", function () {
@@ -183,12 +207,49 @@ describe("invoke.card client", function () {
                 title = 'Test';
 
             client.invokeTargetPicker(request, title, onSuccess, onError);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), onSuccess);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), onError);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeTargetPicker.eventId", jasmine.any(Function));
         });
 
     });
 
+    describe("invoke calendarPicker", function () {
+        var details,
+            done,
+            cancel,
+            invokeCallback;
+
+        beforeEach(function () {
+            details = {
+                filepath : "/path/to/save/the/file/to.vcs"
+            };
+            done = jasmine.createSpy("done");
+            cancel = jasmine.createSpy("cancel");
+            invokeCallback = jasmine.createSpy("invokeCallback");
+        });
+
+        it("should call execAsync with the correct options", function () {
+            client.invokeCalendarPicker(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeCalendarPicker", {options: details});
+        });
+
+        it("should register all necessary events", function () {
+            client.invokeCalendarPicker(details, done, cancel, invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCalendarPicker.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCalendarPicker.invokeEventId", jasmine.any(Function));
+        });
+
+        it("should remove event listener on invoke error", function () {
+            client.invokeCalendarPicker("error", done, cancel, invokeCallback);
+            events["invokeCalendarPicker.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeCalendarPicker.eventId", jasmine.any(Function));
+        });
+
+        it("should not remove event listener on invoke success", function () {
+            client.invokeCalendarPicker("error", done, cancel, invokeCallback);
+            events["invokeCalendarPicker.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
+        });
+    });
 
     describe("invoke Media Player", function () {
         var details,
@@ -214,9 +275,18 @@ describe("invoke.card client", function () {
 
         it("should register all the events", function () {
             client.invokeMediaPlayer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeMediaPlayer.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeMediaPlayer.invokeEventId", jasmine.any(Function));
+        });
+        it("should remove event listener on invoke error", function () {
+            client.invokeMediaPlayer("error", done, cancel, invokeCallback);
+            events["invokeMediaPlayer.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeMediaPlayer.eventId", jasmine.any(Function));
+        });
+        it("should not remove event listener on invoke success", function () {
+            client.invokeMediaPlayer("error", done, cancel, invokeCallback);
+            events["invokeMediaPlayer.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
         });
     });
 
@@ -247,9 +317,20 @@ describe("invoke.card client", function () {
 
         it("should register all necessary events", function () {
             client.invokeCalendarComposer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCalendarComposer.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeCalendarComposer.invokeEventId", jasmine.any(Function));
+        });
+
+        it("should remove event listener on invoke error", function () {
+            client.invokeCalendarComposer("error", done, cancel, invokeCallback);
+            events["invokeCalendarComposer.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeCalendarComposer.eventId", jasmine.any(Function));
+        });
+
+        it("should not remove event listener on invoke success", function () {
+            client.invokeCalendarComposer("error", done, cancel, invokeCallback);
+            events["invokeCalendarComposer.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
         });
     });
 
@@ -279,104 +360,20 @@ describe("invoke.card client", function () {
 
         it("should register all necessary events", function () {
             client.invokeEmailComposer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
-        });
-    });
-
-    describe("invoke Media Player", function () {
-        var details,
-            done,
-            cancel,
-            invokeCallback;
-
-        beforeEach(function () {
-            details = {
-                contentTitle: "Test Title",
-                contentUri: "file:///accounts/1000/shared/camera/VID_00000001.mp4",
-                imageUri: "file:///accounts/1000/shared/camera/AUD_00000001.mp4"
-            };
-            done = jasmine.createSpy("done");
-            cancel = jasmine.createSpy("cancel");
-            invokeCallback = jasmine.createSpy("invokeCallback");
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeEmailComposer.eventId", jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, "invokeEmailComposer.invokeEventId", jasmine.any(Function));
         });
 
-        it("should call execAsync with correct details passed", function () {
-            client.invokeMediaPlayer(details);
-            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeMediaPlayer", {options: details});
+        it("should remove event listener on invoke error", function () {
+            client.invokeEmailComposer("error", done, cancel, invokeCallback);
+            events["invokeEmailComposer.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeEmailComposer.eventId", jasmine.any(Function));
         });
 
-        it("should register all the events", function () {
-            client.invokeMediaPlayer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
-        });
-    });
-
-    describe("invoke calendarComposer", function () {
-        var details,
-            done,
-            cancel,
-            invokeCallback;
-
-        beforeEach(function () {
-            details = {
-                subject: "Some event",
-                body: "something about this event",
-                location: "here and there",
-                startTime: "Wed Jun 21 11:00:01 3412",
-                endTime: "Mon Jun 22 11:00:01 3423",
-                attendees: ["a@a.com", "b@b.com"]
-            };
-            done = jasmine.createSpy("done");
-            cancel = jasmine.createSpy("cancel");
-            invokeCallback = jasmine.createSpy("invokeCallback");
-        });
-
-        it("should call execAsync with the correct options", function () {
-            client.invokeCalendarComposer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeCalendarComposer", {options: details});
-        });
-
-        it("should register all necessary events", function () {
-            client.invokeCalendarComposer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
-        });
-    });
-
-    describe("invoke emailComposer", function () {
-        var details,
-            done,
-            cancel,
-            invokeCallback;
-
-        beforeEach(function () {
-            details = {
-                to: "mission-control@nasa.gov",
-                cc: "obama@whitehouse.org",
-                subject: "[STATUS] Manned Mission to Mars",
-                body: "It worked...",
-                attachment : ["/pictures/mission/astronauts-playing-hockey-on-mars.png"]
-            };
-            done = jasmine.createSpy("done");
-            cancel = jasmine.createSpy("cancel");
-            invokeCallback = jasmine.createSpy("invokeCallback");
-        });
-
-        it("should call execAsync with the correct options", function () {
-            client.invokeEmailComposer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeEmailComposer", {options: details});
-        });
-
-        it("should register all necessary events", function () {
-            client.invokeEmailComposer(details, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+        it("should not remove event listener on invoke success", function () {
+            client.invokeEmailComposer("error", done, cancel, invokeCallback);
+            events["invokeEmailComposer.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
         });
     });
 
@@ -400,9 +397,19 @@ describe("invoke.card client", function () {
 
         it("should register all the events", function () {
             client.invokeIcsViewer({uri: "file://path", accountId: 1}, done, cancel, invokeCallback);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), done);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), cancel);
-            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), invokeCallback);
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), jasmine.any(Function));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), jasmine.any(Function));
+        });
+        it("should remove event listener on invoke error", function () {
+            client.invokeIcsViewer("error", done, cancel, invokeCallback);
+            events["invokeIcsViewer.invokeEventId"]("error");
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, "invokeIcsViewer.eventId", jasmine.any(Function));
+        });
+
+        it("should not remove event listener on invoke success", function () {
+            client.invokeIcsViewer("error", done, cancel, invokeCallback);
+            events["invokeIcsViewer.invokeEventId"]("");
+            expect(mockedWebworks.event.remove).not.toHaveBeenCalled();
         });
     });
 
