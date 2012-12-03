@@ -132,10 +132,10 @@
         #See the License for the specific language governing permissions and limitations under the License.
     </license>
 
-    <rim:invoke-target id="net.rim.webworks.SmokeTest">
+    <rim:invoke-target id="com.webworks.test.functional.invoke.target">
         <type>APPLICATION</type>
         <filter>
-            <action>bb.action.OPEN</action>
+            <action>bb.action.WWTEST</action>
             <mime-type>text/plain</mime-type>
         </filter>
     </rim:invoke-target>
