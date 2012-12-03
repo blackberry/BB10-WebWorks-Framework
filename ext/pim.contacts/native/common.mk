@@ -15,10 +15,9 @@ SRCS+=pim_contacts_qt.cpp \
 ifeq ($(UNITTEST),yes)
 NAME=test
 SRCS+=test_main.cpp
-LIBS+=img
 USEFILE=
 endif
 
 include $(MKFILES_ROOT)/qtargets.mk
 
-LIBS+=bbpim bbcascadespickers QtCore
+LIBS+=bbpim bbcascadespickers QtCore img
