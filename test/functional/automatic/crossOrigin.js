@@ -141,6 +141,48 @@ describe("White listing", function () {
         return script;
     }
 
+    function testLocalAccessFails(domain, path, messageToSend) {
+        testLocalAccess(domain, path, true, messageToSend);
+    }
+
+    function testLocalAccess(domain, path, shouldFail, message) {
+        var origin = 'http://' + domain,
+            url = origin + (path || '/a/localTest.html'),
+            iframe,
+            reply = null,
+            receiveMessage = function (e) {
+                if (e.data === 'loaded') {
+                    var messageToSend = message || 'ping';
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage(messageToSend, origin);
+                    } else {
+                        window.removeEventListener('message', this);
+                    }
+                } else {
+                    reply = e.data;
+                }
+            };
+
+        runs(function () {
+            window.addEventListener('message', receiveMessage, false);
+            iframe = testHtmlElementLoads('iframe', {src: url});
+        });
+        waitsFor(function () {
+            return reply !== null;
+        }, "the web api to responds", 10000);
+        runs(function () {
+            if (shouldFail) {
+                expect(reply).toBe("FAIL");
+            } else {
+                expect(reply).toBe("SUCCESS");
+            }
+
+            window.removeEventListener('message', receiveMessage);
+        });
+
+        return iframe;
+    }
+
     function testExternalWebApi(domain, path, shouldFail, message) {
         var origin = 'http://' + domain,
             url = origin + (path || '/a/webworks.html'),
@@ -501,9 +543,10 @@ describe("White listing", function () {
                 testExternalJsRuns(whitelistedSubdomain);
             });
 
-            it('can externally access the web api', function () {
-                testExternalWebApiRuns(whitelistedSubdomain);
+            it('cannot externally access the web apis (because it cannot access local) when not explicitly whitelisted', function () {
+                testLocalAccessFails(whitelistedSubdomain);
             });
+
         });
 
         // Step 2: Validate that website that has redirection URLs can be accessed, if all
