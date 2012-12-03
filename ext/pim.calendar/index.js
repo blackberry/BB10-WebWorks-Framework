@@ -147,14 +147,29 @@ module.exports = {
     },
 
     getDefaultCalendarAccount: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_calendars")) {
+            success(null);
+            return;
+        }
+
         success(pimCalendar.getInstance().getDefaultCalendarAccount());
     },
 
     getCalendarAccounts: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_calendars")) {
+            success(null);
+            return;
+        }
+
         success(pimCalendar.getInstance().getCalendarAccounts());
     },
 
     getEvent: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_calendars")) {
+            success(null);
+            return;
+        }
+
         var findOptions = {},
             results,
             event = null;
