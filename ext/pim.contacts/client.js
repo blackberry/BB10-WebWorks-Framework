@@ -16,6 +16,7 @@
  
 var _self = {},
     _ID = require("./manifest.json").namespace,
+    contactConsts = require("./contactConsts"),
     Contact = require("./Contact"),
     ContactName = require("./ContactName"),
     ContactOrganization = require("./ContactOrganization"),
@@ -26,8 +27,11 @@ var _self = {},
     ContactFindOptions = require("./ContactFindOptions"),
     ContactNews = require("./ContactNews"),
     ContactActivity = require("./ContactActivity"),
+    ContactPickerOptions = require("./ContactPickerOptions"),
     contactUtils = require("./contactUtils"),
-    utils = require("./../../lib/utils");
+    utils = require("./../../lib/utils"),
+    _contactInvokeEventId = "invokeContactPicker.invokeEventId",
+    _contactPickerEventId = "invokeContactPicker.eventId";
 
 function invokeCallback(callback, args) {
     if (callback && typeof callback === "function") {
@@ -118,6 +122,67 @@ _self.create = function (properties) {
     return new Contact(args);
 };
 
+_self.invokeContactPicker = function (options, onDone, onCancel, onInvoke) {
+   /*
+    * options = {
+    *     mode: Single or Multiple or Attribute, // if mode=Attribute, then must specify kind filters
+    *     title: "some string",
+    *     confirmButtonLabel: "some string",
+    *     fields: ["phoneNumbers", "emails", "urls"]
+    * }
+    */
+    var doneCancelCallback = function (data, reason) {
+            switch (reason) {
+            case "cancel":
+                if (onCancel && typeof(onCancel) === "function") {
+                    onCancel();
+                }
+
+                break;
+            case "done":
+                if (onDone && typeof(onDone) === "function") {
+                    onDone(data);
+                }
+
+                break;
+            }
+        },
+        invokeCallback = function (args) {
+            var result = JSON.parse(unescape(args.result)),
+                error;
+
+            if (!result._success) {
+                error = new ContactError(result.code);
+                window.webworks.event.remove(_ID, _contactPickerEventId, doneCancelCallback);
+            }
+
+            if (onInvoke && typeof(onInvoke) === "function") {
+                onInvoke(error);
+            }
+        };
+
+    if (!options) {
+        options = new ContactPickerOptions();
+    } else {
+        if (!contactUtils.validateContactsPickerOptions(options)) {
+            if (onInvoke && typeof(onInvoke) === "function") {
+                onInvoke(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            }
+            return;
+        }
+    }
+
+    if (!window.webworks.event.isOn(_contactPickerEventId)) {
+        window.webworks.event.once(_ID, _contactPickerEventId, doneCancelCallback);
+    }
+
+    if (!window.webworks.event.isOn(_contactInvokeEventId)) {
+        window.webworks.event.once(_ID, _contactInvokeEventId, invokeCallback);
+    }
+
+    return window.webworks.execAsync(_ID, "invokeContactPicker", {options: options || ""});
+};
+
 _self.Contact = Contact;
 _self.ContactField = ContactField;
 _self.ContactAddress = ContactAddress;
@@ -128,5 +193,6 @@ _self.ContactError = ContactError;
 _self.ContactFindOptions = ContactFindOptions;
 _self.ContactNews = ContactNews;
 _self.ContactActivity = ContactActivity;
+_self.ContactPickerOptions = ContactPickerOptions;
 
 module.exports = _self;

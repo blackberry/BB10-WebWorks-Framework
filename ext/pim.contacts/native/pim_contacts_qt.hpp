@@ -78,6 +78,7 @@ public:
     Json::Value EditContact(bbpim::Contact& contact, const Json::Value& attributeObj);
     Json::Value CloneContact(bbpim::Contact& contact, const Json::Value& attributeObj);
     Json::Value GetContact(const Json::Value& argsObj);
+    static Json::Value InvokePicker(const Json::Value& args);
 
 private:
     // Helper functions for Find

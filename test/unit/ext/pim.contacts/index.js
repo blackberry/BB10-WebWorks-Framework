@@ -21,6 +21,7 @@ var _apiDir = __dirname + "./../../../../ext/pim.contacts/",
     Contact = require(_apiDir + "Contact"),
     ContactName = require(_apiDir + "ContactName"),
     ContactError = require(_apiDir + "ContactError"),
+    ContactPickerOptions = require(_apiDir + "ContactPickerOptions"),
     index,
     mockJnextObjId = 123;
 
@@ -34,9 +35,21 @@ describe("pim.contacts index", function () {
                 return mockJnextObjId;
             }),
             invoke: jasmine.createSpy("JNEXT.invoke").andCallFake(function () {
-                return JSON.stringify({_success: "astrign"});
+                return JSON.stringify({_success: true, contact: { id: "123" }});
             }),
             registerEvents: jasmine.createSpy("JNEXT.registerEvent")
+        };
+        GLOBAL.window = {
+            qnx: {
+                webplatform: {
+                    getApplication: jasmine.createSpy().andReturn({
+                        invocation: {
+                            addEventListener: jasmine.createSpy(),
+                            removeEventListener: jasmine.createSpy()
+                        }
+                    })
+                }
+            }
         };
         spyOn(events, "trigger");
         index = require(_apiDir + "index");
@@ -44,6 +57,7 @@ describe("pim.contacts index", function () {
 
     afterEach(function () {
         delete GLOBAL.JNEXT;
+        delete GLOBAL.window;
         index = null;
     });
 
@@ -62,20 +76,23 @@ describe("pim.contacts index", function () {
                     fieldValue: "John"
                 }],
                 limit: 5
-            };
+            },
+            args = {};
 
         spyOn(utils, "hasPermission").andReturn(true);
 
-        index.find(successCb, failCb, {
-            _eventId: encodeURIComponent(JSON.stringify("abc")),
-            fields: encodeURIComponent(JSON.stringify(["name"])),
-            options: encodeURIComponent(JSON.stringify(findOptions))
+        args._eventId = encodeURIComponent(JSON.stringify("abc"));
+        args.fields = encodeURIComponent(JSON.stringify(["name"]));
+        args.options = encodeURIComponent(JSON.stringify(findOptions));
+
+        index.find(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
         });
 
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("find");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "find " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -132,10 +149,12 @@ describe("pim.contacts index", function () {
 
         index.save(successCb, failCb, args);
 
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
+        });
+
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("save");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "save " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -175,19 +194,22 @@ describe("pim.contacts index", function () {
 
     it("remove - with correct permission specified", function () {
         var successCb = jasmine.createSpy(),
-            failCb = jasmine.createSpy();
+            failCb = jasmine.createSpy(),
+            args = {};
 
         spyOn(utils, "hasPermission").andReturn(true);
 
-        index.remove(successCb, failCb, {
-            contactId: encodeURIComponent(JSON.stringify(1)),
-            _eventId: encodeURIComponent(JSON.stringify("abc"))
+        args.contactId = encodeURIComponent(JSON.stringify(1));
+        args._eventId = encodeURIComponent(JSON.stringify("abc"));
+
+        index.remove(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
         });
 
         expect(events.trigger).not.toHaveBeenCalled();
-        expect(JNEXT.invoke).toHaveBeenCalled();
-        expect(JNEXT.invoke.mostRecentCall.args[0]).toBe(mockJnextObjId);
-        expect(JNEXT.invoke.mostRecentCall.args[1]).toContain("remove");
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "remove " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
@@ -214,12 +236,31 @@ describe("pim.contacts index", function () {
         expect(failCb).not.toHaveBeenCalled();
     });
 
-    it("getContact", function () {
+    it("getContact - without correct permission specified", function () {
         var successCb = jasmine.createSpy(),
             failCb = jasmine.createSpy(),
             args = {
                 contactId: encodeURIComponent(JSON.stringify("123"))
             };
+
+        spyOn(utils, "hasPermission").andReturn(false);
+
+        index.getContact(successCb, failCb, args);
+
+        expect(events.trigger).not.toHaveBeenCalled();
+        expect(JNEXT.invoke).not.toHaveBeenCalled();
+        expect(successCb).toHaveBeenCalledWith(null);
+        expect(failCb).not.toHaveBeenCalled();
+    });
+
+    it("getContact - with correct permission specified", function () {
+        var successCb = jasmine.createSpy(),
+            failCb = jasmine.createSpy(),
+            args = {
+                contactId: encodeURIComponent(JSON.stringify("123"))
+            };
+
+        spyOn(utils, "hasPermission").andReturn(true);
 
         index.getContact(successCb, failCb, args);
 
@@ -229,8 +270,45 @@ describe("pim.contacts index", function () {
 
         expect(events.trigger).not.toHaveBeenCalled();
         expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "getContact " + JSON.stringify(args));
+        expect(successCb).toHaveBeenCalledWith({
+            id: "123"
+        });
+        expect(failCb).not.toHaveBeenCalled();
+    });
+
+    it("invokeContactPicker - with correct permission specified", function () {
+        var successCb = jasmine.createSpy(),
+            failCb = jasmine.createSpy(),
+            args = {};
+
+        spyOn(utils, "hasPermission").andReturn(true);
+
+        args.options = encodeURIComponent(JSON.stringify({ mode: ContactPickerOptions.MODE_SINGLE }));
+
+        index.invokeContactPicker(successCb, failCb, args);
+
+        Object.getOwnPropertyNames(args).forEach(function (key) {
+            args[key] = JSON.parse(decodeURIComponent(args[key]));
+        });
+
+        expect(window.qnx.webplatform.getApplication().invocation.addEventListener).toHaveBeenCalledWith("childCardClosed", jasmine.any(Function));
+        expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "invokePicker " + JSON.stringify(args.options));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
 
+    it("invokeContactPicker - without correct permission specified", function () {
+        var successCb = jasmine.createSpy(),
+            failCb = jasmine.createSpy();
+
+        spyOn(utils, "hasPermission").andReturn(false);
+
+        index.invokeContactPicker(successCb, failCb, {
+            options: encodeURIComponent(JSON.stringify({ mode: ContactPickerOptions.MODE_SINGLE }))
+        });
+
+        expect(JNEXT.invoke).not.toHaveBeenCalled();
+        expect(successCb).toHaveBeenCalled();
+        expect(failCb).not.toHaveBeenCalled();
+    });
 });

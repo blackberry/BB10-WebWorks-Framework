@@ -16,6 +16,8 @@
 
 #include <json/value.h>
 #include <stdio.h>
+#include <bb/cascades/pickers/ContactPicker>
+#include <bb/cascades/pickers/ContactSelectionMode>
 #include <QSet>
 #include <QMap>
 #include <QtAlgorithms>
@@ -298,6 +300,77 @@ Json::Value PimContactsQt::GetContact(const Json::Value& args)
     }
 
     return returnObj;
+}
+
+Json::Value PimContactsQt::InvokePicker(const Json::Value& args)
+{
+    bb::cascades::pickers::ContactPicker picker;
+    bb::cascades::pickers::ContactSelectionMode::Type mode;
+    QSet<bbpim::AttributeKind::Type> filters;
+    Json::Value result;
+
+    if (args.isMember("mode")) {
+        switch (args["mode"].asInt()) {
+            case bb::cascades::pickers::ContactSelectionMode::Single:
+                mode = bb::cascades::pickers::ContactSelectionMode::Single;
+                break;
+            case bb::cascades::pickers::ContactSelectionMode::Multiple:
+                mode = bb::cascades::pickers::ContactSelectionMode::Multiple;
+                break;
+            case bb::cascades::pickers::ContactSelectionMode::Attribute:
+                mode = bb::cascades::pickers::ContactSelectionMode::Attribute;
+                break;
+            default:
+                result["_success"] = false;
+                result["code"] = INVALID_ARGUMENT_ERROR;
+                return result;
+        }
+
+        picker.setMode(mode);
+
+        if (args.isMember("fields") && !args["fields"].empty()) {
+            std::string fieldName;
+            StringToKindMap::iterator found;
+
+            if (_attributeKindMap.empty()) {
+                createAttributeKindMap();
+            }
+
+            for (unsigned int i = 0; i < args["fields"].size(); i++) {
+                fieldName = args["fields"][i].asString();
+
+                if ((found = _attributeKindMap.find(fieldName)) != _attributeKindMap.end()) {
+                    filters << found->second;
+                }
+            }
+
+            picker.setKindFilters(filters);
+        }
+
+        // cannot open picker if mode = attribute unless filters are specified
+        if (mode == bb::cascades::pickers::ContactSelectionMode::Attribute && filters.empty()) {
+            result["_success"] = false;
+            result["code"] = INVALID_ARGUMENT_ERROR;
+            return result;
+        }
+
+        if (args.isMember("title") && args["title"].isString()) {
+            picker.setTitle(QString(args["title"].asCString()));
+        }
+
+        if (args.isMember("confirmButtonLabel") && args["confirmButtonLabel"].isString()) {
+            picker.setConfirmButtonLabel(QString(args["confirmButtonLabel"].asCString()));
+        }
+
+        picker.open();
+
+        result["_success"] = true;
+        return result;
+    }
+
+    result["_success"] = false;
+    result["code"] = INVALID_ARGUMENT_ERROR;
+    return result;
 }
 
 /****************************************************************
@@ -1466,6 +1539,7 @@ void PimContactsQt::createSubKindAttributeMap() {
     _subKindAttributeMap[bbpim::AttributeSubKind::InstantMessagingYahooMessengerJapan] = "YahooMessegerJapan";
     _subKindAttributeMap[bbpim::AttributeSubKind::VideoChatBbPlaybook] = "BbPlaybook";
     _subKindAttributeMap[bbpim::AttributeSubKind::SoundRingtone] = "ringtone";
+    _subKindAttributeMap[bbpim::AttributeSubKind::Personal] = "personal";
 }
 
 } // namespace webworks

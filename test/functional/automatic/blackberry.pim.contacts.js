@@ -23,6 +23,7 @@ var contacts,
     ContactError,
     ContactPhoto,
     ContactActivity,
+    ContactPickerOptions,
     clonedContact,
     foundContact;
 
@@ -76,6 +77,7 @@ beforeEach(function () {
     ContactError = contacts.ContactError;
     ContactPhoto = contacts.ContactPhoto;
     ContactActivity = contacts.ContactActivity;
+    ContactPickerOptions = contacts.ContactPickerOptions;
 });
 
 describe("blackberry.pim.contacts", function () {
@@ -92,6 +94,7 @@ describe("blackberry.pim.contacts", function () {
             expect(blackberry.pim.contacts.ContactPhoto).toBeDefined();
             expect(blackberry.pim.contacts.ContactError).toBeDefined();
             expect(blackberry.pim.contacts.ContactFindOptions).toBeDefined();
+            expect(blackberry.pim.contacts.ContactPickerOptions).toBeDefined();
         });
 
         it('blackberry.pim.contacts.ContactFindOptions constants should exist', function () {
@@ -180,6 +183,18 @@ describe("blackberry.pim.contacts", function () {
         it('blackberry.pim.contacts.ContactActivity constants should be read-only', function () {
             testReadOnly(ContactActivity, "INCOMING");
             testReadOnly(ContactActivity, "OUTGOING");
+        });
+
+        it('blackberry.pim.contacts.ContactPickerOptions constants should exist', function () {
+            expect(ContactPickerOptions.MODE_SINGLE).toBeDefined();
+            expect(ContactPickerOptions.MODE_MULTIPLE).toBeDefined();
+            expect(ContactPickerOptions.MODE_ATTRIBUTE).toBeDefined();
+        });
+
+        it('blackberry.pim.contacts.ContactPickerOptions constants should be read-only', function () {
+            testReadOnly(ContactPickerOptions.MODE_SINGLE, 0);
+            testReadOnly(ContactPickerOptions.MODE_MULTIPLE, 1);
+            testReadOnly(ContactPickerOptions.MODE_ATTRIBUTE, 2);
         });
     });
 
@@ -876,7 +891,46 @@ describe("blackberry.pim.contacts", function () {
                 expect(contactFound.name).toEqual(contactToFind.name);
                 expect(contactFound.phoneNumbers).toEqual([workPhone]);
                 expect(contactFound.emails).toEqual([workEmail]);
-            
+            });
+        });
+    });
+
+    describe("blackberry.pim.contacts.invokeContactPicker()", function () {
+        it("open contact picker then close it", function () {
+            var delay = 20000,
+                reason,
+                callback,
+                called = false,
+                onDone = jasmine.createSpy("onDone"),
+                onCancel = jasmine.createSpy("onCancel"),
+                onInvoke = jasmine.createSpy("onInvoke").andCallFake(function () {
+                    called = true;
+                }),
+                onCardClosed = jasmine.createSpy("onCardClosed").andCallFake(function (request) {
+                    blackberry.event.removeEventListener("onChildCardClosed", callback);
+                    reason = request.reason;
+                    called = true;
+                });
+
+            contacts.invokeContactPicker({ mode: ContactPickerOptions.MODE_SINGLE }, onDone, onCancel, onInvoke);
+
+            waits(delay / 4);
+
+            runs(function () {
+                expect(onInvoke).toHaveBeenCalled();
+
+                called = false;
+                blackberry.event.addEventListener("onChildCardClosed", onCardClosed);
+                blackberry.invoke.closeChildCard();
+
+                waitsFor(function () {
+                    return called;
+                }, delay);
+
+                runs(function () {
+                    // Currently the response that comes onChildCardClosed is not informative or just emtpy.
+                    expect(reason).toBe("closed");
+                });
             });
         });
     });

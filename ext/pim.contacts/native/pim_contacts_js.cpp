@@ -49,9 +49,8 @@ std::string PimContacts::InvokeMethod(const std::string& command)
     string jsonObject = command.substr(index + 1, command.length());
 
     // Parse the JSON
-    Json::Reader reader;
     Json::Value *obj = new Json::Value;
-    bool parse = reader.parse(jsonObject, *obj);
+    bool parse = Json::Reader().parse(jsonObject, *obj);
 
     if (!parse) {
         fprintf(stderr, "%s", "error parsing\n");
@@ -70,6 +69,12 @@ std::string PimContacts::InvokeMethod(const std::string& command)
         std::string result = Json::FastWriter().write(webworks::PimContactsQt().GetContact(*obj));
         delete obj;
         return result;
+    } else if (strCommand == "invokePicker") {
+        Json::Value result = webworks::PimContactsQt::InvokePicker(*obj);
+        delete obj;
+
+        std::string event = Json::FastWriter().write(result);
+        NotifyEvent("invokeContactPicker.invokeEventId", event);
     }
 
     return "";
@@ -122,10 +127,10 @@ void* PimContacts::FindThread(void *args)
     Json::Value result = pim_qt.Find(*(thread_info->jsonObj));
     delete thread_info->jsonObj;
 
-    Json::FastWriter writer;
-    std::string event = writer.write(result);
-
+    std::string event = Json::FastWriter().write(result);
     thread_info->parent->NotifyEvent(thread_info->eventId, event);
+    delete thread_info;
+
     return NULL;
 }
 
@@ -137,10 +142,10 @@ void* PimContacts::SaveThread(void *args)
     Json::Value result = pim_qt.Save(*(thread_info->jsonObj));
     delete thread_info->jsonObj;
 
-    Json::FastWriter writer;
-    std::string event = writer.write(result);
-
+    std::string event = Json::FastWriter().write(result);
     thread_info->parent->NotifyEvent(thread_info->eventId, event);
+    delete thread_info;
+
     return NULL;
 }
 
@@ -152,10 +157,10 @@ void* PimContacts::RemoveThread(void *args)
     Json::Value result = pim_qt.DeleteContact(*(thread_info->jsonObj));
     delete thread_info->jsonObj;
 
-    Json::FastWriter writer;
-    std::string event = writer.write(result);
-
+    std::string event = Json::FastWriter().write(result);
     thread_info->parent->NotifyEvent(thread_info->eventId, event);
+    delete thread_info;
+
     return NULL;
 }
 

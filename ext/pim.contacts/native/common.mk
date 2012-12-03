@@ -21,4 +21,4 @@ endif
 
 include $(MKFILES_ROOT)/qtargets.mk
 
-LIBS+=bbpim QtCore
+LIBS+=bbpim bbcascadespickers QtCore

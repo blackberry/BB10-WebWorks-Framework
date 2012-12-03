@@ -143,4 +143,128 @@ describe("blackberry.pim.contacts", function () {
             });
         });
     });
+
+    describe("Contact picker works", function () {
+        it("can call cancel callback if user cancels", function () {
+            window.alert("Click Cancel button when contact picker opens.");
+
+            var called = false,
+                onDone = jasmine.createSpy("done4"),
+                onCancel = jasmine.createSpy("cancel4").andCallFake(function () {
+                    called = true;
+                }),
+                onInvoke = jasmine.createSpy("invoke4").andCallFake(function (error) {
+                    expect(error).not.toBeDefined();
+                });
+
+            contacts.invokeContactPicker({
+                mode: contacts.ContactPickerOptions.MODE_SINGLE
+            }, onDone, onCancel, onInvoke);
+
+            waitsFor(function () {
+                return called;
+            }, "callback never called", 25000);
+
+            runs(function () {
+                expect(onDone).not.toHaveBeenCalled();
+                expect(onCancel).toHaveBeenCalled();
+                expect(onInvoke).toHaveBeenCalled();
+            });
+        });
+
+        it("can invoke contact picker with mode=single", function () {
+            window.alert("Click on a contact when the contact picker opens.");
+
+            var called = false,
+                onDone = jasmine.createSpy("done1").andCallFake(function (data) {
+                    expect(data.contactId).toBeDefined();
+                    expect(data.contactId).toEqual(jasmine.any(String));
+                    called = true;
+                }),
+                onCancel = jasmine.createSpy("cancel1"),
+                onInvoke = jasmine.createSpy("invoke1").andCallFake(function (error) {
+                    expect(error).not.toBeDefined();
+                });
+
+            contacts.invokeContactPicker({
+                mode: contacts.ContactPickerOptions.MODE_SINGLE
+            }, onDone, onCancel, onInvoke);
+
+            waitsFor(function () {
+                return called;
+            }, "callback never called", 15000);
+
+            runs(function () {
+                expect(onDone).toHaveBeenCalled();
+                expect(onCancel).not.toHaveBeenCalled();
+                expect(onInvoke).toHaveBeenCalled();
+            });
+        });
+
+        it("can invoke contact picker with mode=multiple", function () {
+            window.alert("Click on more than two contact when the contact picker opens, then click Done.");
+
+            var called = false,
+                onDone = jasmine.createSpy("done2").andCallFake(function (data) {
+                    expect(data.contactIds).toBeDefined();
+                    expect(Array.isArray(data.contactIds)).toEqual(true);
+                    expect(data.contactIds.length).toEqual(2);
+                    called = true;
+                }),
+                onCancel = jasmine.createSpy("cancel2"),
+                onInvoke = jasmine.createSpy("invoke2").andCallFake(function (error) {
+                    expect(error).not.toBeDefined();
+                });
+
+            contacts.invokeContactPicker({
+                mode: contacts.ContactPickerOptions.MODE_MULTIPLE
+            }, onDone, onCancel, onInvoke);
+
+            waitsFor(function () {
+                return called;
+            }, "callback never called", 15000);
+
+            runs(function () {
+                expect(onDone).toHaveBeenCalled();
+                expect(onCancel).not.toHaveBeenCalled();
+                expect(onInvoke).toHaveBeenCalled();
+            });
+        });
+
+        it("can invoke contact picker with mode=attribute", function () {
+            window.alert("Click on a contact when contact picker opens, then click on the mobile phone of the contact.");
+
+            var called = false,
+                onDone = jasmine.createSpy("done3").andCallFake(function (data) {
+                    expect(data.contactId).toBeDefined();
+                    expect(data.contactId).toEqual(jasmine.any(String));
+                    expect(data.value).toBeDefined();
+                    expect(data.value).toEqual(jasmine.any(String));
+                    expect(data.type).toBeDefined();
+                    expect(data.type).toEqual("mobile");
+                    expect(data.field).toBeDefined();
+                    expect(data.field).toEqual("phoneNumbers");
+                    called = true;
+                }),
+                onCancel = jasmine.createSpy("cancel3"),
+                onInvoke = jasmine.createSpy("invoke3").andCallFake(function (error) {
+                    expect(error).not.toBeDefined();
+                });
+
+            contacts.invokeContactPicker({
+                mode: contacts.ContactPickerOptions.MODE_ATTRIBUTE,
+                fields: ["phoneNumbers"]
+            }, onDone, onCancel, onInvoke);
+
+            waitsFor(function () {
+                return called;
+            }, "callback never called", 15000);
+
+            runs(function () {
+                expect(onDone).toHaveBeenCalled();
+                expect(onCancel).not.toHaveBeenCalled();
+                expect(onInvoke).toHaveBeenCalled();
+            });
+        });
+    });
 });
