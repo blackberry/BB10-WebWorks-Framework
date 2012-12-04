@@ -141,10 +141,6 @@ describe("White listing", function () {
         return script;
     }
 
-    function testLocalAccessFails(domain, path, messageToSend) {
-        testLocalAccess(domain, path, true, messageToSend);
-    }
-
     function testLocalAccess(domain, path, shouldFail, message) {
         var origin = 'http://' + domain,
             url = origin + (path || '/a/localTest.html'),
@@ -181,6 +177,10 @@ describe("White listing", function () {
         });
 
         return iframe;
+    }
+
+    function testLocalAccessFails(domain, path, messageToSend) {
+        testLocalAccess(domain, path, true, messageToSend);
     }
 
     function testExternalWebApi(domain, path, shouldFail, message) {
