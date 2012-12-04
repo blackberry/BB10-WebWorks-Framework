@@ -164,7 +164,7 @@ describe("blackberry.invoke.card", function () {
             errorSpy = jasmine.createSpy(),
             reason;
 
-        blackberry.invoke.card.invokeIcsViewer({uri: "test"}, function (path) {
+        blackberry.invoke.card.invokeIcsViewer({uri: "local:///manual/framework-split/test.ics"}, function (path) {
         },
         function (reason) {
             flag = true;
