@@ -19,21 +19,25 @@ var callback = function() {
 };
 
 function overridePlatform() {
-    var myItem = {actionId: blackberry.ui.contextmenu.ACTION_COPY, label: 'CustomCopy!', icon:'local:///manual/ContextMenu/icon.png'},
-        contexts = [blackberry.ui.contextmenu.CONTEXT_ALL];
-
-    blackberry.ui.contextmenu.addItem(contexts, myItem, function() {
+    var myItem = {actionId: blackberry.ui.contextmenu.ACTION_COPY, label: 'CustomCopy!', icon:'local:///manual/ContextMenu/icon.png'};
+    blackberry.ui.contextmenu.overrideItem(myItem, function() {
         alert("Wow you succesfully overrode the platform menu item Copy");
     });
 }
 
-function overrideMenuService() {
-    var myItem = {actionId: 'MenuService-Share', label: 'CustomShare', icon:'local:///manual/ContextMenu/icon.png'},
-        contexts = [blackberry.ui.contextmenu.CONTEXT_ALL];
-
-    blackberry.ui.contextmenu.addItem(contexts, myItem, function() {
+function overrideMenuServiceShare() {
+    var myItem = {actionId: 'MenuService-1', label: 'CustomShare', icon:'local:///manual/ContextMenu/icon.png'};
+    blackberry.ui.contextmenu.overrideItem(myItem, function() {
         alert("Wow you succesfully overrode the menu service action");
     });
+}
+
+function clearCopyOverride() {
+    blackberry.ui.contextmenu.clearOverride(blackberry.ui.contextmenu.ACTION_COPY);
+}
+
+function clearMSOverride() {
+    blackberry.ui.contextmenu.clearOverride('MenuService-1');
 }
 
 function addMenuItemContextAll() {
