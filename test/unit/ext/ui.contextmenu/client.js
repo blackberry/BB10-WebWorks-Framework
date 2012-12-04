@@ -24,13 +24,19 @@ var _ID = "blackberry.ui.contextmenu",
         execAsync: jasmine.createSpy("execAsync").andCallFake(function (service, action, args) {
             return true;
         })
+    },
+    mockedEvent = {
+        addEventListener : jasmine.createSpy()
     };
 
 describe("blackberry.ui.contextmenu client", function () {
 
     beforeEach(function () {
         GLOBAL.window = {
-            webworks: mockedWebworks
+            webworks: mockedWebworks,
+            blackberry : {
+                event : mockedEvent
+            },
         };
         client = require(_apiDir + "/client");
     });
@@ -106,4 +112,17 @@ describe("blackberry.ui.contextmenu client", function () {
         expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "defineCustomContext", {context: "myContext", options: options});
     });
 
+    it("Can override an item with an action and handler", function () {
+        var myItem = {actionId: 'OpenLink', label: 'This is a lable'},
+            handler = jasmine.createSpy();
+        client.overrideItem(myItem, handler);
+        expect(mockedEvent.addEventListener).toHaveBeenCalledWith('contextmenu.executeMenuAction', jasmine.any(Function));
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, 'overrideItem', {action: myItem});
+    });
+
+    it("Can clear an item with an actionId", function () {
+        var actionId = 'OpenLink';
+        client.clearOverride(actionId);
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, 'clearOverride', {actionId: actionId});
+    });
 });
