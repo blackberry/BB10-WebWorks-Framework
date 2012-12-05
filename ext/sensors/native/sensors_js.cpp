@@ -17,23 +17,17 @@
 #include <json/reader.h>
 #include <string>
 #include "sensors_js.hpp"
-#ifndef __X86__
 #include "sensors_ndk.hpp"
-#endif
 
 Sensors::Sensors(const std::string& id) : m_id(id)
 {
-#ifndef __X86__
     m_pSensorsController = new webworks::SensorsNDK(this);
-#endif
 }
 
 Sensors::~Sensors()
 {
-#ifndef __X86__
     if (m_pSensorsController)
         delete m_pSensorsController;
-#endif
 }
 
 char* onGetObjList()
@@ -53,7 +47,6 @@ JSExt* onCreateObject(const std::string& className, const std::string& id)
 
 std::string Sensors::InvokeMethod(const std::string& command)
 {
-#ifndef __X86__
     int index = command.find_first_of(" ");
     std::string strCommand = command.substr(0, index);
     std::string arg = command.substr(index + 1, command.length());
@@ -74,12 +67,8 @@ std::string Sensors::InvokeMethod(const std::string& command)
     } else if (strCommand == "supportedSensors") {
         return m_pSensorsController->SupportedSensors();
     }
-#endif
-#ifndef __X86__
+
     return "";
-#else
-    return command;
-#endif
 }
 
 bool Sensors::CanDelete()
