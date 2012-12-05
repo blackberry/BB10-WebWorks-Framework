@@ -69,6 +69,39 @@ describe("Utils", function () {
         expect(utils.fileNameToImageMIME("test.svg")).toEqual("image/svg+xml");
     });
 
+    it("has an invokeInBrowser function", function () {
+        var url = "http://www.webworks.com",
+            mockApplication = {
+                invocation: {
+                    invoke: jasmine.createSpy("invocation.invoke")
+                }
+            },
+            mockWindow = {
+                qnx: {
+                    webplatform: {
+                        getApplication: function () {
+                            return mockApplication;
+                        }
+                    }
+                }
+            };
+
+        GLOBAL.window = mockWindow;
+
+        this.after(function () {
+            delete GLOBAL.window;
+        });
+
+        expect(utils.invokeInBrowser).toBeDefined();
+
+        utils.invokeInBrowser(url);
+
+        expect(mockApplication.invocation.invoke).toHaveBeenCalledWith({
+            uri: url,
+            target: "sys.browser"
+        });
+    });
+
     // A cascading method invoker, kinda like jWorkflow
     describe("series", function () {
         var tasks,
