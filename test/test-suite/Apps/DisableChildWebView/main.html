@@ -2,15 +2,21 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WebWorks Smoke Test for BB10</title>
+  <title>Manual Test App for Disabled Child WebViews</title>
 </head>
 <body>
     <h1>Test Child Web Views</h1>
     <p>
-        A new web view should be created when a link with target=_blank is clicked,
+        NORMALLY A new web view should be created when a link with target=_blank is clicked,
         or when window.open() is called in response to a user's click event.
 
+        HOWEVER child webviews have been disabled. This means that whenever a child web view should be created,
+        instead it will be invoked in the browser.
+
         When target is _self the content should be loaded in the current webview
+
+
+        LASTLY when navigating to a non-whitelisted domain, the domain should be opened in the browser.
     </p>
 
     <h1>Declarative API</h1>
@@ -189,5 +195,11 @@
         });
     }());
     </script>
+
+    <h1>Non-Whitelisted URLs</h1>
+
+    <h3><a href="http://www.google.com">Click here to go to Google</a></h3>
+    <h3><a href="http://www.w3.org">Click here to go to w3.org</a></h3>
+
 </body>
 </html>

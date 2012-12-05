@@ -3,6 +3,7 @@ describe("request", function () {
         libPath = "./../../../",
         Whitelist = require(libPath + 'lib/policy/whitelist').Whitelist,
         server = require(libPath + 'lib/server'),
+        utils = require(libPath + 'lib/utils'),
         mockedWebview;
 
     beforeEach(function () {
@@ -52,22 +53,53 @@ describe("request", function () {
 
     it("can apply whitelist rules and deny blocked urls", function () {
         spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        spyOn(utils, "invokeInBrowser");
+
         var url = "http://www.google.com",
             requestObj = request.init(mockedWebview),
             returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url}));
         expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();
         expect(JSON.parse(returnValue).setAction).toEqual("DENY");
+        expect(utils.invokeInBrowser).not.toHaveBeenCalledWith(url);
+        expect(mockedWebview.uiWebView.childwebviewcontrols.open).not.toHaveBeenCalledWith(url);
         expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith("alert('Access to \"" + url + "\" not allowed')");
     });
 
     it("can apply whitelist rules and deny blocked urls and route to a uiWebView when target is main frame", function () {
         spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        spyOn(utils, "invokeInBrowser");
+
         var url = "http://www.google.com",
             requestObj = request.init(mockedWebview),
             returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url, targetType: "TargetIsMainFrame"}));
         expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();
         expect(mockedWebview.uiWebView.childwebviewcontrols.open).toHaveBeenCalledWith(url);
         expect(mockedWebview.executeJavaScript).not.toHaveBeenCalledWith("alert('Access to \"" + url + "\" not allowed')");
+        expect(utils.invokeInBrowser).not.toHaveBeenCalledWith(url);
+        expect(JSON.parse(returnValue).setAction).toEqual("DENY");
+    });
+
+    it("can apply whitelist rules and deny blocked urls and route to the browser when target is main frame and childWebView is disabled", function () {
+        var url = "http://www.google.com",
+            config = require(libPath + "lib/config"),
+            requestObj,
+            returnValue;
+
+        spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        spyOn(utils, "invokeInBrowser");
+        config.enableChildWebView = false;
+
+        this.after(function () {
+            delete require.cache[require.resolve(libPath + "lib/config")];
+        });
+
+        requestObj = request.init(mockedWebview);
+        returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url, targetType: "TargetIsMainFrame"}));
+
+        expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();
+        expect(mockedWebview.uiWebView.childwebviewcontrols.open).not.toHaveBeenCalledWith(url);
+        expect(mockedWebview.executeJavaScript).not.toHaveBeenCalledWith("alert('Access to \"" + url + "\" not allowed')");
+        expect(utils.invokeInBrowser).toHaveBeenCalledWith(url);
         expect(JSON.parse(returnValue).setAction).toEqual("DENY");
     });
 
