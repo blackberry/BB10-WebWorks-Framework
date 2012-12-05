@@ -73,7 +73,7 @@ describe("notification index", function () {
 
         describe("notify method", function () {
             afterEach(function () {
-                expect(mockNotification.remove).toHaveBeenCalledWith(args.options);
+                expect(mockNotification.remove).toHaveBeenCalledWith(args.options.tag);
                 delete require.cache[require.resolve(_libDir + "config")];
             });
 

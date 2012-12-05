@@ -53,11 +53,12 @@ module.exports = {
         }
 
         // Calling delete with tag before writing new notification, ensures new notification will override the old one.
-        _notification.remove(args.options);
+        _notification.remove(args.options.tag);
         _notification.notify(args, getCallback(args.options.eventName));
 
         success();
     },
+
     remove: function (success, fail, args) {
         var key;
 
@@ -70,5 +71,5 @@ module.exports = {
         _notification.remove(args.tag);
 
         success();
-    },
+    }
 };
