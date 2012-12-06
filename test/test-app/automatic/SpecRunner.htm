@@ -42,7 +42,7 @@
             for (var i = 0; i < checkBoxes.length; i++) {
                 if (checkBoxes[i].checked)
                 {
-                    addScript("local:///automatic/spec/" + checkBoxes[i].value + ".js");
+                    addScript("spec/" + checkBoxes[i].value + ".js");
                 }
             }
             alert("The selected tests have been added, click the Run Jasmine button to execute the SpecRunner");

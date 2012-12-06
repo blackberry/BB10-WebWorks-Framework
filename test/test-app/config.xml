@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns=" http://www.w3.org/ns/widgets"
+<widget xmlns="http://www.w3.org/ns/widgets"
         xmlns:rim="http://www.blackberry.com/ns/widgets"
         version="1.0.0"
         id="WebWorksTest"
@@ -13,7 +13,7 @@
     <description xml:lang="fr-FR">French description</description>
     <description xml:lang="en">English description</description>
 
-    <content src="index.htm"/>
+    <content src="index.html"/>
 
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
