@@ -22,14 +22,14 @@ _self.FileMode = { RDONLY: 0, WRONLY: 1, RDWR: 2, CREATE: 256 };
 
 _self.syncRead = function (path, options) {
     return window.webworks.execSync(ID, "syncRead", { path : path, options : options });
-}
+};
 
 _self.syncWrite = function (writeData, path, options) {
     return window.webworks.execSync(
-        ID, 
-        "syncWrite", 
+        ID,
+        "syncWrite",
         { writeData: writeData, path: path, options: options }
     );
-}
+};
 
 module.exports = _self;
