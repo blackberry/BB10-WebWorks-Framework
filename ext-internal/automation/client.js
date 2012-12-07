@@ -62,6 +62,14 @@ _self.touchBottomCenter = function () {
     _self.touch(screen.availWidth / 2, screen.availHeight - 10);
 };
 
+_self.touchTopLeft = function () {
+    _self.touch(10, 10);
+};
+
+_self.touchTopRight = function () {
+    _self.touch(screen.availWidth - 10, 10);
+};
+
 _self.showKeyboard = function () {
     internal.pps.syncWrite(
         { msg : "show" },
