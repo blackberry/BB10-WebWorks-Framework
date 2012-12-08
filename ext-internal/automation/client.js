@@ -152,6 +152,13 @@ _self.injectText = function (inputText) {
         "/pps/services/agent/ui-agent/control"
     );
 };
+_self.touchTopLeft = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
 
 _self.showKeyboard = function () {
     internal.pps.syncWrite(
