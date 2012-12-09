@@ -14,4 +14,9 @@ if [ "$1" != "-scm" ]; then
     git submodule update --init;
 fi
 
+if [ ! -f test-runner.json ]
+then
+    cp test-runner.default test-runner.json
+fi
+
 echo -e "\nConfiguring complete. Please proceed with running \"jake\"."

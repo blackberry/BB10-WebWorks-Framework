@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jasmine Spec Runner</title>
+
+    <link rel="stylesheet" type="text/css" href="css/jasmine.css">
+    <script type="text/javascript" src="js/jasmine.js"></script>
+    <script type="text/javascript" src="js/jasmine-html.js"></script>
+    <script type="text/javascript" src="local:///chrome/webworks.js"></script>
+
+    <!-- include spec files here... -->
+    <script type="text/javascript" src="spec/disableWebSecurityTests.js"></script>
+
+    <script type="text/javascript">
+    function sendReport(report, data) {
+      var xmlhttp = new XMLHttpRequest();
+      console.log("Sending testing result now...");
+      xmlhttp.onreadystatechange=function()
+      {
+          if (xmlhttp.readyState==4 && xmlhttp.status==200)
+          {
+              console.log(xmlhttp.responseText);
+          }
+      }
+      xmlhttp.open("POST", "http://169.254.0.2:9644", true);
+      xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xmlhttp.send(JSON.stringify({status: report, data: data}));
+    }
+
+
+    var jasmineEnv = jasmine.getEnv();
+    jasmineEnv.updateInterval = 1000;
+
+    var htmlReporter = new jasmine.HtmlReporter(),
+        originalReportSpecResults = htmlReporter.reportSpecResults,
+        originalReportRunnerResults = htmlReporter.reportRunnerResults,
+        knownFailures;
+
+    htmlReporter.reportSpecResults = function (spec) {
+        var data = {
+             failedCount: spec.results().failedCount,
+             description: spec.results().description,
+             passedCount: spec.results().passedCount,
+             totalCount: spec.results().totalCount,
+             items: spec.results().getItems()
+        };
+        sendReport("continue", data);
+        originalReportSpecResults(spec);
+    };
+
+    htmlReporter.reportRunnerResults = function (runner) {
+        var data = {
+            msg: "Do not know what to return"
+        };
+        sendReport("finished", data);
+        originalReportRunnerResults(runner);
+    }
+
+    jasmineEnv.addReporter(htmlReporter);
+
+    jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+    };
+
+    var currentWindowOnload = window.onload;
+
+    window.onload = function() {
+        if (currentWindowOnload) {
+            currentWindowOnload();
+        }
+        //execJasmine();
+    };
+
+    function execJasmine() {
+        jasmineEnv.execute();
+    }
+
+    document.addEventListener("webworksready", function () {
+        execJasmine();
+    });
+
+    </script>
+</head>
+<body>
+</body>
+</html>
+
