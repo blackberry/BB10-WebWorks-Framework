@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 Research In Motion Limited.
+ *  Copyright 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ module.exports = function (done, custom) {
     var jasmine = require('jasmine-node'),
         verbose = false,
         colored = false,
-        specs = __dirname + "/../" + (custom ? custom : "test/unit"),
-        key;    
+        specs = __dirname + "/../" + (custom ? custom : "test/test-suite/test"),
+        key;
 
     //HACK: this should be  taken out if our pull request in jasmine is accepted.
     jasmine.Matchers.prototype.toThrow = function (expected) {

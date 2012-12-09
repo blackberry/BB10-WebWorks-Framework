@@ -28,6 +28,10 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
 3. `jake deploy-tests` - builds the Framework, creates, packages and deploys Functional test app<br />
        To run the tests use `jake deploy-tests[<pathToPackager>,<packageroptions>,<device|simulator>,<device ip>,<device password>]`<br />
        eg: `jake deploy-tests[/Users/jheifetz/Downloads/BB10webworks-next-42/,-d,device,169.254.0.1,qaqa]`<br /><br />
+4. `jake test-suite` - simply runs the test suite which will deploy and run jasmine tests on device and report them on the console. <br/>
+   `jake test-suite test/test-suite/test/whitelist-suite-runner.js` - to run a particular part of the test suite. <br/>
+    Before running this please configure the test-runner.json with the packager location, options, and device ip and password. <br/>
+
 *Note: To see a full list of commands available with jake, use `jake -T`.*
 
 ##Common issues

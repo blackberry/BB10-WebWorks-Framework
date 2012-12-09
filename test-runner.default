@@ -1,0 +1,7 @@
+{
+    "packager": "/Users/nukulb/github-reviews/packager/target/zip/bbwp",
+    "packager-options": "-d",
+    "device": true,
+    "ip": "169.254.0.1",
+    "password": "qaqa"
+}
