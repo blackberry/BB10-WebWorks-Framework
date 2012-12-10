@@ -569,4 +569,41 @@ describe("system index", function () {
             expect(tranlatedPath.indexOf(excludedPrefix)).toEqual(-1);
         });
     });
+
+    describe("deviceLockedStatus", function () {
+        var mockApplication;
+
+        beforeEach(function () {
+            mockApplication = {};
+
+            mockApplication.isDeviceLocked = jasmine.createSpy("isDeviceLocked").andCallFake(function (callback) {
+                callback("notLocked");
+            });
+
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        getApplication: jasmine.createSpy().andReturn(mockApplication)
+                    }
+                }
+            };
+        });
+
+        afterEach(function () {
+            mockApplication.isDeviceLocked = null;
+            mockApplication = null;
+            delete GLOBAL.window;
+        });
+
+        it("returns status from webplatform", function () {
+            var successCb = jasmine.createSpy(),
+                failCb = jasmine.createSpy();
+
+            sysIndex.deviceLockedStatus(successCb, failCb);
+
+            expect(mockApplication.isDeviceLocked).toHaveBeenCalledWith(jasmine.any(Function));
+            expect(successCb).toHaveBeenCalledWith("notLocked");
+            expect(failCb).not.toHaveBeenCalled();
+        });
+    });
 });
