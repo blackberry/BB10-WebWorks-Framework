@@ -96,8 +96,8 @@ describe("blackberry.app", function () {
         testAppReadOnly("version");
     });
 
-    it('blackberry.app.windowState should exist', function () {
-        expect(blackberry.app.windowState).toBeDefined();
+    it('blackberry.app.windowState should have correct value when in fullscreen', function () {
+        testAppValue("windowState", "fullscreen");
     });
 
     it('blackberry.app.windowState should be read-only', function () {
