@@ -16,6 +16,8 @@
 var _self = {},
     ID = require("./manifest.json").namespace;
 
+_self.TOUCH_SPACE_FROM_EDGE = 50;
+
 _self.swipeDown = function () {
     internal.pps.syncWrite(
         {
@@ -55,11 +57,23 @@ _self.touch = function (x, y) {
 };
 
 _self.touchBottomLeft = function () {
-    _self.touch(10, screen.availHeight - 10);
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
 };
 
 _self.touchBottomCenter = function () {
-    _self.touch(screen.availWidth / 2, screen.availHeight - 10);
+    _self.touch(screen.availWidth / 2, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopLeft = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchCenter = function () {
+    _self.touch(screen.availWidth / 2, screen.availHeight / 2);
 };
 
 _self.showKeyboard = function () {
