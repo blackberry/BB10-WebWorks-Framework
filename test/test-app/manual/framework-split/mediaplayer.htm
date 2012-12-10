@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>blackberry.invoke.card manual tests</title>
+</head>
+<script src="local:///chrome/webworks.js" type="text/javascript"></script>
+<body>
+
+    <script type="text/javascript">
+    var videoPath,
+        audioPath,
+        imagePath;
+
+    function setVideoCallback(evt) {
+        videoPath = "file://" + blackberry.io.sharedFolder + "/camera/" + evt.target.files[0].name;
+    }
+
+    function setAudioCallback(evt) {
+        audioPath = "file://" + blackberry.io.sharedFolder + "/music/" + evt.target.files[0].name;
+    }
+
+    function setImageCallback(evt) {
+        imagePath = "file://" + blackberry.io.sharedFolder + "/camera/" + evt.target.files[0].name;
+    }
+
+    function invokeMediaPlayer(mode) {
+        var request;
+
+        switch (mode) {
+            default:
+            // Empty
+            case 0:
+            request = {
+            }
+            break;
+
+            // Title Only
+            case 1:
+            request = {
+                contentTitle: "Empty Player",
+            }
+            break;
+
+            // Video Only
+            case 2:
+            request = {
+                contentUri: videoPath
+            }
+            break;
+
+            // Title & Video
+            case 3:
+            request = {
+                contentTitle: "Best Video Record",
+                contentUri: videoPath
+            }
+            break;
+
+            // Audio Only
+            case 4:
+            request = {
+                contentUri: audioPath
+            }
+            break;
+
+            // Title & Audio
+            case 5:
+            request = {
+                contentTitle: "Best Audio Record",
+                contentUri: audioPath
+            }
+            break;
+
+            // Title, Image and Audio
+            case 6:
+            request = {
+                contentTitle: "Best Audio Record",
+                contentUri: audioPath,
+                imageUri: imagePath
+            }
+            break;
+        }
+
+        blackberry.invoke.card.invokeMediaPlayer(request,
+            function (info) {
+                alert("Got Done Event " + (info ? info : ""));
+            },
+            function (reason) {
+                alert("Previewing Cancelled: " + reason);
+            },
+            function (error) {
+                if (error) {
+                    alert("Media Previweing Error "+ error);
+                } else {
+                    console.log("invoke success " );
+                }
+            }
+        );
+    }
+
+
+</script>
+    </p> <br>
+    <input id="Button100" type="button" value="Back" onclick="history.back()" />
+    </p>
+
+    <h2 align="center">Camera</h2>
+    <p> Case 1 - Launch MediaPlayer with NO options provided</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on Play to launch the Player.<br/>
+        2. Close the Player and verify done event fires.<br/>
+    <div align="center">
+        <button onclick="invokeMediaPlayer(0);">
+            Play
+        </button>
+    </div>
+
+    <br />
+    <HR>
+    <br />
+
+    <p> Case 2 - Launch MediaPlayer with only Title provided</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on Play to launch the Player.<br/>
+        2. Close the Player and verify done event fires.<br/>
+    <div align="center">
+        <button onclick="invokeMediaPlayer(1);">
+            Play
+        </button>
+    </div>
+
+    <br />
+    <HR>
+    <br />
+
+    <p> Case 3 - Pick Video and Launch MediaPlayer with only Video provided</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on the input field to select a video file from <b>camera</b> folder.<br/>
+        2. Click on Play and verify player launches and done event fires.<br/>
+    <input id="videoinput1" type="file" accept="video/*">
+    <script>
+        document.getElementById('videoinput1').addEventListener('change', setVideoCallback, false);
+    </script>
+
+    <div align="center">
+        <button onclick="invokeMediaPlayer(2)">
+            Play
+        </button>
+    </div>
+
+    <br />
+    <HR>
+    <br />
+
+    <p> Case 4 - Pick a Video and Launch MediaPlayer with Both Video and Title provided</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on the input field to select a video file from <b>camera</b> folder.<br/>
+	    2. Click on Play and verify player launches and done event fires.<br/>
+    <input id="videoinput2" type="file" accept="video/*">
+    <script>
+        document.getElementById('videoinput2').addEventListener('change', setVideoCallback, false);
+    </script>
+
+    <div align="center">
+        <button onclick="invokeMediaPlayer(3)">
+            Play
+        </button>
+    </div>
+
+    <br />
+    <HR>
+    <br />
+
+    <p> Case 5 - Pick an Audio file and Launch MediaPlayer to play this record</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on the input field to select an audio file from <b>music</b> folder.<br/>
+        2. Click on Play and verify player launches and done event fires.<br/>
+    <input id="audioinput1" type="file" accept="audio/*">
+    <script>
+        document.getElementById('audioinput1').addEventListener('change', setAudioCallback, false);
+    </script>
+
+    <div align="center">
+        <button onclick="invokeMediaPlayer(4)">
+            Play
+        </button>
+    </div>
+
+    <br />
+    <HR>
+    <br />
+
+    <p> Case 6 - Pick an Audio file Launch MediaPlayer with Both Audio and Title provided</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on the input field to select an audio file from <b>music</b> folder.<br/>
+        2. Click on Play and verify player launches and done event fires.<br/>
+    <input id="audioinput2" type="file" accept="audio/*">
+    <script>
+        document.getElementById('audioinput2').addEventListener('change', setAudioCallback, false);
+    </script>
+
+    <div align="center">
+        <button onclick="invokeMediaPlayer(5)">
+            Play
+        </button>
+    </div>
+
+    <br />
+    <HR>
+    <br />
+
+    <p> Case 7 - Launch MediaPlayer with Title, Image and Audio provided</p>
+    <p> Steps for Testing:</p>
+    <p>
+        1. Click on the input field and choose any image from <b>camera</b> folder.<br/>
+        2. Click on the input field and choose any audio from <b>music</b> folder.<br/>
+        3. Click on Play and verify player launches and done event fires.<br/>
+    <input id="imageinput1" type="file" accept="image/*">
+    <input id="audioinput3" type="file" accept="audio/*">
+    <script>
+        document.getElementById('imageinput1').addEventListener('change', setImageCallback, false);
+    </script>
+
+    <script>
+        document.getElementById('audioinput3').addEventListener('change', setAudioCallback, false);
+    </script>
+
+    <div align="center">
+        <button onclick="invokeMediaPlayer(6)">
+            Play
+        </button>
+    </div>
+
+
+    <HR>
+
+    </p>
+    <input id="Button100" type="button" value="Back" onclick="history.back()" />
+    </p>
+</body>
+</html>

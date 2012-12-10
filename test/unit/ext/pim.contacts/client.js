@@ -24,9 +24,12 @@ var _extDir = __dirname + "./../../../../ext",
     ContactName = client.ContactName,
     ContactOrganization = client.ContactOrganization,
     ContactPhoto = client.ContactPhoto,
+    ContactPickerOptions = client.ContactPickerOptions,
     mockedWebworks = {
         execAsync: jasmine.createSpy("webworks.execAsync"),
+        execSync: jasmine.createSpy("webworks.execSync"),
         event: {
+            isOn: jasmine.createSpy("webworks.event.isOn"),
             once: jasmine.createSpy("webworks.event.once").andCallFake(function (service, eventId, callback) {
                 callback({
                     result: escape(JSON.stringify({
@@ -184,6 +187,17 @@ describe("pim.contacts client", function () {
         });
     });
 
+    describe("Testing getContact", function () {
+        it("has method getContact", function () {
+            expect(client.getContact).toBeDefined();
+        });
+
+        it("returns the contact with specific contactId", function () {
+            var contact = client.getContact();
+            expect(contact).toBeDefined();
+        });
+    });
+
     describe("create", function () {
         it("pim.contacts.create() returns a Contact object with all specified properties set", function () {
             var contact = client.create({
@@ -245,6 +259,63 @@ describe("pim.contacts client", function () {
             expect(contact.photos[1].pref).toBe(false);
             expect(contact.photos[1].originalFilePath).toBe("path/to/anotherpic");
             expect(contact.random).not.toBeDefined();
+        });
+    });
+
+    describe("invokeContactPicker", function () {
+        it("invokeContactPicker calls onInvoke with error for invalid picker mode", function () {
+            var doneCb = jasmine.createSpy(),
+                cancelCb = jasmine.createSpy(),
+                invokeCb = jasmine.createSpy();
+
+            mockedWebworks.event.once = jasmine.createSpy("webworks.event.once");
+
+            client.invokeContactPicker({
+                mode: "ridiculous!"
+            }, doneCb, cancelCb, invokeCb);
+
+            expect(doneCb).not.toHaveBeenCalled();
+            expect(cancelCb).not.toHaveBeenCalled();
+            expect(invokeCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+        });
+
+        it("invokeContactPicker calls onInvoke with error for mode=Attribute but filters are missing", function () {
+            var doneCb = jasmine.createSpy(),
+                cancelCb = jasmine.createSpy(),
+                invokeCb = jasmine.createSpy();
+
+            mockedWebworks.event.once = jasmine.createSpy("webworks.event.once");
+
+            client.invokeContactPicker({
+                mode: ContactPickerOptions.MODE_ATTRIBUTE
+            }, doneCb, cancelCb, invokeCb);
+
+            expect(doneCb).not.toHaveBeenCalled();
+            expect(cancelCb).not.toHaveBeenCalled();
+            expect(invokeCb).toHaveBeenCalledWith(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+        });
+
+        it("invokeContactPicker should register client callbacks", function () {
+            var doneCb = jasmine.createSpy(),
+                cancelCb = jasmine.createSpy(),
+                invokeCb = jasmine.createSpy();
+
+            mockedWebworks.execAsync = jasmine.createSpy("webworks.execAsync").andCallFake(function () {
+                doneCb({
+                    contactId: "123"
+                });
+            });
+
+            client.invokeContactPicker({
+                mode: ContactPickerOptions.MODE_SINGLE
+            }, doneCb, cancelCb, invokeCb);
+
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "invokeContactPicker", jasmine.any(Object));
+            expect(mockedWebworks.event.once).toHaveBeenCalledWith(_ID, jasmine.any(String), jasmine.any(Function));
+            expect(doneCb).toHaveBeenCalledWith({
+                contactId: "123"
+            });
+            expect(cancelCb).not.toHaveBeenCalled();
         });
     });
 });

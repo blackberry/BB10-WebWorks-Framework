@@ -156,5 +156,18 @@ module.exports = {
         } catch (err) {
             fail(ERROR_ID, err.message);
         }
+    },
+
+    setWallpaper: function (success, fail, args) {
+        try {
+            var path = _utils.translatePath(JSON.parse(decodeURIComponent(args.wallpaper)));
+
+            // Removing file:// form the path because newWallpaper can't handle it.
+            path = path.replace(/file:\/\//, '');
+            window.qnx.webplatform.getApplication().newWallpaper(path);
+            success();
+        } catch (err) {
+            fail(ERROR_ID, err.message);
+        }
     }
 };

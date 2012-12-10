@@ -22,7 +22,13 @@ describe("blackberry.sensors", function () {
         beforeEach(function () {
             waits(1000);
         });
-            
+
+        it('should be able to get a list of supported sensors', function () {
+            runs(function () {
+                expect(blackberry.sensors.supportedSensors).toContain("devicecompass");
+            });
+        });
+
         it('should be able to activate the deviceaccelerometer sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("deviceaccelerometer", onSensor);
@@ -37,7 +43,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("deviceaccelerometer", onSensor);
             });
         });
-        
+
         it('should be able to activate the devicemagnetometer sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicemagnetometer", onSensor);
@@ -52,6 +58,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicegyroscope", onSensor);
             });
         });
+
         it('should be able to activate the devicegyroscope sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicegyroscope", onSensor);
@@ -81,6 +88,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicecompass", onSensor);
             });
         });
+
         it('should be able to activate the deviceproximity sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("deviceproximity", onSensor);
@@ -95,7 +103,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("deviceproximity", onSensor);
             });
         });
-        
+
         it('should be able to activate the devicelight sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicelight", onSensor);
@@ -110,7 +118,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicelight", onSensor);
             });
         });
-        
+
         it('should be able to activate the devicegravity sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicegravity", onSensor);
@@ -125,7 +133,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicegravity", onSensor);
             });
         });
-        
+
         it('should be able to activate the devicelinearacceleration sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicelinearacceleration", onSensor);
@@ -140,7 +148,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicelinearacceleration", onSensor);
             });
         });
-        
+
         it('should be able to activate the deviceorientation sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("deviceorientation", onSensor);
@@ -155,7 +163,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("deviceorientation", onSensor);
             });
         });
-        
+
         it('should be able to activate the devicerotationmatrix sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicerotationmatrix", onSensor);
@@ -170,7 +178,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicerotationmatrix", onSensor);
             });
         });
-        
+
         it('should be able to activate the deviceazimuthpitchroll sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("deviceazimuthpitchroll", onSensor);
@@ -185,7 +193,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("deviceazimuthpitchroll", onSensor);
             });
         });
-        
+
         it('should be able to activate the deviceholster sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("deviceholster", onSensor);

@@ -16,11 +16,13 @@
  
 var self,
     ContactFindOptions = require("./ContactFindOptions"),
+    ContactPickerOptions = require("./ContactPickerOptions"),
     ContactError = require("./ContactError"),
     ContactName = require("./ContactName"),
     ContactOrganization = require("./ContactOrganization"),
     ContactAddress = require("./ContactAddress"),
     ContactField = require("./ContactField"),
+    contactConsts = require("./contactConsts"),
     ContactPhoto = require("./ContactPhoto"),
     ContactNews = require("./ContactNews"),
     ContactActivity = require("./ContactActivity");
@@ -124,6 +126,45 @@ function validateFindArguments(findOptions) {
     return !error;
 }
 
+function validateContactsPickerFilter(filter) {
+    var isValid = true,
+        availableFields = {};
+
+    if (typeof(filter) === "undefined") {
+        isValid = false;
+    } else {
+        if (filter && Array.isArray(filter)) {
+            availableFields = contactConsts.getKindAttributeMap();
+            filter.forEach(function (e) {
+                isValid = isValid && Object.getOwnPropertyNames(availableFields).reduce(
+                    function (found, key) {
+                        return found || availableFields[key] === e;
+                    }, false);
+            });
+        }
+    }
+
+    return isValid;
+}
+
+function validateContactsPickerOptions(options) {
+    var isValid = false,
+        mode = options.mode;
+
+    if (typeof(options) === "undefined") {
+        isValid = false;
+    } else {
+        isValid = mode === ContactPickerOptions.MODE_SINGLE || mode === ContactPickerOptions.MODE_MULTIPLE || mode === ContactPickerOptions.MODE_ATTRIBUTE;
+
+        // if mode is attribute, fields must be defined
+        if (mode === ContactPickerOptions.MODE_ATTRIBUTE && !validateContactsPickerFilter(options.fields)) {
+            isValid = false;
+        }
+    }
+
+    return isValid;
+}
+
 self = module.exports = {
     populateContact: function (contact) {
         if (contact.name) {
@@ -152,6 +193,8 @@ self = module.exports = {
             errorCallback(new ContactError(code));
         }
     },
-    validateFindArguments: validateFindArguments
+    validateFindArguments: validateFindArguments,
+    validateContactsPickerFilter: validateContactsPickerFilter,
+    validateContactsPickerOptions: validateContactsPickerOptions
 };
 

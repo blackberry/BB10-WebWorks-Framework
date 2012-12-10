@@ -377,6 +377,7 @@ describe("system index", function () {
             });
 
             afterEach(function () {
+                delete GLOBAL.window;
                 successCB = null;
                 failCB = null;
                 mockedFontFamily = null;
@@ -483,6 +484,89 @@ describe("system index", function () {
             sysIndex.getTimezones(successCb);
 
             expect(successCb).toHaveBeenCalledWith(["America/New_York", "America/Los_Angeles"]);
+        });
+    });
+
+    describe("setWallpaper", function () {
+        var mockApplication;
+
+        beforeEach(function () {
+            mockApplication = {};
+
+            mockApplication.newWallpaper = jasmine.createSpy("newWallpaper method");
+            mockApplication.getEnv = function (envName) {
+                if (envName === "HOME") {
+                    return "/accounts/1000/appdata/data";
+                }
+            };
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        getApplication: jasmine.createSpy().andReturn(mockApplication)
+                    }
+                }
+            };
+            successCB = jasmine.createSpy("Success Callback");
+            failCB = jasmine.createSpy("Fail Callback");
+        });
+        
+        afterEach(function () {
+            mockApplication.newWallpaper = null;
+            mockApplication = null;
+            delete GLOBAL.window;
+
+            successCB = null;
+            failCB = null;
+        });
+
+        it("calls setWallpaper with success callback at the end for NOT local path", function () {
+            var filePath = "/accounts/1000/shared/camera/IMG_00000001.jpg",
+                request = {wallpaper: encodeURIComponent(JSON.stringify(filePath))};
+
+            sysIndex.setWallpaper(successCB, failCB, request);
+
+            expect(mockApplication.newWallpaper).toHaveBeenCalledWith(filePath);
+            expect(successCB).toHaveBeenCalled();
+            expect(failCB).not.toHaveBeenCalled();
+        });
+
+        it("calls setWallpaper with success callback at the end for local path", function () {
+            var imageName = "IMG_00000001.jpg",
+                localPath = "local:///" + imageName,
+                request = {wallpaper: encodeURIComponent(JSON.stringify(localPath))},
+                tranlatedPath;
+
+            sysIndex.setWallpaper(successCB, failCB, request);
+            tranlatedPath = mockApplication.newWallpaper.mostRecentCall.args[0];
+
+            // Checking if the image name is at the end of translated path
+            expect(tranlatedPath.indexOf(imageName)).toEqual(tranlatedPath.length - imageName.length);
+
+            expect(successCB).toHaveBeenCalled();
+            expect(failCB).not.toHaveBeenCalled();
+        });
+
+        it("calls setWallpaper with path no prefixed 'file://' for NOT local path", function () {
+            var filePathPrefix = "file://",
+                filePath = "/accounts/1000/shared/camera/IMG_00000001.jpg",
+                request = {wallpaper: encodeURIComponent(JSON.stringify(filePathPrefix + filePath))};
+
+            sysIndex.setWallpaper(successCB, failCB, request);
+
+            expect(mockApplication.newWallpaper).toHaveBeenCalledWith(filePath);
+        });
+
+        it("calls setWallpaper with path no prefixed 'file://' for local path", function () {
+            var excludedPrefix = "file://",
+                localPath = "local:///accounts/1000/shared/camera/IMG_00000001.jpg",
+                request = {wallpaper: encodeURIComponent(JSON.stringify(localPath))},
+                tranlatedPath;
+
+            sysIndex.setWallpaper(successCB, failCB, request);
+            tranlatedPath = mockApplication.newWallpaper.mostRecentCall.args[0];
+
+            // Checking the tranlated path not prefixed with 'file://'
+            expect(tranlatedPath.indexOf(excludedPrefix)).toEqual(-1);
         });
     });
 });

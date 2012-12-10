@@ -36,7 +36,8 @@ var _extDir = __dirname + "./../../../../ext",
             "en": "testName-EN"
         },
         version: "testVersion",
-        orientation: "portrait-primary"
+        orientation: "portrait-primary",
+        windowState: "fullscreen"
     },
     mockedWebworks;
 
@@ -152,6 +153,13 @@ describe("app client", function () {
         });
     });
 
+    describe("minimize", function () {
+        it("should call execSync", function () {
+            client.minimize();
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "minimize");
+        });
+    });
+
     describe("exit", function () {
         it("should call execSync", function () {
             client.exit();
@@ -165,6 +173,12 @@ describe("app client", function () {
         });
     });
 
+    describe("windowState", function () {
+        it("should be populated", function () {
+            expect(client.windowState === mockData.windowState);
+        });
+    });
+    
     describe("lockOrientation", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();

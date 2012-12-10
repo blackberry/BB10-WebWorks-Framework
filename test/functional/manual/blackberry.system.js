@@ -356,4 +356,86 @@ describe("blackberry.system", function () {
             });
         });
     });
+
+    describe("setWallpaper", function () {
+        it('should set wallpaper using the path to file provided', function () {
+            var confirm,
+                onSuccessFlag,
+                onFailFlag;
+
+            alert("Select any image to be use as wallpaper from camera folder");
+
+            try {
+                blackberry.invoke.card.invokeFilePicker(
+                    {
+                        mode: blackberry.invoke.card.FILEPICKER_MODE_PICKER,
+                        filter: ["*.jpg", "*.png"],
+                        directory: [(blackberry.io.sharedFolder + "/camera")]
+                    }, function (path) {
+                        if (path instanceof Array) {
+                            path = path[0];
+                        }
+
+                        blackberry.system.setWallpaper(path);
+                        onSuccessFlag = true;
+                    },
+                    function (reason) {
+                        onFailFlag = true;
+                    },
+                    function (error) {
+                        if (error) {
+                            onFailFlag = true;
+                        }
+                    }
+                );
+            } catch (e) {
+                onFailFlag = true;
+            }
+
+            waitsFor(function () {
+                return onSuccessFlag || onFailFlag;
+            }, "The callback flag should be set to true", waitForTimeout);
+
+            runs(function () {
+                expect(onSuccessFlag).toEqual(true);
+
+                if (onSuccessFlag) {
+                    confirm = window.confirm("The image previously selected is used as wallpaper");
+                }
+
+                expect(confirm).toEqual(true);
+
+            });
+        });
+
+        it('should set wallpaper using the local path to file', function () {
+            var confirm,
+                onSuccessFlag,
+                onFailFlag;
+
+            alert("It will select local path of blackberry10.jpg to set wallpaper");
+
+            try {
+                blackberry.system.setWallpaper("local:///img/blackberry10.jpg");
+                onSuccessFlag = true;
+            } catch (e) {
+                onFailFlag = true;
+            }
+
+            waitsFor(function () {
+                return onSuccessFlag || onFailFlag;
+            }, "The callback flag should be set to true", waitForTimeout);
+
+            runs(function () {
+                expect(onSuccessFlag).toEqual(true);
+
+                if (onSuccessFlag) {
+                    confirm = window.confirm("Local blackberry10.jpg image used as wallpaper now");
+                }
+
+                expect(confirm).toEqual(true);
+
+            });
+        });
+    });
 });

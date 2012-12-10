@@ -9,7 +9,13 @@ describe("request", function () {
         request = require(libPath + "lib/request");
         mockedWebview = {
             originalLocation : "http://www.origin.com",
-            executeJavaScript : jasmine.createSpy()
+            executeJavaScript : jasmine.createSpy(),
+            id: 42,
+            uiWebView: {
+                childwebviewcontrols: {
+                    open: jasmine.createSpy()
+                }
+            }
         };
     });
 
@@ -51,7 +57,18 @@ describe("request", function () {
             returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url}));
         expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();
         expect(JSON.parse(returnValue).setAction).toEqual("DENY");
-        expect(mockedWebview.executeJavaScript.mostRecentCall.args[0]).toEqual("alert('Access to \"" + url + "\" not allowed')");
+        expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith("alert('Access to \"" + url + "\" not allowed')");
+    });
+
+    it("can apply whitelist rules and deny blocked urls and route to a uiWebView when target is main frame", function () {
+        spyOn(Whitelist.prototype, "isAccessAllowed").andReturn(false);
+        var url = "http://www.google.com",
+            requestObj = request.init(mockedWebview),
+            returnValue = requestObj.networkResourceRequestedHandler(JSON.stringify({url: url, targetType: "TargetIsMainFrame"}));
+        expect(Whitelist.prototype.isAccessAllowed).toHaveBeenCalled();
+        expect(mockedWebview.uiWebView.childwebviewcontrols.open).toHaveBeenCalledWith(url);
+        expect(mockedWebview.executeJavaScript).not.toHaveBeenCalledWith("alert('Access to \"" + url + "\" not allowed')");
+        expect(JSON.parse(returnValue).setAction).toEqual("DENY");
     });
 
     it("can call the server handler when certain urls are detected", function () {
@@ -65,7 +82,7 @@ describe("request", function () {
                     action: "kungfuAction",
                     ext: "customExt",
                     method: "crystalMethod",
-                    args: "blargs=yes",
+                    args: "blargs=yes"
                 },
                 body: undefined,
                 origin: "http://www.origin.com"

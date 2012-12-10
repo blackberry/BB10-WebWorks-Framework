@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns=" http://www.w3.org/ns/widgets"
+<widget xmlns="http://www.w3.org/ns/widgets"
         xmlns:rim="http://www.blackberry.com/ns/widgets"
         version="1.0.0"
         id="WebWorksTest"
         rim:header="RIM:WebWorks/App">
 
     <name>WebWorks Test Application</name>
-    <name xml:lang="fr-FR">French application name</name>
-    <name xml:lang="en">English application name</name>
+    <name xml:lang="fr-FR">WebWorks Test App-fr</name>
+    <name xml:lang="en">WebWorks Test App-en</name>
 
     <description>This application tests a wide range of WebWorks functionalities.</description>
     <description xml:lang="fr-FR">French description</description>
     <description xml:lang="en">English description</description>
 
-    <content src="index.htm"/>
+    <content src="index.html"/>
 
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
@@ -26,6 +26,7 @@
     <feature id="blackberry.event" required="true" version="1.0.0.0"/>
     <feature id="blackberry.ui.dialog" required="true" version="1.0.0.0"/>
     <feature id="blackberry.ui.toast" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.ui.contextmenu" required="true" version="1.0.0.0"/>
     <feature id="blackberry.io" required="true" version="1.0.0.0"/>
     <feature id="blackberry.io.filetransfer" required="true" version="1.0.0.0" />
     <feature id="blackberry.push" required="true" version="1.0.0.0" />
@@ -38,6 +39,9 @@
     <feature id="blackberry.notification" required="true" version="1.0.0.0" />
     <feature id="blackberry.sensors" required="true" version="1.0.0.0" />
     <feature id="enable-flash" />
+    <feature id="internal.automation" required="true" version="1.0.0.0" />
+    <feature id="internal.pps" required="true" version="1.0.0.0" />
+    <feature id="blackberry.ui.cover" required="true" version="1.0.0.0" />
 
     <access uri="http://www.rim.com">
         <feature id="blackberry.app"/>
@@ -129,10 +133,10 @@
         #See the License for the specific language governing permissions and limitations under the License.
     </license>
 
-    <rim:invoke-target id="net.rim.webworks.SmokeTest">
+    <rim:invoke-target id="com.webworks.test.functional.invoke.target">
         <type>APPLICATION</type>
         <filter>
-            <action>bb.action.OPEN</action>
+            <action>bb.action.WWTEST</action>
             <mime-type>text/plain</mime-type>
         </filter>
     </rim:invoke-target>

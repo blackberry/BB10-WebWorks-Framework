@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebWorks Smoke Test for BB10</title>
+</head>
+<body>
+    <h1>Test Navigating to whitelisted URLs</h1>
+    <p>
+        A new web view should be created when a link with a non whitelisted url is clicked.
+    </p>
+
+    <h2>1. http://www.google.com</h2>
+    <h3><a href="http://www.google.com">Click here</a></h3>
+    <p>
+        The above link has a link to google and should load
+        a new page in a separate web view when clicked.
+    </p>
+
+    <h2>2. http://www.ncix.com</h2>
+    <h3><a href="http://www.ncix.com">Click here</a></h3>
+    <p>
+        The above link has a link to google and should load
+        a new page in a separate web view when clicked.
+    </p>
+</body>
+</html>

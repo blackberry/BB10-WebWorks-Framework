@@ -54,6 +54,14 @@ _self.touch = function (x, y) {
     );
 };
 
+_self.touchBottomLeft = function () {
+    _self.touch(10, screen.availHeight - 10);
+};
+
+_self.touchBottomCenter = function () {
+    _self.touch(screen.availWidth / 2, screen.availHeight - 10);
+};
+
 _self.showKeyboard = function () {
     internal.pps.syncWrite(
         { msg : "show" },

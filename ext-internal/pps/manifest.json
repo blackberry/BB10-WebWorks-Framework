@@ -1,5 +1,5 @@
 {
-    "global": true,
+    "global": false,
     "namespace": "internal.pps",
     "dependencies": []
 }

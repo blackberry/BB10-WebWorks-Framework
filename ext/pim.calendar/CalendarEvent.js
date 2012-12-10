@@ -29,7 +29,8 @@ var CalendarEvent,
 CalendarEvent = function (properties) {
     var privateId,
         privateParentId,
-        privateFolder;
+        privateFolder,
+        privateHash;
 
     this.allDay = properties && typeof properties.allDay !== "undefined" ? properties.allDay : false;
     this.attendees = properties && typeof properties.attendees !== "undefined" ? properties.attendees : [];
@@ -51,10 +52,12 @@ CalendarEvent = function (properties) {
     privateId = properties && typeof properties.id !== "undefined" ? properties.id : null;
     privateParentId = properties && typeof properties.parentId !== "undefined" ? properties.parentId : null;
     privateFolder = properties && typeof properties.folder !== "undefined" ? new CalendarFolder(properties.folder) : null;
+    privateHash = properties && typeof properties.hash !== "undefined" ? properties.hash : 0;
 
     Object.defineProperty(this, "id", { "value": privateId, "enumerable": true });
     Object.defineProperty(this, "parentId", { "value": privateParentId, "enumerable": true });
     Object.defineProperty(this, "folder", {"value": privateFolder, "enumerable": true });
+    Object.defineProperty(this, "hash", { "value": privateHash, "enumerable": false });
 };
 
 CalendarEvent.prototype.save = function (onSaveSuccess, onSaveError) {

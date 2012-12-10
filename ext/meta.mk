@@ -21,20 +21,22 @@ EXTRA_INCVPATH+=$(QNX_INCLUDE) \
                 $(WEBWORKS_DIR)/ext/utils/native
 
 EXTRA_SRCVPATH+=$(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/lib_json \
-                $(WEBWORKS_DIR)/dependencies/jnext_1_0_8_3/jncore/jnext-extensions/common
+                $(WEBWORKS_DIR)/dependencies/jnext_1_0_8_3/jncore/jnext-extensions/common \
+                $(WEBWORKS_DIR)/ext/utils/native
 
 ifeq ($(PLUGIN),yes)
 SRCS+=$(WEBWORKS_DIR)/dependencies/jnext_1_0_8_3/jncore/jnext-extensions/common/plugin.cpp
 endif
 
 ifeq ($(UTILS),yes)
-	ifeq ($(UNITTEST),yes)
-	SRCS+=$(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_reader.cpp \
-		  $(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_value.cpp \
-	  	  $(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_writer.cpp
-	else
-	LDFLAGS+=-lutils
-	endif
+    ifeq ($(UNITTEST),yes)
+    SRCS+=$(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_reader.cpp \
+          $(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_value.cpp \
+          $(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_writer.cpp \
+          $(WEBWORKS_DIR)/ext/utils/native/webworks_utils.cpp
+    else
+    LDFLAGS+=-lutils
+    endif
 endif
 
 ifeq ($(UNITTEST),yes)

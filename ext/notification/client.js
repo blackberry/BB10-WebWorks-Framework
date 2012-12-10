@@ -53,7 +53,7 @@ Notification = function (title, options) {
 
     // itemId is required parameter that identifies the notification. If tag is provided it serves as an itemId, when tag isn't provided itemId is generated.
     if (!options.tag) {
-        options.tag = "itemId" + generateItemId();
+        options.tag = generateItemId() + "_itemId";
     }
 
     if (options.onerror || options.onshow) {

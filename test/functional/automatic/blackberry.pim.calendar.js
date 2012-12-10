@@ -1559,17 +1559,17 @@ describe("blackberry.pim.calendar", function () {
                     venue = "some location",
                     summary = "WebWorksTest last day of every month (wwt011)",
                     rule = new CalendarRepeatRule({
-                        "frequency": CalendarRepeatRule.FREQUENCY_MONTHLY,
+                        "frequency": CalendarRepeatRule.FREQUENCY_MONTHLY_AT_A_WEEK_DAY,
                         "expires": new Date("Jun 1, 2013, 12:00"),
-                        "dayInMonth": CalendarRepeatRule.LAST_DAY_IN_MONTH
+                        "dayInWeek": CalendarRepeatRule.LAST_DAY_IN_MONTH
                     }),
                     called = false,
                     successCb = jasmine.createSpy().andCallFake(function (created) {
                         expect(created.summary).toBe(summary);
                         expect(created.location).toBe(venue);
                         expect(created.recurrence).toBeDefined();
-                        expect(created.recurrence.frequency).toBe(CalendarRepeatRule.FREQUENCY_MONTHLY);
-                        expect(created.recurrence.dayInMonth).toBe(CalendarRepeatRule.LAST_DAY_IN_MONTH);
+                        expect(created.recurrence.frequency).toBe(CalendarRepeatRule.FREQUENCY_MONTHLY_AT_A_WEEK_DAY);
+                        expect(created.recurrence.dayInWeek).toBe(CalendarRepeatRule.LAST_DAY_IN_MONTH);
                         recEvent = created;
                         called = true;
                     }),

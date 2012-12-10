@@ -17,13 +17,13 @@ describe("blackberry.invoked", function () {
     it('blackberry.invoked should exist', function () {
         expect(blackberry.invoked).toBeDefined();
     });
-    
+
     it("should sucessfully send and receive invocations", function () {
         var onSuccess = jasmine.createSpy(),
             onError = jasmine.createSpy(),
             invocationHandled = false,
             invokedTarget, invokedType, invokedAction, invokedData;
-        
+
         blackberry.event.addEventListener("invoked", function (invocationInfo) {
             if (invocationInfo.target) {
                 invokedTarget = invocationInfo.target;
@@ -39,11 +39,11 @@ describe("blackberry.invoked", function () {
             }
             invocationHandled = true;
         });
-        
+
         runs(function () {
             blackberry.invoke.invoke({
-                target: "net.rim.webworks.SmokeTest",
-                action: "bb.action.OPEN",
+                target: "com.webworks.test.functional.invoke.target",
+                action: "bb.action.WWTEST",
                 type: "text/plain",
                 data: "Hello from SmokeTest"
             }, onSuccess, onError);
@@ -56,10 +56,10 @@ describe("blackberry.invoked", function () {
         runs(function () {
             expect(onSuccess).toHaveBeenCalled();
             expect(onError).not.toHaveBeenCalled();
-            expect(invokedTarget).toBe("net.rim.webworks.SmokeTest");
+            expect(invokedTarget).toBe("com.webworks.test.functional.invoke.target");
             expect(invokedType).toBe("text/plain");
-            expect(invokedAction).toBe("bb.action.OPEN");
+            expect(invokedAction).toBe("bb.action.WWTEST");
             expect(invokedData).toBe("Hello from SmokeTest");
         });
-    }); 
+    });
 });
