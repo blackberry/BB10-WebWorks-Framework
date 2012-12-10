@@ -8,22 +8,6 @@
 <body>
 
     <script type="text/javascript">
-        function invokeCard(mode) {
-            blackberry.invoke.card.invokeCamera(mode, function (path) {
-                        alert("saved "+ path);
-                    },
-                    function (reason) {
-                        alert("cancelled " + reason);
-                    },
-                    function (error) {
-                        if (error) {
-                            alert("invoke error "+ error);
-                        } else {
-                            console.log("invoke success " );
-                        }
-                    }
-                );
-        }
         //pick a file of picture or music type
         function invokeFileInPickerMode0() {
             var details = {
@@ -180,122 +164,79 @@
 
 </script>
  <p> Steps for Testing</p>
- <p> Case 1</p>
-    <p>
-    	1. Click on the button below to invoke camera card in photo mode. <br/>
-		2. When the camera card show - take a picture and make sure it was invoke in photo mode <br/>
-	    3. An alert should pop up with the photo path when you return to app <br/>
-    <input id="Button2" type="button" value="camera card in photo mode" onclick='invokeCard(blackberry.invoke.card.CAMERA_MODE_PHOTO)' />
-    <br />
-    <p> Case 2</p>
-    <p>
-        1. Same as Case1 but for video.
-    <br />
-    <input id="Button3" type="button" value="camera card in video mode" onclick='invokeCard(blackberry.invoke.card.CAMERA_MODE_VIDEO)' />
-    <br />
-
-    <p> Case 3</p>
-    <p>
-        1. Same as Case1 but for full mode.
-    <br />
-    <input id="Button3" type="button" value="camera card in full mode" onclick='invokeCard(blackberry.invoke.card.CAMERA_MODE_FULL)' />
-    <br />
-    <p> Case 4</p>
-    <p>
-    1. Same as Case1 but for invalid mode should default to full mode.
-    <br />
-    <input id="Button4" type="button" value="camera card in invalid mode" onclick='invokeCard("invalid")' />
-    <br />
-    <p> Case 5</p>
-    <p>
-        1. Same as Case5 but for undefined mode.
-    <br />
-    <input id="Button5" type="button" value="camera card in undefined  mode" onclick='invokeCard()' />
-    <br />
-
-    <p> Case 6 - Input field test continues to work</p>
-    <p>
-    	1. Click on the input field and take a picture or select a file <br/>
-		2. The div at the bottom of the page will show the details of the file. <br/>
-    <p>Camera<br>
-    <input id="camerainput" type="file" accept="image/*" capture="camera">
-    <script>
-        document.getElementById('camerainput').addEventListener('change', readSingleFile, false);
-    </script>
-    <p> File Picker test cases </p>
-    <p> Case 7</p>
+    <p> Case 1</p>
     <p>
         pick a file of picture or music type
     <br />
     <input id="Button7" type="button" value="file picker card " onclick='invokeFileInPickerMode0()'/>
     <br />
-    <p> Case 8</p>
+    <p> Case 2</p>
     <p>
      pick a file of picture with image crop enabled
     <br />
     <input id="Button8" type="button" value="file picker card " onclick='invokeFileInPickerMode1()'/>
     <br />
-    <p> Case 9</p>
+    <p> Case 3</p>
     <p>
       pick a file using a filter, of only jpg and mp4
     <br />
     <input id="Button9" type="button" value="file picker card " onclick='invokeFileInPickerMode2()'/>
     <br />
-    <p> Case 10</p>
+    <p> Case 4</p>
     <p>
      open file picker in GridView and sort by descending name
     <br />
     <input id="Button10" type="button" value="file picker card " onclick='invokeFileInPickerMode3()'/>
     <br />
-    <p> Case 11 </p>
+    <p> Case 5 </p>
     <p>
         open file picker with a title in viewMode list
     <br />
     <input id="Button11" type="button" value="file picker card " onclick='invokeFileInPickerMode4()'/>
     <br />
-   <p> Case 12</p>
+   <p> Case 6</p>
     <p>
      open file picker starting at two directories - Photos and Camera
     <br />
     <input id="Button12" type="button" value="file picker card " onclick='invokeFileInPickerMode5()'/>
     <br />
-    <p> Case 13 </p>
+    <p> Case 7 </p>
     <p>
      open file picker in multiple mode starting at two directories
     <br />
     <input id="Button14" type="button" value="file picker card " onclick='invokeFileInPickerMode6()'/>
     <br />
-    <p> Case 14 </p>
+    <p> Case 8 </p>
     <p>
       open file picker in saver mode with 1 directory. Should open parent of App Home
     <br />
     <input id="Button14" type="button" value="file picker card " onclick='invokeFileInPickerMode7()'/>
     <br />
-    <p> Case 15 </p>
+    <p> Case 9 </p>
     <p>
     open file picker in saver mode and allow overwrite - try to save already saved file
     <br />
     <input id="Button15" type="button" value="file picker card " onclick='invokeFileInPickerMode8()'/>
     <br />
-    <p> Case 16 </p>
+    <p> Case 10 </p>
     <p>
       open file picker in multiple saver mode to save a folder path
     <br />
     <input id="Button16" type="button" value="file picker card " onclick='invokeFileInPickerMode9()'/>
     <br />
-    <p> Case 17 </p>
+    <p> Case 11 </p>
     <p>
       open file picker in saver mode with file names
     <br />
     <input id="Button17" type="button" value="file picker card " onclick='invokeFileInPickerMode10()'/>
     <br />
-    <p> Case 18 </p>
+    <p> Case 12 </p>
     <p>
       open file picker in multiple saver mode with file names and file types
     <br />
     <input id="Button18" type="button" value="file picker card " onclick='invokeFileInPickerMode11()'/>
     <br />
-    <p> Case 19 </p>
+    <p> Case 13 </p>
     <p>
       open file picker in single  mode with a type and defaultType
     <br />
@@ -308,7 +249,7 @@
     </p> <br>
     <div id="show" />
     </p>
-    <p> Case 20 - Input field test continues to work for file picker</p>
+    <p> Case 14 - Input field test continues to work for file picker</p>
     <p>
     	1. Click on the input field and select a file <br/>
 		2. The div at the bottom of the page will show the details of the file. <br/>
@@ -317,5 +258,6 @@
     <script>
 document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
     </script>
+    <a href="main.htm">Back></a>
 </body>
 </html>

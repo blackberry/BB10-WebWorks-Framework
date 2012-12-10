@@ -18,8 +18,12 @@ var contextmenu = {},
     _storedCallbacks = {},
     _listeningForCallbacks = false;
 
-function defineReadOnlyField(field) {
+function defineReadOnlyContext(field) {
     Object.defineProperty(contextmenu, "CONTEXT_" + field, {"value": field, "writable": false});
+}
+
+function defineReadOnlyActions(name, value) {
+    Object.defineProperty(contextmenu, "ACTION_" + name, {"value": value, "writable": false});
 }
 
 function listen() {
@@ -50,6 +54,15 @@ Object.defineProperty(contextmenu, "enabled", {
 });
 
 contextmenu.addItem = function (contexts, action, callback) {
+
+    if (typeof contexts === 'undefined') {
+        return 'Adding a custom menu item requires a context';
+    }
+
+    if (typeof action.actionId === 'undefined') {
+        return 'Adding a custom menu item requires an actionId';
+    }
+
     _storedCallbacks[action.actionId] = callback;
     if (!_listeningForCallbacks) {
         _listeningForCallbacks = true;
@@ -59,15 +72,42 @@ contextmenu.addItem = function (contexts, action, callback) {
 };
 
 contextmenu.removeItem = function (contexts, actionId) {
+
+    if (typeof contexts === 'undefined') {
+        return 'Removing a custom menu item requires a context';
+    }
+
+    if (typeof actionId === 'undefined') {
+        return 'Removing a custom menu item requires an actionId';
+    }
+
     window.webworks.execAsync(_ID, 'removeItem', {contexts: contexts, actionId: actionId});
     delete _storedCallbacks[actionId];
 };
 
-defineReadOnlyField("ALL");
-defineReadOnlyField("LINK");
-defineReadOnlyField("IMAGE_LINK");
-defineReadOnlyField("IMAGE");
-defineReadOnlyField("INPUT");
-defineReadOnlyField("TEXT");
+contextmenu.defineCustomContext = function (customContext, options) {
+    window.webworks.execAsync(_ID, 'defineCustomContext', {context: customContext, options: options});
+};
+
+defineReadOnlyContext("ALL");
+defineReadOnlyContext("LINK");
+defineReadOnlyContext("IMAGE_LINK");
+defineReadOnlyContext("IMAGE");
+defineReadOnlyContext("INPUT");
+defineReadOnlyContext("TEXT");
+
+defineReadOnlyActions("CLEAR_FIELD", "ClearField");
+defineReadOnlyActions("CANCEL", "Cancel");
+defineReadOnlyActions("CUT", "Cut");
+defineReadOnlyActions("COPY", "Copy");
+defineReadOnlyActions("PASTE", "Paste");
+defineReadOnlyActions("SELECT", "Select");
+defineReadOnlyActions("COPY_LINK", "CopyLink");
+defineReadOnlyActions("OPEN_LINK", "OpenLink");
+defineReadOnlyActions("SAVE_LINK_AS", "SaveLinkAs");
+defineReadOnlyActions("SAVE_IMAGE", "SaveImage");
+defineReadOnlyActions("COPY_IMAGE_LINK", "CopyImageLink");
+defineReadOnlyActions("VIEW_IMAGE", "ViewImage");
+defineReadOnlyActions("INSPECT_ELEMENT", "InspectElement");
 
 module.exports = contextmenu;

@@ -55,6 +55,8 @@ describe("pim.calendar CalendarEvent", function () {
                         expect(evt[field]).toBeFalsy();
                     } else if (field === "attendees") {
                         expect(evt[field]).toEqual([]);
+                    } else if (field === "hash") {
+                        expect(evt[field]).toEqual(0);
                     } else {
                         expect(evt[field]).toBe(null);
                     }
@@ -88,6 +90,8 @@ describe("pim.calendar CalendarEvent", function () {
                         expect(evt[field]).toBeFalsy();
                     } else if (field === "attendees") {
                         expect(evt[field]).toEqual([]);
+                    } else if (field === "hash") {
+                        expect(evt[field]).toEqual(0);
                     } else {
                         expect(evt[field]).toBe(null);
                     }

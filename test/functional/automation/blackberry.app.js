@@ -69,7 +69,6 @@ describe("blackberry.app", function () {
             onResume = null;
         });
 
-
         it("should invoke callback when application is fullscreened when Application Behavior is 'Paused'", function () {
             waitsFor(function () {
                 return onResume.callCount;
@@ -77,9 +76,82 @@ describe("blackberry.app", function () {
 
             runs(function () {
                 expect(onResume).toHaveBeenCalled();
+                waits(2000);
             });
 
             internal.automation.touch(300, 300);
+        });
+    });
+
+    describe("minimize", function () {
+        var onPause;
+
+        beforeEach(function () {
+            onPause = jasmine.createSpy();
+            blackberry.event.addEventListener("pause", onPause);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("pause", onPause);
+            onPause = null;
+        });
+
+        it("should invoke pause when application is minimized", function () {
+            waitsFor(function () {
+                return onPause.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onPause).toHaveBeenCalled();
+                internal.automation.touch(300, 300);
+                waits(2000);
+            });
+
+            blackberry.app.minimize();
+        });
+    });
+
+    describe("windowstatechanged", function () {
+        var onWindowStateChange;
+
+        beforeEach(function () {
+            onWindowStateChange = jasmine.createSpy();
+            blackberry.event.addEventListener("windowstatechanged", onWindowStateChange);
+        });
+
+        afterEach(function () {
+            blackberry.event.removeEventListener("windowstatechanged", onWindowStateChange);
+            onWindowStateChange = null;
+        });
+
+
+        it("should receive thumbnail event when minimized and fullscreen event when brought back to foreground", function () {
+            expect(blackberry.app.windowState).toBe("fullscreen");
+
+            internal.automation.swipeUp();
+
+            waitsFor(function () {
+                return onWindowStateChange.callCount;
+            }, "event never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onWindowStateChange).toHaveBeenCalledWith("thumbnail");
+                expect(blackberry.app.windowState).toBe("thumbnail");
+                waits(2000); //takes time to minimize the app.
+                runs(function () {
+                    internal.automation.touch(300, 300);
+                    waitsFor(function () {
+                        return onWindowStateChange.callCount - 1;
+                    }, "event never fired", waitForTimeout);
+
+                    runs(function () {
+                        expect(onWindowStateChange).toHaveBeenCalledWith("fullscreen");
+                        expect(blackberry.app.windowState).toBe("fullscreen");
+                    });
+                });
+            });
+
+
         });
     });
 

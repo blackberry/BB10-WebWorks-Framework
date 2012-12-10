@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>emailComposer card manual tests</title>
+    <script src="local:///chrome/webworks.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function invokeCard(options) {
+            blackberry.invoke.card.invokeEmailComposer(options, function () {
+                window.alert("done");
+            },
+            function (reason) {
+                window.alert(reason);
+            },
+            function (error) {
+                if (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<p>Steps for Testing</p>
+<p>You must have an email account synced to device</p>
+<p>Case 1</p>
+    <p>
+        1.Click on the button below to invoke the email composer <br />
+        2.Confirm the composer appears <br />
+        3.Click the 'Cancel' button <br />
+        4.Wait for confirmation alert (it will say 'cancel')<br />
+        <input type="button" value="invoke emailComposer (no options)" onclick="invokeCard()" />
+    </p>
+<p>Case 2</p>
+    <p>
+        1.Click on the button below to invoke the email composer <br />
+        2.Confirm the composer appears <br />
+        3.Send an email <br />
+        4.Wait for confirmation alert (it will say 'done')<br />
+        <input type="button" value="invoke emailComposer (no options)" onclick="invokeCard()" />
+    </p>
+<p>Case 3</p>
+    <p>
+        1.Click on the button below to invoke the email composer <br />
+        2.Confirm the composer is pre-populated with the following data:<br />
+        <ul>
+            <li>to: somebody@somewhere.com</li>
+            <li>cc: someoneelse@somewhere.com, anotherone@somewhere.com</li>
+            <li>subject: Something</li>
+            <li>body: Something something...</li>
+            <li>attachment: blackberry10.png"</li>
+        </ul>
+        <input type="button" value="invoke emailComposer (with options set)"
+            onclick='invokeCard({
+                to: ["somebody@somewhere.com"],
+                cc: ["someoneelse@somewhere.com", "anotherone@somewhere.com"],
+                subject: "Something",
+                body: "Something something...",
+                attachment: ["local:///img/blackberry10.png"]
+            })'
+        />
+    </p>
+
+
+<a href="main.htm">Back</a>
+</body>

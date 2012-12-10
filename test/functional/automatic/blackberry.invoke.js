@@ -47,7 +47,7 @@ describe("blackberry.invoke", function () {
                         expect(target.icon).toBeDefined();
                         expect(target.icon).not.toEqual(iconPath);
                         expect(target.label).toBeDefined();
-                        expect(target.label).toEqual("English application name");//Localized application name [en]
+                        expect(target.label).toEqual("WebWorks Test App-en");//Localized application name [en]
                         expect(target.type).toBeDefined();
                         expect(target.type).toEqual("APPLICATION");
                         expect(target.perimeter).toBeDefined();
@@ -284,4 +284,46 @@ describe("blackberry.invoke", function () {
 
     });
 
+    it('Register an invoke interrupter and expect the handler to NOT be triggered on invoke since it is not interruptable', function () {
+        var handler = jasmine.createSpy(),
+            reason,
+            delay = 1000,
+            flag = false,
+            errorSpy = jasmine.createSpy();
+
+        // Register the handler function
+        blackberry.invoke.interrupter = handler;
+
+        blackberry.invoke.invoke({
+            action: "bb.action.VIEW",
+            uri : "local:///audio/test.mp3",
+            file_transfer_mode : blackberry.invoke.FILE_TRANSFER_COPY_RW
+        },
+        function (reason) {
+        },
+        function (reason) {
+        }, errorSpy);
+
+        expect(errorSpy).not.toHaveBeenCalled();
+
+        waits(delay);
+
+        runs(function () {
+            flag = false;
+            blackberry.event.addEventListener("onChildCardClosed", function (request) {
+                reason = request.reason;
+                flag = true;
+            });
+
+            blackberry.invoke.closeChildCard();
+            waitsFor(function () {
+                return flag;
+            }, delay);
+            runs(function () {
+                expect(reason).toBe("closed");
+            });
+        });
+
+        expect(handler).not.toHaveBeenCalled();
+    });
 });

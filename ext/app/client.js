@@ -17,8 +17,12 @@ var _self = {},
     ID = require("./manifest.json").namespace,
     readOnlyValues;
 
+_self.minimize = function () {
+    window.webworks.execSync(ID, "minimize");
+};
+
 _self.exit = function () {
-    return window.webworks.execSync(ID, "exit");
+    window.webworks.execSync(ID, "exit");
 };
 
 function getReadOnlyFields() {
@@ -56,6 +60,18 @@ Object.defineProperty(_self, "orientation", {
             console.error(e);
         }
         return orientation;
+    }
+});
+
+Object.defineProperty(_self, "windowState", {
+    get: function () {
+        var windowState;
+        try {
+            windowState = window.webworks.execSync(ID, "windowState");
+        } catch (e) {
+            console.error(e);
+        }
+        return windowState;
     }
 });
 

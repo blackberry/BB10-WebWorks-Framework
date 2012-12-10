@@ -91,6 +91,15 @@ describe("system client", function () {
         expect(result).toBe(timezones);
     });
 
+    it("setWallpaper", function () {
+        var filePath = "file:///accounts/1000/shared/camera/IMG_00000001.jpg";
+
+        spyOn(mockedWebworks, "execSync");
+        sysClient.setWallpaper(filePath);
+
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "setWallpaper", {"wallpaper": filePath});
+    });
+
     it("ALLOW", function () {
         expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "ALLOW", 0);
     });

@@ -145,6 +145,16 @@ describe("webview", function () {
         });
     });
 
+    describe("enableCrossSiteXHR", function () {
+        it("can set enableCrossSiteXHR", function () {
+            webview.create();
+            webview.enableCrossSiteXHR = true;
+            expect(mockedWebview.enableCrossSiteXHR).toBe(true);
+            webview.enableCrossSiteXHR = false;
+            expect(mockedWebview.enableCrossSiteXHR).toBe(false);
+        });
+    });
+
     describe("geometry", function () {
         it("can set geometry", function () {
             webview.create();
@@ -273,6 +283,14 @@ describe("webview", function () {
             waits(1);
             runs(function () {
                 expect(mockedWebview.extraHttpHeaders).toEqual({"rim-header": "RIM-Widget:rim/widget"});
+            });
+        });
+
+        it("expect the config to set the user agent", function () {
+            webview.create();
+            waits(1);
+            runs(function () {
+                expect(mockedWebview.userAgent).toEqual("Some extremely long user agent (with) spe/cial, characters");
             });
         });
     });

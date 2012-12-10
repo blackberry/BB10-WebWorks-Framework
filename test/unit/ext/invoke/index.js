@@ -18,6 +18,9 @@ var _apiDir = __dirname + "./../../../../ext/invoke/",
     _libDir = __dirname + "./../../../../lib/",
     _extDir = __dirname + "./../../../../ext/",
     mockedInvocation,
+    mockedApplication,
+    mockedController,
+    _event,
     index,
     successCB,
     failCB,
@@ -33,18 +36,34 @@ describe("invoke index", function () {
             TARGET_TYPE_MASK_CARD: 2,
             TARGET_TYPE_MASK_VIEWER: 4
         };
+        mockedController = {
+            dispatchEvent : jasmine.createSpy(),
+            addEventListener : jasmine.createSpy(),
+            removeEventListener : jasmine.createSpy()
+        };
+        mockedApplication = {
+            interrupter : false,
+            invocation: mockedInvocation,
+            addEventListener : jasmine.createSpy().andCallFake(function (eventName, callback) {
+                    callback();
+                }),
+            removeEventListener : jasmine.createSpy()
+        };
         GLOBAL.window = {};
         GLOBAL.window.qnx = {
             callExtensionMethod : function () {},
             webplatform: {
                 getApplication: function () {
-                    return {
-                        invocation: mockedInvocation
-                    };
-                }
+                    return mockedApplication;
+                },
+                getController : function () {
+                    return mockedController;
+                },
             }
         };
 
+        GLOBAL.qnx = GLOBAL.window.qnx;
+        _event = require(_libDir + "./event");
         index = require(_apiDir + "index");
         successCB = jasmine.createSpy("success callback");
         failCB = jasmine.createSpy("fail callback");
@@ -374,6 +393,58 @@ describe("invoke index", function () {
                 expect(successCB).not.toHaveBeenCalled();
                 expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
             });
+
+        });
+
+        describe("interrupt invocation", function () {
+
+            it("expect returnInterruption to be defined", function () {
+                expect(index.returnInterruption).toBeDefined();
+            });
+
+            it("can properly register for invocation interruption", function () {
+                var args = {someTestStuff : 'Test arges'};
+                index.registerInterrupter(successCB, failCB, args);
+                expect(mockedApplication.invocation.interrupter).toEqual(jasmine.any(Function));
+                expect(successCB).toHaveBeenCalled();
+            });
+
+            it("can properly trigger an event to the client after registration", function () {
+                var args = {someTestStuff : 'Test arges'},
+                    mockedRequest = {'mocked' : 'request'},
+                    returnCallback = jasmine.createSpy();
+
+                index.registerInterrupter(successCB, failCB, args);
+                expect(mockedApplication.invocation.interrupter).toEqual(jasmine.any(Function));
+
+                spyOn(_event, 'trigger');
+                mockedApplication.invocation.interrupter(mockedRequest, returnCallback);
+                expect(_event.trigger).toHaveBeenCalledWith('invocation.interrupted', mockedRequest);
+
+                expect(successCB).toHaveBeenCalled();
+            });
+
+            it("can properly return from the client to continue invocation", function () {
+                var mockedRequest = { request : encodeURIComponent(JSON.stringify({something : 'some other data'})) },
+                    returnCallback = jasmine.createSpy();
+
+                index.registerInterrupter(successCB, failCB, mockedRequest);
+                expect(mockedApplication.invocation.interrupter).toEqual(jasmine.any(Function));
+
+                spyOn(_event, 'trigger');
+                mockedApplication.invocation.interrupter(mockedRequest, returnCallback);
+                expect(_event.trigger).toHaveBeenCalledWith('invocation.interrupted', mockedRequest);
+
+                index.returnInterruption(successCB, failCB, mockedRequest);
+                expect(returnCallback).toHaveBeenCalledWith(JSON.parse(decodeURIComponent(mockedRequest.request)));
+                expect(successCB).toHaveBeenCalled();
+            });
+
+            it("can properly clear invocation interruption", function () {
+                index.clearInterrupter(successCB, failCB);
+                expect(mockedApplication.invocation.interrupter).toEqual(undefined);
+            });
+
         });
     });
 });

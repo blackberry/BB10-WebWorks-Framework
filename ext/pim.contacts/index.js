@@ -19,7 +19,9 @@ var pimContacts,
     _utils = require("../../lib/utils"),
     config = require("../../lib/config"),
     contactUtils = require("./contactUtils"),
-    ContactError = require("./ContactError");
+    contactConsts = require("./contactConsts"),
+    ContactError = require("./ContactError"),
+    ContactPickerOptions = require("./ContactPickerOptions");
 
 function checkPermission(success, eventId) {
     if (!_utils.hasPermission(config, "access_pimdomain_contacts")) {
@@ -34,6 +36,54 @@ function checkPermission(success, eventId) {
     }
 
     return true;
+}
+
+function onChildCardClosed(cb) {
+    var application = window.qnx.webplatform.getApplication(),
+        result = {},
+        kindAttributeMap = contactConsts.getKindAttributeMap(),
+        subKindAttributeMap = contactConsts.getSubKindAttributeMap(),
+        callback = function (info) {
+            application.invocation.removeEventListener("childCardClosed", callback);
+
+            if (info.reason === "cancel") {
+                cb(undefined, "cancel");
+            } else if (info.reason === "contactSelected") {
+                result.contactId = info.data;
+                cb(result, "done");
+            } else if (info.reason === "contactsSelected") {
+                info.data = info.data.split("\n");
+
+                info.data.forEach(function (line) {
+                    if (line.match("^selectedContacts:json:")) {
+                        result.contactIds = JSON.parse(line.slice(22));
+                        result.contactIds = result.contactIds.map(function (contactId) {
+                                                return JSON.stringify(contactId);
+                                            });
+                    }
+                });
+
+                cb(result, "done");
+            } else if (info.reason === "attributeSelected") {
+                info.data = info.data.split("\n");
+
+                info.data.forEach(function (line) {
+                    if (line.match("^attribute::")) {
+                        result.value = line.slice(11);
+                    } else if (line.match("^id:n:")) {
+                        result.contactId = line.slice(5);
+                    } else if (line.match("^kind:n:")) {
+                        result.field = kindAttributeMap[parseInt(line.slice(7), 10)];
+                    } else if (line.match("^subKind:n:")) {
+                        result.type = subKindAttributeMap[parseInt(line.slice(10), 10)];
+                    }
+                });
+
+                cb(result, "done");
+            }
+        };
+
+    application.invocation.addEventListener("childCardClosed", callback);
 }
 
 module.exports = {
@@ -67,6 +117,29 @@ module.exports = {
         success();
     },
 
+    getContact: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_contacts")) {
+            success(null);
+            return;
+        }
+
+        var findOptions = {},
+            results;
+
+        findOptions.contactId = JSON.parse(decodeURIComponent(args.contactId));
+
+        results = pimContacts.getInstance().getContact(findOptions);
+        if (results._success) {
+            if (results.contact && results.contact.id) {
+                success(results.contact);
+            } else {
+                success(null);
+            }
+        } else {
+            success(null);
+        }
+    },
+
     save: function (success, fail, args) {
         var attributes = {},
             key;
@@ -95,6 +168,31 @@ module.exports = {
 
         pimContacts.getInstance().remove(attributes);
         success();
+    },
+
+    invokeContactPicker: function (success, fail, args) {
+        var options = JSON.parse(decodeURIComponent(args["options"])),
+            callback = function (args, reason) {
+                _event.trigger("invokeContactPicker.eventId", args, reason);
+            };
+
+        if (!checkPermission(success, "invokeContactPicker.invokeEventId")) {
+            return;
+        }
+
+        // Validate options
+        if (!options || typeof(options.mode) === "undefined") {
+            options = new ContactPickerOptions();
+        }
+
+        if (!contactUtils.validateContactsPickerOptions(options)) {
+            return;
+        }
+
+        // start listening to childCardClosed event from navigator before invoking picker
+        onChildCardClosed(callback);
+        pimContacts.getInstance().invokePicker(options);
+        success();
     }
 };
 
@@ -112,6 +210,10 @@ JNEXT.PimContacts = function ()
         return "";
     };
 
+    self.getContact = function (args) {
+        return JSON.parse(JNEXT.invoke(self.m_id, "getContact " + JSON.stringify(args)));
+    };
+
     self.save = function (args) {
         JNEXT.invoke(self.m_id, "save " + JSON.stringify(args));
         return "";
@@ -120,6 +222,10 @@ JNEXT.PimContacts = function ()
     self.remove = function (args) {
         JNEXT.invoke(self.m_id, "remove " + JSON.stringify(args));
         return "";
+    };
+
+    self.invokePicker = function (options) {
+        JNEXT.invoke(self.m_id, "invokePicker " + JSON.stringify(options));
     };
 
     self.getId = function () {

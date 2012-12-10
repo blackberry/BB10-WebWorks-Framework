@@ -19,9 +19,10 @@ var srcPath = __dirname + '/../../../lib/',
     framework,
     webview,
     overlayWebView,
+    overlayWebViewObj,
     controllerWebView,
     Whitelist = require(srcPath + 'policy/whitelist').Whitelist,
-    mockedWebview,
+    mockedController,
     mockedApplicationWindow,
     mockedApplication,
     mockedDevice,
@@ -34,7 +35,7 @@ var srcPath = __dirname + '/../../../lib/',
 
 describe("framework", function () {
     beforeEach(function () {
-        mockedWebview = {
+        mockedController = {
             id: 42,
             enableCrossSiteXHR: undefined,
             visible: undefined,
@@ -69,7 +70,7 @@ describe("framework", function () {
             },
             webplatform : {
                 getController : function () {
-                    return mockedWebview;
+                    return mockedController;
                 },
                 getApplication : function () {
                     return mockedApplication;
@@ -98,6 +99,10 @@ describe("framework", function () {
         });
 
         spyOn(overlayWebView, "create").andCallFake(function (done) {
+            overlayWebViewObj = overlayWebView.getWebViewObj();
+            overlayWebViewObj.formcontrol = {
+                subscribeTo: jasmine.createSpy()
+            };
             done();
         });
 
@@ -185,9 +190,68 @@ describe("framework", function () {
         });
     });
 
+    describe('configuring webSecurity', function () {
+        var enableCrossSiteXHRSetter;
+
+        beforeEach(function () {
+            enableCrossSiteXHRSetter = jasmine.createSpy();
+            Object.defineProperty(webview, "enableCrossSiteXHR", {set: enableCrossSiteXHRSetter, configurable: true});
+        });
+
+        afterEach(function () {
+            delete webview.enableCrossSiteXHR;
+            delete require.cache[require.resolve(srcPath + "webview")];
+            webview = require(srcPath + "webview");
+        });
+
+        it('does not call enableCrossSiteXHR by default', function () {
+            expect(config.enableWebSecurity).toBe(true);
+            framework.start();
+
+            expect(enableCrossSiteXHRSetter).not.toHaveBeenCalledWith(true);
+        });
+
+        it('does enable crossSiteXHR when the config says too', function () {
+            delete require.cache[require.resolve(srcPath + "config")];
+            config = require(srcPath + 'config');
+            config.enableWebSecurity = false;
+
+            //reload config in framework
+            delete require.cache[require.resolve(srcPath + "framework")];
+            framework = require(srcPath + 'framework');
+
+            this.after(function () {
+                delete require.cache[require.resolve(srcPath + "config")];
+                config = require(srcPath + 'config');
+
+                delete require.cache[require.resolve(srcPath + "framework")];
+                framework = require(srcPath + 'framework');
+            });
+
+            expect(config.enableWebSecurity).toBe(false);
+            framework.start();
+
+            expect(enableCrossSiteXHRSetter).toHaveBeenCalledWith(true);
+        });
+    });
+
     describe('configuring OpenChildWindow events', function () {
+        var onChildWindowOpenHandler;
+
+        beforeEach(function () {
+            Object.defineProperty(webview, "onChildWindowOpen", {set: function (input) {
+                onChildWindowOpenHandler = input;
+            }, configurable: true});
+        });
+
+        afterEach(function () {
+            delete webview.onChildWindowOpen;
+            delete require.cache[require.resolve(srcPath + "webview")];
+            webview = require(srcPath + "webview");
+        });
+
         it('delegates to childWebViewControls on the overlay webview', function () {
-            config.enableChildWebView = false;
+            config.enableChildWebView = true;
 
             //reload config in framework
             delete require.cache[require.resolve(srcPath + "framework")];
@@ -204,13 +268,7 @@ describe("framework", function () {
         });
 
         it('binds to OpenChildWindow and invokes the browser', function () {
-            var handler;
-
             config.enableChildWebView = false;
-
-            webview.__defineSetter__('onChildWindowOpen', function (input) {
-                handler = input;
-            });
 
             //reload config in framework
             delete require.cache[require.resolve(srcPath + "framework")];
@@ -223,8 +281,8 @@ describe("framework", function () {
 
             framework.start();
             expect(overlayWebView.bindAppWebViewToChildWebViewControls).not.toHaveBeenCalledWith(webview);
-            expect(handler).toEqual(jasmine.any(Function));
-            handler(JSON.stringify({url: 'http://www.google.com'}));
+            expect(onChildWindowOpenHandler).toEqual(jasmine.any(Function));
+            onChildWindowOpenHandler(JSON.stringify({url: 'http://www.google.com'}));
             expect(mockedApplication.invocation.invoke).toHaveBeenCalledWith(
                 {uri: 'http://www.google.com', target: "sys.browser" }
             );
@@ -311,5 +369,22 @@ describe("framework", function () {
                 expect(overlayWebView.showDialog).toHaveBeenCalledWith(messageObj);
             });
         });
+
     });
+
+    describe('enabling form control', function () {
+
+        it('subscribes webview to formcontrol', function () {
+            config.enableFormControl = true;
+            framework.start();
+            expect(overlayWebViewObj.formcontrol.subscribeTo).toHaveBeenCalledWith(webview);
+        });
+
+        it('does not subscribe webview to formcontrol is enableFormControl is false', function () {
+            config.enableFormControl = false;
+            framework.start();
+            expect(overlayWebViewObj.formcontrol.subscribeTo).not.toHaveBeenCalled();
+        });
+    });
+
 });

@@ -1,0 +1,62 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Contexts Are Awesome!</title>
+<script src="local:///chrome/webworks.js"></script>
+<script src="js/app.js"></script>
+<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+
+<script>
+window.addEventListener("load", function(e) {
+document.addEventListener("webworksready", initApp);
+}, false);
+</script>
+
+<style>
+button {
+	height: 100px;
+	width: 100%;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Invocation List Sharing Tests</h1>
+<br />
+<button onclick="shareCardJPEG();">Share and Image JPEG using cards</button>
+
+<button onclick="shareCardFileJPEG();">Share Image JPEG using file</button>
+
+<button onclick="shareCardJPEG();">Share Image PNG using ALL</button>
+
+<button onclick="sharePDFNoURI();">Share PDF No Uri</button>
+
+<button onclick="shareRemoteURL();">Share Remote Link</button>
+
+<button onclick="shareTextMockingSelection();">Share Text selection</button>
+
+<button onclick="shareDocNoURI();">Share Word Document</button>
+
+<button onclick="shareLinkURISpaces();">Share Link with spaces</button>
+
+<button onclick="shareLinkWeirdCharacters();">Share Link weird characters</button>
+
+<h1>Invoke Interruption</h1>
+<br/>
+<button onclick="registerInvocationInterrupter()">
+    Register Interrupt Handler
+</button>
+<button onclick="registerInvocationInterrupterCanceller()">
+    Register Interrupt Canceller
+</button>
+<br />
+<br />
+<button onclick="clearInvocationInterrupter()">
+    Clear Interrupt Handler
+</button>
+<br />
+</button>
+
+</body>
+</html>

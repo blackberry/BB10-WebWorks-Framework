@@ -266,6 +266,59 @@ describe("blackberry.pim.calendar", function () {
         });
     });
 
+    it('can return error when save an event which was changed by others scince last fetch', function () {
+        var homeCalFolder = getCalendarFolder(),
+            start = new Date(),
+            end = new Date(start.valueOf() + 60 * 60 * 1000),
+            summary = "wwft01: WebWorksTest - Synchronization check",
+            evt = cal.createEvent({
+                "summary": summary,
+                "start": start,
+                "end": end,
+                "allDay": false
+            }, homeCalFolder),
+            called = false,
+            successCb = jasmine.createSpy().andCallFake(function (created) {
+                evt = created;
+                called = true;
+            }),
+            errorCb = jasmine.createSpy().andCallFake(function () {
+                called = true;
+            });
+
+        runs(function () {
+            evt.save(function (e) {
+                evt = e;
+                called = true;
+            }, function (err) {
+                console.log(err);
+            });
+        });
+
+        waitsFor(function () {
+            return called;
+        }, "Event not saved in calendar", timeout);
+
+        runs(function () {
+            window.alert('Before proceeding, open Calendar app and search event with keyword "wwft01", then change the start time to 12:00PM');
+            called = false;
+            start = new Date(start.valueOf() + 2 * 60 * 60 * 1000);
+            end = new Date(start.valueOf() + 60 * 60 * 1000);
+            evt.start = start;
+            evt.end = end;
+            evt.save(successCb, errorCb);
+        });
+
+        waitsFor(function () {
+            return called;
+        }, "Event not saved in calendar", timeout);
+
+        runs(function () {
+            expect(successCb).not.toHaveBeenCalled();
+            expect(errorCb).toHaveBeenCalled();
+        });
+    });
+
     describe("Clean up all test events", function () {
         it("Clean up all test events", function () {
             var called = false,

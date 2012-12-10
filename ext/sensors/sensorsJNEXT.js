@@ -39,6 +39,10 @@ JNEXT.Sensors = function () {
         JNEXT.invoke(self.m_id, "setOptions " + JSON.stringify(options));
     };
 
+    self.supportedSensors = function () {
+        return JNEXT.invoke(self.m_id, "supportedSensors");
+    };
+
     self.onEvent = function (strData) {
         var arData = strData.split(" "),
             strEventDesc = arData[0],

@@ -84,6 +84,10 @@ private:
     static QList<QDateTime> setEventFields(bbpim::CalendarEvent& ev, const Json::Value& args, Json::Value& returnObj);
     static bbpim::CalendarService* getCalendarService();
     Json::Value populateEvent(const bbpim::CalendarEvent& event, bool isFind);
+    static unsigned int getEventHash(const bbpim::CalendarEvent& event);
+    static std::string eventToString(const bbpim::CalendarEvent& event);
+    static Json::Value eventToJson(const bbpim::CalendarEvent& event);
+
     static AccountFolderManager m_mgr;
     static ServiceProvider& m_provider;
 };

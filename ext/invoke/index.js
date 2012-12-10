@@ -36,7 +36,9 @@ var _event = require("../../lib/event"),
                 _event.trigger("onChildCardClosed", info);
             }
         }
-    };
+    },
+    _interruption,
+    _returnCallback;
 
 module.exports = {
     invoke: function (success, fail, args) {
@@ -108,7 +110,37 @@ module.exports = {
         } catch (e) {
             fail(-1, e);
         }
-    }
+    },
 
+    returnInterruption : function (success, fail, args) {
+        try {
+            var request = JSON.parse(decodeURIComponent(args.request));
+            if (typeof _returnCallback === 'function') {
+                _returnCallback(request);
+            }
+
+            success();
+        } catch (e) {
+            fail();
+        }
+    },
+
+    registerInterrupter : function (success, fail, args) {
+        try {
+            qnx.webplatform.getApplication().invocation.interrupter =  function (request, returnCallback) {
+                _returnCallback = returnCallback;
+                // Tell the client that we want to interrupt
+                _event.trigger("invocation.interrupted", request);
+            };
+            success();
+        } catch (e) {
+            fail();
+        }
+    },
+
+    clearInterrupter : function (success, fail) {
+        var application = qnx.webplatform.getApplication();
+        application.invocation.interrupter = undefined;
+    },
 };
 

@@ -17,6 +17,7 @@
 var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/invoke",
     _ID = require(_apiDir + "/manifest").namespace,
+    _eventID = 'blackberry.event',
     client,
     mockedWebworks;
 
@@ -28,7 +29,9 @@ describe("invoke client", function () {
             defineReadOnlyField: jasmine.createSpy(),
             event: {
                 isOn: jasmine.createSpy("webworks.event.isOn"),
-                once: jasmine.createSpy("webworks.event.once")
+                add: jasmine.createSpy("webworks.event.add"),
+                once: jasmine.createSpy("webworks.event.once"),
+                remove : jasmine.createSpy("webworks.event.remove")
             }
         };
 
@@ -204,8 +207,43 @@ describe("invoke client", function () {
             expect(onSuccess).not.toHaveBeenCalled();
             expect(onError).toHaveBeenCalledWith(jasmine.any(String));
         });
+
+
     });
 
+    describe("invoke interruption", function () {
+
+        it("can successfully register as an interrupter", function () {
+            var handler = function () {};
+            client.interrupter = handler;
+            expect(mockedWebworks.event.add).toHaveBeenCalledWith(_eventID, 'invocation.interrupted', jasmine.any(Function));
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, 'registerInterrupter');
+        });
+
+        it("can successfully clear an interrupter", function () {
+            client.interrupter = null;
+            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, 'clearInterrupter');
+        });
+
+        it("can successfully register an interrupter multiple times and only the last one is registered", function () {
+            var handler = function () {};
+            client.interrupter = handler;
+            expect(mockedWebworks.event.add).toHaveBeenCalledWith(_eventID, 'invocation.interrupted', jasmine.any(Function));
+
+            window.webworks.event.isOn = jasmine.createSpy().andReturn(true);
+            client.interrupter = handler;
+            expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_eventID, 'invocation.interrupted', jasmine.any(Function));
+            expect(mockedWebworks.event.add).toHaveBeenCalledWith(_eventID, 'invocation.interrupted', jasmine.any(Function));
+        });
+
+
+        it("can successfully register an interrupter and retreive its value", function () {
+            var handler = function () {};
+            client.interrupter = handler;
+            expect(client.interrupter).toEqual(handler);
+        });
+
+    });
     describe("closeChildCard", function () {
         it("should call execSync for closeChildCard", function () {
             expect(client.closeChildCard).toBeDefined();

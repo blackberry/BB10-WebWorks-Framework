@@ -27,11 +27,17 @@
 #include <bb/pim/calendar/FolderKey>
 #include <bb/pim/calendar/Sensitivity>
 #include <bb/pim/calendar/BusyStatus>
+#include <bb/pim/calendar/BbmConference>
+#include <bb/pim/calendar/BbmConferencePreferredData>
+#include <bb/pim/calendar/BbmConferenceUserData>
+#include <bb/pim/calendar/ICalendarData>
+#include <bb/pim/calendar/MeetingHistory>
 #include <bb/pim/account/AccountService>
 #include <bb/pim/account/Account>
 #include <bb/pim/account/Service>
 
 #include <stdio.h>
+#include <string.h>
 #include <webworks_utils.hpp>
 #include <string>
 #include <utility>
@@ -132,6 +138,13 @@ Json::Value PimCalendarQt::Save(const Json::Value& attributeObj)
             mutex_unlock();
 
             if (result == bbpim::Result::Success && event.isValid()) {
+                // Check the hash code
+                unsigned int currentHash = getEventHash(event);
+                if (attributeObj["hash"].asUInt() != currentHash) {
+                    returnObj["_success"] = false;
+                    returnObj["code"] = UNKNOWN_ERROR;
+                    return returnObj;
+                }
                 returnObj = EditCalendarEvent(event, attributeObj);
             }
         } else {
@@ -330,6 +343,11 @@ Json::Value PimCalendarQt::CreateCalendarEvent(const Json::Value& args)
     }
 
     if (ev.isValid()) {
+        // Refresh the event by retrieving it from database
+        if (mutex_lock() == 0) {
+            ev = service->event(ev.accountId(), ev.id());
+            mutex_unlock();
+        }
         returnObj["event"] = populateEvent(ev, false);
         returnObj["_success"] = true;
         returnObj["id"] = Json::Value(ev.id());
@@ -428,6 +446,10 @@ Json::Value PimCalendarQt::EditCalendarEvent(bbpim::CalendarEvent& calEvent, con
             }
 
             if (calEvent.isValid()) {
+                if (mutex_lock() == 0) {
+                    calEvent = service->event(calEvent.accountId(), calEvent.id());
+                    mutex_unlock();
+                }
                 returnObj["event"] = populateEvent(calEvent, false);
                 returnObj["_success"] = true;
             }
@@ -448,7 +470,7 @@ QVariant PimCalendarQt::getFromMap(QMap<QString, QVariant> map, QStringList keys
     QVariant variant;
     QMap<QString, QVariant> currentMap = map;
     QStringList::iterator i;
-    for (i = keys.begin(); i != keys.end(); ++i){
+    for (i = keys.begin(); i != keys.end(); ++i) {
         if (currentMap.contains(*i)) {
             variant = currentMap.value(*i);
         } else {
@@ -720,102 +742,137 @@ Json::Value PimCalendarQt::populateEvent(const bbpim::CalendarEvent& event, bool
 {
     Json::Value e;
 
-    e["accountId"] = Utils::intToStr(event.accountId());
-    e["id"] = Utils::intToStr(event.id());
+    e = eventToJson(event);
+
+    if (event.id() > 0 && event.isValid()) {
+        e["hash"] = getEventHash(event);
+    } else {
+        e["hash"] = 0;
+    }
 
     if (!isFind) {
         bbpim::CalendarFolder folder = m_mgr.GetFolder(event.accountId(), event.folderId());
         e["folder"] = m_mgr.GetFolderJson(folder, false);
     }
 
-    e["folderId"] = Utils::intToStr(event.folderId());
-    e["parentId"] = Utils::intToStr(event.parentId());
-
-    // Reminder can be negative, when an all-day event is created, and reminder is set to "On the day at 9am", reminder=-540 (negative!)
-    // For events with all-day=false, default reminder (in calendar app) is 15 mins before start -> reminder=15:
-    // Tested:
-    // 1 hour before start -> reminder=60
-    // 2 days before start -> reminder=2880
-    // 1 week before start -> reminder=10080
-    e["reminder"] = event.reminder();
-    e["birthday"] = event.isBirthday();
-    e["allDay"] = event.isAllDay();
-
-    // meeting status values:
-    // - 0: not a meeting;
-    // - 1 and 9: is a meeting;
-    // - 3 and 11: meeting received;
-    // - 5 and 13: meeting is canceled;
-    // - 7 and 15: meeting is canceled and received.
-    e["status"] = event.meetingStatus();
-
-    // busy status values (BusyStatus::Type)
-    // Free = 0, Used to inform that the event represents free time (the event's owner is available)
-    // Tentative = 1, Tells that an event may or may not happen (the owner may be available).
-    // Busy = 2, Tells that the event is confirmed (the owner is busy).
-    // OutOfOffice = 3, Indicates that the event owner is out of office.
-    e["transparency"] = event.busyStatus();
-
-    e["start"] = QString::number(event.startTime().toUTC().toMSecsSinceEpoch()).toStdString();
-    e["end"] = QString::number(event.endTime().toUTC().toMSecsSinceEpoch()).toStdString();
-
-    // sensitivity values (Sensitivity::Type)
-    // Normal = 0, To be used for unrestricted events.
-    // Personal = 1, Sensitivity value for personal events.
-    // Private = 2, Sensitivity level for private events.
-    // Confidential = 3, Maximum sensitivity level for events.
-    e["sensitivity"] = event.sensitivity();
-    e["timezone"] = event.timezone().toStdString();
-    e["summary"] = getSafeString(event.subject().toStdString());
-    e["description"] = getSafeString(event.body().toStdString());
-    e["location"] = getSafeString(event.location().toStdString());
-    e["url"] = getSafeString(event.url().toStdString());
-    e["attendees"] = Json::Value();
-
-    QList<bbpim::Attendee> attendees = event.attendees();
-
-    for (QList<bbpim::Attendee>::const_iterator j = attendees.constBegin(); j != attendees.constEnd(); j++) {
-        bbpim::Attendee attendee = *j;
-        Json::Value a;
-
-        a["id"] = Utils::intToStr(attendee.id());
-        a["eventId"] = Utils::intToStr(attendee.eventId());
-
-        // contactId is 0 even if contact is on device...maybe it's a permission issue (contact permission not specified in app)
-        // would most likely just leave it out
-        a["contactId"] = Utils::intToStr(attendee.contactId());
-        a["email"] = getSafeString(attendee.email().toStdString());
-        a["name"] = getSafeString(attendee.name().toStdString());
-        a["type"] = attendee.type();
-        a["role"] = attendee.role();
-        a["owner"] = attendee.isOwner();
-        a["status"] = attendee.status();
-
-        e["attendees"].append(a);
-    }
-
-    if (event.recurrence().isValid()) {
-        e["recurrence"] = Json::Value();
-        e["recurrence"]["frequency"] = event.recurrence().frequency();
-        e["recurrence"]["interval"] = event.recurrence().interval();
-        e["recurrence"]["numberOfOccurrences"] = event.recurrence().numberOfOccurrences();
-        e["recurrence"]["dayInWeek"] = event.recurrence().dayInWeek();
-        e["recurrence"]["dayInMonth"] = event.recurrence().dayInMonth();
-        e["recurrence"]["weekInMonth"] = event.recurrence().weekInMonth();
-        e["recurrence"]["monthInYear"] = event.recurrence().monthInYear();
-        e["recurrence"]["exceptionDates"] = Json::Value();
-
-        if (event.recurrence().until().isValid()) {
-            e["recurrence"]["expires"] = QString::number(event.recurrence().until().toUTC().toMSecsSinceEpoch()).toStdString();
-        }
-
-        QList<QDateTime> exceptions = event.recurrence().exceptions();
-        for (int i = 0; i < exceptions.size(); i++) {
-            e["recurrence"]["exceptionDates"].append(QString::number(exceptions[i].toUTC().toMSecsSinceEpoch()).toStdString());
-        }
-    }
-
     return e;
+}
+
+unsigned int PimCalendarQt::getEventHash(const bbpim::CalendarEvent& event)
+{
+    std::string strEvent = eventToString(event);
+    return qHash(QString::fromStdString(strEvent));
+}
+
+// Convert event to string
+std::string PimCalendarQt::eventToString(const bbpim::CalendarEvent& event)
+{
+    return Json::FastWriter().write(eventToJson(event));
+}
+
+// Convert event to JSON
+Json::Value PimCalendarQt::eventToJson(const bbpim::CalendarEvent& event)
+{
+    Json::Value jsonEvent;
+
+    jsonEvent["id"] = Utils::intToStr(event.id());
+    jsonEvent["accountId"] = Utils::intToStr(event.accountId());
+    jsonEvent["start"] =  QString::number(event.startTime().toUTC().toMSecsSinceEpoch()).toStdString();
+    jsonEvent["end"] =  QString::number(event.endTime().toUTC().toMSecsSinceEpoch()).toStdString();
+    jsonEvent["description"] = getSafeString(event.body().toStdString());
+    jsonEvent["summary"] = getSafeString(event.subject().toStdString());
+    jsonEvent["location"] = getSafeString(event.location().toStdString());
+    jsonEvent["timezone"] = event.timezone().toStdString();
+    jsonEvent["url"] = event.url().toStdString();
+
+    jsonEvent["recurrence"] = Json::Value();
+    jsonEvent["recurrence"]["isValid"] = event.recurrence().isValid();
+    jsonEvent["recurrence"]["start"] = QString::number(event.recurrence().start().toUTC().toMSecsSinceEpoch()).toStdString();
+    jsonEvent["recurrence"]["end"] = QString::number(event.recurrence().end().toUTC().toMSecsSinceEpoch()).toStdString();
+    jsonEvent["recurrence"]["until"] = QString::number(event.recurrence().until().toUTC().toMSecsSinceEpoch()).toStdString();
+    jsonEvent["recurrence"]["exceptionDates"] = Json::Value();
+
+    for (QList<QDateTime>::const_iterator i = event.recurrence().exceptions().constBegin(); i != event.recurrence().exceptions().constEnd(); ++i) {
+        jsonEvent["recurrence"]["exceptionDates"].append(QString::number(i->toUTC().toMSecsSinceEpoch()).toStdString());
+    }
+
+    jsonEvent["recurrence"]["frequency"] = event.recurrence().frequency();
+    jsonEvent["recurrence"]["interval"] = event.recurrence().interval();
+    jsonEvent["recurrence"]["numberOfOccurrences"] = event.recurrence().numberOfOccurrences();
+    jsonEvent["recurrence"]["dayInWeek"] = event.recurrence().dayInWeek();
+    jsonEvent["recurrence"]["dayInMonth"] = event.recurrence().dayInMonth();
+    jsonEvent["recurrence"]["weekInMonth"] = event.recurrence().weekInMonth();
+    jsonEvent["recurrence"]["monthInYear"] = event.recurrence().monthInYear();
+
+    jsonEvent["attendees"] = Json::Value();
+
+    for (QList<bbpim::Attendee>::const_iterator i = event.attendees().constBegin(); i != event.attendees().constEnd(); ++i) {
+        Json::Value jsonAttendee;
+        jsonAttendee["email"] = getSafeString(i->email().toStdString());
+        jsonAttendee["name"] = getSafeString(i->name().toStdString());
+        jsonAttendee["type"] = i->type();
+        jsonAttendee["role"] = i->role();
+        jsonAttendee["id"] = Utils::intToStr(i->id());
+        jsonAttendee["eventId"] = Utils::intToStr(i->eventId());
+        jsonAttendee["contactId"] = Utils::intToStr(i->contactId());
+        jsonAttendee["status"] = i->status();
+        jsonAttendee["isOwner"] = i->isOwner();
+
+        jsonEvent["attendees"].append(jsonAttendee);
+    }
+
+    jsonEvent["sensitivity"] = event.sensitivity();
+    jsonEvent["transparency"] = event.busyStatus();
+    jsonEvent["folderId"] = Utils::intToStr(event.folderId());
+    jsonEvent["parentId"] = Utils::intToStr(event.parentId());
+    jsonEvent["sequence"] = event.sequence();
+    jsonEvent["reminder"] = event.reminder();
+    jsonEvent["birthday"] = event.isBirthday();
+    jsonEvent["allDay"] = event.isAllDay();
+
+    jsonEvent["bbmConference"] = Json::Value();
+    jsonEvent["bbmConference"]["phoneLabels"] = Json::Value();
+
+    for (QStringList::const_iterator i = event.bbmConference().phoneLabels().constBegin(); i != event.bbmConference().phoneLabels().constEnd(); ++i) {
+        jsonEvent["bbmConference"]["phoneLabels"].append(i->toStdString());
+    }
+
+    jsonEvent["bbmConference"]["phoneNumbers"] = Json::Value();
+
+    for (QStringList::const_iterator i = event.bbmConference().phoneNumbers().constBegin(); i != event.bbmConference().phoneNumbers().constEnd(); ++i) {
+        jsonEvent["bbmConference"]["phoneNumbers"].append(i->toStdString());
+    }
+    jsonEvent["bbmConference"]["preferredData"] = Json::Value();
+    jsonEvent["bbmConference"]["preferredData"]["accessCode"] = event.bbmConference().preferredData().accessCode().toStdString();
+    jsonEvent["bbmConference"]["preferredData"]["moderatorCode"] = event.bbmConference().preferredData().moderatorCode().toStdString();
+    jsonEvent["bbmConference"]["preferredData"]["isModerator"] = event.bbmConference().preferredData().isModerator();
+    jsonEvent["bbmConference"]["preferredData"]["participantCode"] = event.bbmConference().preferredData().participantCode().toStdString();
+    jsonEvent["bbmConference"]["preferredData"]["phoneNumber"] = event.bbmConference().preferredData().phoneNumber().toStdString();
+    jsonEvent["bbmConference"]["preferredData"]["isValid"] = event.bbmConference().preferredData().isValid();
+
+    jsonEvent["bbmConference"]["userData"] = Json::Value();
+    jsonEvent["bbmConference"]["userData"]["accessCode"] = event.bbmConference().userData().accessCode().toStdString();
+    jsonEvent["bbmConference"]["userData"]["phoneNumber"] = event.bbmConference().userData().phoneNumber().toStdString();
+    jsonEvent["bbmConference"]["userData"]["isValid"] = event.bbmConference().userData().isValid();
+
+    jsonEvent["iCalendarData"] = Json::Value();
+    jsonEvent["iCalendarData"]["method"] = event.iCalendarData().method().toStdString();
+    jsonEvent["iCalendarData"]["eventSequence"] = event.iCalendarData().eventSequence();
+
+    jsonEvent["iCalendarData"]["history"] = Json::Value();
+    jsonEvent["iCalendarData"]["history"]["ownerStatus"] = event.iCalendarData().history().ownerStatus();
+    jsonEvent["iCalendarData"]["history"]["statusDate"] = event.iCalendarData().history().statusDate().toString().toStdString();
+    jsonEvent["iCalendarData"]["history"]["meetingSequence"] = event.iCalendarData().history().meetingSequence();
+    jsonEvent["iCalendarData"]["history"]["updatedDate"] = event.iCalendarData().history().updatedDate().toString().toStdString();
+    jsonEvent["iCalendarData"]["history"]["canceledDate"] = event.iCalendarData().history().canceledDate().toString().toStdString();
+
+    jsonEvent["iCalendarData"]["isValid"] = event.iCalendarData().isValid();
+
+    jsonEvent["status"] = event.meetingStatus();
+    jsonEvent["guid"] = event.guid().toStdString();
+    jsonEvent["isValid"] = event.isValid();
+
+    return jsonEvent;
 }
 
 } // namespace webworks

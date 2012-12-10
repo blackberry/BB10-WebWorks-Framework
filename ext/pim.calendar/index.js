@@ -147,31 +147,45 @@ module.exports = {
     },
 
     getDefaultCalendarAccount: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_calendars")) {
+            success(null);
+            return;
+        }
+
         success(pimCalendar.getInstance().getDefaultCalendarAccount());
     },
 
     getCalendarAccounts: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_calendars")) {
+            success(null);
+            return;
+        }
+
         success(pimCalendar.getInstance().getCalendarAccounts());
     },
 
     getEvent: function (success, fail, args) {
+        if (!_utils.hasPermission(config, "access_pimdomain_calendars")) {
+            success(null);
+            return;
+        }
+
         var findOptions = {},
             results,
-            event = {};
+            event = null;
 
         findOptions.eventId = JSON.parse(decodeURIComponent(args.eventId));
-        findOptions.accountId = JSON.parse(decodeURIComponent(args.folder)).accountId;
+        findOptions.accountId = JSON.parse(decodeURIComponent(args.accountId));
 
         results = pimCalendar.getInstance().getEvent(findOptions);
 
         if (results._success) {
             if (results.event && results.event.id) {
                 event = results.event;
-                success(event);
-            } else {
-                success(null);
             }
         }
+
+        success(event);
     },
 
     getCalendarFolders: function (success, fail, args) {

@@ -16,22 +16,69 @@
 
 var _self = {},
     _ID = require("./manifest.json").namespace,
-    _cameraDoneEventId = "invokeCamera.doneEventId",
-    _cameraCancelEventId = "invokeCamera.cancelEventId",
+    _cameraEventId = "invokeCamera.eventId",
     _cameraInvokeEventId = "invokeCamera.invokeEventId",
-    _filePickerDoneEventId = "invokeFilePicker.doneEventId",
-    _filePickerCancelEventId = "invokeFilePicker.cancelEventId",
-    _filePickerInvokeEventId = "invokeFilePicker.invokeEventId";
+    _filePickerEventId = "invokeFilePicker.eventId",
+    _filePickerInvokeEventId = "invokeFilePicker.invokeEventId",
+    _icsEventId = "invokeIcsViewer.eventId",
+    _icsInvokeEventId = "invokeIcsViewer.invokeEventId",
+    _calendarPickerEventId = "invokeCalendarPicker.eventId",
+    _calendarPickerInvokeEventId = "invokeCalendarPicker.invokeEventId",
+    _calendarComposerEventId = "invokeCalendarComposer.eventId",
+    _calendarComposerInvokeEventId = "invokeCalendarComposer.invokeEventId",
+    _targetPickerEventId = "invokeTargetPicker.eventId",
+    _emailComposerEventId = "invokeEmailComposer.eventId",
+    _emailComposerInvokeEventId = "invokeEmailComposer.invokeEventId";
+
+function doneCancelCallback(done, cancel) {
+    return function (reason, data) {
+        if (reason === "done") {
+            if (done && typeof(done) === "function") {
+                done(data);
+            }
+        } else if (reason === "cancel") {
+            if (cancel && typeof(cancel) === "function") {
+                cancel(data);
+            }
+        }
+    };
+}
+
+_self.invokeMediaPlayer = function (options, done, cancel, invokeCallback) {
+    var eventId = "invokeMediaPlayer.eventId",
+        invokeEventId = "invokeMediaPlayer.invokeEventId",
+        callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, eventId, callback);
+            }
+            invokeCallback();
+        }; 
+
+    if (!window.webworks.event.isOn(eventId)) {
+        window.webworks.event.once(_ID, eventId, callback);
+    }
+
+    if (!window.webworks.event.isOn(invokeEventId)) {
+        window.webworks.event.once(_ID, invokeEventId, invoked);
+    }
+
+    return window.webworks.execAsync(_ID, "invokeMediaPlayer", {options: options || {}});
+};
 
 _self.invokeCamera = function (mode, done, cancel, invokeCallback) {
-    if (!window.webworks.event.isOn(_cameraDoneEventId)) {
-        window.webworks.event.once(_ID, _cameraDoneEventId, done);
-    }
-    if (!window.webworks.event.isOn(_cameraCancelEventId)) {
-        window.webworks.event.once(_ID, _cameraCancelEventId, cancel);
+    var callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, _cameraEventId, callback);
+            }
+            invokeCallback();
+        }; 
+    if (!window.webworks.event.isOn(_cameraEventId)) {
+        window.webworks.event.once(_ID, _cameraEventId, callback);
     }
     if (!window.webworks.event.isOn(_cameraInvokeEventId)) {
-        window.webworks.event.once(_ID, _cameraInvokeEventId, invokeCallback);
+        window.webworks.event.once(_ID, _cameraInvokeEventId, invoked);
     }
     return window.webworks.execAsync(_ID, "invokeCamera", {mode: mode || ""});
 };
@@ -53,16 +100,156 @@ _self.invokeFilePicker = function (options, done, cancel, invokeCallback) {
    *    allowOverwrite: true|false
    * }
    */
-    if (!window.webworks.event.isOn(_filePickerDoneEventId)) {
-        window.webworks.event.once(_ID, _filePickerDoneEventId, done);
-    }
-    if (!window.webworks.event.isOn(_filePickerCancelEventId)) {
-        window.webworks.event.once(_ID, _filePickerCancelEventId, cancel);
+    var callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, _filePickerEventId, callback);
+            }
+            invokeCallback();
+        }; 
+    if (!window.webworks.event.isOn(_filePickerEventId)) {
+        window.webworks.event.once(_ID, _filePickerEventId, callback);
     }
     if (!window.webworks.event.isOn(_filePickerInvokeEventId)) {
-        window.webworks.event.once(_ID, _filePickerInvokeEventId, invokeCallback);
+        window.webworks.event.once(_ID, _filePickerInvokeEventId, invoked);
     }
     return window.webworks.execAsync(_ID, "invokeFilePicker", {options: options || ""});
+};
+
+_self.invokeIcsViewer = function (options, done, cancel, invokeCallback) {
+    /*
+    * options = {
+    *     uri: path to the ICS file on device
+    *     accountId: id of the calendar account to open the file in (optional)
+    * }
+    */
+    var callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, _icsEventId, callback);
+            }
+            invokeCallback();
+        }; 
+    if (!window.webworks.event.isOn(_icsEventId)) {
+        window.webworks.event.once(_ID, _icsEventId, callback);
+    }
+    if (!window.webworks.event.isOn(_icsInvokeEventId)) {
+        window.webworks.event.once(_ID, _icsInvokeEventId, invoked);
+    }
+    return window.webworks.execAsync(_ID, "invokeIcsViewer", {options: options || ""});
+};
+
+
+_self.invokeCalendarPicker = function (options, done, cancel, invokeCallback) {
+   /*
+   * options = {
+   *    filepath: path to file where .vcs will be saved
+   * }
+   */
+    var callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, _calendarPickerEventId, callback);
+            }
+            invokeCallback();
+        }; 
+    if (!window.webworks.event.isOn(_calendarPickerEventId)) {
+        window.webworks.event.once(_ID, _calendarPickerEventId, callback);
+    }
+    if (!window.webworks.event.isOn(_calendarPickerInvokeEventId)) {
+        window.webworks.event.once(_ID, _calendarPickerInvokeEventId, invoked);
+    }
+    return window.webworks.execAsync(_ID, "invokeCalendarPicker", {options: options || ""});
+};
+
+_self.invokeCalendarComposer = function (options, done, cancel, invokeCallback) {
+   /*
+   * options = {
+   *    accountId : account ID //used with syncId or folderId to identify a specific account
+   *    syncId : sync ID
+   *    folderId : folder ID
+   *    subject : event subject
+   *    body : event body
+   *    startTime : event start time e.g: Wed Jun 13 09:39:56 2012
+   *    duration : event duration
+   *    participants : array of pariticipant email addresses
+   * }
+   */
+    var callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, _calendarComposerEventId, callback);
+            }
+            invokeCallback();
+        }; 
+    if (!window.webworks.event.isOn(_calendarComposerEventId)) {
+        window.webworks.event.once(_ID, _calendarComposerEventId, callback);
+    }
+    if (!window.webworks.event.isOn(_calendarComposerInvokeEventId)) {
+        window.webworks.event.once(_ID, _calendarComposerInvokeEventId, invoked);
+    }
+    return window.webworks.execAsync(_ID, "invokeCalendarComposer", {options: options || ""});
+};
+
+_self.invokeEmailComposer = function (options, done, cancel, invokeCallback) {
+   /*
+   * options = {
+   *    from : accountId this message should be sent from
+   *    subject : message subject
+   *    body : plaintext message body
+   *    calendarevent : calendar event ID
+   *    to : array of recipient emails
+   *    cc : array of emails
+   *    attachment : array of attachment filepaths
+   * }
+   */
+    var callback = doneCancelCallback(done, cancel),
+        invoked = function (error) {
+            if (error !== "") {
+                window.webworks.event.remove(_ID, _emailComposerEventId, callback);
+            }
+            invokeCallback();
+        }; 
+    if (!window.webworks.event.isOn(_emailComposerEventId)) {
+        window.webworks.event.once(_ID, _emailComposerEventId, callback);
+    }
+    if (!window.webworks.event.isOn(_emailComposerInvokeEventId)) {
+        window.webworks.event.once(_ID, _emailComposerInvokeEventId, invoked);
+    }
+    return window.webworks.execAsync(_ID, "invokeEmailComposer", {options: options || ""});
+};
+
+_self.invokeTargetPicker = function (request, title, onSuccess, onError) {
+
+    var callback = function (reason, data) {
+        if (reason === "success") {
+            if (onSuccess && typeof(onSuccess) === "function") {
+                onSuccess(data);
+            }
+        } else if (reason === "error") {
+            if (onError && typeof(onError) === "function") {
+                onError(data);
+            }
+        }
+    };
+
+    if (!window.webworks.event.isOn(_targetPickerEventId)) {
+        window.webworks.event.once(_ID, _targetPickerEventId, callback);
+    }
+    try {
+        if (request.hasOwnProperty('data')) {
+            request.data = window.btoa(request.data);
+        }
+
+        window.webworks.execSync(_ID, "invokeTargetPicker", {
+            request: request,
+            title: title,
+            onSuccess: onSuccess,
+            onError : onError,
+        });
+    } catch (e) {
+        onError(e);
+    }
 };
 
 //CAMERA PROPERTIES

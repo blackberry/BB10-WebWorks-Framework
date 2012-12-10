@@ -90,10 +90,9 @@ task('stats', [], require('./build/stats'));
 
 desc("Packages an app using the framework produced by this repo." + DESC_NEW_LINE +
      " This will replace the framework folder in the packager specified." + DESC_NEW_LINE +
-     " This will replace webworks.js in the zip if you specify the path." + DESC_NEW_LINE +
      " The packager path MUST be absolute (ie no ~)" + DESC_NEW_LINE +
-     " Expected usage - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>,<{OPTIONAL}pathToWebWorks.js>]" + DESC_NEW_LINE +
-     " Example - jake package[/Users/jheifets/Downloads/BB10webworks-next-42/,test/test-app/wwTest.zip,-d,js/webworks.js]");
+     " Expected usage - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>]" + DESC_NEW_LINE +
+     " Example - jake package[/Users/jheifets/Downloads/BB10webworks-next-42/,test/test-app/wwTest.zip,-d]");
 task('package', [], require('./build/package'));
 
 desc("Deploys a bar file to the given device/sim - jake deploy[<pathToBar>,<deviceIP>,<devicePassword>]");

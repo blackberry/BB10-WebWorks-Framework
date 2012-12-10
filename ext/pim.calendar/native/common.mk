@@ -18,4 +18,4 @@ SRCS+=pim_calendar_qt.cpp \
 
 include $(MKFILES_ROOT)/qtargets.mk
 
-LIBS+=bbpim QtCore icuuc icudata icui18n
+LIBS+=bbpim QtCore icuuc icudata icui18n img

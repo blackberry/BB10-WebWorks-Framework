@@ -19,9 +19,7 @@ var _extDir = __dirname + "./../../../../ext",
     client,
     mockedWebworks = {
         execSync: jasmine.createSpy(),
-        execAsync: jasmine.createSpy()
     };
-
 
 describe("sensors", function () {
     beforeEach(function () {
@@ -29,6 +27,7 @@ describe("sensors", function () {
             webworks: mockedWebworks
         };
         client = require(_apiDir + "/client");
+        mockedWebworks.execSync.reset();
     });
 
     afterEach(function () {
@@ -36,9 +35,21 @@ describe("sensors", function () {
     });
 
     describe("setOptions", function () {
-        it("calls execAsync", function () {
+        it("calls execSync", function () {
             client.setOptions("devicecompass", { delay : 1000 });
-            expect(mockedWebworks.execAsync).toHaveBeenCalledWith(_ID, "setOptions", { options : { delay : 1000, sensor : "devicecompass" } });
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "setOptions", { options : { delay : 1000, sensor : "devicecompass" } });
+        });
+    });
+
+    describe("supportedSensors", function () {
+        it("calls execSync", function () {
+            var supportedSensors;
+            
+            supportedSensors = client.supportedSensors;
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "supportedSensors");
+            // make sure it only gets called once
+            supportedSensors = client.supportedSensors;
+            expect(mockedWebworks.execSync.callCount).toEqual(1);
         });
     });
 });

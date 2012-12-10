@@ -22,6 +22,7 @@ var _extDir = __dirname + "./../../../../ext/",
     mockedContextMenu = {
         addItem: jasmine.createSpy(),
         removeItem: jasmine.createSpy(),
+        defineCustomContext: jasmine.createSpy(),
         enabled : true
     },
     mockedQnx = {
@@ -127,6 +128,25 @@ describe("blackberry.ui.contextmenu index", function () {
 
         contextmenu.removeItem(success, fail, args, env);
         expect(mockedContextMenu.removeItem).toHaveBeenCalledWith(success, fail, expectedArgs, env);
+    });
+
+    it("can define a custom context", function () {
+        var args = {
+                context: encodeURIComponent(JSON.stringify("myContext")),
+                options: encodeURIComponent(JSON.stringify({
+                    includeContextItems: ['IMAGE'],
+                    includePlatformItems: false,
+                    includeMenuServiceItems: false
+                })),
+            },
+            env = {};
+
+        contextmenu.defineCustomContext(success, fail, args, env);
+        expect(mockedContextMenu.defineCustomContext).toHaveBeenCalledWith("myContext", {
+            includeContextItems: ['IMAGE'],
+            includePlatformItems: false,
+            includeMenuServiceItems: false
+        });
     });
 
 });
