@@ -105,10 +105,10 @@ describe("blackberry.app", function () {
     });
 
     describe("internationalization support", function () {
-        var originalLanguage = navigator.language;
+        var originalNavigator = window.navigator;
 
         afterEach(function () {
-            window.navigator = { language : originalLanguage };
+            window.navigator = originalNavigator;
         });
 
         it('blackberry.app.name - default value should exist', function () {
