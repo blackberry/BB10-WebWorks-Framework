@@ -41,6 +41,11 @@ task('test', [], function () {
     require('./build/test')(null, process.argv.length >= 4 ? process.argv[3] : null);
 });
 
+desc("run all tests in node - jake test [path,path2]");
+task('test-suite', [], function () {
+    require('./build/test-suite')(null, process.argv.length >= 4 ? process.argv[3] : null);
+});
+
 desc("Grabs the latest ScreenShot from the device located at /accounts/1000/shared/camera/WebWorksScreenShot.bmp " +
     "/test/data/ReferenceImages/<name-of-file> [<ip address>,<name-of-file>]");
 task('grab-image', [], function () {

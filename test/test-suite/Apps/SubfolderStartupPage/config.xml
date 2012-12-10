@@ -18,6 +18,7 @@
         <feature id="blackberry.app" />
     </access>
 
+    <access uri="http://169.254.0.2:9644" />
     <access uri="http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/c" subdomains="true" />
     <access uri="http://smoketest1-vmyyz.labyyz.testnet.rim.net:8080/js" subdomains="true" />
 

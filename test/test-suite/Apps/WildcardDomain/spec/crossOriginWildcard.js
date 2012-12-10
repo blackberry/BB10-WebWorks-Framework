@@ -96,6 +96,7 @@ describe("Cross Origin Wildcard", function () {
 
             runs(function () {
                 testHtmlElementLoads('iframe', { src : 'file:///accounts/1000/shared/documents/textData.txt' });
+                sendReport(true);
             });
         });
     });
