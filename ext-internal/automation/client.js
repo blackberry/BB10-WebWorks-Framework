@@ -17,12 +17,18 @@ var _self = {},
     ID = require("./manifest.json").namespace;
 
 _self.TOUCH_SPACE_FROM_EDGE = 50;
+_self.SWIPE_DURATION = "500";
+
+// Return approximate width of footer's icon depend of what device orientation is
+_self.getFooterMenuIconWidth = function () {
+    return screen.availWidth < screen.availHeight? 150 : 250;
+}
 
 _self.swipeDown = function () {
     internal.pps.syncWrite(
         {
             action : "nativeGesture",
-            duration: "500",
+            duration: _self.SWIPE_DURATION,
             points : "[[(384,-10)(384,500)]]",
             _src: "desktop",
             _dest: "ui-agent"
@@ -35,8 +41,21 @@ _self.swipeUp = function () {
     internal.pps.syncWrite(
         {
             action : "nativeGesture",
-            duration: "500",
+            duration: _self.SWIPE_DURATION,
             points : "[[(384,2000)(384,500)]]",
+            _src: "desktop",
+            _dest: "ui-agent"
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
+};
+
+_self.swipeUpABitFromCenter = function () {
+    internal.pps.syncWrite(
+        {
+            action : "nativeGesture",
+            duration: _self.SWIPE_DURATION,
+            points : "[[(" + screen.availWidth / 2 + "," + screen.availHeight / 2 + ")(" + screen.availWidth / 2 + "," + (screen.availHeight / 2 - _self.TOUCH_SPACE_FROM_EDGE * 3) + ")]]",
             _src: "desktop",
             _dest: "ui-agent"
         },
@@ -62,6 +81,18 @@ _self.touchBottomRight = function () {
 
 _self.touchBottomLeft = function () {
     _self.touch(_self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomLeftSecondIcon = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE + _self.getFooterMenuIconWidth(), screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomLeftThirdIcon = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE + _self.getFooterMenuIconWidth() * 2, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
 };
 
 _self.touchBottomCenter = function () {
@@ -112,7 +143,7 @@ _self.keyboardGesture = function () {
     internal.pps.syncWrite(
         {
             action : "nativeGesture",
-            duration: "500",
+            duration: _self.SWIPE_DURATION,
             points : "[[(200,2000)(200,500)][(400,2000)(400,500)]]",
             _src: "desktop",
             _dest: "ui-agent"
