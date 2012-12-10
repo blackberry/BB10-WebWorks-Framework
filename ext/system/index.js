@@ -169,5 +169,18 @@ module.exports = {
         } catch (err) {
             fail(ERROR_ID, err.message);
         }
+    },
+
+    deviceLockedStatus: function (success, fail) {
+        var callback;
+
+        try {
+            callback = function (state) {
+                success(state);
+            };
+            window.qnx.webplatform.getApplication().isDeviceLocked(callback);
+        } catch (err) {
+            fail(ERROR_ID, err.message);
+        }
     }
 };
