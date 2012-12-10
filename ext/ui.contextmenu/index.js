@@ -74,12 +74,31 @@ function defineCustomContext(success, fail, args, env) {
     _overlayWebView.contextMenu.defineCustomContext(args.context, args.options);
 }
 
+function disablePlatformItem(success, fail, args) {
+    args.context = JSON.parse(decodeURIComponent(args.context));
+    args.actionId = JSON.parse(decodeURIComponent(args.actionId));
+    success(_overlayWebView.contextMenu.disablePlatformItem(args.context, args.actionId));
+}
+
+function enablePlatformItem(success, fail, args) {
+    args.context = JSON.parse(decodeURIComponent(args.context));
+    args.actionId = JSON.parse(decodeURIComponent(args.actionId));
+    success(_overlayWebView.contextMenu.enablePlatformItem(args.context, args.actionId));
+}
+
+function listDisabledPlatformItems(success) {
+    success(_overlayWebView.contextMenu.listDisabledPlatformItems());
+}
+
 contextmenu = {
     enabled: enabled,
     addItem: addItem,
     removeItem: removeItem,
     overrideItem: overrideItem,
     clearOverride: clearOverride,
+    disablePlatformItem: disablePlatformItem,
+    enablePlatformItem: enablePlatformItem,
+    listDisabledPlatformItems: listDisabledPlatformItems,
     defineCustomContext: defineCustomContext
 };
 

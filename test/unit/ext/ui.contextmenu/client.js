@@ -72,12 +72,12 @@ describe("blackberry.ui.contextmenu client", function () {
         expect(client.ACTION_COPY_LINK).toEqual("CopyLink");
         expect(client.ACTION_CUT).toEqual("Cut");
         expect(client.ACTION_INSPECT_ELEMENT).toEqual("InspectElement");
-        expect(client.ACTION_OPEN_LINK).toEqual("OpenLink");
         expect(client.ACTION_PASTE).toEqual("Paste");
         expect(client.ACTION_SAVE_IMAGE).toEqual("SaveImage");
         expect(client.ACTION_SAVE_LINK_AS).toEqual("SaveLinkAs");
         expect(client.ACTION_VIEW_IMAGE).toEqual("ViewImage");
         expect(client.ACTION_SELECT).toEqual("Select");
+        expect(client.ACTION_MENU_SERVICE).toEqual("MenuService");
     });
 
     it("Cannot add a menu item without a context", function () {
@@ -124,5 +124,24 @@ describe("blackberry.ui.contextmenu client", function () {
         var actionId = 'OpenLink';
         client.clearOverride(actionId);
         expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, 'clearOverride', {actionId: actionId});
+    });
+
+    it("can disable a platform provided item", function () {
+        var context = client.CONTEXT_ALL,
+            actionId = client.ACTION_OPEN_LINK;
+        client.disablePlatformItem(context, actionId);
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, 'disablePlatformItem', {context: context, actionId: actionId});
+    });
+
+    it("can enable a disabled platform provided item", function () {
+        var context = client.CONTEXT_ALL,
+            actionId = client.ACTION_OPEN_LINK;
+        client.enablePlatformItem(context, actionId);
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, 'enablePlatformItem', {context: context, actionId: actionId});
+    });
+
+    it("can list the disabled platform provided item", function () {
+        client.listDisabledPlatformItems();
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, 'listDisabledPlatformItems');
     });
 });
