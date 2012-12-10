@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+var wrench = require('wrench'),
+    jWorkflow = require('jWorkflow'),
+    path = require('path'),
+    utils = require('./build/utils'),
+    preprocess = require('./build/preprocess'),
+    _c = require('./build/conf');
+
 module.exports = function (done, custom) {
     var jasmine = require('jasmine-node'),
         verbose = false,
         colored = false,
-        specs = __dirname + "/../" + (custom ? custom : "test/unit"),
-        key;    
+        specs = path.join(_c.TEMP, (custom ? custom : "test/unit")),
+        key,
+        test;
 
     //HACK: this should be  taken out if our pull request in jasmine is accepted.
     jasmine.Matchers.prototype.toThrow = function (expected) {
@@ -54,16 +63,32 @@ module.exports = function (done, custom) {
         return result;
     };
 
+    //this file contains the modifications to jasmine-node
+    require('./../dependencies/jasmine-node/jasmine-node');
+
     for (key in jasmine) {
         if (Object.prototype.hasOwnProperty.call(jasmine, key)) {
             global[key] = jasmine[key];
         }
     }
 
-    jasmine.executeSpecsInFolder(specs, function (runner, log) {
-        var failed = runner.results().failedCount === 0 ? 0 : 1;
-        setTimeout(function () {
-            (typeof done !== "function" ? process.exit : done)(failed);
-        }, 10);
-    }, verbose, colored);
+    utils.copyFolder(path.join(_c.ROOT, "ext"), path.join(_c.TEMP, "ext"));
+    utils.copyFolder(path.join(_c.ROOT, "ext-internal"), path.join(_c.TEMP, "ext-internal"));
+    utils.copyFolder(path.join(_c.ROOT, "lib"), path.join(_c.TEMP, "lib"));
+    utils.copyFolder(path.join(_c.ROOT, "build"), path.join(_c.TEMP, "build"));
+    utils.copyFolder(path.join(_c.DEPENDENCIES, "require"), path.join(_c.TEMP + "/dependencies", "require"));
+    utils.copyFolder(path.join(_c.ROOT, "test"), path.join(_c.TEMP, "test"));
+
+    test = jWorkflow.order(preprocess([], [_c.TEMP]));
+    test.start(function (code) {
+        jasmine.executeSpecsInFolder(specs, function (runner, log) {
+            wrench.rmdirSyncRecursive(_c.TEMP, true);
+            var failed = runner.results().failedCount === 0 ? 0 : 1;
+            setTimeout(function () {
+                (typeof done !== "function" ? process.exit : done)(failed);
+            }, 10);
+
+        }, verbose, colored);
+    });
+
 };
