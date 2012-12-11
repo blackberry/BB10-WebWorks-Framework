@@ -4,20 +4,43 @@
 	    <meta name="viewport" id="viewport" content="initial-scale=1.0,user-scalable=no" />
 		<title>test geolocation</title>
 
+
+    <script type="text/javascript">
+
+        function displayError(error) {
+          var errors = {
+            1: 'Permission denied',
+            2: 'Position unavailable',
+            3: 'Request timeout'
+          };
+          alert("Error: " + errors[error.code]);
+        }
+
+        function displayPosition(position) {
+          alert("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+        }
+
+        function findLocation() {
+            if (navigator.geolocation) {
+              var timeoutVal = 10 * 1000;
+              navigator.geolocation.getCurrentPosition(
+                displayPosition,
+                displayError,
+                { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+              );
+            }
+            else {
+              alert("Geolocation is not supported by this browser");
+            }
+        }
+    </script>
 	</head>
 	<body>
-    <ol>
-    
-    <li>
-    <a href="http://html5demos.com/geo">Test remote geolocation page 01 : http://html5demos.com/geo</a>
-    </li>
-	
-    <li>
-    <a href="http://benwerd.com/lab/geo.php">Test remote geolocation page 02 : http://benwerd.com/lab/geo.php</a>
-    </li>
-  
-    </ol>
-	
-	<p><a href="main.htm">Go back to main page</a></p> 
+
+    <h3>Checking your location</h3>
+
+    <button onclick="findLocation()">Find your location</button>
+
+	<p><a href="main.htm">Go back to main page</a></p>
 	</body>
 </html>
