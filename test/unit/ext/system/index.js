@@ -350,6 +350,84 @@ describe("system index", function () {
         });
     });
 
+    describe("perimeterlocked event", function () {
+        var applicationEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            applicationEvents = require(libDir + "events/applicationEvents");
+        });
+
+        it("responds to 'perimeterlocked' events", function () {
+            var clientEventName = "perimeterlocked",
+                eventName = "windowLock",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'perimeterlocked' event", function () {
+            var clientEventName = "perimeterlocked",
+                eventName = "windowLock",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("perimeterunlocked event", function () {
+        var applicationEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            applicationEvents = require(libDir + "events/applicationEvents");
+        });
+
+        it("responds to 'perimeterunlocked' events", function () {
+            var clientEventName = "perimeterunlocked",
+                eventName = "windowUnlock",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'perimeterunlocked' event", function () {
+            var clientEventName = "perimeterunlocked",
+                eventName = "windowUnlock",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
     describe("font", function () {
         describe("font methods", function () {
             var fontFamily = "courier",
