@@ -18,7 +18,6 @@
 describe("email composer", function () {
     var onDone,
         onCancel,
-        flag = false,
         waitTimeout = 2000,
         invokeCallback = function (e) {
             if (e) {
