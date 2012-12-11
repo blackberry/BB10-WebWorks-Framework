@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,10 @@ _self.touch = function (x, y) {
     );
 };
 
+_self.touchBottomRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
 _self.touchBottomLeft = function () {
     _self.touch(_self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
 };
@@ -76,12 +80,16 @@ _self.touchCenter = function () {
     _self.touch(screen.availWidth / 2, screen.availHeight / 2);
 };
 
-_self.touchTopLeft = function () {
-    _self.touch(10, 10);
-};
-
-_self.touchTopRight = function () {
-    _self.touch(screen.availWidth - 10, 10);
+_self.injectText = function (inputText) {
+    internal.pps.syncWrite(
+        {
+            action: "injectText",
+            text: inputText,
+            _src: "desktop",
+            _dest: "ui-agent"
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
 };
 
 _self.showKeyboard = function () {

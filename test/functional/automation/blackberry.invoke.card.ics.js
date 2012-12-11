@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ describe("blackberry.invoke.card.ics", function () {
                     return val;
                 }
             }
-            return segment(2) + "-" + segment(1) + "-" + segment(1) + "-" + segment(1) +  "-" + segment(3); 
-        } 
+            return segment(2) + "-" + segment(1) + "-" + segment(1) + "-" + segment(1) +  "-" + segment(3);
+        }
 
         function gotWriter(fileWriter) {
             fileWriter.onwriteend = function (e) {
