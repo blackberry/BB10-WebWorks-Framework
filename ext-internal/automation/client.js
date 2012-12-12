@@ -26,7 +26,7 @@ _self.SWIPE_DURATION = "500";
 // Return approximate width of footer's icon depend of what device orientation is
 _self.getFooterMenuIconWidth = function () {
     return screen.availWidth < screen.availHeight? 150 : 250;
-}
+};
 
 _self.swipeDown = function () {
     internal.pps.syncWrite(
@@ -139,7 +139,23 @@ _self.touchContextMenuShare = function () {
 _self.touchInvocationListItem = function (index) {
     _self.touch(screen.availWidth / 2 ,  (_self.INVOCATIONLIST_TITLE_HEIGHT - 25) + _self.INVOCATIONLIST_ITEM_HEIGHT * index);
     // touch past the cancel bar, plus each item width, with a 5 offset to actually touch the item
-}
+};
+
+_self.getForegroundAppInfo = function () {
+    var appInfo = {};
+    internal.pps.syncWrite(
+        {
+            _src: "desktop",
+            _dest: "navigator",
+            msg: "getForegroundAppInfo"
+        },
+        "/pps/services/automation/navigator/control"
+    );
+    internal.pps.syncRead("/pps/services/automation/navigator/output").output.response.slice(0, -1).split(";").forEach(function (element) {
+        appInfo[element.split("=")[0]] = element.split("=")[1];
+    });
+    return appInfo;
+};
 
 _self.injectText = function (inputText) {
     internal.pps.syncWrite(
@@ -158,6 +174,10 @@ _self.touchTopLeft = function () {
 
 _self.touchTopRight = function () {
     _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopRightAppTile = function () {
+    _self.touch(screen.availWidth - 100, 300);
 };
 
 _self.showKeyboard = function () {
