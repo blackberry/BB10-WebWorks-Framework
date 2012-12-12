@@ -29,7 +29,7 @@ function testSystemReadOnly(field) {
 
 beforeEach(function () {
     this.addMatchers({
-        toBeOneOf: function(expected) {
+        toBeOneOf: function (expected) {
             return expected.indexOf(this.actual) !== -1;
         }
     });
