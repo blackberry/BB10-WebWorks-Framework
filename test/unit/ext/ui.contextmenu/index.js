@@ -15,12 +15,17 @@
  */
 var _extDir = __dirname + "./../../../../ext/",
     _libDir = __dirname + "./../../../../lib/",
+    _event = require(_libDir + "event"),
     contextmenu,
     overlayWebView,
     success = jasmine.createSpy(),
     fail = jasmine.createSpy(),
     mockedContextMenu = {
-        addItem: jasmine.createSpy(),
+        addItem: jasmine.createSpy().andCallFake(function (success, fail, args, env) {
+            if (args && typeof args.handler === 'function') {
+                args.handler('Copy', '1');
+            }
+        }),
         removeItem: jasmine.createSpy(),
         overrideItem: jasmine.createSpy(),
         clearOverride: jasmine.createSpy(),
@@ -100,6 +105,7 @@ describe("blackberry.ui.contextmenu index", function () {
         expect(mockedContextMenu.enabled).toEqual(true);
         expect(success).toHaveBeenCalled();
     });
+
     it("can add a custom menu item", function () {
         var args = {
                 contexts: encodeURIComponent(JSON.stringify(['ALL'])),
@@ -112,8 +118,21 @@ describe("blackberry.ui.contextmenu index", function () {
                 handler: jasmine.any(Function)
             };
 
+        spyOn(_event, 'trigger');
         contextmenu.addItem(success, fail, args, env);
         expect(mockedContextMenu.addItem).toHaveBeenCalledWith(success, fail, expectedArgs, env);
+    });
+
+    it("properly passes the sourceId from the handler back to the callback", function () {
+        var args = {
+                contexts: encodeURIComponent(JSON.stringify(['ALL'])),
+                action: encodeURIComponent(JSON.stringify({actionId: 'explosion'})),
+            },
+            env = {};
+
+        spyOn(_event, 'trigger');
+        contextmenu.addItem(success, fail, args, env);
+        expect(_event.trigger).toHaveBeenCalledWith('contextmenu.executeMenuAction', 'Copy', '1');
     });
 
     it("can remove a custom menu item", function () {
