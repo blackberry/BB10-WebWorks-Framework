@@ -14,14 +14,14 @@
 * limitations under the License.
 */
 var jWorkflow = require("jWorkflow"),
-    path = require("path"),
+    fs = require("fs"),
     conf = require("./build/conf"),
     utils = require("./build/utils");
 
 module.exports = function (barFile, deviceIp, password) {
     var deployBar = jWorkflow.order();
 
-    if (!barFile || !path.existsSync(barFile)) {
+    if (!barFile || !fs.existsSync(barFile)) {
         utils.displayOutput("Invalid bar file specified - " + barFile);
         process.exit();
     }
