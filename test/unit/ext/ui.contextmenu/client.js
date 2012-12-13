@@ -72,7 +72,6 @@ describe("blackberry.ui.contextmenu client", function () {
         expect(client.ACTION_COPY_LINK).toEqual("CopyLink");
         expect(client.ACTION_CUT).toEqual("Cut");
         expect(client.ACTION_INSPECT_ELEMENT).toEqual("InspectElement");
-        expect(client.ACTION_OPEN_LINK).toEqual("OpenLink");
         expect(client.ACTION_PASTE).toEqual("Paste");
         expect(client.ACTION_SAVE_IMAGE).toEqual("SaveImage");
         expect(client.ACTION_SAVE_LINK_AS).toEqual("SaveLinkAs");
