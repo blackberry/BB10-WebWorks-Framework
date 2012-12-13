@@ -22,6 +22,8 @@ var _extDir = __dirname + "./../../../../ext/",
     mockedContextMenu = {
         addItem: jasmine.createSpy(),
         removeItem: jasmine.createSpy(),
+        overrideItem: jasmine.createSpy(),
+        clearOverride: jasmine.createSpy(),
         defineCustomContext: jasmine.createSpy(),
         enabled : true
     },
@@ -147,6 +149,50 @@ describe("blackberry.ui.contextmenu index", function () {
             includePlatformItems: false,
             includeMenuServiceItems: false
         });
+    });
+
+    it("has an override menu item function", function () {
+        expect(contextmenu.overrideItem).toBeDefined();
+    });
+
+    it("has an clearmenu item function", function () {
+        expect(contextmenu.clearOverride).toBeDefined();
+    });
+
+    it("can override a platform menu item", function () {
+        var args = {
+                action: encodeURIComponent(JSON.stringify({actionId: 'Paste'}))
+            },
+            env = {};
+        contextmenu.overrideItem(success, fail, args, env);
+        expect(mockedContextMenu.overrideItem).toHaveBeenCalledWith({ actionId: 'Paste'}, jasmine.any(Function));
+    });
+
+    it("can override a platform MenuService menu item", function () {
+        var args = {
+                action: encodeURIComponent(JSON.stringify({actionId: 'MenuService-Share'}))
+            },
+            env = {};
+        contextmenu.overrideItem(success, fail, args, env);
+        expect(mockedContextMenu.overrideItem).toHaveBeenCalledWith({ actionId: 'MenuService-Share'}, jasmine.any(Function));
+    });
+
+    it("can clear an overriden platform menu item", function () {
+        var args = {
+                actionId: encodeURIComponent(JSON.stringify('Copy'))
+            },
+            env = {};
+        contextmenu.clearOverride(success, fail, args, env);
+        expect(mockedContextMenu.clearOverride).toHaveBeenCalledWith('Copy');
+    });
+
+    it("can clear an overriden menu item", function () {
+        var args = {
+                actionId: encodeURIComponent(JSON.stringify('MenuService-Share'))
+            },
+            env = {};
+        contextmenu.clearOverride(success, fail, args, env);
+        expect(mockedContextMenu.clearOverride).toHaveBeenCalledWith('MenuService-Share');
     });
 
 });
