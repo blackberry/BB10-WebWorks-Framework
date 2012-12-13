@@ -523,7 +523,7 @@ describe("blackberry.pim.contacts", function () {
                     expect(contact.id).toBeDefined();
 
                     if (foundContact) {
-                        expect(contact.id).not.toBe(foundContact.id);
+                        expect(contact.id).not.toEqual(foundContact.id);
                     }
 
                     expect(contact.id).not.toBe("");
@@ -863,9 +863,9 @@ describe("blackberry.pim.contacts", function () {
         it('can get the contact with specified contactId', function () {
             var contactFound,
                 name = {
-                "familyName": "WebWorksTest",
-                "givenName": "John"
-            },
+                    "familyName": "WebWorksTest",
+                    "givenName": "John"
+                },
                 workPhone = { type: ContactField.WORK, value: "123-456-789" },
                 workEmail = { type: ContactField.WORK, value: "abc@blah.com" },
                 contact = contacts.create({

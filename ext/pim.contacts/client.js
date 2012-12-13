@@ -70,6 +70,7 @@ _self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
         if (result._success) {
             if (contacts) {
                 contacts.forEach(function (contact) {
+                    contact.id = contact.id.toString();
                     contactUtils.populateContact(contact);
                     realContacts.push(new Contact(contact));
                 });
