@@ -21,7 +21,7 @@ describe("blackberry.invoke.card.ics", function () {
     var waitTimeout = 2000;
 
     function pushIcsFileToDevice(callback) {
-        var dir = "/accounts/1000/shared/documents/",
+        var dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "test.ics",
             bb = new window.WebKitBlobBuilder();
 
@@ -105,7 +105,7 @@ describe("blackberry.invoke.card.ics", function () {
                 return flag;
             }, waitTimeout);
             runs(function () {
-                blackberry.invoke.card.invokeIcsViewer({uri: "file:///accounts/1000/shared/documents/test.ics"}, onDone, onCancel);
+                blackberry.invoke.card.invokeIcsViewer({uri: "file://" + blackberry.io.sharedFolder + "/documents/test.ics"}, onDone, onCancel);
                 waits(waitTimeout);
                 runs(function () {
                     internal.automation.touchBottomCenter();

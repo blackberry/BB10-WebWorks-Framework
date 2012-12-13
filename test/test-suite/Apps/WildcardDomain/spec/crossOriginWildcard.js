@@ -40,7 +40,7 @@ describe("Cross Origin Wildcard", function () {
                 console.log(e);
             }),
             fileWritten = false,
-            dir = "/accounts/1000/shared/documents/",
+            dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "textData.txt",
             bb = new window.WebKitBlobBuilder();
 
@@ -74,7 +74,7 @@ describe("Cross Origin Wildcard", function () {
             expect(errorHandler).wasNotCalled();
             expect(fileWritten).toBe(true);
 
-            testHtmlElementLoads('iframe', {src: 'file:///accounts/1000/shared/documents/textData.txt' });
+            testHtmlElementLoads('iframe', {src: 'file://' + blackberry.io.sharedFolder + '/documents/textData.txt' });
         });
     }
 
@@ -95,7 +95,7 @@ describe("Cross Origin Wildcard", function () {
             writeTestFile();
 
             runs(function () {
-                testHtmlElementLoads('iframe', { src : 'file:///accounts/1000/shared/documents/textData.txt' });
+                testHtmlElementLoads('iframe', { src : 'file://' + blackberry.io.sharedFolder + '/documents/textData.txt' });
                 sendReport(true);
             });
         });
