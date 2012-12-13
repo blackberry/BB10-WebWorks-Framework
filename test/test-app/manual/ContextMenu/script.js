@@ -14,8 +14,8 @@
  * limitations under the License.
 */
 
-var callback = function() {
-    alert("Callback triggered");
+var callback = function(id) {
+    alert("Callback triggered with id: " + id);
 };
 
 function overridePlatform() {

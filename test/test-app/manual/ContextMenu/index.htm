@@ -103,7 +103,7 @@
         <br />
         <div align="left">
             <h1 align="center">Context menu tests - Custom contexts</h1>
-            <div align="left" data-webworks-context="myContext">
+            <div align="left" data-webworks-context='{"id":"2", "type":"myContext", "header":"The bug custom header", "subheader":"A custom subheader"}'>
                 <a href="http://www.google.com">This is a link with customContext</a>
                 <br />
                 <br />
@@ -127,7 +127,13 @@
                 <a href="http://www.w3.org"><img src="http://www.w3.org/2008/site/images/logo-w3c-mobile-lg.png"></a>
                 <br />
                 <br />
-                <h4>Empty div: with customContext</h4>
+                <h4>Empty div: with customContext id 2</h4>
+            </div>
+            <div align"left" data-webworks-context='{"id":"4", "type":"myContext", "header":"The bug custom header", "subheader":"A custom subheader"}'>
+                <p>Div with ID 4</p>
+            </div>
+            <div align"left" data-webworks-context='{"id":"5", "type":"myContext", "header":"The bug custom header", "subheader":"A custom subheader"}'>
+                <p>Div with ID 5</p>
             </div>
             <button onclick="addMenuItemContextCustom()">Add custom item to custom context ["myContext"]</button>
             <button onclick="removeMenuItemContextCustom()">Remove custom item from custom context ["myContext"]</button>
