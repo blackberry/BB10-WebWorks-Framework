@@ -143,7 +143,8 @@ function addLinkContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_LINK],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '6'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -152,7 +153,8 @@ function addInputContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_INPUT],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '6'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -161,7 +163,8 @@ function addTextContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_TEXT],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '6'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -170,7 +173,8 @@ function addImageContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_IMAGE],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '6'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
