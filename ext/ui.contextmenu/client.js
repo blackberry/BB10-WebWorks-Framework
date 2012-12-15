@@ -27,9 +27,9 @@ function defineReadOnlyActions(name, value) {
 }
 
 function listen() {
-    window.blackberry.event.addEventListener('contextmenu.executeMenuAction', function (actionId) {
+    window.blackberry.event.addEventListener('contextmenu.executeMenuAction', function (actionId, elementId) {
         if (typeof _storedCallbacks[actionId] === 'function') {
-            _storedCallbacks[actionId]();
+            _storedCallbacks[actionId](elementId);
         }
     });
 }
