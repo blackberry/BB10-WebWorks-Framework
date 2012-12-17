@@ -28,6 +28,8 @@ var ContactFindOptions = function (filter, sort, limit, favorite) {
     this.sort = sort || null;
     this.limit = limit || -1; // -1 for returning all results
     this.favorite = favorite || false;
+    this.includeAccounts = [];
+    this.excludeAccounts = [];
 };
 
 Object.defineProperty(ContactFindOptions, "SEARCH_FIELD_GIVEN_NAME", { "value": 0 });

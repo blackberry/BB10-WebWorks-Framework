@@ -311,4 +311,8 @@ describe("pim.contacts index", function () {
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
     });
+
+    it("has getContactAccounts", function () {
+        expect(index.getContactAccounts).toBeDefined();
+    });
 });
