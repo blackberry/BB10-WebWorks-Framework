@@ -1,46 +1,138 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
 <html>
-	<head>
-	    <meta name="viewport" id="viewport" content="initial-scale=1.0,user-scalable=no" />
-		<title>test geolocation</title>
 
+    <head>
 
-    <script type="text/javascript">
+        <meta name="viewport" id="viewport" content="initial-scale=1.0,user-scalable=no" />
 
-        function displayError(error) {
-          var errors = {
-            1: 'Permission denied',
-            2: 'Position unavailable',
-            3: 'Request timeout'
-          };
-          alert("Error: " + errors[error.code]);
-        }
+        <title>test geolocation</title>
 
-        function displayPosition(position) {
-          alert("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
-        }
+        <script type="text/javascript" src="local:///chrome/webworks.js"></script>
 
-        function findLocation() {
-            if (navigator.geolocation) {
-              var timeoutVal = 10 * 1000;
-              navigator.geolocation.getCurrentPosition(
-                displayPosition,
-                displayError,
-                { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
-              );
+        <style type="text/css">
+            input[type='text'] {
+                width: 100px;
             }
-            else {
-              alert("Geolocation is not supported by this browser");
+            a {
+                display: block;
+                font-size: 14pt;
+                margin-bottom: 10px;
             }
-        }
-    </script>
-	</head>
-	<body>
+            #currentPosition, #watch {
+                width: 100%;
+                min-height: 50px;
+                word-wrap: break-word;
+                border: 2px solid black;
+            }
+        </style>
 
-    <h3>Checking your location</h3>
+        <script type="text/javascript">
+            var watchId;
+            function getCurrentPosition() {
+                var options = { },
+                    timeout = parseInt(document.getElementById('timeout').value),
+                    maximumAge = parseInt(document.getElementById('maximumAge').value);
 
-    <button onclick="findLocation()">Find your location</button>
+                if (document.getElementById('highAccuracy').checked) {
+                    options.enableHighAccuracy = true;
+                }
+                if (!isNaN(timeout)) {
+                    options.timeout = timeout;
+                }
+                if (!isNaN(maximumAge)) {
+                    options.maximumAge = maximumAge;
+                }
 
-	<p><a href="main.htm">Go back to main page</a></p>
-	</body>
+                console.log(JSON.stringify(options));
+
+                document.getElementById('currentPosition').innerHTML = '';
+
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    document.getElementById('currentPosition').innerHTML = JSON.stringify(pos);
+                }, function (error) {
+                    document.getElementById('currentPosition').innerHTML = JSON.stringify(error);
+                },
+                options);
+            }
+            function watchPosition() {
+                var options = { },
+                    timeout = parseInt(document.getElementById('watch_timeout').value),
+                    maximumAge = parseInt(document.getElementById('watch_maximumAge').value);
+
+                if (document.getElementById('watch_highAccuracy').checked) {
+                    options.enableHighAccuracy = true;
+                }
+                if (!isNaN(timeout)) {
+                    options.timeout = timeout;
+                }
+                if (!isNaN(maximumAge)) {
+                    options.maximumAge = maximumAge;
+                }
+
+                console.log(JSON.stringify(options));
+
+                document.getElementById('watch').innerHTML = '';
+                document.getElementById('watchButton').disabled = true;
+                document.getElementById('clearButton').disabled = false;
+
+                watchId = navigator.geolocation.watchPosition(function (pos) {
+                    document.getElementById('watch').innerHTML = JSON.stringify(pos);
+                }, function (error) {
+                    document.getElementById('watch').innerHTML = JSON.stringify(error);
+                },
+                options);
+            }
+            function clearWatch() {
+                document.getElementById('watch').innerHTML = '';
+                navigator.geolocation.clearWatch(watchId);
+                document.getElementById('watchButton').disabled = false;
+                document.getElementById('clearButton').disabled = true;
+            }
+            function invokeBrowser(uri) {
+                blackberry.invoke.invoke({uri: uri});
+            }
+        </script>
+
+    </head>
+
+    <body>
+
+        <h1>navigator.geolocation</h1>
+
+        <section>
+            <h2>getCurrentPosition</h2>
+            <div id="currentPosition"></div>
+            <div>
+                Enable High Accuracy: <input id="highAccuracy" type="checkbox" /><br />
+                Maximum Age (ms): <input id="maximumAge" type="text"/><br />
+                Timeout (ms): <input id="timeout" type="text" /><br />
+                <input type="button" value="getCurrentPosition" onclick="getCurrentPosition();" />
+            </div>
+        </section>
+
+        <section>
+            <h2>watchPosition</h2>
+            <div id="watch"></div>
+            <div>
+                Enable High Accuracy: <input id="watch_highAccuracy" type="checkbox" /><br />
+                Maximum Age (ms): <input id="watch_maximumAge" type="text"/><br />
+                Timeout (ms): <input id="watch_timeout" type="text" /><br />
+                <input type="button" id="watchButton" value="watchPosition" onclick="watchPosition();" />
+                <input type="button" id="clearButton" value="clearWatch" onclick="clearWatch();" disabled="true" />
+            </div>
+        </section>
+
+        <section>
+            <h2>Remote Pages</h2>
+            <a href="http://html5demos.com/geo">http://html5demos.com/geo</a>
+            <input type="button" value="Browser" onclick="invokeBrowser('http://html5demos.com/geo');" /><br />
+            <a href="http://benwerd.com/lab/geo.php">http://benwerd.com/lab/geo.php</a>
+            <input type="button" value="Browser"  onclick="invokeBrowser('http://benwerd.com/lab/geo.php');" />
+        </section>
+
+        <section>	
+	    <a href="main.htm">Back</a>
+        </section>
+
+    </body>
 </html>
