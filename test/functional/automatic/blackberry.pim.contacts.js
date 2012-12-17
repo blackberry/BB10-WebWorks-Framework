@@ -1634,4 +1634,15 @@ describe("blackberry.pim.contacts", function () {
             doneTestingFind = true;
         });
     });
+
+    describe("blackberry.pim.contact.getContactAccounts", function () {
+        it("returns at least one account", function () {
+            var accounts;
+
+            accounts = contacts.getContactAccounts();
+            expect(accounts).toBeDefined();
+            expect(accounts.length).toBeGreaterThan(0);
+
+        });
+    });
 });

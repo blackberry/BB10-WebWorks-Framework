@@ -43,26 +43,32 @@ JSExt* onCreateObject(const std::string& className, const std::string& id)
 
 std::string PimContacts::InvokeMethod(const std::string& command)
 {
-    int index = command.find_first_of(" ");
+    unsigned int index = command.find_first_of(" ");
 
-    string strCommand = command.substr(0, index);
-    string jsonObject = command.substr(index + 1, command.length());
+    string strCommand;
+    string jsonObject;
+    Json::Value *obj;
 
-    // Parse the JSON
-    Json::Value *obj = new Json::Value;
-    bool parse = Json::Reader().parse(jsonObject, *obj);
+    if (index != std::string::npos) {
+        strCommand = command.substr(0, index);
+        jsonObject = command.substr(index + 1, command.length());
 
-    if (!parse) {
-        fprintf(stderr, "%s", "error parsing\n");
-        return "Cannot parse JSON object";
+        // Parse the JSON
+        obj = new Json::Value;
+        bool parse = Json::Reader().parse(jsonObject, *obj);
+
+        if (!parse) {
+            return "Cannot parse JSON object";
+        }
+    } else {
+        strCommand = command;
+        obj = NULL;
     }
 
     if (strCommand == "find") {
         startThread(FindThread, obj);
-
     } else if (strCommand == "save") {
         startThread(SaveThread, obj);
-
     } else if (strCommand == "remove") {
         startThread(RemoveThread, obj);
     } else if (strCommand == "getContact") {
@@ -75,6 +81,8 @@ std::string PimContacts::InvokeMethod(const std::string& command)
 
         std::string event = Json::FastWriter().write(result);
         NotifyEvent("invokeContactPicker.invokeEventId", event);
+    } else if (strCommand == "getContactAccounts") {
+        return Json::FastWriter().write(webworks::PimContactsQt::GetContactAccounts());
     }
 
     return "";
