@@ -32,7 +32,7 @@ function deleteContactWithMatchingLastName(lastName) {
             filter: [{
                 fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
                 fieldValue: lastName
-            }], 
+            }]
         },
         numContactsRemoved = 0,
         numContactsFound = 0,
@@ -50,7 +50,7 @@ function deleteContactWithMatchingLastName(lastName) {
         });
     }, function (error) {
         console.log("Failed to clean up contacts with last name '" + lastName + "', error code=" + error.code);
-    }); 
+    });
 
     waitsFor(function () {
         return numContactsRemoved === numContactsFound;
@@ -179,7 +179,7 @@ describe("blackberry.pim.contacts", function () {
             expect(ContactActivity.INCOMING).toBeDefined();
             expect(ContactActivity.OUTGOING).toBeDefined();
         });
-        
+
         it('blackberry.pim.contacts.ContactActivity constants should be read-only', function () {
             testReadOnly(ContactActivity, "INCOMING");
             testReadOnly(ContactActivity, "OUTGOING");
@@ -268,10 +268,10 @@ describe("blackberry.pim.contacts", function () {
 
         it('Can create blackberry.pim.contacts.ContactPhoto object', function () {
             var photo = {
-                originalFilePath: "/accounts/1000/shared/pictures/001.jpg", 
+                originalFilePath: blackberry.io.sharedFolder + "/pictures/001.jpg",
                 pref: true
             };
-            expect(photo.originalFilePath).toBe("/accounts/1000/shared/pictures/001.jpg");
+            expect(photo.originalFilePath).toBe(blackberry.io.sharedFolder + "/pictures/001.jpg");
             expect(photo.pref).toBe(true);
         });
 
@@ -309,7 +309,7 @@ describe("blackberry.pim.contacts", function () {
                     name: "Research In Motion"
                 },
                 workEmail = {
-                    type: ContactField.WORK, 
+                    type: ContactField.WORK,
                     value: "jfk@rim.com"
                 },
                 homeEmail = {
@@ -445,8 +445,8 @@ describe("blackberry.pim.contacts", function () {
                                               {"name": "IBM", "title": "Manager"},
                                               {"name": "The Cool Co.", "department": "Cooler", "title": "Mr. Cool"} ];
 
-                new_contact.photos = [ {originalFilePath: "/accounts/1000/shared/camera/earth.gif", pref: false},
-                                       {originalFilePath: "/accounts/1000/shared/camera/twitter.jpg", pref: true} ];
+                new_contact.photos = [ {originalFilePath: blackberry.io.sharedFolder + "/camera/earth.gif", pref: false},
+                                       {originalFilePath: blackberry.io.sharedFolder + "/camera/twitter.jpg", pref: true} ];
 
                 new_contact.note = "This is a test contact for the PIM WebWorks API";
                 new_contact.videoChat = ["abc", "def"];
@@ -1101,7 +1101,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                         fieldValue: "Alessandro"
-                    }], 
+                    }],
                     sort: [{
                         fieldName: 23423,
                         desc: false
@@ -1144,7 +1144,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                         fieldValue: "Alessandro"
-                    }], 
+                    }],
                     sort: [{
                         fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME
                     }]
@@ -1329,7 +1329,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
                         "fieldValue": "S"
-                    }], 
+                    }],
                     sort: [{
                         "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
                         "desc": false
@@ -1388,7 +1388,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
                         "fieldValue": "S"
-                    }], 
+                    }],
                     sort: [{
                         "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
                         "desc": false

@@ -44,7 +44,7 @@ describe("blackberry.ui.cover", function () {
 
         it("sets window cover from file:///filepath", function () {
             var confirm,
-                path = "file:///accounts/1000/shared/downloads/windowcover.png",
+                path = "file://" + blackberry.io.sharedFolder + "/downloads/windowcover.png",
                 label = {"label": "Test 1", "size": 8},
                 blob,
                 flag = false,
@@ -70,7 +70,7 @@ describe("blackberry.ui.cover", function () {
                 xhr.onload = function (e) {
                     if (this.status === 200) {
                         blob = new window.Blob([this.response], {type:  'image/png'});
-                        writeBlobToPath(blob, 1024 * 1024, "/accounts/1000/shared/downloads/windowcover.png", function () {
+                        writeBlobToPath(blob, 1024 * 1024, blackberry.io.sharedFolder + "/downloads/windowcover.png", function () {
                             flag = true;
                         });
                     }
