@@ -89,20 +89,25 @@ describe("framework", function () {
 
         delete require.cache[require.resolve(srcPath + "webview")];
         webview = require(srcPath + "webview");
-        delete require.cache[require.resolve(srcPath + "overlayWebview")];
+        delete require.cache[require.resolve(srcPath + "overlayWebView")];
         overlayWebView = require(srcPath + "overlayWebView");
-        delete require.cache[require.resolve(srcPath + "controllerWebview")];
+        delete require.cache[require.resolve(srcPath + "controllerWebView")];
         controllerWebView = require(srcPath + "controllerWebView");
 
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
 
-        spyOn(overlayWebView, "create").andCallFake(function (done) {
-            overlayWebViewObj = overlayWebView.getWebViewObj();
-            overlayWebViewObj.formcontrol = {
-                subscribeTo: jasmine.createSpy()
+        spyOn(overlayWebView, "getWebViewObj").andCallFake(function () {
+            overlayWebViewObj = {
+                formcontrol: {
+                    subscribeTo: jasmine.createSpy()
+                }
             };
+            return overlayWebViewObj;
+        });
+
+        spyOn(overlayWebView, "create").andCallFake(function (done) {
             done();
         });
 
