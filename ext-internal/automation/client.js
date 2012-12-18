@@ -17,6 +17,10 @@ var _self = {},
     ID = require("./manifest.json").namespace;
 
 _self.TOUCH_SPACE_FROM_EDGE = 50;
+_self.CONTEXTMENU_ITEM_HEIGHT = 121;
+_self.INVOCATIONLIST_TITLE_HEIGHT = 111;
+_self.INVOCATIONLIST_ITEM_HEIGHT = 121;
+_self.CONTEXTMENU_SHARE_ITEM = 760;
 _self.SWIPE_DURATION = "500";
 
 // Return approximate width of footer's icon depend of what device orientation is
@@ -75,6 +79,19 @@ _self.touch = function (x, y) {
     );
 };
 
+_self.longTouch = function (x, y) {
+    internal.pps.syncWrite(
+        {
+            action : "nativeTouch",
+            points : "[[(" + x + "," + y + ")]]",
+            _src: "desktop",
+            _dest: "ui-agent",
+            duration: 1000
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
+};
+
 _self.touchBottomRight = function () {
     _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
 };
@@ -110,6 +127,19 @@ _self.touchTopRight = function () {
 _self.touchCenter = function () {
     _self.touch(screen.availWidth / 2, screen.availHeight / 2);
 };
+
+_self.triggerContextMenu = function (x, y) {
+    _self.longTouch(x, y);
+};
+
+_self.touchContextMenuShare = function () {
+    _self.touch(screen.availWidth - 10 , _self.CONTEXTMENU_SHARE_ITEM);
+};
+
+_self.touchInvocationListItem = function (index) {
+    _self.touch(screen.availWidth / 2 ,  (_self.INVOCATIONLIST_TITLE_HEIGHT - 25) + _self.INVOCATIONLIST_ITEM_HEIGHT * index);
+    // touch past the cancel bar, plus each item width, with a 5 offset to actually touch the item
+}
 
 _self.injectText = function (inputText) {
     internal.pps.syncWrite(
