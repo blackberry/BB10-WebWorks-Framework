@@ -19,7 +19,7 @@ var childProcess = require('child_process'),
 
 function getTestForAgentCmd(ip) {
     return "ssh root@" + ip + " '[ -f /var/automation/ui-agent ] && " +
-        "[ -f /var/automation/PuppetMasterAgent ] && [ -f /var/automation/automation-interface ] && echo 1 || " +
+        "[ -f /var/automation/PuppetMasterAgent ] && [ -f /var/automation/automation-interface ] && [ -f /var/automation/automation.py ] && echo 1 || " +
         "(echo 0 ; mkdir -p /var/automation ; mkdir -p /accounts/1000/shared/misc/PuppetMaster/ReferenceImages/)'";
 }
 
@@ -33,6 +33,7 @@ function getCopyAgentCmd(ip, user) {
         "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/ui-agent root@" + ip + ":/var/automation/ui-agent && " +
         "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/automation-interface root@" + ip + ":/var/automation/automation-interface && " +
         "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/PuppetMasterAgent root@" + ip + ":/var/automation/PuppetMasterAgent && " +
+        "scp /Volumes/QNXAutomation/Trunk-Developer/target/arm/automation.py root@" + ip + ":/var/automation/automation.py && " +
         "umount /Volumes/QNXAutomation";
 }
 
@@ -56,7 +57,8 @@ function getRunAgentCmd(ip) {
         "fi;" +
         "sleep 5;" +
         "chmod 666 /pps/services/agent/ui-agent/control; " +
-        "chmod 666 /pps/services/agent/puppetmaster/control; "
+        "chmod 666 /pps/services/agent/puppetmaster/control; " + 
+        "python2.7 /var/automation/automation.py wifi_agent"
         ];
 }
 
