@@ -258,4 +258,20 @@ _self.compareCurrentScreen = function (name, callback) {
         callback(internal.pps.syncRead("/pps/services/agent/puppetmaster/output").output.response);
     }, 1000);
 };
+
+_self.toggleWifi = function (enabled) {
+    internal.pps.syncWrite(
+        {
+            action : "Remote Call",
+            class : "WifiApi",
+            method : "toggleWifi",
+            parameter0 : enabled.toString(),
+            _src : "test-agent",
+            _dest : "puppetmaster",
+            _id : 0
+        },
+        "/pps/services/agent/puppetmaster/control"
+    );
+};
+
 module.exports = _self;
