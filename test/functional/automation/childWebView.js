@@ -36,12 +36,12 @@ describe("Child WebView", function () {
 
         showOverlay();
 
-        a.addEventListener('click', function(e) {
+        a.addEventListener('click', function (e) {
             e.preventDefault();
             childWindow = window.open(a.href);
 
         });
-        internal.automation.touch(418,5);
+        internal.automation.touch(418, 5);
 
         waits(1500);
         runs(function () {
