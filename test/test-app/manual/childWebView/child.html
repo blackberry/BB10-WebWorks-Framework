@@ -21,5 +21,16 @@
         Please click the <strong>close</strong> button to return to the
         test page.
     </p>
+    <h1><a id="setFundo" >Click here</a></h1>
+ <script>
+    (function() {
+        var link = document.getElementById('setFundo');
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.fundo = "FUNDO...FUNDO";
+        });
+    }());
+    </script>
+
 </body>
 </html>
