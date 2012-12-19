@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 var childProcess = require("child_process"),
+    conf = require("../../../build/build/conf"),
     DeployTest,
-    settings = require('../../../test-runner.json'),
+    settings = conf.COMMAND_DEFAULTS,
     child;
 
 DeployTest = function (barFile) {

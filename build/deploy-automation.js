@@ -117,8 +117,9 @@ function exec(ip, user) {
 }
 
 module.exports = function () {
-    var ip = arguments[0] || conf.USB_IP,
-        user = arguments[1] || "";
+    var user = arguments[0] || "",
+        ip = arguments[1] || conf.COMMAND_DEFAULTS.ip;
+
     if (utils.isWindows()) {
         console.log("This command is not supported in Windows.");
     } else {

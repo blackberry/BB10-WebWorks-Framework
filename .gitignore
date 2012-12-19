@@ -29,9 +29,7 @@ lib/webworks-info.js
 /ext/*/native/x86/*/test
 
 #Test-App generation
-test/test-app/wwTest.zip
-test/test-app/device
-test/test-app/simulator
+test/output
 test/test-app/automatic/spec/
 test/test-app/automation/spec/
 test/test-app/manual/framework/spec/
@@ -41,3 +39,4 @@ test/test-app/js/jasmine-html.js
 
 #Test-suite
 test-runner.json
+test/test-suite/data

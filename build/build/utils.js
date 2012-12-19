@@ -123,5 +123,14 @@ module.exports = {
 
     isDirectory: function (source) {
         return fs.statSync(source).isDirectory();
+    },
+
+    mixin: function (mixin, to) {
+        Object.getOwnPropertyNames(mixin).forEach(function (prop) {
+            if (Object.hasOwnProperty.call(mixin, prop)) {
+                Object.defineProperty(to, prop, Object.getOwnPropertyDescriptor(mixin, prop));
+            }
+        });
+        return to;
     }
 };

@@ -18,6 +18,7 @@ var jWorkflow = require("jWorkflow"),
     utils = require("./build/utils"),
     childProcess = require('child_process'),
     conf = require("./build/conf"),
+    path = require("path"),
     build;
 
 function _exec(cmdExpr, options) {
@@ -48,50 +49,52 @@ function _exec(cmdExpr, options) {
     };
 }
 
-function _done() {
-    util.puts("Test App deployed successfully");
-    process.exit();
+function _done(error) {
+    if (error === undefined) {
+        utils.displayOutput("Test App deployed successfully");
+    } else {
+        utils.displayOutput("Test App FAILED to deploy");
+    }
+    process.exit(error);
 }
 
 module.exports = function (pathToPackager, packagerOptions, target, deviceIp, password) {
     var jakeDir = __dirname + "/../",
-        barPath,
-        deployTests;
+        deployTests,
+        packageCmd = "jake package[" + path.normalize("test/test-app"),
+        deployCmd = "jake deploy[";
 
 
-    if (!pathToPackager) {
-        pathToPackager = conf.PACKAGE_COMMAND_DEFAULT_PACKAGER;
-        util.puts("No packager specified, using default from build/conf.js - " + pathToPackager);
+    if (pathToPackager) {
+        packageCmd += ",\"" + pathToPackager + "\"";
     }
 
-    if (!packagerOptions) {
-        packagerOptions = conf.PACKAGE_COMMAND_DEFAULT_OPTIONS;
-        util.puts("No packager options specified, using default from build/conf.js - " + packagerOptions);
+    if (packagerOptions) {
+        packageCmd += "," + packagerOptions;
     }
+
+    packageCmd += "]";
 
     if (!target) {
-        target = conf.DEPLOY_TESTS_DEFAULT_TARGET;
-        util.puts("No deploy target specified, using default from build/conf.js - " + target);
+        target = ((!!conf.COMMAND_DEFAULTS.device) ? "device" : "simulator");
+        utils.displayOutput("No deploy target specified, using default from test-runner.json - " + target);
     }
-    barPath = "'test/test-app/" + target + "/wwTest.bar'";
+    deployCmd += "\"" + path.join("test", "output", target,  "test-app.bar") + "\"";
 
-    if (!deviceIp) {
-        deviceIp = conf.DEPLOY_COMMAND_DEFAULT_IP;
-        util.puts("Device IP not specified, using default from build/conf.js - " + deviceIp);
+    if (deviceIp) {
+        deployCmd += "," + deviceIp;
     }
 
-    if (!password) {
-        password = conf.DEPLOY_COMMAND_DEFAULT_PW;
-        util.puts("Device password not specified, using default from build/conf.js - " + password);
+    if (password) {
+        deployCmd += "," + password;
     }
+
+    deployCmd += "]";
 
     deployTests = jWorkflow.order(_exec("jake build[test]", {cwd: jakeDir}))
                            .andThen(_exec("jake test-app", {cwd: jakeDir}))
-                           .andThen(_exec("jake package['" + pathToPackager + "','test/test-app/wwTest.zip','" + packagerOptions + "']",  {cwd: jakeDir}))
-                           .andThen(_exec("jake deploy[" + barPath + "," + deviceIp + "," + password + "]",  {cwd: jakeDir}));
-
-    deployTests.start(function () {
-        _done();
-    });
+                           .andThen(_exec(packageCmd,  {cwd: jakeDir}))
+                           .andThen(_exec(deployCmd,  {cwd: jakeDir}))
+                           .start(_done);
 
 };
