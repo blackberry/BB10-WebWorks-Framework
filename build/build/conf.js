@@ -13,7 +13,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var path = require("path");
+var path = require("path"),
+    utils = require("./utils");
 
 module.exports = {
     ROOT: path.normalize(__dirname + "/../../"),
@@ -40,13 +41,5 @@ module.exports = {
     DEPENDENCIES_REQUIRE: path.normalize(__dirname + "/../../dependencies/require/require.js"),
     DEPENDENCIES_CONFIGURE_QSK: path.normalize(__dirname + "/../../dependencies/configure-qsk/configure-qsk"),
     NODE_MOD: path.normalize(__dirname + "/../../node_modules"),
-    COMPILER_THREADS: "4",
-    USB_IP: "169.254.0.1",
-    DEFAULT_SSH_KEY: "~/.ssh/id_rsa.pub",
-    PACKAGE_COMMAND_DEFAULT_PACKAGER: "../target/zip/",
-    PACKAGE_COMMAND_DEFAULT_APP: "test/test-app/wwtest.zip",
-    PACKAGE_COMMAND_DEFAULT_OPTIONS: "-d",
-    DEPLOY_COMMAND_DEFAULT_IP: "169.254.0.1",
-    DEPLOY_COMMAND_DEFAULT_PW: "qaqa",
-    DEPLOY_TESTS_DEFAULT_TARGET: "device"
+    COMMAND_DEFAULTS: utils.mixin(require(__dirname + "/../../test-runner.json"), require(__dirname + "/../../test-runner.default.json"))
 };

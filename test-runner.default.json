@@ -1,0 +1,12 @@
+{
+    "compiler_threads": 4,
+    "ssh_key": "~/.ssh/id_rsa.pub",
+    "packager": "/Developer/SDKs/Research In Motion/BlackBerry 10 WebWorks SDK 1.0.3.8/",
+    "packager_options": "-d",
+    "output_folder": "test/output",
+    "device": true,
+    "ip": "169.254.0.1",
+    "password": "qaqa",
+    "omit_list": [],
+    "super_ssh_key": ""
+}

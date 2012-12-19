@@ -20,6 +20,7 @@ var childProcess = require('child_process'),
     fs = require('fs');
 
 function _exec(cmdExpr) {
+    utils.displayOutput(cmdExpr);
     childProcess.exec(cmdExpr, function (error, stdout, stderr) {
         if (error) {
             console.log("Upload Failed");
@@ -34,14 +35,16 @@ function _exec(cmdExpr) {
 
 }
 
-function _getCmd(loc, ip) {
-    return "ssh root@" + ip + " 'mkdir .ssh; chmod 700 .ssh/;' &&" +
-        "scp " + loc  + " root@" + ip + ":/root/.ssh/authorized_keys2 ";
+function _getCmd(loc, ip, superKey) {
+    var identity = (superKey ? " -i '" + superKey + "' ": "");
+    return "ssh " + identity + "root@" + ip + " 'mkdir .ssh; chmod 700 .ssh/;' &&" +
+        "scp " + identity + loc  + " root@" + ip + ":/root/.ssh/authorized_keys2 ";
 }
 
 module.exports = function () {
     var args = Array.prototype.slice.call(arguments)[0],
-        loc = args[1] ||  _c.DEFAULT_SSH_KEY,
-        ip = args[0] || _c.USB_IP;
-    _exec(_getCmd(loc, ip));
+        loc = args[1] ||  _c.COMMAND_DEFAULTS.ssh_key,
+        ip = args[0] || _c.COMMAND_DEFAULTS.ip,
+        superKey = args[2] || _c.COMMAND_DEFAULTS.super_ssh_key;
+    _exec(_getCmd(loc, ip, superKey));
 };
