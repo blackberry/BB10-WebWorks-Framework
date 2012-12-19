@@ -21,7 +21,7 @@ describe("blackberry.ui.contextmenu", function () {
     describe("Can invoke the Context Menu", function () {
 
         it("should display a Context Menu and invoke a share targets screen", function () {
-            var callback = jasmine.createSpy().andCallFake(function(request) {
+            var callback = jasmine.createSpy().andCallFake(function (request) {
                     return null; //Cancels invocation
                 });
 
