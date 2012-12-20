@@ -38,6 +38,7 @@ function processCover(cover) {
     if (cover.cover.type === 'file') {
         cover.cover.path = _utils.translatePath(cover.cover.path).replace(/file:\/\//, '');
     }
+
     return cover;
 }
 
