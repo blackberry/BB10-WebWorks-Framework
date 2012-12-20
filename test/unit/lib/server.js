@@ -107,6 +107,56 @@ describe("server", function () {
             expect(extensionPlugin.get).toHaveBeenCalled();
         });
 
+        it("parses url encoded args", function () {
+            var webview = "BLAHBLAHBLAH";
+
+            spyOn(extensionPlugin, "get");
+
+            expect(function () {
+                req.params.service = "extensions";
+                req.params.action = "get";
+                req.params.args = "a=1&b=2&c=3";
+
+                return server.handle(req, res, webview);
+            }).not.toThrow();
+            expect(extensionPlugin.get).toHaveBeenCalledWith(
+                jasmine.any(Object),
+                jasmine.any(Function),
+                jasmine.any(Function),
+                {
+                    a: '1',
+                    b: '2',
+                    c: '3'
+                },
+                jasmine.any(Object)
+            );
+        });
+
+        it("parses url encoded args", function () {
+            var webview = "BLAHBLAHBLAH";
+
+            spyOn(extensionPlugin, "get");
+
+            expect(function () {
+                req.params.service = "extensions";
+                req.params.action = "get";
+                req.body = JSON.stringify({a: '1', b: '2', c: '3'});
+
+                return server.handle(req, res, webview);
+            }).not.toThrow();
+            expect(extensionPlugin.get).toHaveBeenCalledWith(
+                jasmine.any(Object),
+                jasmine.any(Function),
+                jasmine.any(Function),
+                {
+                    a: '1',
+                    b: '2',
+                    c: '3'
+                },
+                jasmine.any(Object)
+            );
+        });
+
         it("returns the result and code 1 when success callback called", function () {
             spyOn(plugin, "exec").andCallFake(function (request, succ, fail, body) {
                 succ(["MyFeatureId"]);
