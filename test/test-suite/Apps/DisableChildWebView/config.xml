@@ -9,7 +9,6 @@
 			Research In Motion Ltd.
 	</author>
     <description>The example to test child webview</description>
-    <access uri="*"/>
     <feature id="blackberry.app">
         <param name="childBrowser" value="disable" />
     </feature>
