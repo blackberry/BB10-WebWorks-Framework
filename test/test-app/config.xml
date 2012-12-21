@@ -114,6 +114,8 @@
         <feature id="blackberry.app" />
     </access>
 
+    <access uri="https://atg05-yyz.labyyz.testnet.rim.net/" />
+
     <access uri="file:///accounts/1000/appData" />
 
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
