@@ -189,7 +189,6 @@ void BBMBPS::processContactUpdate(bbmsp_event_t *event)
 
 std::string BBMBPS::getFullProfile()
 {
-    Json::FastWriter writer;
     Json::Value root;
 
     root["displayName"] = GetProfile(BBM_DISPLAY_NAME);
@@ -201,12 +200,35 @@ std::string BBMBPS::getFullProfile()
     root["appVersion"] = GetProfile(BBM_APP_VERSION);
     root["bbmsdkVersion"] = GetProfile(BBM_SDK_VERSION);
 
-    return writer.write(root);
+    return Json::FastWriter().write(root);
+}
+
+std::string BBMBPS::getProfileDisplayPicture(bbmsp_profile_t *profile)
+{
+    bbmsp_image_t *avatar;
+    std::string result;
+    char *imgData = NULL;
+    char *output = NULL;
+
+    bbmsp_image_create_empty(&avatar);
+    if (bbmsp_profile_get_display_picture(profile, avatar) == BBMSP_SUCCESS) {
+        imgData = bbmsp_image_get_data(avatar);
+
+        int size = bbmsp_image_get_data_size(avatar);
+        output = new char[size*4];
+
+        int bufferSize = b64_ntop(reinterpret_cast<unsigned char *>(imgData), bbmsp_image_get_data_size(avatar), output, size*4);
+        output[bufferSize] = 0;
+        result = output;
+        delete output;
+    }
+    bbmsp_image_destroy(&avatar);
+
+    return result;
 }
 
 std::string BBMBPS::getFullContact(bbmsp_contact_t *contact)
 {
-    Json::FastWriter writer;
     Json::Value root;
 
     root["displayName"] = GetContact(contact, BBM_DISPLAY_NAME);
@@ -218,8 +240,9 @@ std::string BBMBPS::getFullContact(bbmsp_contact_t *contact)
     root["appVersion"] = GetContact(contact, BBM_APP_VERSION);
     root["bbmsdkVersion"] = GetContact(contact, BBM_SDK_VERSION);
 
-    return writer.write(root);
+    return Json::FastWriter().write(root);
 }
+
 
 int BBMBPS::WaitForEvents()
 {
@@ -266,23 +289,7 @@ int BBMBPS::WaitForEvents()
                                         bbmsp_event_profile_changed_get_profile(bbmEvent, &bbmProfile);
                                         if (bbmsp_event_profile_changed_get_presence_update_type(bbmEvent, &profileUpdateType) == BBMSP_SUCCESS) {
                                             if (profileUpdateType == BBMSP_DISPLAY_PICTURE) {
-                                                bbmsp_image_t *avatar;
-                                                char *imgData = NULL;
-                                                char *output = NULL;
-
-                                                bbmsp_image_create_empty(&avatar);
-                                                if (bbmsp_profile_get_display_picture(bbmProfile, avatar) == BBMSP_SUCCESS) {
-                                                    imgData = bbmsp_image_get_data(avatar);
-
-                                                    int size = bbmsp_image_get_data_size(avatar);
-                                                    output = new char[size*4];
-
-                                                    int bufferSize = b64_ntop(reinterpret_cast<unsigned char *>(imgData), bbmsp_image_get_data_size(avatar), output, size*4);
-                                                    output[bufferSize] = 0;
-                                                    m_pParent->NotifyEvent(std::string("self.getDisplayPicture ").append(output));
-                                                    delete output;
-                                                }
-                                                bbmsp_image_destroy(&avatar);
+                                                // not supported
                                             } else {
                                                 processProfileUpdate(bbmEvent);
                                             }
@@ -316,6 +323,16 @@ int BBMBPS::WaitForEvents()
                 } else if (code == INTERNAL_EVENT_CONTACT_EVENTS) {
                     bbmsp_event_contact_list_register_event();
                     contactEventsEnabled = true;
+                } else if (code == INTERNAL_EVENT_GET_DISPLAY_PICTURE) {
+                    bbmsp_profile_t *profile;
+
+                    bbmsp_profile_create(&profile);
+
+                    if (bbmsp_get_user_profile(profile) == BBMSP_SUCCESS) {
+                        m_pParent->NotifyEvent(std::string("self.getDisplayPicture ").append(getProfileDisplayPicture(profile)));
+                    }
+
+                    bbmsp_profile_destroy(&profile);
                 } else if (code == INTERNAL_EVENT_STOP) {
                     break;
                 }
@@ -443,15 +460,9 @@ std::string BBMBPS::GetProfile(const BBMField field)
 void BBMBPS::GetDisplayPicture()
 {
     MUTEX_LOCK();
-    bbmsp_profile_t *profile;
-    bbmsp_profile_create(&profile);
-
-    if (bbmsp_get_user_profile(profile) == BBMSP_SUCCESS) {
-        // Send request for user profile
-        bbmsp_profile_get_display_picture(profile, NULL);
-    }
-
-    bbmsp_profile_destroy(&profile);
+    bps_event_t *event = NULL;
+    bps_event_create(&event, m_BBMInternalDomain, INTERNAL_EVENT_GET_DISPLAY_PICTURE, NULL, NULL);
+    bps_channel_push_event(m_eventChannel, event);
     MUTEX_UNLOCK();
 }
 
