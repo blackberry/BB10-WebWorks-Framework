@@ -20,6 +20,7 @@
 #include <bbmsp/bbmsp_contactlist.h>
 #include <pthread.h>
 #include <string>
+#include <json/writer.h>
 
 class BBM;
 
@@ -63,14 +64,16 @@ public:
     void SetDisplayPicture(const std::string& imgPath);
     std::string GetContact(bbmsp_contact_t *contact, BBMField field);
     void InviteToDownload();
+    void GetContactsWithApp();
 
 private:
     BBM *m_pParent;
     void processAccessCode(int code);
     void processProfileUpdate(bbmsp_event_t *event);
     void processContactUpdate(bbmsp_event_t *event);
+    void processContactList(bbmsp_event_t *event);
     std::string getFullProfile();
-    std::string getFullContact(bbmsp_contact_t *contact);
+    Json::Value getFullContact(bbmsp_contact_t *contact);
     static bool contactEventsEnabled;
     static pthread_mutex_t m_lock;
     static int m_eventChannel;
