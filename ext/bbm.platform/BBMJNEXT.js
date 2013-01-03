@@ -87,6 +87,12 @@ JNEXT.BBM = function ()
     _self.users.inviteToDownload = function () {
         JNEXT.invoke(_self.m_id, "users.inviteToDownload");
     };
+	
+	_self.users.getContactsWithApp = function (eventId) {
+		console.log("BBNJNEXT : _self.users.getContactsWithApp: " + eventId);
+        _self.contactsWithAppEventId = eventId;
+        return JNEXT.invoke(_self.m_id, "users.getContactsWithApp");
+    };
 
     _self.getId = function () {
         return _self.m_id;
@@ -111,6 +117,8 @@ JNEXT.BBM = function ()
             strEventDesc = arData[0],
             allowed,
             obj;
+			
+		console.log("BBNJNEXT : _self.onEvent: " + strData);
 
         if (strEventDesc === "onaccesschanged") {
             if (arData[1] === "allowed") {
@@ -124,11 +132,14 @@ JNEXT.BBM = function ()
             updateCallback(JSON.parse(obj), arData[1]);
         } else if (strEventDesc === "self.getDisplayPicture") {
             _event.trigger(_self.displayPictureEventId, arData[1]);
+        } else if (strEventDesc === "users.getContactsWithApp") {
+            _event.trigger(_self.contactsWithAppEventId, arData[1]);
         }
     };
     
     _self.m_id = "";
     _self.displayPictureEventId = "";
+	_self.contactsWithAppEventId = "";
 
     _self.getInstance = function () {
         if (!hasInstance) {
