@@ -131,7 +131,9 @@ JNEXT.BBM = function ()
             _event.trigger(_self.displayPictureEventId, arData[1]);
         } else if (strEventDesc === "users.getContactsWithApp") {
             obj = arData.slice(1, arData.length).join(" ");
-            _event.trigger(_self.contactsWithAppEventId, JSON.parse(obj));
+            obj = JSON.parse(obj) || [];
+
+            _event.trigger(_self.contactsWithAppEventId, obj);
         }
     };
     
