@@ -142,10 +142,13 @@ void BBMBPS::processProfileUpdate(bbmsp_event_t *event)
                 updateString += "status " + getFullProfile();
                 break;
              case BBMSP_INSTALL_APP:
+                updateString += "install " + getFullProfile();
                 return;
             case BBMSP_UNINSTALL_APP:
+                updateString += "uninstall " + getFullProfile();
                 return;
             case BBMSP_INVITATION_RECEIVED:
+                updateString += "invitation " + getFullProfile();
                 return;
         }
         m_pParent->NotifyEvent(updateString);
@@ -189,7 +192,6 @@ void BBMBPS::processContactUpdate(bbmsp_event_t *event)
 }
 
 void BBMBPS::GetContactsWithApp() {
-	fprintf(stdout, "BBMBPS::GetContactsWithApp\n");
 	bps_event_t *event = NULL;
 
     bps_event_create(&event, m_BBMInternalDomain, INTERNAL_EVENT_GET_CONTACT_LIST, NULL, NULL);
@@ -355,7 +357,6 @@ int BBMBPS::WaitForEvents()
                     contactEventsEnabled = true;
                 }  else if (code == INTERNAL_EVENT_GET_CONTACT_LIST) {
                     bbmsp_contact_list_get();
-                    break;
                 } else if (code == INTERNAL_EVENT_STOP) {
                     break;
                 }

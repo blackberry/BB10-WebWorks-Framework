@@ -87,9 +87,8 @@ JNEXT.BBM = function ()
     _self.users.inviteToDownload = function () {
         JNEXT.invoke(_self.m_id, "users.inviteToDownload");
     };
-	
-	_self.users.getContactsWithApp = function (eventId) {
-		console.log("BBNJNEXT : _self.users.getContactsWithApp: " + eventId);
+    
+    _self.users.getContactsWithApp = function (eventId) {
         _self.contactsWithAppEventId = eventId;
         return JNEXT.invoke(_self.m_id, "users.getContactsWithApp");
     };
@@ -99,13 +98,13 @@ JNEXT.BBM = function ()
     };
 
     _self.init = function () {
-        if (!JNEXT.require("libbbm")) {   
+        if (!JNEXT.require("libbbm")) {
             return false;
         }
 
         _self.m_id = JNEXT.createObject("libbbm.BBM");
 
-        if (_self.m_id === "") {   
+        if (_self.m_id === "") {
             return false;
         }
 
@@ -117,8 +116,6 @@ JNEXT.BBM = function ()
             strEventDesc = arData[0],
             allowed,
             obj;
-			
-		console.log("BBNJNEXT : _self.onEvent: " + strData);
 
         if (strEventDesc === "onaccesschanged") {
             if (arData[1] === "allowed") {
@@ -133,13 +130,14 @@ JNEXT.BBM = function ()
         } else if (strEventDesc === "self.getDisplayPicture") {
             _event.trigger(_self.displayPictureEventId, arData[1]);
         } else if (strEventDesc === "users.getContactsWithApp") {
-            _event.trigger(_self.contactsWithAppEventId, arData[1]);
+            obj = arData.slice(1, arData.length).join(" ");
+            _event.trigger(_self.contactsWithAppEventId, JSON.parse(obj));
         }
     };
     
     _self.m_id = "";
     _self.displayPictureEventId = "";
-	_self.contactsWithAppEventId = "";
+    _self.contactsWithAppEventId = "";
 
     _self.getInstance = function () {
         if (!hasInstance) {

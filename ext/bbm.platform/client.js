@@ -17,7 +17,7 @@
 var _self = {},
     _ID = require("./manifest.json").namespace,
     _displayPictureEventId = "bbm.self.displayPicture",
-	_contactsWithAppEventId = "bbm.users.getContactsWithApp";
+    _contactsWithAppEventId = "bbm.users.getContactsWithApp";
 
 _self.self = {};
 _self.users = {};
@@ -88,7 +88,7 @@ _self.users.inviteToDownload = function () {
 };
 
 _self.users.getContactsWithApp = function (callback) {
-	console.log("client.js : _self.users.getContactsWithApp: " + callback);
+    console.log("client.js : _self.users.getContactsWithApp: " + callback);
     var args = { "eventId" : _contactsWithAppEventId };
     createEventHandler(callback, _contactsWithAppEventId);
     return window.webworks.execAsync(_ID, "users/getContactsWithApp", args);
