@@ -138,13 +138,7 @@ Json::Value PimCalendarQt::Save(const Json::Value& attributeObj)
             mutex_unlock();
 
             if (result == bbpim::Result::Success && event.isValid()) {
-                // Check the hash code
-                unsigned int currentHash = getEventHash(event);
-                if (attributeObj["hash"].asUInt() != currentHash) {
-                    returnObj["_success"] = false;
-                    returnObj["code"] = UNKNOWN_ERROR;
-                    return returnObj;
-                }
+                // not doing any synchronization check until we find out a correct way to do it, and it needs to be severely tested
                 returnObj = EditCalendarEvent(event, attributeObj);
             }
         } else {
@@ -744,24 +738,12 @@ Json::Value PimCalendarQt::populateEvent(const bbpim::CalendarEvent& event, bool
 
     e = eventToJson(event);
 
-    if (event.id() > 0 && event.isValid()) {
-        e["hash"] = getEventHash(event);
-    } else {
-        e["hash"] = 0;
-    }
-
     if (!isFind) {
         bbpim::CalendarFolder folder = m_mgr.GetFolder(event.accountId(), event.folderId());
         e["folder"] = m_mgr.GetFolderJson(folder, false);
     }
 
     return e;
-}
-
-unsigned int PimCalendarQt::getEventHash(const bbpim::CalendarEvent& event)
-{
-    std::string strEvent = eventToString(event);
-    return qHash(QString::fromStdString(strEvent));
 }
 
 // Convert event to string
@@ -785,24 +767,25 @@ Json::Value PimCalendarQt::eventToJson(const bbpim::CalendarEvent& event)
     jsonEvent["timezone"] = event.timezone().toStdString();
     jsonEvent["url"] = event.url().toStdString();
 
-    jsonEvent["recurrence"] = Json::Value();
-    jsonEvent["recurrence"]["isValid"] = event.recurrence().isValid();
-    jsonEvent["recurrence"]["start"] = QString::number(event.recurrence().start().toUTC().toMSecsSinceEpoch()).toStdString();
-    jsonEvent["recurrence"]["end"] = QString::number(event.recurrence().end().toUTC().toMSecsSinceEpoch()).toStdString();
-    jsonEvent["recurrence"]["until"] = QString::number(event.recurrence().until().toUTC().toMSecsSinceEpoch()).toStdString();
-    jsonEvent["recurrence"]["exceptionDates"] = Json::Value();
+    if (event.recurrence().isValid()) {
+        jsonEvent["recurrence"] = Json::Value();
+        jsonEvent["recurrence"]["start"] = QString::number(event.recurrence().start().toUTC().toMSecsSinceEpoch()).toStdString();
+        jsonEvent["recurrence"]["end"] = QString::number(event.recurrence().end().toUTC().toMSecsSinceEpoch()).toStdString();
+        jsonEvent["recurrence"]["until"] = QString::number(event.recurrence().until().toUTC().toMSecsSinceEpoch()).toStdString();
+        jsonEvent["recurrence"]["exceptionDates"] = Json::Value();
 
-    for (QList<QDateTime>::const_iterator i = event.recurrence().exceptions().constBegin(); i != event.recurrence().exceptions().constEnd(); ++i) {
-        jsonEvent["recurrence"]["exceptionDates"].append(QString::number(i->toUTC().toMSecsSinceEpoch()).toStdString());
+        for (QList<QDateTime>::const_iterator i = event.recurrence().exceptions().constBegin(); i != event.recurrence().exceptions().constEnd(); ++i) {
+            jsonEvent["recurrence"]["exceptionDates"].append(QString::number(i->toUTC().toMSecsSinceEpoch()).toStdString());
+        }
+
+        jsonEvent["recurrence"]["frequency"] = event.recurrence().frequency();
+        jsonEvent["recurrence"]["interval"] = event.recurrence().interval();
+        jsonEvent["recurrence"]["numberOfOccurrences"] = event.recurrence().numberOfOccurrences();
+        jsonEvent["recurrence"]["dayInWeek"] = event.recurrence().dayInWeek();
+        jsonEvent["recurrence"]["dayInMonth"] = event.recurrence().dayInMonth();
+        jsonEvent["recurrence"]["weekInMonth"] = event.recurrence().weekInMonth();
+        jsonEvent["recurrence"]["monthInYear"] = event.recurrence().monthInYear();
     }
-
-    jsonEvent["recurrence"]["frequency"] = event.recurrence().frequency();
-    jsonEvent["recurrence"]["interval"] = event.recurrence().interval();
-    jsonEvent["recurrence"]["numberOfOccurrences"] = event.recurrence().numberOfOccurrences();
-    jsonEvent["recurrence"]["dayInWeek"] = event.recurrence().dayInWeek();
-    jsonEvent["recurrence"]["dayInMonth"] = event.recurrence().dayInMonth();
-    jsonEvent["recurrence"]["weekInMonth"] = event.recurrence().weekInMonth();
-    jsonEvent["recurrence"]["monthInYear"] = event.recurrence().monthInYear();
 
     jsonEvent["attendees"] = Json::Value();
 
@@ -829,48 +812,7 @@ Json::Value PimCalendarQt::eventToJson(const bbpim::CalendarEvent& event)
     jsonEvent["reminder"] = event.reminder();
     jsonEvent["birthday"] = event.isBirthday();
     jsonEvent["allDay"] = event.isAllDay();
-
-    jsonEvent["bbmConference"] = Json::Value();
-    jsonEvent["bbmConference"]["phoneLabels"] = Json::Value();
-
-    for (QStringList::const_iterator i = event.bbmConference().phoneLabels().constBegin(); i != event.bbmConference().phoneLabels().constEnd(); ++i) {
-        jsonEvent["bbmConference"]["phoneLabels"].append(i->toStdString());
-    }
-
-    jsonEvent["bbmConference"]["phoneNumbers"] = Json::Value();
-
-    for (QStringList::const_iterator i = event.bbmConference().phoneNumbers().constBegin(); i != event.bbmConference().phoneNumbers().constEnd(); ++i) {
-        jsonEvent["bbmConference"]["phoneNumbers"].append(i->toStdString());
-    }
-    jsonEvent["bbmConference"]["preferredData"] = Json::Value();
-    jsonEvent["bbmConference"]["preferredData"]["accessCode"] = event.bbmConference().preferredData().accessCode().toStdString();
-    jsonEvent["bbmConference"]["preferredData"]["moderatorCode"] = event.bbmConference().preferredData().moderatorCode().toStdString();
-    jsonEvent["bbmConference"]["preferredData"]["isModerator"] = event.bbmConference().preferredData().isModerator();
-    jsonEvent["bbmConference"]["preferredData"]["participantCode"] = event.bbmConference().preferredData().participantCode().toStdString();
-    jsonEvent["bbmConference"]["preferredData"]["phoneNumber"] = event.bbmConference().preferredData().phoneNumber().toStdString();
-    jsonEvent["bbmConference"]["preferredData"]["isValid"] = event.bbmConference().preferredData().isValid();
-
-    jsonEvent["bbmConference"]["userData"] = Json::Value();
-    jsonEvent["bbmConference"]["userData"]["accessCode"] = event.bbmConference().userData().accessCode().toStdString();
-    jsonEvent["bbmConference"]["userData"]["phoneNumber"] = event.bbmConference().userData().phoneNumber().toStdString();
-    jsonEvent["bbmConference"]["userData"]["isValid"] = event.bbmConference().userData().isValid();
-
-    jsonEvent["iCalendarData"] = Json::Value();
-    jsonEvent["iCalendarData"]["method"] = event.iCalendarData().method().toStdString();
-    jsonEvent["iCalendarData"]["eventSequence"] = event.iCalendarData().eventSequence();
-
-    jsonEvent["iCalendarData"]["history"] = Json::Value();
-    jsonEvent["iCalendarData"]["history"]["ownerStatus"] = event.iCalendarData().history().ownerStatus();
-    jsonEvent["iCalendarData"]["history"]["statusDate"] = event.iCalendarData().history().statusDate().toString().toStdString();
-    jsonEvent["iCalendarData"]["history"]["meetingSequence"] = event.iCalendarData().history().meetingSequence();
-    jsonEvent["iCalendarData"]["history"]["updatedDate"] = event.iCalendarData().history().updatedDate().toString().toStdString();
-    jsonEvent["iCalendarData"]["history"]["canceledDate"] = event.iCalendarData().history().canceledDate().toString().toStdString();
-
-    jsonEvent["iCalendarData"]["isValid"] = event.iCalendarData().isValid();
-
     jsonEvent["status"] = event.meetingStatus();
-    jsonEvent["guid"] = event.guid().toStdString();
-    jsonEvent["isValid"] = event.isValid();
 
     return jsonEvent;
 }
