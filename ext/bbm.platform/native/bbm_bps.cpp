@@ -190,7 +190,10 @@ void BBMBPS::processContactUpdate(bbmsp_event_t *event)
 
 void BBMBPS::GetContactsWithApp() {
 	fprintf(stdout, "BBMBPS::GetContactsWithApp\n");
-	bbmsp_contact_list_get();
+	bps_event_t *event = NULL;
+
+    bps_event_create(&event, m_BBMInternalDomain, INTERNAL_EVENT_GET_CONTACT_LIST, NULL, NULL);
+    bps_channel_push_event(m_eventChannel, event);
 }
 
 void BBMBPS::processContactList(bbmsp_event_t* event) {
@@ -350,6 +353,9 @@ int BBMBPS::WaitForEvents()
                 } else if (code == INTERNAL_EVENT_CONTACT_EVENTS) {
                     bbmsp_event_contact_list_register_event();
                     contactEventsEnabled = true;
+                }  else if (code == INTERNAL_EVENT_GET_CONTACT_LIST) {
+                    bbmsp_contact_list_get();
+                    break;
                 } else if (code == INTERNAL_EVENT_STOP) {
                     break;
                 }
