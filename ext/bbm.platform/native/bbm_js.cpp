@@ -64,7 +64,7 @@ JSExt* onCreateObject(const std::string& className, const std::string& id)
 
 std::string BBM::InvokeMethod(const std::string& command)
 {
-	fprintf(stdout, "BBM::InvokeMethod: command: %s", command.c_str());
+	fprintf(stderr, "BBM::InvokeMethod: command: %s", command.c_str());
 
     int index = command.find_first_of(" ");
 
@@ -127,6 +127,7 @@ std::string BBM::InvokeMethod(const std::string& command)
         m_pBBMController->InviteToDownload();
     } else if (strCommand == "users.getContactsWithApp") {
         m_pBBMController->GetContactsWithApp();
+        return "";
     }
     return "";
 }

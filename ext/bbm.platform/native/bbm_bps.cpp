@@ -189,10 +189,8 @@ void BBMBPS::processContactUpdate(bbmsp_event_t *event)
 }
 
 void BBMBPS::GetContactsWithApp() {
-	fprintf(stderr, "BBMBPS::GetContactsWithApp\n");
-	MUTEX_LOCK();
+	fprintf(stdout, "BBMBPS::GetContactsWithApp\n");
 	bbmsp_contact_list_get();
-	MUTEX_UNLOCK();
 }
 
 void BBMBPS::processContactList(bbmsp_event_t* event) {
@@ -328,13 +326,14 @@ int BBMBPS::WaitForEvents()
                                     case BBMSP_SP_EVENT_CONTACT_CHANGED:
                                     {
                                         processContactUpdate(bbmEvent);
+                                        break;
                                     }
-                                    break;
+                                    
                                     case BBMSP_SP_EVENT_CONTACT_LIST_FULL:
                                     {
                                     	processContactList(bbmEvent);
+                                        break;
                                     }
-                                    break;
                                 }
                             }
                             break;
