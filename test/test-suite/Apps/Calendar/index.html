@@ -1,0 +1,185 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+	<link rel="stylesheet" href="textarea.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="local:///chrome/webworks.js"></script>
+	<script type="text/javascript" src="textarea.js"></script>
+	<script type="text/javascript">
+		var cal,
+			evt;
+
+		function init() {
+			cal = blackberry.pim.calendar;
+		}
+
+	    window.addEventListener("load", function(e) {
+	        document.addEventListener("webworksready", function(e) {
+	           init();
+	        }, false);
+	    }, false);
+
+		function getDefaultFolder() {
+			textarea.clear();
+			try {
+				var folder = cal.getDefaultCalendarFolder();
+
+				textarea.append("Default folder details:");
+				textarea.append("ID: " + folder.id);
+				textarea.append("Name: " + folder.name);
+				textarea.append("Owner Email: " + folder.ownerEmail);
+				textarea.append("Default: " + folder.default);
+				textarea.append("Enterprise: " + folder.enterprise);
+			} catch (e) {
+				textarea.append("Error: " + e.message);
+			}
+		}
+
+		function createAndSave() {
+			textarea.clear();
+			try {
+				evt = cal.createEvent({
+					"start": new Date("Jan 1, 2013, 12:00"),
+					"end": new Date("Jan 1, 2013, 14:00"),
+					"summary": document.getElementById("summary").value,
+					"location": "Secret"
+				});
+				evt.save(function (saved) {
+						evt = saved;
+						textarea.append("Event saved successfully");
+						textarea.append("Start: " + evt.start);
+						textarea.append("End: " + evt.end);
+						textarea.append("Summary: " + evt.summary);
+						textarea.append("Location: " + evt.location);
+					}, function (error) {
+						textarea.append("Failed to save, error: " + error.code);
+					});
+			} catch (e) {
+				textarea.append("Error: " + e.message);
+			}
+		}
+
+		function editAndSave() {
+			textarea.clear();
+			if (evt) {
+				try {
+					evt.location = "Edited";
+					evt.save(function (saved) {
+							evt = saved;
+							textarea.append("Event (edited) saved successfully");
+							textarea.append("Start: " + evt.start);
+							textarea.append("End: " + evt.end);
+							textarea.append("Summary: " + evt.summary);
+							textarea.append("Location: " + evt.location);
+						}, function (error) {
+							textarea.append("Failed to save, error: " + error.code);
+						});
+				} catch (e) {
+					textarea.append("Error: " + e.message);
+				}
+			}
+		}
+
+		function findEvents() {
+			textarea.clear();
+			try {
+				var findOptions = {
+					"filter": {
+						"substring": document.getElementById("summary").value
+					},
+					"detail": cal.CalendarFindOptions.DETAIL_AGENDA,
+					"expandRecurring": false
+				};
+				cal.findEvents(findOptions,
+					function (events) {
+						textarea.append("# events found: " + events.length);
+						events.forEach(function (e, i) {
+							textarea.append("Event " + i + ":");
+							textarea.append("Start: " + e.start);
+							textarea.append("End: " + e.end);
+							textarea.append("Summary: " + e.summary);
+							textarea.append("Location: " + e.location);
+						});
+					}, function (error) {
+						textarea.append("Failed to find, error: " + error.code);
+						textarea.append(error.code);
+					});
+			} catch (e) {
+				textarea.append("Error: " + e.message);
+			}
+		}
+
+		function removeEvent() {
+			textarea.clear();
+			try {
+				evt.remove(function () {
+					textarea.append("Event removed successfully");
+				}, function (error) {
+					textarea.append("Error removed event: " + error.code);
+				});
+			} catch (e) {
+				textarea.append("Error: " + e.message);
+			}
+		}
+
+		function createRecurringEvent() {
+			textarea.clear();
+			var start = new Date("Jan 6, 2014, 12:00"),
+                end = new Date("Jan 6, 2014, 12:30"),
+                venue = "some location",
+                summary = document.getElementById("summary").value,
+                rule = {
+                    "frequency": cal.CalendarRepeatRule.FREQUENCY_MONTHLY,
+                    "expires": new Date("Dec 31, 2014"),
+                    "numberOfOccurrences": 4
+                };
+			var recEvent = cal.createEvent({
+				"start": start,
+				"end": end,
+				"location": venue,
+				"summary": summary,
+				"recurrence": rule
+			});
+			recEvent.save(function (saved) {
+				textarea.append("Recurring event created!");
+				textarea.append(saved);
+			}, function (error) {
+				textarea.append("Failed to save recurring event");
+			});
+		}
+
+		function removeSingleOccurrence() {
+			textarea.clear();
+			cal.findEvents({
+				"filter": {
+					"substring": document.getElementById("summary").value,
+					"expandRecurring": true
+				}
+			}, function (events) {
+				textarea.append("Found " + events.length + " occurrences!");
+
+				if (events.length > 0) {
+					events[events.length - 1].remove(function () {
+						textarea.append("Removed! Now check if it's just the last occurrence is gone");
+					}, function () {
+						textarea.append("Failed to remove");
+					},
+					false);
+				}
+			}, function (error) {
+				textarea.append("Failed to find!");
+			});
+		}
+	</script>
+</head>
+<body class="dark" onload="textarea.init()">
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="getDefaultFolder()" value="Default Folder"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="createAndSave()" value="Create Event"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="editAndSave()" value="Edit Event"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="findEvents()" value="Find"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="removeEvent()" value="Remove"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" id="summary" type="text" size="10"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="createRecurringEvent()" value="Create Recurring Event"><br><br>
+	<input style="width: 100px; height: 100px; font-size: 200%" type="button" onclick="removeSingleOccurrence()" value="Remove Single Occurrence">
+	<textarea></textarea>
+</body>
+</html>
