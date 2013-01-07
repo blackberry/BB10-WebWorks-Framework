@@ -172,7 +172,8 @@ Json::Value PimContactsQt::CreateContact(const Json::Value& attributeObj)
     }
 
     bbpim::ContactService service;
-    newContact = service.createContact(newContact, false);
+    newContact = service.createContact(newContact, attributeObj["isWork"].asBool(), true);
+
     Json::Value returnObj;
 
     if (newContact.isValid()) {
@@ -253,7 +254,7 @@ Json::Value PimContactsQt::CloneContact(bbpim::Contact& contact, const Json::Val
         syncAttributeKind(newContact, attributeObj[key], key);
     }
 
-    newContact = service.createContact(newContact, false);
+    newContact = service.createContact(newContact, attributeObj["isWork"].asBool(), true);
 
     Json::Value returnObj;
 

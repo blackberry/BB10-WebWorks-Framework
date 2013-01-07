@@ -170,6 +170,8 @@ module.exports = {
             return;
         }
 
+        attributes["isWork"] = !_utils.isPersonal();
+
         pimContacts.getInstance().save(attributes);
         success();
     },
