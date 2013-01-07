@@ -56,8 +56,8 @@ function clearOverride(success, fail, args, env) {
 function addItem(success, fail, args, env) {
     args.contexts = JSON.parse(decodeURIComponent(args.contexts));
     args.action = JSON.parse(decodeURIComponent(args.action));
-    args.handler = function (actionId) {
-        _event.trigger("contextmenu.executeMenuAction", actionId);
+    args.handler = function (actionId, elementId) {
+        _event.trigger("contextmenu.executeMenuAction", actionId, elementId);
     };
     _overlayWebView.contextMenu.addItem(success, fail, args, env);
 }
