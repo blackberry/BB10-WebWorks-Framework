@@ -90,19 +90,22 @@ function execCopyReferenceImage(ip, user) {
 }
 
 function exec(ip, user) {
-    console.log('Checking if automation agents are installed...');
-    childProcess.exec(getTestForAgentCmd(ip), function (error, stdout, stderr) {
-        if (error) {
-            onError(stderr);
-        } else {
-            if (stdout.toString()[0] === "0") {
-                console.log('automation agents are not installed. Copying from shared drive...');
-                execCopy(ip, user);
+    console.log('Installing SSH key...');
+    childProcess.exec('jake upload-ssh-key', function () {
+        console.log('Checking if automation agents are installed...');
+        childProcess.exec(getTestForAgentCmd(ip), function (error, stdout, stderr) {
+            if (error) {
+                onError(stderr);
             } else {
-                execAgent(ip);
+                if (stdout.toString()[0] === "0") {
+                    console.log('automation agents are not installed. Copying from shared drive...');
+                    execCopy(ip, user);
+                } else {
+                    execAgent(ip);
+                }
+                execCopyReferenceImage(ip, user);
             }
-            execCopyReferenceImage(ip, user);
-        }
+        });
     });
 }
 
