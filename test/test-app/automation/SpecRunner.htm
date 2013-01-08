@@ -15,6 +15,10 @@
             visibility:hidden;
         }
 
+        .description, .runningAlert {
+            pointer-events: none;
+        }
+
     </style>
     <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
     <script type="text/javascript" src="../js/jasmine.js"></script>
@@ -32,10 +36,6 @@
         jasmineEnv.specFilter = function(spec) {
             return htmlReporter.specFilter(spec);
         };
-
-        function execJasmine() {
-            jasmineEnv.execute();
-        }
 
         function addChosenSpecs() {
             var checkBoxes = document.getElementById('featureList').elements;
@@ -79,9 +79,13 @@
                 {
                     oldTests[i].parentNode.removeChild(oldTests[i]);
                 }
-                execJasmine();
+                document.getElementById('controls').style.display = "none";
+                jasmineEnv.execute();
+                jasmineEnv.currentRunner_.finishCallback = function () { 
+                    document.getElementById('controls').style.display = "block"; 
+                };
             };
-            });
+        });
 
         function showOverlay() {
             var o = document.getElementById('overlay');
@@ -105,6 +109,8 @@
 
     <h1> Automation tests </h1>
 
+    <div id="controls">
+
     <input id="backButton" type="button" value="Back" onclick="history.back();"/>
     <input id="reloadPage" type="button" value="Reload Page" onclick="window.location.reload(true);"><br /><br />
 
@@ -127,6 +133,9 @@
     <input id="deselectAll" type="button" value="De-select All" />
     <input id="addSpecs" type="button" value="Add Specs" />
     <input id="start" type="button" value="Run Jasmine" /><br />
+
+    </div>
+
     <div id="overlay">
         <button onclick="takeScreenshot()" > Take ScreenShot </button>
     </div>
