@@ -35,17 +35,23 @@ function deleteContactWithMatchingLastName(lastName) {
             }]
         },
         numContactsRemoved = 0,
-        numContactsFound = 0,
+        numContactsNotRemoved = 0,
+        numContactsFound = -1,
         successCb = function () {
             numContactsRemoved++;
-        };
+        },
+        errorCb = function () {
+            numContactsNotRemoved++;
+        },
+        curIndex;
 
-    contacts.find(["name"], findOptions, function (contacts, index) {
+    contacts.find(["name"], findOptions, function (contacts) {
         numContactsFound = contacts.length;
         contacts.forEach(function (c, index) {
-            c.remove(successCb);
+            curIndex = index;
+            c.remove(successCb, errorCb);
             waitsFor(function () {
-                return numContactsRemoved === index + 1;
+                return numContactsRemoved + numContactsNotRemoved === curIndex + 1;
             }, "Contact not removed", 15000);
         });
     }, function (error) {
@@ -53,7 +59,7 @@ function deleteContactWithMatchingLastName(lastName) {
     });
 
     waitsFor(function () {
-        return numContactsRemoved === numContactsFound;
+        return numContactsFound !== -1 && (numContactsRemoved + numContactsNotRemoved === numContactsFound);
     }, "Not all contacts removed", 15000);
 
     runs(function () {
@@ -860,7 +866,7 @@ describe("blackberry.pim.contacts", function () {
             deleteContactWithMatchingLastName("WebWorksTest");
         });
 
-        it('can get the contact with specified contactId', function () {
+        it('can get the contact with specified contactId as a String', function () {
             var contactFound,
                 name = {
                     "familyName": "WebWorksTest",
@@ -886,11 +892,21 @@ describe("blackberry.pim.contacts", function () {
                 return !!contactToFind;
             }, "create new contact was failed", 15000);
             runs(function () {
-                contactFound = contacts.getContact(contactToFind.id);
+                contactFound = contacts.getContact(contactToFind.id.toString());
                 expect(contactFound.id).toBe(contactToFind.id);
                 expect(contactFound.name).toEqual(contactToFind.name);
                 expect(contactFound.phoneNumbers).toEqual([workPhone]);
                 expect(contactFound.emails).toEqual([workEmail]);
+            });
+        });
+
+        it('cannot get the contact with if the specified contactId is a Number', function () {
+            var contactFound;
+
+            runs(function () {
+                expect(typeof parseInt(contactToFind.id, 10)).toEqual("number");
+                contactFound = contacts.getContact(parseInt(contactToFind.id, 10));
+                expect(contactFound).toBe(null);
             });
         });
     });

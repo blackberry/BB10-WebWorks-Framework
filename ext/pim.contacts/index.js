@@ -134,7 +134,7 @@ module.exports = {
     },
 
     getContact: function (success, fail, args) {
-        if (!_utils.hasPermission(config, "access_pimdomain_contacts")) {
+        if (!_utils.hasPermission(config, "access_pimdomain_contacts") || typeof args.contactId !== "string") {
             success(null);
             return;
         }
@@ -143,7 +143,7 @@ module.exports = {
             results;
 
         findOptions.contactId = JSON.parse(decodeURIComponent(args.contactId));
-
+        findOptions.contactId = findOptions.contactId.toString();
         results = pimContacts.getInstance().getContact(findOptions);
         if (results._success) {
             if (results.contact && results.contact.id) {
