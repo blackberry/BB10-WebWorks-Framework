@@ -114,3 +114,22 @@ task("deploy-tests", [], require("./build/deploy-tests"));
 
 desc("Deploys and runs QNX automation agents (internal only) - jake deploy-automation[<deviceIP>,<domainUserName>]");
 task("deploy-automation", [], require("./build/deploy-automation"));
+
+/**
+ * Expected syntax is
+ * jake startup-test[<IP Address of device>,<Name of .bar file to parse>..]
+ * eg.
+ * To run tests on "StartupTest" app on device with ip 192.10.235.20
+ * jake startup-test[192.10.235.20,StartupTest]
+ * The default params are [169.254.0.1,WebWorksTest]
+ * To run with default params use-
+ * jake startup-test
+ * To clear the log use-
+ * jake startup-test[<IP Address of device>,CLEAR_LOG]
+ *
+ */
+desc("Run startup time tests - jake startup-test [<ip address>,<Name of .bar>]. Use CLEAR_LOG as the name of .bar to clear the timing log (sloginfo -c)");
+task('startup-test', [], function () {
+    require('./build/startup-test')(Array.prototype.slice.call(arguments));
+});
+
