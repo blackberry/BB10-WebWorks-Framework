@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var timeout = 250;
-
 describe('blackberry.ui.dialog', function () {
+
+    var timeout = 500;
 
     it('blackerry.ui.dialog.customAskAsync should be able to create a dialog', function () {
         var buttons = ['Ok'],
