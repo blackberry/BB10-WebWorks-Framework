@@ -61,7 +61,7 @@ describe("calendar cards", function () {
     it("creates event in composer then searches for and picks it in picker", function () {
         var pickedVcs,
             flag = false,
-            eventSubject = "This event is very far in the future",
+            eventSubject = "X24df42",
             partialVcs = "BEGIN:VCALENDAR",
             composerDone = jasmine.createSpy("composer done"),
             composerCancel = jasmine.createSpy("composer cancel"),
@@ -69,10 +69,13 @@ describe("calendar cards", function () {
                 pickedVcs = vcs;
                 flag = true;
             }),
-            pickerCancel = jasmine.createSpy("picker cancel");
+            pickerCancel = jasmine.createSpy("picker cancel"),
+            formatDate = function (s) {
+                return s.substring(0, 10) + s.substring(10, s.length) + s.substring(10, 15);
+            };
         blackberry.invoke.card.invokeCalendarComposer({
             accountId: 0,
-            startTime: "Sat Jun 13 09:00:00 2020",
+            startTime: formatDate(new Date().toString().slice(0, -15)),
             duration: 20
         }, composerDone, composerCancel, invokeCallback);
         waits(waitTimeout);
@@ -81,7 +84,7 @@ describe("calendar cards", function () {
             waits(waitTimeout / 2);
             runs(function () {
                 internal.automation.injectText(eventSubject);
-                waits(waitTimeout * 2);
+                waits(waitTimeout);
                 runs(function () {
                     internal.automation.touchTopRight();
                     waits(waitTimeout / 2);
@@ -93,7 +96,7 @@ describe("calendar cards", function () {
                             waits(waitTimeout / 2);
                             runs(function () {
                                 internal.automation.injectText(eventSubject);
-                                waits(waitTimeout * 2);
+                                waits(waitTimeout);
                                 runs(function () {
                                     internal.automation.touch(screen.availWidth / 2, 400);
                                     waits(waitTimeout / 2);
