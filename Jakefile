@@ -112,5 +112,5 @@ desc("Builds the framework, creates the test-app, packages it and deploys it" + 
      " Example - jake deploy-tests[/Users/jheifetz/Downloads/BB10webworks-next-42/,-d,device,169.254.0.1,qaqa]");
 task("deploy-tests", [], require("./build/deploy-tests"));
 
-desc("Deploys and runs QNX automation agents (internal only) - jake deploy-automation[<deviceIP>,<domainUserName>]");
+desc("Deploys and runs QNX automation agents (internal only) - jake deploy-automation[<deviceIP>,<domainUserName>,<ssh id_rsa file>]");
 task("deploy-automation", [], require("./build/deploy-automation"));
