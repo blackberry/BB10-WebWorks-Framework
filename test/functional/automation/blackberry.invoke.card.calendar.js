@@ -34,6 +34,7 @@ describe("calendar cards", function () {
         onCancel = null;
     });
 
+
     it("opens and cancels calendarPicker", function () {
         blackberry.invoke.card.invokeCalendarPicker({}, onDone, onCancel, invokeCallback);
         waits(waitTimeout);
@@ -61,7 +62,7 @@ describe("calendar cards", function () {
     it("creates event in composer then searches for and picks it in picker", function () {
         var pickedVcs,
             flag = false,
-            eventSubject = "This event is very far in the future",
+            eventSubject = "X24df42",
             partialVcs = "BEGIN:VCALENDAR",
             composerDone = jasmine.createSpy("composer done"),
             composerCancel = jasmine.createSpy("composer cancel"),
@@ -69,42 +70,53 @@ describe("calendar cards", function () {
                 pickedVcs = vcs;
                 flag = true;
             }),
-            pickerCancel = jasmine.createSpy("picker cancel");
+            pickerCancel = jasmine.createSpy("picker cancel"),
+            formatDate = function (s) {
+                return s.substring(0, 10) + s.substring(15, s.length) + s.substring(10, 15);
+            },
+            meetingStartTime = new Date();
+
+        meetingStartTime.setMonth(meetingStartTime.getMonth() + 10);
+
         blackberry.invoke.card.invokeCalendarComposer({
             accountId: 0,
-            startTime: "Sat Jun 13 09:00:00 2020",
+            startTime: formatDate(meetingStartTime.toString().slice(0, -15)),
             duration: 20
         }, composerDone, composerCancel, invokeCallback);
         waits(waitTimeout);
         runs(function () {
-            internal.automation.touch(screen.availWidth / 2, 300);
+            internal.automation.touch(screen.availWidth / 2, 250);
             waits(waitTimeout / 2);
             runs(function () {
-                internal.automation.injectText(eventSubject);
-                waits(waitTimeout * 2);
+                internal.automation.touch(screen.availWidth / 2, 250);
+                waits(waitTimeout / 2);
                 runs(function () {
-                    internal.automation.touchTopRight();
-                    waits(waitTimeout / 2);
+                    internal.automation.injectText(eventSubject);
+                    waits(waitTimeout);
                     runs(function () {
-                        blackberry.invoke.card.invokeCalendarPicker({}, pickerDone, pickerCancel, invokeCallback);
-                        waits(waitTimeout);
+                        internal.automation.touchTopRight();
+                        waits(waitTimeout / 2);
                         runs(function () {
-                            internal.automation.touchBottomRight();
-                            waits(waitTimeout / 2);
+                            blackberry.invoke.card.invokeCalendarPicker({}, pickerDone, pickerCancel, invokeCallback);
+                            waits(waitTimeout);
                             runs(function () {
-                                internal.automation.injectText(eventSubject);
-                                waits(waitTimeout * 2);
+                                internal.automation.touchBottomRight();
+                                waits(waitTimeout / 2);
                                 runs(function () {
-                                    internal.automation.touch(screen.availWidth / 2, 400);
-                                    waits(waitTimeout / 2);
+                                    internal.automation.injectText(eventSubject);
+                                    waits(waitTimeout);
                                     runs(function () {
-                                        expect(pickerDone).toHaveBeenCalled();
-                                        waitsFor(function () {
-                                            return flag;
-                                        });
+                                        internal.automation.touch(screen.availWidth / 2, 400);
+                                        waits(waitTimeout / 2);
                                         runs(function () {
-                                            expect(pickerCancel).not.toHaveBeenCalled();
-                                            expect(pickedVcs.indexOf(partialVcs)).toEqual(0);
+                                            expect(pickerDone).toHaveBeenCalled();
+                                            waitsFor(function () {
+                                                return flag;
+                                            });
+                                            runs(function () {
+                                                expect(pickerCancel).not.toHaveBeenCalled();
+                                                expect(pickedVcs.indexOf(partialVcs)).toEqual(0);
+                                            });
                                         });
                                     });
                                 });
