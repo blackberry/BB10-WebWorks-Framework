@@ -1113,13 +1113,13 @@ describe("blackberry.pim.calendar", function () {
 
         it('Can save a monthly recurring event on device', function () {
             if (isDefaultFolderAccessible()) {
-                var start = new Date("Jan 6, 2013, 12:00"),
-                    end = new Date("Jan 6, 2013, 12:30"),
+                var start = new Date("Jan 6, 2046, 12:00"),
+                    end = new Date("Jan 6, 2046, 12:30"),
                     location = "some location",
                     summary = "WebWorksTest awesome recurring event (wwt006)",
                     rule = new CalendarRepeatRule({
                         "frequency": CalendarRepeatRule.FREQUENCY_MONTHLY,
-                        "expires": new Date("Dec 31, 2013"),
+                        "expires": new Date("Dec 31, 2046"),
                         "numberOfOccurrences": 4
                     }),
                     called = false,
@@ -1218,10 +1218,10 @@ describe("blackberry.pim.calendar", function () {
                             expect(evt.allDay).toBe(recEvent.allDay);
                         });
 
-                        expect(starts).toContain(new Date("Jan 6, 2013, 12:00").toISOString());
-                        expect(starts).toContain(new Date("Feb 6, 2013, 12:00").toISOString());
-                        expect(starts).toContain(new Date("Mar 6, 2013, 12:00").toISOString());
-                        expect(starts).toContain(new Date("Apr 6, 2013, 12:00").toISOString());
+                        expect(starts).toContain(new Date("Jan 6, 2046, 12:00").toISOString());
+                        expect(starts).toContain(new Date("Feb 6, 2046, 12:00").toISOString());
+                        expect(starts).toContain(new Date("Mar 6, 2046, 12:00").toISOString());
+                        expect(starts).toContain(new Date("Apr 6, 2046, 12:00").toISOString());
 
                         called = true;
                     }),

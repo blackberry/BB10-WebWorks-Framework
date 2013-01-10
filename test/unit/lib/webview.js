@@ -26,6 +26,7 @@ describe("webview", function () {
             active: undefined,
             zOrder: undefined,
             url: undefined,
+            reload: jasmine.createSpy(),
             extraHttpHeaders: undefined,
             setFileSystemSandbox: undefined,
             addOriginAccessWhitelistEntry: jasmine.createSpy(),
@@ -102,6 +103,8 @@ describe("webview", function () {
                 expect(mockedWebview.onNetworkResourceRequested).toEqual(request.init(mockedWebview).networkResourceRequestedHandler);
                 expect(Object.getOwnPropertyDescriptor(webview, 'onContextMenuRequestEvent')).toEqual(jasmine.any(Object));
                 expect(Object.getOwnPropertyDescriptor(webview, 'onContextMenuCancelEvent')).toEqual(jasmine.any(Object));
+                expect(Object.getOwnPropertyDescriptor(webview, 'onGeolocationPermissionRequest')).toEqual(jasmine.any(Object));
+
 
                 expect(mockedWebview.allowWebEvent).toHaveBeenCalledWith("DialogRequested");
                 expect(mockedController.dispatchEvent).toHaveBeenCalledWith("webview.initialized", jasmine.any(Array));
@@ -292,6 +295,14 @@ describe("webview", function () {
             runs(function () {
                 expect(mockedWebview.userAgent).toEqual("Some extremely long user agent (with) spe/cial, characters");
             });
+        });
+
+        it("expect reload to be defined", function () {
+            webview.create();
+            waits(1);
+            expect(webview.reload).toBeDefined();
+            webview.reload();
+            expect(mockedWebview.reload).toHaveBeenCalled();
         });
     });
 

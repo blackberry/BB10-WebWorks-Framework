@@ -27,6 +27,14 @@ function testSystemReadOnly(field) {
     expect(blackberry.system[field]).toEqual(before);
 }
 
+beforeEach(function () {
+    this.addMatchers({
+        toBeOneOf: function (expected) {
+            return expected.indexOf(this.actual) !== -1;
+        }
+    });
+});
+
 describe("blackberry.system", function () {
 
     it("blackberry.system should exist", function () {
@@ -65,6 +73,15 @@ describe("blackberry.system", function () {
 
     it("blackberry.system.hasCapability should return false for unknown capability", function () {
         expect(blackberry.system.hasCapability("bake.cookies")).toBeFalsy();
+    });
+
+    it("blackberry.system.deviceLockedStatus should be defined", function () {
+        expect(blackberry.system.deviceLockedStatus).toBeDefined();
+        expect(blackberry.system.deviceLockedStatus).toBeOneOf(["passwordLocked", "notLocked", "screenLocked"]);
+    });
+
+    it("blackberry.system.deviceLockedStatus should be read-only", function () {
+        testSystemReadOnly("deviceLockedStatus");
     });
 
     describe("font api", function () {

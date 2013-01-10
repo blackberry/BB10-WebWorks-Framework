@@ -749,11 +749,11 @@ describe("White listing", function () {
         // if declared <access uri="file:///store/home/user"></access>,
         // then access to files in /store/home should be disallowed.
         it("can access whitelisted file:// path", function () {
-            writeTestFile("/accounts/1000/shared/documents/textData.txt");
+            writeTestFile(blackberry.io.sharedFolder + "/documents/textData.txt");
 
             runs(function () {
                 console.log(blackberry.io.sharedFolder + '/documents/textData.txt');
-                testHtmlElementLoads('iframe', {src: 'file:///accounts/1000/shared/documents/textData.txt' });
+                testHtmlElementLoads('iframe', {src: 'file://' + blackberry.io.sharedFolder + '/documents/textData.txt' });
             });
         });
 
@@ -768,11 +768,11 @@ describe("White listing", function () {
         // <access uri='"/store/home/user/documents">
         // Validate that access to files in /store/home/user/documents/html is allowed.
         it("can access whitelisted file:// subdirectory", function () {
-            createTestDirectory("/accounts/1000/shared/documents/subdir");
-            writeTestFile("/accounts/1000/shared/documents/subdir/textData.txt");
+            createTestDirectory(blackberry.io.sharedFolder + "/documents/subdir");
+            writeTestFile(blackberry.io.sharedFolder + "/documents/subdir/textData.txt");
 
             runs(function () {
-                testHtmlElementLoads('iframe', {src: 'file:///accounts/1000/shared/documents/subdir/textData.txt' });
+                testHtmlElementLoads('iframe', {src: 'file://' + blackberry.io.sharedFolder + '/documents/subdir/textData.txt' });
             });
         });
 

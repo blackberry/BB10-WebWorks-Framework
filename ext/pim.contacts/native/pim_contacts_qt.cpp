@@ -15,7 +15,9 @@
  */
 
 #include <json/value.h>
+#include <json/writer.h>
 #include <stdio.h>
+#include <webworks_utils.hpp>
 #include <bb/cascades/pickers/ContactPicker>
 #include <bb/cascades/pickers/ContactSelectionMode>
 #include <QSet>
@@ -35,6 +37,7 @@ KindToStringMap PimContactsQt::_kindAttributeMap;
 SubKindToStringMap PimContactsQt::_subKindAttributeMap;
 QList<bbpim::SortSpecifier> PimContactsQt::_sortSpecs;
 std::map<bbpim::ContactId, bbpim::Contact> PimContactsQt::_contactSearchMap;
+ContactAccount& PimContactsQt::_contactAccount = ContactAccount::GetAccountInstance();
 
 PimContactsQt::PimContactsQt()
 {
@@ -70,6 +73,8 @@ Json::Value PimContactsQt::Find(const Json::Value& args)
     QSet<bbpim::ContactId> results;
     int limit = -1;
     bool favorite = false;
+    Json::Value includeAccounts = args["options"].get("includeAccounts", Json::nullValue);
+    Json::Value excludeAccounts = args["options"].get("excludeAccounts", Json::nullValue);
 
     if (args["options"].isMember("favorite") && args["options"]["favorite"].isBool()) {
         favorite = args["options"]["favorite"].asBool();
@@ -80,7 +85,7 @@ Json::Value PimContactsQt::Find(const Json::Value& args)
     }
 
     if (args["options"].isMember("filter") && !args["options"]["filter"].empty()) {
-        results = getPartialSearchResults(args["options"]["filter"], args["fields"], favorite);
+        results = getPartialSearchResults(args["options"]["filter"], args["fields"], favorite, includeAccounts, excludeAccounts);
 
         getSortSpecs(args["options"]["sort"]);
 
@@ -107,6 +112,8 @@ Json::Value PimContactsQt::Find(const Json::Value& args)
         if (limit != -1) {
             listFilters.setLimit(limit);
         }
+
+        getAccountFilters(NULL, &listFilters, includeAccounts, excludeAccounts);
 
         results = service.contacts(listFilters);
         for (QList<bbpim::Contact>::const_iterator i = results.constBegin(); i != results.constEnd(); i++) {
@@ -165,7 +172,7 @@ Json::Value PimContactsQt::CreateContact(const Json::Value& attributeObj)
     }
 
     bbpim::ContactService service;
-    newContact = service.createContact(newContact, false);
+    newContact = service.createContact(newContact, attributeObj["isWork"].asBool(), true);
 
     Json::Value returnObj;
 
@@ -247,7 +254,7 @@ Json::Value PimContactsQt::CloneContact(bbpim::Contact& contact, const Json::Val
         syncAttributeKind(newContact, attributeObj[key], key);
     }
 
-    newContact = service.createContact(newContact, false);
+    newContact = service.createContact(newContact, attributeObj["isWork"].asBool(), true);
 
     Json::Value returnObj;
 
@@ -373,6 +380,19 @@ Json::Value PimContactsQt::InvokePicker(const Json::Value& args)
     return result;
 }
 
+Json::Value PimContactsQt::GetContactAccounts()
+{
+    Json::Value retVal;
+
+    retVal["accounts"] = Json::Value();
+    QList<bb::pim::account::Account> accounts = _contactAccount.GetContactAccounts();
+    for (int i = 0; i < accounts.size(); ++i) {
+        retVal["accounts"].append(ContactAccount::Account2Json(accounts[i]));
+    }
+    retVal["_success"] = true;
+    return retVal;
+}
+
 /****************************************************************
  * Helper functions for Find
  ****************************************************************/
@@ -446,7 +466,7 @@ void PimContactsQt::getSortSpecs(const Json::Value& sort)
     }
 }
 
-QSet<bbpim::ContactId> PimContactsQt::getPartialSearchResults(const Json::Value& filter, const Json::Value& contactFields, const bool favorite)
+QSet<bbpim::ContactId> PimContactsQt::getPartialSearchResults(const Json::Value& filter, const Json::Value& contactFields, const bool favorite, const Json::Value& includeAccounts, const Json::Value& excludeAccounts)
 {
     QSet<bbpim::ContactId> results;
 
@@ -454,7 +474,7 @@ QSet<bbpim::ContactId> PimContactsQt::getPartialSearchResults(const Json::Value&
 
     if (!filter.empty()) {
         for (unsigned int j = 0; j < filter.size(); j++) {
-            QSet<bbpim::ContactId> currentResults = singleFieldSearch(filter[j], contactFields, favorite);
+            QSet<bbpim::ContactId> currentResults = singleFieldSearch(filter[j], contactFields, favorite, includeAccounts, excludeAccounts);
 
             if (currentResults.empty()) {
                 // no need to continue, can return right away
@@ -471,6 +491,41 @@ QSet<bbpim::ContactId> PimContactsQt::getPartialSearchResults(const Json::Value&
     }
 
     return results;
+}
+
+void PimContactsQt::getAccountFilters(bbpim::ContactSearchFilters* searchFilter, bbpim::ContactListFilters* listFilter, const Json::Value& includeAccounts, const Json::Value& excludeAccounts)
+{
+    if (!includeAccounts.empty() && includeAccounts.isArray()) {
+        QList<bbpim::AccountId> accountIds;
+
+        for (unsigned int i = 0; i < includeAccounts.size(); i++) {
+            accountIds << Utils::strToInt(includeAccounts[i].asString());
+        }
+
+        if (searchFilter != NULL) {
+            searchFilter->setHasAccounts(accountIds);
+        }
+
+        if (listFilter != NULL) {
+            listFilter->setHasAccounts(accountIds);
+        }
+    }
+
+    if (!excludeAccounts.empty() && excludeAccounts.isArray()) {
+        QList<bbpim::AccountId> accountIds;
+
+        for (unsigned int i = 0; i < excludeAccounts.size(); i++) {
+            accountIds << Utils::strToInt(excludeAccounts[i].asString());
+        }
+
+        if (searchFilter != NULL) {
+            searchFilter->setExcludeAccounts(accountIds);
+        }
+
+        if (listFilter != NULL) {
+            listFilter->setExcludeAccounts(accountIds);
+        }
+    }
 }
 
 QList<bbpim::AttributeKind::Type> PimContactsQt::getIncludeAttributesList(const Json::Value& contactFields, bbpim::ContactListFilters* listFilters)
@@ -509,7 +564,7 @@ QList<bbpim::AttributeKind::Type> PimContactsQt::getIncludeAttributesList(const 
     return includeFields;
 }
 
-QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searchFieldsJson, const Json::Value& contactFields, bool favorite)
+QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searchFieldsJson, const Json::Value& contactFields, const bool favorite, const Json::Value& includeAccounts, const Json::Value& excludeAccounts)
 {
     QList<bbpim::SearchField::Type> searchFields = PimContactsQt::getSearchFields(searchFieldsJson);
     QSet<bbpim::ContactId> contactIds;
@@ -528,6 +583,8 @@ QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searc
 
         contactFilter.setShowAttributes(true);
         contactFilter.setIncludeAttributes(getIncludeAttributesList(contactFields));
+
+        getAccountFilters(&contactFilter, NULL, includeAccounts, excludeAccounts);
 
         results = contactService.searchContacts(contactFilter);
 
@@ -697,7 +754,15 @@ Json::Value PimContactsQt::populateContact(const bbpim::Contact& contact, const 
         }
     }
 
-    contactItem["id"] = Json::Value(contact.id());
+    contactItem["sourceAccounts"] = Json::Value();
+    // fetch sourceAccounts by sourceSourceIds
+    for (int i = 0; i < contact.sourceAccountIds().size(); ++i) {
+        bb::pim::account::AccountKey id = contact.sourceAccountIds()[i];
+        bb::pim::account::Account account = _contactAccount.GetAccount(id);
+        contactItem["sourceAccounts"].append(ContactAccount::Account2Json(account));
+    }
+
+    contactItem["id"] = Utils::intToStr(contact.id());
     contactItem["favorite"] = Json::Value(contact.isFavourite()); // always populate favorite
 
     return contactItem;

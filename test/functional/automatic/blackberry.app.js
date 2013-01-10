@@ -58,26 +58,6 @@ describe("blackberry.app", function () {
         testAppReadOnly("copyright");
     });
 
-    it('blackberry.app.description - default value should exist', function () {
-        window.navigator = { language: "iDoNotExist" };//Forces default value
-        testAppValue("description", "This application tests a wide range of WebWorks functionalities.");
-    });
-
-    it('blackberry.app.description - localized value should exist', function () {
-        window.navigator = { language: "fr-FR" };
-        testAppValue("description", "French description");
-    });
-
-
-    it('blackberry.app.description should be read-only', function () {
-        testAppReadOnly("description");
-    });
-
-    it('blackberry.app.description - localized value for regional locale[en-FR] should default to language locale[en] when unprovided', function () {
-        window.navigator = { language: "en-FR" };
-        testAppValue("description", "English description");//[en] locale data
-    });
-
     it('blackberry.app.id should exist', function () {
         testAppValue("id", "WebWorksTest");
     });
@@ -104,21 +84,6 @@ describe("blackberry.app", function () {
         testAppReadOnly("licenseURL");
     });
 
-    it('blackberry.app.name - default value should exist', function () {
-        window.navigator = { language: "iDoNotExist" };//Forces default value
-        testAppValue("name", "WebWorks Test Application");
-    });
-
-    it('blackberry.app.name - localized value should exist', function () {
-        window.navigator = { language: "fr-FR" };
-        testAppValue("name", "WebWorks Test App-fr");
-    });
-
-    it('blackberry.app.name - localized value for regional locale[en-FR] should default to language locale[en] when unprovided', function () {
-        window.navigator = { language: "en-FR" };
-        testAppValue("name", "WebWorks Test App-en");//[en] locale data
-    });
-
     it('blackberry.app.name should be read-only', function () {
         testAppReadOnly("name");
     });
@@ -137,5 +102,48 @@ describe("blackberry.app", function () {
 
     it('blackberry.app.windowState should be read-only', function () {
         testAppReadOnly("windowState");
-    });    
+    });
+
+    describe("internationalization support", function () {
+        var originalNavigator = window.navigator;
+
+        afterEach(function () {
+            window.navigator = originalNavigator;
+        });
+
+        it('blackberry.app.name - default value should exist', function () {
+            window.navigator = { language : "iDoNotExist" };//Forces default value
+            testAppValue("name", "WebWorks Test Application");
+        });
+
+        it('blackberry.app.name - localized value should exist', function () {
+            window.navigator = { language : "fr-FR" };
+            testAppValue("name", "WebWorks Test App-fr");
+        });
+
+        it('blackberry.app.name - localized value for regional locale[en-FR] should default to language locale[en] when unprovided', function () {
+            window.navigator = { language : "en-FR" };
+            testAppValue("name", "WebWorks Test App-en");//[en] locale data
+        });
+
+        it('blackberry.app.description - default value should exist', function () {
+            window.navigator = { language : "iDoNotExist" };//Forces default value
+            testAppValue("description", "This application tests a wide range of WebWorks functionalities.");
+        });
+
+        it('blackberry.app.description - localized value should exist', function () {
+            window.navigator = { language : "fr-FR" };
+            testAppValue("description", "French description");
+        });
+
+
+        it('blackberry.app.description should be read-only', function () {
+            testAppReadOnly("description");
+        });
+
+        it('blackberry.app.description - localized value for regional locale[en-FR] should default to language locale[en] when unprovided', function () {
+            window.navigator = { language : "en-FR" };
+            testAppValue("description", "English description");//[en] locale data
+        });
+    });
 });

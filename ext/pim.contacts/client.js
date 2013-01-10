@@ -28,6 +28,7 @@ var _self = {},
     ContactNews = require("./ContactNews"),
     ContactActivity = require("./ContactActivity"),
     ContactPickerOptions = require("./ContactPickerOptions"),
+    ContactAccount = require("./ContactAccount"),
     contactUtils = require("./contactUtils"),
     utils = require("./../../lib/utils"),
     _contactInvokeEventId = "invokeContactPicker.invokeEventId",
@@ -69,6 +70,7 @@ _self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
         if (result._success) {
             if (contacts) {
                 contacts.forEach(function (contact) {
+                    contact.id = contact.id.toString();
                     contactUtils.populateContact(contact);
                     realContacts.push(new Contact(contact));
                 });
@@ -91,15 +93,14 @@ _self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
 };
 
 _self.getContact = function (contactId) {
-    if (!contactId) {
+    if (!contactId || typeof contactId !== "string") {
         return null;
-    }
+    } 
     
     var obj = window.webworks.execSync(_ID, "getContact", {
             "contactId": contactId
         });
     if (obj) {
-        obj.id = obj.id.toString();
         contactUtils.populateContact(obj);
         return new Contact(obj);
     } else {
@@ -183,6 +184,17 @@ _self.invokeContactPicker = function (options, onDone, onCancel, onInvoke) {
     return window.webworks.execAsync(_ID, "invokeContactPicker", {options: options || ""});
 };
 
+_self.getContactAccounts = function () {
+    var obj = window.webworks.execSync(_ID, "getContactAccounts"),
+        accounts = [];
+
+    obj.forEach(function (account) {
+        accounts.push(new ContactAccount(account));
+    });
+
+    return accounts;
+};
+
 _self.Contact = Contact;
 _self.ContactField = ContactField;
 _self.ContactAddress = ContactAddress;
@@ -194,5 +206,6 @@ _self.ContactFindOptions = ContactFindOptions;
 _self.ContactNews = ContactNews;
 _self.ContactActivity = ContactActivity;
 _self.ContactPickerOptions = ContactPickerOptions;
+_self.ContactAccount = ContactAccount;
 
 module.exports = _self;

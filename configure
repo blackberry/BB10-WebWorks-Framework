@@ -4,14 +4,19 @@ echo "This is to allow the Packager to install node dependencies globally."
 if [[ "$OS" == *Windows* ]] ; then
     npm install -g jake jshint@0.5.2 uglify-js
 else
-    sudo npm install -g jake jshint@0.5.2 uglify-js
+    sudo $(which npm) install -g jake jshint@0.5.2 uglify-js
 fi
 
-npm install jasmine-node express wrench@1.3.6 jWorkflow mustache node-native-zip
+npm install jasmine-node express wrench@1.3.9 jWorkflow mustache node-native-zip
 
 #Don't grab submodules for SCM builds (already included in productization repo)
 if [ "$1" != "-scm" ]; then
     git submodule update --init;
+fi
+
+if [ ! -f test-runner.json ]
+then
+    cp test-runner.default test-runner.json
 fi
 
 echo -e "\nConfiguring complete. Please proceed with running \"jake\"."

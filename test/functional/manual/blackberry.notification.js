@@ -40,12 +40,12 @@ describe("blackberry.notification", function () {
                 onErrorFlag = true;
             });
         onClick = jasmine.createSpy("click callback").andCallFake(
-            function () { 
-                onClickFlag = true; 
+            function () {
+                onClickFlag = true;
             });
         onClose = jasmine.createSpy("close callback").andCallFake(
-            function () { 
-                onCloseFlag = true; 
+            function () {
+                onCloseFlag = true;
             });
     });
 
@@ -145,7 +145,7 @@ describe("blackberry.notification", function () {
         var confirm;
 
         try {
-            notifObj = new window.Notification(notifTitle, {'body': notifBody, 'target': "net.rim.webworks.SmokeTest", 'targetAction': "bb.action.OPEN", 'onerror': onError, 'onshow': onShow});
+            notifObj = new window.Notification(notifTitle, {'body': notifBody, 'target': "com.webworks.test.functional.invoke.target", 'targetAction': "bb.action.WWTEST", 'onerror': onError, 'onshow': onShow});
             alert("To invoke wwTest app itself, in UIB select notificatoin with title '" + notifTitle + "' and body '" + notifBody + "', then dimsiss this alert.");
         } catch (e) {
             exThrown = true;
@@ -179,8 +179,8 @@ describe("blackberry.notification", function () {
         var confirm,
             invokedFlag,
             invokedData,
-            target = "net.rim.webworks.SmokeTest",
-            targetAction = "bb.action.OPEN",
+            target = "com.webworks.test.functional.invoke.target",
+            targetAction = "bb.action.WWTEST",
             payload = "SGksIGZyb20gdGhlIEVhcnRoIQ==",
             payloadType = "text/plain",
             payloadURI = "http://www.google.com";
@@ -200,7 +200,7 @@ describe("blackberry.notification", function () {
         });
 
         waitsFor(function () {
-            return invokedFlag; 
+            return invokedFlag;
         });
 
         runs(function () {
@@ -208,7 +208,7 @@ describe("blackberry.notification", function () {
 
             expect(confirm).toEqual(true);
             expect(exThrown).not.toEqual(true);
-            
+
             expect(invokedData.target).toEqual(target);
             expect(invokedData.action).toEqual(targetAction);
             expect(invokedData.data).toEqual(payload);
@@ -239,8 +239,8 @@ describe("blackberry.notification", function () {
     });
 
     it('should not throw an exception when manually delete notification from UIB and then remove with an instance', function () {
-        var target = "net.rim.webworks.SmokeTest",
-            targetAction = "bb.action.OPEN";
+        var target = "com.webworks.test.functional.invoke.target",
+            targetAction = "bb.action.WWTEST";
 
         try {
             notifObj = new window.Notification(notifTitle, {'body': notifBody, 'target': target, 'targetAction': targetAction });
@@ -272,7 +272,7 @@ describe("blackberry.notification", function () {
         var confirm,
             notify1,
             notify2;
-        
+
         try {
             notify1 = new window.Notification('notify1', {'tag': 'duplicate tag'});
             notify2 = new window.Notification('notify2', {'tag': 'duplicate tag'});
@@ -293,7 +293,7 @@ describe("blackberry.notification", function () {
         var confirm,
             invokedFlag,
             invokedData,
-            target = "net.rim.webworks.SmokeTest",
+            target = "com.webworks.test.functional.invoke.target",
             targetAction = "bb.action.OPEN";
 
         runs(function () {
@@ -311,7 +311,7 @@ describe("blackberry.notification", function () {
         });
 
         waitsFor(function () {
-            return invokedFlag; 
+            return invokedFlag;
         });
 
         runs(function () {
@@ -319,7 +319,7 @@ describe("blackberry.notification", function () {
 
             expect(confirm).toEqual(true);
             expect(exThrown).not.toEqual(true);
-            
+
             expect(invokedData.target).toEqual(target);
             expect(invokedData.action).toEqual(targetAction);
         });
@@ -346,7 +346,7 @@ describe("blackberry.notification", function () {
         });
 
         waitsFor(function () {
-            return invokedFlag; 
+            return invokedFlag;
         });
 
         runs(function () {
@@ -354,7 +354,7 @@ describe("blackberry.notification", function () {
 
             expect(confirm).toEqual(true);
             expect(exThrown).not.toEqual(true);
-            
+
             expect(invokedData.action).toEqual(targetAction);
         });
     });

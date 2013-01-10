@@ -1,23 +1,138 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
 <html>
-	<head>
-	    <meta name="viewport" id="viewport" content="initial-scale=1.0,user-scalable=no" />
-		<title>test geolocation</title>
 
-	</head>
-	<body>
-    <ol>
-    
-    <li>
-    <a href="http://html5demos.com/geo">Test remote geolocation page 01 : http://html5demos.com/geo</a>
-    </li>
-	
-    <li>
-    <a href="http://benwerd.com/lab/geo.php">Test remote geolocation page 02 : http://benwerd.com/lab/geo.php</a>
-    </li>
-  
-    </ol>
-	
-	<p><a href="main.htm">Go back to main page</a></p> 
-	</body>
+    <head>
+
+        <meta name="viewport" id="viewport" content="initial-scale=1.0,user-scalable=no" />
+
+        <title>test geolocation</title>
+
+        <script type="text/javascript" src="local:///chrome/webworks.js"></script>
+
+        <style type="text/css">
+            input[type='text'] {
+                width: 100px;
+            }
+            a {
+                display: block;
+                font-size: 14pt;
+                margin-bottom: 10px;
+            }
+            #currentPosition, #watch {
+                width: 100%;
+                min-height: 50px;
+                word-wrap: break-word;
+                border: 2px solid black;
+            }
+        </style>
+
+        <script type="text/javascript">
+            var watchId;
+            function getCurrentPosition() {
+                var options = { },
+                    timeout = parseInt(document.getElementById('timeout').value),
+                    maximumAge = parseInt(document.getElementById('maximumAge').value);
+
+                if (document.getElementById('highAccuracy').checked) {
+                    options.enableHighAccuracy = true;
+                }
+                if (!isNaN(timeout)) {
+                    options.timeout = timeout;
+                }
+                if (!isNaN(maximumAge)) {
+                    options.maximumAge = maximumAge;
+                }
+
+                console.log(JSON.stringify(options));
+
+                document.getElementById('currentPosition').innerHTML = '';
+
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    document.getElementById('currentPosition').innerHTML = JSON.stringify(pos);
+                }, function (error) {
+                    document.getElementById('currentPosition').innerHTML = JSON.stringify(error);
+                },
+                options);
+            }
+            function watchPosition() {
+                var options = { },
+                    timeout = parseInt(document.getElementById('watch_timeout').value),
+                    maximumAge = parseInt(document.getElementById('watch_maximumAge').value);
+
+                if (document.getElementById('watch_highAccuracy').checked) {
+                    options.enableHighAccuracy = true;
+                }
+                if (!isNaN(timeout)) {
+                    options.timeout = timeout;
+                }
+                if (!isNaN(maximumAge)) {
+                    options.maximumAge = maximumAge;
+                }
+
+                console.log(JSON.stringify(options));
+
+                document.getElementById('watch').innerHTML = '';
+                document.getElementById('watchButton').disabled = true;
+                document.getElementById('clearButton').disabled = false;
+
+                watchId = navigator.geolocation.watchPosition(function (pos) {
+                    document.getElementById('watch').innerHTML = JSON.stringify(pos);
+                }, function (error) {
+                    document.getElementById('watch').innerHTML = JSON.stringify(error);
+                },
+                options);
+            }
+            function clearWatch() {
+                document.getElementById('watch').innerHTML = '';
+                navigator.geolocation.clearWatch(watchId);
+                document.getElementById('watchButton').disabled = false;
+                document.getElementById('clearButton').disabled = true;
+            }
+            function invokeBrowser(uri) {
+                blackberry.invoke.invoke({uri: uri});
+            }
+        </script>
+
+    </head>
+
+    <body>
+
+        <h1>navigator.geolocation</h1>
+
+        <section>
+            <h2>getCurrentPosition</h2>
+            <div id="currentPosition"></div>
+            <div>
+                Enable High Accuracy: <input id="highAccuracy" type="checkbox" /><br />
+                Maximum Age (ms): <input id="maximumAge" type="text"/><br />
+                Timeout (ms): <input id="timeout" type="text" /><br />
+                <input type="button" value="getCurrentPosition" onclick="getCurrentPosition();" />
+            </div>
+        </section>
+
+        <section>
+            <h2>watchPosition</h2>
+            <div id="watch"></div>
+            <div>
+                Enable High Accuracy: <input id="watch_highAccuracy" type="checkbox" /><br />
+                Maximum Age (ms): <input id="watch_maximumAge" type="text"/><br />
+                Timeout (ms): <input id="watch_timeout" type="text" /><br />
+                <input type="button" id="watchButton" value="watchPosition" onclick="watchPosition();" />
+                <input type="button" id="clearButton" value="clearWatch" onclick="clearWatch();" disabled="true" />
+            </div>
+        </section>
+
+        <section>
+            <h2>Remote Pages</h2>
+            <a href="http://html5demos.com/geo">http://html5demos.com/geo</a>
+            <input type="button" value="Browser" onclick="invokeBrowser('http://html5demos.com/geo');" /><br />
+            <a href="http://benwerd.com/lab/geo.php">http://benwerd.com/lab/geo.php</a>
+            <input type="button" value="Browser"  onclick="invokeBrowser('http://benwerd.com/lab/geo.php');" />
+        </section>
+
+        <section>	
+	    <a href="main.htm">Back</a>
+        </section>
+
+    </body>
 </html>

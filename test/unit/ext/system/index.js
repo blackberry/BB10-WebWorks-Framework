@@ -350,6 +350,84 @@ describe("system index", function () {
         });
     });
 
+    describe("perimeterlocked event", function () {
+        var applicationEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            applicationEvents = require(libDir + "events/applicationEvents");
+        });
+
+        it("responds to 'perimeterlocked' events", function () {
+            var clientEventName = "perimeterlocked",
+                eventName = "windowLock",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'perimeterlocked' event", function () {
+            var clientEventName = "perimeterlocked",
+                eventName = "windowLock",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
+    describe("perimeterunlocked event", function () {
+        var applicationEvents;
+
+        beforeEach(function () {
+            spyOn(utils, "loadExtensionModule").andCallFake(function () {
+                return eventExt;
+            });
+            applicationEvents = require(libDir + "events/applicationEvents");
+        });
+
+        it("responds to 'perimeterunlocked' events", function () {
+            var clientEventName = "perimeterunlocked",
+                eventName = "windowUnlock",
+                args = { eventName : encodeURIComponent(clientEventName) };
+
+            spyOn(events, "add");
+            sysIndex.registerEvents(jasmine.createSpy());
+            eventExt.add(null, null, args);
+            expect(events.add).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+
+        it("removes 'perimeterunlocked' event", function () {
+            var clientEventName = "perimeterunlocked",
+                eventName = "windowUnlock",
+                args = {eventName : encodeURIComponent(clientEventName)};
+            spyOn(events, "remove");
+            eventExt.remove(null, null, args);
+            expect(events.remove).toHaveBeenCalledWith({
+                context: applicationEvents,
+                event: eventName,
+                trigger: jasmine.any(Function)
+            });
+        });
+    });
+
     describe("font", function () {
         describe("font methods", function () {
             var fontFamily = "courier",
@@ -567,6 +645,43 @@ describe("system index", function () {
 
             // Checking the tranlated path not prefixed with 'file://'
             expect(tranlatedPath.indexOf(excludedPrefix)).toEqual(-1);
+        });
+    });
+
+    describe("deviceLockedStatus", function () {
+        var mockApplication;
+
+        beforeEach(function () {
+            mockApplication = {};
+
+            mockApplication.isDeviceLocked = jasmine.createSpy("isDeviceLocked").andCallFake(function (callback) {
+                callback("notLocked");
+            });
+
+            GLOBAL.window = {
+                qnx: {
+                    webplatform: {
+                        getApplication: jasmine.createSpy().andReturn(mockApplication)
+                    }
+                }
+            };
+        });
+
+        afterEach(function () {
+            mockApplication.isDeviceLocked = null;
+            mockApplication = null;
+            delete GLOBAL.window;
+        });
+
+        it("returns status from webplatform", function () {
+            var successCb = jasmine.createSpy(),
+                failCb = jasmine.createSpy();
+
+            sysIndex.deviceLockedStatus(successCb, failCb);
+
+            expect(mockApplication.isDeviceLocked).toHaveBeenCalledWith(jasmine.any(Function));
+            expect(successCb).toHaveBeenCalledWith("notLocked");
+            expect(failCb).not.toHaveBeenCalled();
         });
     });
 });

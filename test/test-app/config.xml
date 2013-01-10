@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns=" http://www.w3.org/ns/widgets"
+<widget xmlns="http://www.w3.org/ns/widgets"
         xmlns:rim="http://www.blackberry.com/ns/widgets"
         version="1.0.0"
         id="WebWorksTest"
@@ -13,7 +13,7 @@
     <description xml:lang="fr-FR">French description</description>
     <description xml:lang="en">English description</description>
 
-    <content src="index.htm"/>
+    <content src="index.html"/>
 
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
@@ -114,11 +114,9 @@
         <feature id="blackberry.app" />
     </access>
 
+    <access uri="https://atg05-yyz.labyyz.testnet.rim.net/" />
 
-
-
-    <access uri="file:///accounts/1000/shared/documents/textData.txt" />
-    <access uri="file:///accounts/1000/shared/documents/subdir/textData.txt" />
+    <access uri="file:///accounts/1000/appData" />
 
     <license href="http://www.apache.org/licenses/LICENSE-2.0">
         Licensed under the Apache License, Version 2.0 (the "License");

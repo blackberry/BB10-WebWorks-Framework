@@ -46,7 +46,8 @@ describe("pim.contacts index", function () {
                         invocation: {
                             addEventListener: jasmine.createSpy(),
                             removeEventListener: jasmine.createSpy()
-                        }
+                        },
+                        getEnv: jasmine.createSpy().andReturn("personal")
                     })
                 }
             }
@@ -153,7 +154,10 @@ describe("pim.contacts index", function () {
             args[key] = JSON.parse(decodeURIComponent(args[key]));
         });
 
+        args["isWork"] = false;
+
         expect(events.trigger).not.toHaveBeenCalled();
+        expect(window.qnx.webplatform.getApplication().getEnv).toHaveBeenCalledWith("PERIMETER");
         expect(JNEXT.invoke).toHaveBeenCalledWith(mockJnextObjId, "save " + JSON.stringify(args));
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
@@ -310,5 +314,9 @@ describe("pim.contacts index", function () {
         expect(JNEXT.invoke).not.toHaveBeenCalled();
         expect(successCb).toHaveBeenCalled();
         expect(failCb).not.toHaveBeenCalled();
+    });
+
+    it("has getContactAccounts", function () {
+        expect(index.getContactAccounts).toBeDefined();
     });
 });

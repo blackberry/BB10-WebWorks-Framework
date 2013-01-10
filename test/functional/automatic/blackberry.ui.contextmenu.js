@@ -34,7 +34,6 @@ describe('blackberry.ui.contextmenu', function () {
         expect(blackberry.ui.contextmenu.ACTION_COPY_LINK).toEqual("CopyLink");
         expect(blackberry.ui.contextmenu.ACTION_CUT).toEqual("Cut");
         expect(blackberry.ui.contextmenu.ACTION_INSPECT_ELEMENT).toEqual("InspectElement");
-        expect(blackberry.ui.contextmenu.ACTION_OPEN_LINK).toEqual("OpenLink");
         expect(blackberry.ui.contextmenu.ACTION_PASTE).toEqual("Paste");
         expect(blackberry.ui.contextmenu.ACTION_SAVE_IMAGE).toEqual("SaveImage");
         expect(blackberry.ui.contextmenu.ACTION_SAVE_LINK_AS).toEqual("SaveLinkAs");
