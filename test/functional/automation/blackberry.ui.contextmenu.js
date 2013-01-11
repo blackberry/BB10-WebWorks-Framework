@@ -20,6 +20,12 @@ describe("blackberry.ui.contextmenu", function () {
 
     describe("Can invoke the Context Menu", function () {
 
+        afterEach(function () {
+            internal.automation.touchCenter();
+            waits(waitTimeout);
+            runs(function () { });
+        });
+
         it("should display a Context Menu and invoke a share targets screen", function () {
             var callback = jasmine.createSpy().andCallFake(function (request) {
                     return null; //Cancels invocation
@@ -28,8 +34,8 @@ describe("blackberry.ui.contextmenu", function () {
             // trigger a Context Menu
             waits(waitTimeout);
             runs(function () {
-                internal.automation.triggerContextMenu(120, 50);
-                internal.automation.triggerContextMenu(120, 50);
+                internal.automation.longTouch(120, 50);
+                internal.automation.longTouch(120, 50);
             });
 
             blackberry.invoke.interrupter = callback;

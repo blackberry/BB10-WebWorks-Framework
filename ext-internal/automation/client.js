@@ -86,7 +86,7 @@ _self.longTouch = function (x, y) {
             points : "[[(" + x + "," + y + ")]]",
             _src: "desktop",
             _dest: "ui-agent",
-            duration: 1000
+            duration: 1500
         },
         "/pps/services/agent/ui-agent/control"
     );
@@ -126,10 +126,6 @@ _self.touchTopRight = function () {
 
 _self.touchCenter = function () {
     _self.touch(screen.availWidth / 2, screen.availHeight / 2);
-};
-
-_self.triggerContextMenu = function (x, y) {
-    _self.longTouch(x, y);
 };
 
 _self.touchContextMenuShare = function () {
