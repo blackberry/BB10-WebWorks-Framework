@@ -67,8 +67,12 @@ function onError(stderr) {
 }
 
 function execAgent(ip) {
+    var child;
     console.log('Starting automation agents...');
-    childProcess.spawn('ssh', getRunAgentCmd(ip), [], { stdio: 'inherit', detached: true });
+    child = childProcess.spawn('ssh', getRunAgentCmd(ip), [], { stdio: 'ignore', detached: true });
+    setTimeout(function () {
+        child.kill();
+    }, 20000);
 }
 
 function execCopy(ip, user) {
