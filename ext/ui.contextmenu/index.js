@@ -32,12 +32,32 @@ function enabled(success, fail, args, env) {
         success(_overlayWebView.contextMenu.enabled);
     }
 }
+/*
+ * Returns true if it was able to override the item, false if there
+ * was an error doing so.
+ */
+function overrideItem(success, fail, args, env) {
+    args.action = JSON.parse(decodeURIComponent(args.action));
+    args.handler = function (actionId) {
+        _event.trigger("contextmenu.executeMenuAction", actionId);
+    };
+    success(_overlayWebView.contextMenu.overrideItem(args.action, args.handler));
+}
+
+/*
+ * Returns true if the item could be cleared successfully and
+ * false otherwise.
+ */
+function clearOverride(success, fail, args, env) {
+    var actionId = JSON.parse(decodeURIComponent(args.actionId));
+    success(_overlayWebView.contextMenu.clearOverride(actionId));
+}
 
 function addItem(success, fail, args, env) {
     args.contexts = JSON.parse(decodeURIComponent(args.contexts));
     args.action = JSON.parse(decodeURIComponent(args.action));
-    args.handler = function (actionId) {
-        _event.trigger("contextmenu.executeMenuAction", actionId);
+    args.handler = function (actionId, elementId) {
+        _event.trigger("contextmenu.executeMenuAction", actionId, elementId);
     };
     _overlayWebView.contextMenu.addItem(success, fail, args, env);
 }
@@ -58,6 +78,8 @@ contextmenu = {
     enabled: enabled,
     addItem: addItem,
     removeItem: removeItem,
+    overrideItem: overrideItem,
+    clearOverride: clearOverride,
     defineCustomContext: defineCustomContext
 };
 

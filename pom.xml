@@ -71,7 +71,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>sh</executable>
+                                    <executable>bash</executable>
                                     <arguments>
                                         <argument>configure</argument>
                                         <argument>${scm}</argument>

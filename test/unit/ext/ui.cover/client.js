@@ -57,7 +57,7 @@ describe("client ui.cover", function () {
     });
 
     it("coverSize calls execSync with the correct parameters", function () {
-        var coverSize = client.coverSize;
+        expect(client.coverSize).toEqual(undefined);
         expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "coverSize");
     });
 

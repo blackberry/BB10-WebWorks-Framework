@@ -42,7 +42,7 @@
             for (var i = 0; i < checkBoxes.length; i++) {
                 if (checkBoxes[i].checked)
                 {
-                    addScript("local:///automatic/spec/" + checkBoxes[i].value + ".js");
+                    addScript("spec/" + checkBoxes[i].value + ".js");
                 }
             }
             alert("The selected tests have been added, click the Run Jasmine button to execute the SpecRunner");
@@ -83,20 +83,6 @@
             };
             });
 
-        function showOverlay() {
-            var o = document.getElementById('overlay');
-            o.style.visibility = 'visible';
-            window.scrollTo(0,0);
-        }
-        function hideOverlay() {
-            var o = document.getElementById('overlay');
-            o.style.visibility = 'hidden';
-        }
-
-    function takeScreenshot() {
-       internal.automation.takeScreenshot("/accounts/1000/shared/camera/WebWorksScreenShot.bmp");
-    }
-
   </script>
 
 </head>
@@ -108,7 +94,6 @@
     <form id="featureList">
         <!--include spec files here-->
         <input type="checkbox" value="blackberry.app">blackberry.app</input><br />
-        <input type="checkbox" value="automation/blackberry.app">blackberry.app (automation)</input><br />
         <input type="checkbox" value="blackberry.connection">blackberry.connection</input><br />
         <input type="checkbox" value="blackberry.event">blackberry.event</input><br />
         <input type="checkbox" value="blackberry.identity">blackberry.identity</input><br />
@@ -126,13 +111,13 @@
         <input type="checkbox" value="blackberry.ui.contextmenu">blackberry.ui.contextmenu</input><br />
         <input type="checkbox" value="blackberry.ui.dialog">blackberry.ui.dialog</input><br />
         <input type="checkbox" value="blackberry.ui.toast">blackberry.ui.toast</input><br />
-        <input type="checkbox" value="automation/blackberry.ui.toast">blackberry.ui.toast (automation)</input><br />
         <input type="checkbox" value="blackberry.bbm.platform">blackberry.bbm.platform</input><br />
         <input type="checkbox" value="crossOrigin">crossOrigin</input><br />
         <input type="checkbox" value="remoteFunctionCall">remoteFunctionCall</input><br />
         <input type="checkbox" value="blackberry.notification">blackberry.notification</input><br />
         <input type="checkbox" value="blackberry.sensors">blackberry.sensors</input><br />
         <input type="checkbox" value="blackberry.ui.cover">blackberry.ui.cover</input><br />
+        <input type="checkbox" value="navigator.geolocation">navigator.geolocation</input><br />
     </form>
     <br />
 
@@ -140,9 +125,5 @@
     <input id="deselectAll" type="button" value="De-select All" />
     <input id="addSpecs" type="button" value="Add Specs" />
     <input id="start" type="button" value="Run Jasmine" /><br />
-    <div id="overlay">
-        <button onclick="takeScreenshot()" > Take ScreenShot </button>
-    </div>
-
 </body>
 </html>

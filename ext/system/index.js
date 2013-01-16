@@ -62,6 +62,20 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
             trigger: function (fontFamily, fontSize) {
                 _event.trigger("fontchanged", {'fontFamily': fontFamily, 'fontSize': fontSize});
             }
+        },
+        perimeterlocked: {
+            context: _applicationEvents,
+            event: "windowLock",
+            trigger: function () {
+                _event.trigger("perimeterlocked", null);
+            }
+        },
+        perimeterunlocked: {
+            context: _applicationEvents,
+            event: "windowUnlock",
+            trigger: function () {
+                _event.trigger("perimeterunlocked", null);
+            }
         }
     },
     ERROR_ID = -1;
@@ -166,6 +180,19 @@ module.exports = {
             path = path.replace(/file:\/\//, '');
             window.qnx.webplatform.getApplication().newWallpaper(path);
             success();
+        } catch (err) {
+            fail(ERROR_ID, err.message);
+        }
+    },
+
+    deviceLockedStatus: function (success, fail) {
+        var callback;
+
+        try {
+            callback = function (state) {
+                success(state);
+            };
+            window.qnx.webplatform.getApplication().isDeviceLocked(callback);
         } catch (err) {
             fail(ERROR_ID, err.message);
         }

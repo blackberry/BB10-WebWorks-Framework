@@ -15,6 +15,7 @@
  */
 var Contact,
     ContactError = require("./ContactError"),
+    ContactAccount = require("./ContactAccount"),
     _ID = require("./manifest.json").namespace, // normally 2nd-level require does not work in client side, but manifest has already been required in client.js, so this is ok
     contactUtils = require("./contactUtils"),
     utils = require("./../../lib/utils");
@@ -162,7 +163,8 @@ function validateRemoveArguments(id, onSuccess, onError) {
 Contact = function (properties) {
     var privateId,
         privateNews,
-        privateActivities;
+        privateActivities,
+        privateSourceAccounts = [];
 
     this.displayName = properties && properties.displayName ? properties.displayName : null;
     this.name = properties && properties.name ? properties.name : null; // ContactName
@@ -193,6 +195,9 @@ Contact = function (properties) {
 
     privateActivities = properties && properties.activities ? properties.activities : null; // ContactActivity[]
     Object.defineProperty(this, "activities", { "value": privateActivities });
+
+    privateSourceAccounts = properties && properties.sourceAccounts ?  properties.sourceAccounts : [];
+    Object.defineProperty(this, "sourceAccounts", { "value": privateSourceAccounts});
 };
 
 Contact.prototype.save = function (onSaveSuccess, onSaveError) {

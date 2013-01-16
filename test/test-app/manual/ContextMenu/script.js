@@ -14,26 +14,30 @@
  * limitations under the License.
 */
 
-var callback = function() {
-    alert("Callback triggered");
+var callback = function(id) {
+    alert("Callback triggered with id: " + id);
 };
 
 function overridePlatform() {
-    var myItem = {actionId: blackberry.ui.contextmenu.ACTION_COPY, label: 'CustomCopy!', icon:'local:///manual/ContextMenu/icon.png'},
-        contexts = [blackberry.ui.contextmenu.CONTEXT_ALL];
-
-    blackberry.ui.contextmenu.addItem(contexts, myItem, function() {
+    var myItem = {actionId: blackberry.ui.contextmenu.ACTION_COPY, label: 'CustomCopy!', icon:'local:///manual/ContextMenu/icon.png'};
+    blackberry.ui.contextmenu.overrideItem(myItem, function() {
         alert("Wow you succesfully overrode the platform menu item Copy");
     });
 }
 
-function overrideMenuService() {
-    var myItem = {actionId: 'MenuService-Share', label: 'CustomShare', icon:'local:///manual/ContextMenu/icon.png'},
-        contexts = [blackberry.ui.contextmenu.CONTEXT_ALL];
-
-    blackberry.ui.contextmenu.addItem(contexts, myItem, function() {
+function overrideMenuServiceShare() {
+    var myItem = {actionId: 'MenuService-1', label: 'CustomShare', icon:'local:///manual/ContextMenu/icon.png'};
+    blackberry.ui.contextmenu.overrideItem(myItem, function() {
         alert("Wow you succesfully overrode the menu service action");
     });
+}
+
+function clearCopyOverride() {
+    blackberry.ui.contextmenu.clearOverride(blackberry.ui.contextmenu.ACTION_COPY);
+}
+
+function clearMSOverride() {
+    blackberry.ui.contextmenu.clearOverride('MenuService-1');
 }
 
 function addMenuItemContextAll() {
@@ -139,7 +143,8 @@ function addLinkContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_LINK],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '2'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -148,7 +153,8 @@ function addInputContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_INPUT],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '3'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -157,7 +163,8 @@ function addTextContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_TEXT],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '4'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -166,7 +173,8 @@ function addImageContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_IMAGE],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '5'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }
@@ -175,7 +183,8 @@ function addImageLinkContextToCustom() {
     var options = {
         includeContextItems: [blackberry.ui.contextmenu.CONTEXT_IMAGE_LINK],
         includePlatformItems: false,
-        includeMenuServiceItems: false
+        includeMenuServiceItems: false,
+        pinnedItemId: '6'
     };
     blackberry.ui.contextmenu.defineCustomContext("myContext", options);
 }

@@ -79,6 +79,7 @@ defineGetter("region");
 defineGetter("language", function () {
     return navigator.language;
 });
+defineGetter("deviceLockedStatus");
 
 window.webworks.defineReadOnlyField(_self, "ALLOW", 0);
 window.webworks.defineReadOnlyField(_self, "DENY", 1);

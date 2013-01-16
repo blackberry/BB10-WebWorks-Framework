@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Research In Motion Limited.
+ * Copyright 2012 Research In Motion Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,23 @@
 var _self = {},
     ID = require("./manifest.json").namespace;
 
+_self.TOUCH_SPACE_FROM_EDGE = 50;
+_self.CONTEXTMENU_ITEM_HEIGHT = 121;
+_self.INVOCATIONLIST_TITLE_HEIGHT = 111;
+_self.INVOCATIONLIST_ITEM_HEIGHT = 121;
+_self.CONTEXTMENU_SHARE_ITEM = 760;
+_self.SWIPE_DURATION = "500";
+
+// Return approximate width of footer's icon depend of what device orientation is
+_self.getFooterMenuIconWidth = function () {
+    return screen.availWidth < screen.availHeight ? 150 : 250;
+};
+
 _self.swipeDown = function () {
     internal.pps.syncWrite(
         {
             action : "nativeGesture",
-            duration: "500",
+            duration: _self.SWIPE_DURATION,
             points : "[[(384,-10)(384,500)]]",
             _src: "desktop",
             _dest: "ui-agent"
@@ -33,8 +45,21 @@ _self.swipeUp = function () {
     internal.pps.syncWrite(
         {
             action : "nativeGesture",
-            duration: "500",
+            duration: _self.SWIPE_DURATION,
             points : "[[(384,2000)(384,500)]]",
+            _src: "desktop",
+            _dest: "ui-agent"
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
+};
+
+_self.swipeUpABitFromCenter = function () {
+    internal.pps.syncWrite(
+        {
+            action : "nativeGesture",
+            duration: _self.SWIPE_DURATION,
+            points : "[[(" + screen.availWidth / 2 + "," + screen.availHeight / 2 + ")(" + screen.availWidth / 2 + "," + (screen.availHeight / 2 - _self.TOUCH_SPACE_FROM_EDGE * 3) + ")]]",
             _src: "desktop",
             _dest: "ui-agent"
         },
@@ -52,6 +77,103 @@ _self.touch = function (x, y) {
         },
         "/pps/services/agent/ui-agent/control"
     );
+};
+
+_self.longTouch = function (x, y) {
+    internal.pps.syncWrite(
+        {
+            action : "nativeTouch",
+            points : "[[(" + x + "," + y + ")]]",
+            _src: "desktop",
+            _dest: "ui-agent",
+            duration: 1500
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
+};
+
+_self.touchBottomRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomLeft = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomLeftSecondIcon = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE + _self.getFooterMenuIconWidth(), screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomLeftThirdIcon = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE + _self.getFooterMenuIconWidth() * 2, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchBottomCenter = function () {
+    _self.touch(screen.availWidth / 2, screen.availHeight - _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopLeft = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchCenter = function () {
+    _self.touch(screen.availWidth / 2, screen.availHeight / 2);
+};
+
+_self.touchContextMenuShare = function () {
+    _self.touch(screen.availWidth - 10, _self.CONTEXTMENU_SHARE_ITEM);
+};
+
+_self.touchInvocationListItem = function (index) {
+    _self.touch(screen.availWidth / 2,  (_self.INVOCATIONLIST_TITLE_HEIGHT - 25) + _self.INVOCATIONLIST_ITEM_HEIGHT * index);
+    // touch past the cancel bar, plus each item width, with a 5 offset to actually touch the item
+};
+
+_self.getForegroundAppInfo = function () {
+    var appInfo = {};
+    internal.pps.syncWrite(
+        {
+            _src: "desktop",
+            _dest: "navigator",
+            msg: "getForegroundAppInfo"
+        },
+        "/pps/services/automation/navigator/control"
+    );
+    internal.pps.syncRead("/pps/services/automation/navigator/output").output.response.slice(0, -1).split(";").forEach(function (element) {
+        appInfo[element.split("=")[0]] = element.split("=")[1];
+    });
+    return appInfo;
+};
+
+_self.injectText = function (inputText) {
+    internal.pps.syncWrite(
+        {
+            action: "injectText",
+            text: inputText,
+            _src: "desktop",
+            _dest: "ui-agent"
+        },
+        "/pps/services/agent/ui-agent/control"
+    );
+};
+_self.touchTopLeft = function () {
+    _self.touch(_self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopRight = function () {
+    _self.touch(screen.availWidth - _self.TOUCH_SPACE_FROM_EDGE, _self.TOUCH_SPACE_FROM_EDGE);
+};
+
+_self.touchTopRightAppTile = function () {
+    _self.touch(screen.availWidth - 100, 300);
 };
 
 _self.showKeyboard = function () {
@@ -74,7 +196,7 @@ _self.keyboardGesture = function () {
     internal.pps.syncWrite(
         {
             action : "nativeGesture",
-            duration: "500",
+            duration: _self.SWIPE_DURATION,
             points : "[[(200,2000)(200,500)][(400,2000)(400,500)]]",
             _src: "desktop",
             _dest: "ui-agent"
@@ -136,4 +258,20 @@ _self.compareCurrentScreen = function (name, callback) {
         callback(internal.pps.syncRead("/pps/services/agent/puppetmaster/output").output.response);
     }, 1000);
 };
+
+_self.toggleWifi = function (enabled) {
+    internal.pps.syncWrite(
+        {
+            action : "Remote Call",
+            class : "WifiApi",
+            method : "toggleWifi",
+            parameter0 : enabled.toString(),
+            _src : "test-agent",
+            _dest : "puppetmaster",
+            _id : 0
+        },
+        "/pps/services/agent/puppetmaster/control"
+    );
+};
+
 module.exports = _self;

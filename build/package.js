@@ -84,7 +84,7 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions) {
     }
 
     //First delete the old directory
-    if (path.existsSync(frameworkPath)) {
+    if (fs.existsSync(frameworkPath)) {
         wrench.rmdirSyncRecursive(frameworkPath);
     }
     //Now replace with current framework
@@ -92,6 +92,11 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions) {
 
     //Include internal extensions
     intExtPath = path.normalize(__dirname + "/../ext-internal/");
+    fs.readdirSync(intExtPath).forEach(function (ext) {
+        wrench.copyDirSyncRecursive(path.join(intExtPath, ext), path.join(frameworkPath, "ext", ext));
+    });
+    //Include experimental extensions
+    intExtPath = path.normalize(__dirname + "/../ext-experimental/");
     fs.readdirSync(intExtPath).forEach(function (ext) {
         wrench.copyDirSyncRecursive(path.join(intExtPath, ext), path.join(frameworkPath, "ext", ext));
     });

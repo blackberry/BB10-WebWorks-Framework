@@ -292,5 +292,12 @@ describe("pim.contacts Contact", function () {
             expect(onRemoveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
         });
     });
+
+    describe("remove", function () {
+        it("has property sourceAccounts", function () {
+            var contact = new Contact();
+            expect(contact.sourceAccounts).toBeDefined();
+        });
+    });
 });
 

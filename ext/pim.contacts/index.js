@@ -21,7 +21,8 @@ var pimContacts,
     contactUtils = require("./contactUtils"),
     contactConsts = require("./contactConsts"),
     ContactError = require("./ContactError"),
-    ContactPickerOptions = require("./ContactPickerOptions");
+    ContactPickerOptions = require("./ContactPickerOptions"),
+    PERMISSION_DENIED_MSG = "Permission denied";
 
 function checkPermission(success, eventId) {
     if (!_utils.hasPermission(config, "access_pimdomain_contacts")) {
@@ -86,6 +87,20 @@ function onChildCardClosed(cb) {
     application.invocation.addEventListener("childCardClosed", callback);
 }
 
+function getAccountFilters(options) {
+    if (options.includeAccounts) {
+        options.includeAccounts = options.includeAccounts.map(function (acct) {
+            return acct.id.toString();
+        });
+    }
+
+    if (options.excludeAccounts) {
+        options.excludeAccounts = options.excludeAccounts.map(function (acct) {
+            return acct.id.toString();
+        });
+    }
+}
+
 module.exports = {
     find: function (success, fail, args) {
         var findOptions = {},
@@ -112,13 +127,14 @@ module.exports = {
             return;
         }
 
+        getAccountFilters(findOptions.options);
         pimContacts.getInstance().find(findOptions);
 
         success();
     },
 
     getContact: function (success, fail, args) {
-        if (!_utils.hasPermission(config, "access_pimdomain_contacts")) {
+        if (!_utils.hasPermission(config, "access_pimdomain_contacts") || typeof args.contactId !== "string") {
             success(null);
             return;
         }
@@ -127,7 +143,7 @@ module.exports = {
             results;
 
         findOptions.contactId = JSON.parse(decodeURIComponent(args.contactId));
-
+        findOptions.contactId = findOptions.contactId.toString();
         results = pimContacts.getInstance().getContact(findOptions);
         if (results._success) {
             if (results.contact && results.contact.id) {
@@ -153,6 +169,8 @@ module.exports = {
         if (!checkPermission(success, attributes["_eventId"])) {
             return;
         }
+
+        attributes["isWork"] = !_utils.isPersonal();
 
         pimContacts.getInstance().save(attributes);
         success();
@@ -193,6 +211,21 @@ module.exports = {
         onChildCardClosed(callback);
         pimContacts.getInstance().invokePicker(options);
         success();
+    },
+
+    getContactAccounts: function (success, fail, args) {
+        var result = {};
+
+        if (!_utils.hasPermission(config, "access_pimdomain_contacts")) {
+            fail(ContactError.PERMISSION_DENIED_ERROR, PERMISSION_DENIED_MSG);
+            return;
+        }
+        result = pimContacts.getInstance().getContactAccounts();
+        if (result._success) {
+            success(result.accounts);
+        } else {
+            fail(-1, "Failed to get accounts");
+        }        
     }
 };
 
@@ -230,6 +263,11 @@ JNEXT.PimContacts = function ()
 
     self.getId = function () {
         return self.m_id;
+    };
+
+    self.getContactAccounts = function () {
+        var value = JNEXT.invoke(self.m_id, "getContactAccounts");
+        return JSON.parse(value);
     };
 
     self.init = function () {

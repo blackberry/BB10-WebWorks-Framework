@@ -53,47 +53,47 @@
         <br />
         <br />
 
+        <h4>Telephone</h4>
+        <a href="tel:654-2343-23423">A phone number link for context tests</a>
+        <br />
+        <br />
         <div align="left">
-            <br />
             <br />
             <button onclick="overridePlatform()">Add a custom Item that overrides the "Copy action"</button>
             <br />
+            <button onclick="overrideMenuServiceShare()">Experimental MenuService override, technically not supported, but provided for completness</button>
             <br />
-            <button onclick="overrideMenuService()">Add a custom Item that overrides a "Menu Service" action</button>
+            <button onclick="clearCopyOverride()">Clear the Copy action</button>
             <br />
-            <br />
-            <br />
+            <button onclick="clearMSOverride()">Clear the Menu Service override</button>
             <br />
             <button onclick="blackberry.ui.contextmenu.enabled = true">Enable Context Menu</button>
             <br />
-            <br />
             <button onclick="blackberry.ui.contextmenu.enabled = false">Disable Context Menu</button>
             <br />
-            <br />
             <button onclick="addMenuItemContextAll()">Add custom item [CONTEXT_ALL]</button>
+            <br />
             <button onclick="removeMenuItemContextAll()">Remove custom item [CONTEXT_ALL]</button>
             <br />
-            <br />
             <button onclick="addMenuItemContextLink()">Add custom item [CONTEXT_LINK]</button>
+            <br />
             <button onclick="removeMenuItemContextLink()">Remove custom item [CONTEXT_LINK]</button>
             <br />
-            <br />
             <button onclick="addMenuItemContextInput()">Add custom item [CONTEXT_INPUT]</button>
+            <br />
             <button onclick="removeMenuItemContextInput()">Remove custom item [CONTEXT_INPUT]</button>
             <br />
-            <br />
             <button onclick="addMenuItemContextIText()">Add custom item [CONTEXT_TEXT]</button>
+            <br />
             <button onclick="removeMenuItemContextIText()">Remove custom item [CONTEXT_TEXT]</button>
             <br />
-            <br />
             <button onclick="addMenuItemContextImage()">Add custom item [CONTEXT_IMAGE]</button>
+            <br />
             <button onclick="removeMenuItemContextImage()">Remove custom item [CONTEXT_IMAGE]</button>
             <br />
-            <br />
             <button onclick="addMenuItemContextImageLink()">Add custom item [CONTEXT_IMAGE_LINK]</button>
+            <br />
             <button onclick="removeMenuItemContextImageLink()">Remove custom item [CONTEXT_IMAGE_LINK]</button>
-            <br />
-            <br />
         </div>
         <br />
         <br />
@@ -103,7 +103,7 @@
         <br />
         <div align="left">
             <h1 align="center">Context menu tests - Custom contexts</h1>
-            <div align="left" data-webworks-context="myContext">
+            <div align="left" data-webworks-context='{"id":"2", "type":"myContext", "header":"The bug custom header", "subheader":"A custom subheader"}'>
                 <a href="http://www.google.com">This is a link with customContext</a>
                 <br />
                 <br />
@@ -127,8 +127,20 @@
                 <a href="http://www.w3.org"><img src="http://www.w3.org/2008/site/images/logo-w3c-mobile-lg.png"></a>
                 <br />
                 <br />
-                <h4>Empty div: with customContext</h4>
+                <h4>Empty div: with customContext id 2</h4>
             </div>
+
+            <a style="height:200px; width:600px; font-size: 40px;" href="#" data-webworks-context='{"id":"4", "type":"myContext", "header":"The bug custom header", "subheader":"A custom subheader"}'>
+                Link with an ID of 4
+            </a>
+            <br />
+            <br />
+            <a style="height:200px; width:600px; font-size: 40px;" href="#" data-webworks-context='{"id":"5", "type":"myContext", "header":"The bug custom header", "subheader":"A custom subheader"}'>
+                Link with an ID of 5
+            </a>
+
+            <br />
+            <br />
             <button onclick="addMenuItemContextCustom()">Add custom item to custom context ["myContext"]</button>
             <button onclick="removeMenuItemContextCustom()">Remove custom item from custom context ["myContext"]</button>
             <br />
