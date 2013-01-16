@@ -27,13 +27,28 @@ describe("io.filetransfer index", function () {
             invoke: jasmine.createSpy()
         };
 
+        GLOBAL.window = {
+            qnx : {
+                webplatform : {
+                    getApplication : function () {
+                        return {
+                            getEnv : function () {
+                                return "ROOT";
+                            }
+                        };
+                    }
+                }
+            }
+        };
+
         spyOn(webview, "windowGroup").andReturn(42);
         index = require(root + "ext/io.filetransfer/index");
     });
 
     afterEach(function () {
-        GLOBAL.JNEXT = null;
+        delete GLOBAL.JNEXT;
         index = null;
+        delete GLOBAL.window;
     });
 
     it("makes sure JNEXT was not initialized on require", function () {
@@ -142,6 +157,27 @@ describe("io.filetransfer index", function () {
             expect(successCB).not.toHaveBeenCalled();
             expect(failCB).toHaveBeenCalled();
         });
+
+        it("should translate local path", function () {
+            var params,
+                mocked_args = {
+                    "_eventId": encodeURIComponent(JSON.stringify("1")),
+                    "filePath": encodeURIComponent(JSON.stringify("local:///persistent/test.txt")),
+                    "server": encodeURIComponent(JSON.stringify("3"))
+                },
+                successCB = jasmine.createSpy(),
+                failCB = jasmine.createSpy();
+
+            JNEXT.invoke = jasmine.createSpy().andCallFake(function () {
+                params = JSON.parse(arguments[1].substring(7, arguments[1].length));
+            });
+
+            index.upload(successCB, failCB, mocked_args, null);       
+
+            expect(JNEXT.invoke).toHaveBeenCalled();
+            expect(params.filePath).toEqual("/ROOT/../app/native/persistent/test.txt");
+            expect(successCB).toHaveBeenCalled();
+        });
     });
 
     describe("filetransfer download", function () {
@@ -180,6 +216,27 @@ describe("io.filetransfer index", function () {
 
             expect(successCB).not.toHaveBeenCalled();
             expect(failCB).toHaveBeenCalled();
+        });
+
+        it("should translate local path", function () {
+            var params,
+                mocked_args = {
+                    "_eventId": encodeURIComponent(JSON.stringify("1")),
+                    "target": encodeURIComponent(JSON.stringify("local:///persistent/test.txt")),
+                    "source": encodeURIComponent(JSON.stringify("3"))
+                },
+                successCB = jasmine.createSpy(),
+                failCB = jasmine.createSpy();
+
+            JNEXT.invoke = jasmine.createSpy().andCallFake(function () {
+                params = JSON.parse(arguments[1].substring(9, arguments[1].length));
+            });
+
+            index.download(successCB, failCB, mocked_args, null);       
+
+            expect(JNEXT.invoke).toHaveBeenCalled();
+            expect(params.target).toEqual("/ROOT/../app/native/persistent/test.txt");
+            expect(successCB).toHaveBeenCalled();
         });
     });
 });
