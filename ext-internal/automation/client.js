@@ -274,4 +274,34 @@ _self.toggleWifi = function (enabled) {
     );
 };
 
+/*
+ * Updates BattMgr PPS with provided level and state
+ */
+_self.setBatteryStatus = function(level, state){
+   internal.pps.syncWrite(
+        {
+            BatteryInfo : {
+                "BatteryState" : "READY",
+                "BatteryStatus" : {
+                    "BatteryPresent" : "YES",
+                    "BatteryId" : 226,
+                    "StateOfBattery" : "OK",
+                    "StateOfCharge" : level,
+                    "StateOfHealth" : 90
+                }
+            }, 
+            ChargerInfo : state,
+            DeviceName : "",
+            TimeToEmpty : 6142,
+            TimeToFull : 3655,
+            Version : 1 
+        },
+        "/pps/services/BattMgr/status"
+    );    
+};
+
+_self.getBatteryStatus = function() {
+    return internal.pps.syncRead("/pps/services/BattMgr/status");
+};
+
 module.exports = _self;

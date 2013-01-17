@@ -58,6 +58,7 @@ function getRunAgentCmd(ip) {
         "sleep 5;" +
         "chmod 666 /pps/services/agent/ui-agent/control; " +
         "chmod 666 /pps/services/agent/puppetmaster/control; " + 
+        "chmod 666 /pps/services/BattMgr/status; " +
         "python2.7 /var/automation/automation.py wifi_agent"
         ];
 }
