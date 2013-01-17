@@ -215,12 +215,15 @@ std::string BBMBPS::getProfileDisplayPicture(bbmsp_profile_t *profile)
         imgData = bbmsp_image_get_data(avatar);
 
         int size = bbmsp_image_get_data_size(avatar);
-        output = new char[size*4];
 
-        int bufferSize = b64_ntop(reinterpret_cast<unsigned char *>(imgData), bbmsp_image_get_data_size(avatar), output, size*4);
-        output[bufferSize] = 0;
-        result = output;
-        delete output;
+        if (size > 0) {
+            output = new char[size*4];
+
+            int bufferSize = b64_ntop(reinterpret_cast<unsigned char *>(imgData), bbmsp_image_get_data_size(avatar), output, size*4);
+            output[bufferSize] = 0;
+            result = output;
+            delete output;
+        }
     }
     bbmsp_image_destroy(&avatar);
 
