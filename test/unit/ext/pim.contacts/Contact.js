@@ -132,7 +132,7 @@ describe("pim.contacts Contact", function () {
             contact.save(null, onSaveError);
 
             expect(once).not.toHaveBeenCalled();
-            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR, message : 'onSuccess should be a function'});
         });
 
         it("calls the error callback when arguments are incorrect", function () {
@@ -147,7 +147,7 @@ describe("pim.contacts Contact", function () {
 
             expect(once).not.toHaveBeenCalled();
             expect(onSaveSuccess).not.toHaveBeenCalled();
-            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR, message: "phoneNumbers.type at index 0 should be a string"});
         });
 
         it("calls the error callback when the id is incorrect", function () {
@@ -162,7 +162,7 @@ describe("pim.contacts Contact", function () {
 
             expect(once).not.toHaveBeenCalled();
             expect(onSaveSuccess).not.toHaveBeenCalled();
-            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR, message : 'id is required and must be a number'});
         });
 
         it("converts Date objects to strings", function () {
