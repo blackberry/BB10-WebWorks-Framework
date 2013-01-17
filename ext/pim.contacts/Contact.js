@@ -20,57 +20,55 @@ var Contact,
     contactUtils = require("./contactUtils"),
     utils = require("./../../lib/utils");
 
-function validateSaveArguments(contact, onSuccess, onError) {
-    var i,
-        j,
-        key,
+function saveArgumentsError(contact, onSuccess, onError) {
+    var i, j, key, field,
         contactFields = ["phoneNumbers", "faxNumbers", "pagerNumbers", "emails", "ims", "categories", "urls", "socialNetworks"];
 
     if (!onSuccess || typeof(onSuccess) !== "function") {
-        return false;
+        return "onSuccess should be a function";
     }
 
     if (contact.id !== null && isNaN(contact.id)) {
-        return false;
+        return "id is required and must be a number";
     }
 
     if (contact.favorite !== null && typeof(contact.favorite) !== "boolean") {
-        return false;
+        return "favorite should be a boolean or null";
     }
 
     if (contact.displayName !== null && typeof(contact.displayName) !== "string") {
-        return false;
+        return "displayName should be a string or null";
     }
 
     if (contact.nickname !== null && typeof(contact.nickname) !== "string") {
-        return false;
+        return "nickname should be a string or null";
     }
 
     if (contact.name !== null) {
         for (key in contact.name) {
             if (typeof(contact.name[key]) !== "string") {
-                return false;
+                return "name." + key + " should be a string";
             }
         }
     }
 
     if (contact.ringtone !== null && typeof(contact.ringtone) !== "string") {
-        return false;
+        return "ringtone should be a string or null";
     }
 
     if (contact.note !== null && typeof(contact.note) !== "string") {
-        return false;
+        return "note should be a string or null";
     }
 
     if (contact.addresses !== null) {
         if (Object.prototype.toString.call(contact.addresses) !== "[object Array]") {
-            return false;
+            return "addresses should be an array or null";
         }
 
         for (i = 0; i < contact.addresses.length; i++) {
             for (key in contact.addresses[i]) {
                 if (typeof(contact.addresses[i][key]) !== "string") {
-                    return false;
+                    return "address." + key + " at index " + i + " should be a string";
                 }
             }
         }
@@ -78,46 +76,46 @@ function validateSaveArguments(contact, onSuccess, onError) {
 
     if (contact.organizations !== null) {
         if (Object.prototype.toString.call(contact.organizations) !== "[object Array]") {
-            return false;
+            return "organizations should be an array or null";
         }
 
         for (i = 0; i < contact.organizations.length; i++) {
             for (key in contact.organizations[i]) {
                 if (typeof(contact.organizations[i][key]) !== "string") {
-                    return false;
+                    return "organization." + key + " at index " + i + " should be a string";
                 }
             }
 
             if (!contact.organizations[i].name) {
-                return false;
+                return "organization.name at index " + i + " should be truthy";
             }
         }
     }
 
     if (contact.photos !== null) {
         if (Object.prototype.toString.call(contact.photos) !== "[object Array]") {
-            return false;
+            return "contact.photos should be an array or null";
         }
 
         for (i = 0; i < contact.photos.length; i++) {
             if (typeof(contact.photos[i].originalFilePath) !== "string") {
-                return false;
+                return "photos.originalFilePath at index " + i + " should be a string";
             }
 
             if (typeof(contact.photos[i].pref) !== "boolean") {
-                return false;
+                return "photos.pref at index " + i + " should be boolean";
             }
         }
     }
 
     if (contact.videoChat !== null) {
         if (Object.prototype.toString.call(contact.videoChat) !== "[object Array]") {
-            return false;
+            return "contact.videoChat should be an array or null";
         }
 
         for (i = 0; i < contact.videoChat.length; i++) {
             if (typeof(contact.videoChat[i]) !== "string") {
-                return false;
+                return "contact.videoChat at index " + i + " should be a string";
             }
         }
     }
@@ -125,22 +123,21 @@ function validateSaveArguments(contact, onSuccess, onError) {
     for (i = 0; i < contactFields.length; i++) {
         if (contact[contactFields[i]] !== null) {
             if (Object.prototype.toString.call(contact[contactFields[i]]) !== "[object Array]") {
-                return false;
+                return "contact." + contactFields[i] + " should be an array or null";
             }
 
             for (j = 0; j < contact[contactFields[i]].length; j++) {
-                if (typeof(contact[contactFields[i]][j].type) !== "string") {
-                    return false;
+                field = contact[contactFields[i]][j];
+                if (typeof(field.type) !== "string") {
+                    return contactFields[i] + ".type at index " + j + " should be a string";
                 }
 
-                if (typeof(contact[contactFields[i]][j].value) !== "string") {
-                    return false;
+                if (typeof(field.value) !== "string") {
+                    return contactFields[i] + ".value at index " + j + " should be a string";
                 }
             }
         }
     }
-
-    return true;
 }
 
 function validateRemoveArguments(id, onSuccess, onError) {
@@ -205,6 +202,7 @@ Contact.prototype.save = function (onSaveSuccess, onSaveError) {
         key,
         successCallback = onSaveSuccess,
         errorCallback = onSaveError,
+        argError = saveArgumentsError(this, successCallback, errorCallback),
         saveCallback;
 
     for (key in this) {
@@ -213,9 +211,9 @@ Contact.prototype.save = function (onSaveSuccess, onSaveError) {
         }
     }
 
-    if (!validateSaveArguments(this, successCallback, errorCallback)) {
+    if (argError) {
         if (errorCallback && typeof(errorCallback) === "function") {
-            errorCallback(new ContactError(ContactError.INVALID_ARGUMENT_ERROR));
+            errorCallback(new ContactError(ContactError.INVALID_ARGUMENT_ERROR, argError));
         }
 
         return;

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var ContactError = function (code) {
+var ContactError = function (code, msg) {
     this.code = code;
+    this.message = msg;
 };
 
 Object.defineProperty(ContactError, "UNKNOWN_ERROR", { "value": 0 });
