@@ -370,4 +370,64 @@ describe('blackberry.ui.dialog', function () {
             });
         });
     });
+    
+    it("blackerry.ui.dialog.customAskAsync should be able to create a dialog with use of '", function () {
+        var buttons = ["'"],
+            settings = { title: "'" },
+            callback = jasmine.createSpy('callback');
+
+        blackberry.ui.dialog.customAskAsync("'", buttons, callback, settings);
+
+        waits(timeout);
+
+        runs(function () {
+
+            internal.automation.touch(screen.availWidth / 2, 450);
+
+            waitsFor(function () {
+                return callback.argsForCall.length > 0;
+            }, 'dialog callback was never called', timeout * 2);
+
+            runs(function () {
+                expect(callback).toHaveBeenCalledWith(0);
+            });
+        });
+    });
+    
+    it("blackberry.ui.dialog.standardAskAsync should allow use of ' for display and input text", function () {
+        var type = blackberry.ui.dialog.D_PROMPT,
+            settings = {title : "'"},
+            callback = jasmine.createSpy('callback');
+
+        blackberry.ui.dialog.standardAskAsync("'", type, callback, settings);
+
+        waits(timeout);
+
+        runs(function () {
+
+            internal.automation.touch(screen.availWidth / 2, 400);
+
+            waits(timeout);
+
+            runs(function () {
+
+                internal.automation.injectText("'");
+
+                waits(timeout * 4);
+
+                runs(function () {
+
+                    internal.automation.touch((screen.availWidth / 2) + 50, 450);
+
+                    waitsFor(function () {
+                        return callback.argsForCall.length > 0;
+                    }, 'dialog callback was never called', timeout * 5);
+
+                    runs(function () {
+                        expect(callback).toHaveBeenCalledWith({return: 'Ok', promptText: "'"});
+                    });
+                });
+            });
+        });
+    });
 });
