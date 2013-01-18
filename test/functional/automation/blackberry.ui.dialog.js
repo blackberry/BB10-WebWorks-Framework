@@ -394,49 +394,12 @@ describe('blackberry.ui.dialog', function () {
         });
     });
     
-    it("blackberry.ui.dialog.standardAskAsync should allow use of ' for display text", function () {
+    it("blackberry.ui.dialog.standardAskAsync should allow use of ' for display and input text", function () {
         var type = blackberry.ui.dialog.D_PROMPT,
             settings = {title : "'"},
             callback = jasmine.createSpy('callback');
 
         blackberry.ui.dialog.standardAskAsync("'", type, callback, settings);
-
-        waits(timeout);
-
-        runs(function () {
-
-            internal.automation.touch(screen.availWidth / 2, 400);
-
-            waits(timeout);
-
-            runs(function () {
-
-                internal.automation.injectText("test");
-
-                waits(timeout * 4);
-
-                runs(function () {
-
-                    internal.automation.touch((screen.availWidth / 2) + 50, 450);
-
-                    waitsFor(function () {
-                        return callback.argsForCall.length > 0;
-                    }, 'dialog callback was never called', timeout * 5);
-
-                    runs(function () {
-                        expect(callback).toHaveBeenCalledWith({return: 'Ok', promptText: "test"});
-                    });
-                });
-            });
-        });
-    });
-
-    it("blackberry.ui.dialog.standardAskAsync should allow use of ' for input text", function () {
-        var type = blackberry.ui.dialog.D_PROMPT,
-            settings = {title : "Test use of '"},
-            callback = jasmine.createSpy('callback');
-
-        blackberry.ui.dialog.standardAskAsync("Test use of '", type, callback, settings);
 
         waits(timeout);
 
@@ -467,5 +430,4 @@ describe('blackberry.ui.dialog', function () {
             });
         });
     });
-    
 });
