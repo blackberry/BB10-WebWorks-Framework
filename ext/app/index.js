@@ -194,11 +194,12 @@ module.exports = {
 
     lockOrientation : function (success, fail, args, env) {
         var orientation = JSON.parse(decodeURIComponent(args.orientation)),
-            rotateTo = translateToDeviceOrientation(orientation);
+            rotateTo = translateToDeviceOrientation(orientation),
+            recieveRotateEvents = args.recieveRotateEvents === undefined  ? true : args.recieveRotateEvents;
 
         // Force rotate to the given orientation then lock it
         qnx.webplatform.getApplication().rotate(rotateTo);
-        qnx.webplatform.getApplication().lockRotation(true);
+        qnx.webplatform.getApplication().lockRotation(recieveRotateEvents);
         success(true);
     },
 

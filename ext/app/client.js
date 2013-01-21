@@ -106,7 +106,7 @@ defineReadOnlyField("licenseURL");
 defineReadOnlyField("version");
 
 function lockOrientation(orientation, receiveRotateEvents) {
-    return window.webworks.execSync(ID, "lockOrientation", { orientation: orientation });
+    return window.webworks.execSync(ID, "lockOrientation", { orientation: orientation, receiveRotateEvents: receiveRotateEvents });
 }
 
 function unlockOrientation() {

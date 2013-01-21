@@ -133,12 +133,24 @@ describe("app index", function () {
         it("calls webplatform rotate and lock methods", function () {
             var success = jasmine.createSpy(),
                 fail = jasmine.createSpy(),
-                mockArgs = { orientation : encodeURIComponent("\"landscape-primary\"") };
+                mockArgs = { orientation : encodeURIComponent("\"landscape-primary\""), recieveRotateEvents: undefined };
 
             index.lockOrientation(success, fail, mockArgs, null);
             expect(fail).not.toHaveBeenCalled();
             expect(success).toHaveBeenCalledWith(true);
             expect(mockedRotate).toHaveBeenCalledWith("left_up");
+            expect(mockedLockRotation).toHaveBeenCalledWith(true);
+        });
+        it("allows recieveRotateEvents to be set to false", function () {
+            var success = jasmine.createSpy(),
+                fail = jasmine.createSpy(),
+                mockArgs = { recieveRotateEvents: false, orientation : encodeURIComponent("\"landscape-primary\"") };
+
+            index.lockOrientation(success, fail, mockArgs, null);
+            expect(fail).not.toHaveBeenCalled();
+            expect(success).toHaveBeenCalledWith(true);
+            expect(mockedRotate).toHaveBeenCalledWith("left_up");
+            expect(mockedLockRotation).toHaveBeenCalledWith(false);
         });
     });
 
