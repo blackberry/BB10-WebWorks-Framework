@@ -14,9 +14,6 @@
         <param name="websecurity" value="disable"/>
     </feature>
 
-    <!-- although unnecessary serves as an example-->
-    <access uri="http://169.254.0.2:9644" />
-
     <author rim:copyright="Copyright 1998-2011 My Corp" email="hello.bob@blah.com" href="http://www.blah.com">Research In Motion Ltd.</author>
 
     <license href="http://www.apache.org/licenses/LICENSE-2.0">

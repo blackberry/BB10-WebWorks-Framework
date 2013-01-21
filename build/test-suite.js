@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+var utils = require('./build/utils'),
+    CLITest = require('../test/test-suite/helpers/CLITest');
+
 module.exports = function (done, custom) {
     var jasmine = require('jasmine-node'),
         verbose = false,
@@ -60,10 +64,23 @@ module.exports = function (done, custom) {
         }
     }
 
-    jasmine.executeSpecsInFolder(specs, function (runner, log) {
-        var failed = runner.results().failedCount === 0 ? 0 : 1;
-        setTimeout(function () {
-            (typeof done !== "function" ? process.exit : done)(failed);
-        }, 10);
-    }, verbose, colored);
+    utils.displayOutput("STARTING TEST SUITE");
+
+    jasmine.executeSpecsInFolder(specs, null, verbose, colored);
+
+    function noop () {}
+
+    jasmine.getEnv().reporter = {
+        log: noop,
+        reportSpecStarting: noop,
+        reportRunnerStarting: noop,
+        reportSuiteResults: noop,
+        reportSpecResults: noop,
+        reportRunnerResults: function (runner) {
+            failed = runner.results().failedCount === 0 ? 0 : 1;
+            CLITest.reportFinalResults();
+            utils.displayOutput("TEST SUITE COMPLETED");
+            process.exit(failed);
+        }
+    };
 };
