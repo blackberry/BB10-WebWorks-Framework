@@ -182,8 +182,8 @@ describe("app client", function () {
     describe("lockOrientation", function () {
         it("should call execSync", function () {
             mockedWebworks.execSync = jasmine.createSpy();
-            client.lockOrientation('portrait-primary');
-            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "lockOrientation", { orientation: 'portrait-primary' });
+            client.lockOrientation('portrait-primary', false);
+            expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "lockOrientation", { orientation: 'portrait-primary', receiveRotateEvents: false });
         });
     });
 
