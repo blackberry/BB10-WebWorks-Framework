@@ -68,8 +68,8 @@ describe("ui.dialog", function () {
             settings = {};
 
         client.customAskAsync(message, buttons, callback, settings);
-        expect(mockedWebworks.event.once).toHaveBeenCalledWith(ID, "ui.dialogEventId", callback);
-        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(ID, "customAskAsync", { "eventId" : "ui.dialogEventId", "message" : message, "buttons" : buttons, "callback" : callback, "settings" : settings });
+        expect(mockedWebworks.event.once).toHaveBeenCalledWith(ID, jasmine.any(String), callback);
+        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(ID, "customAskAsync", { "eventId" : jasmine.any(String), "message" : message, "buttons" : buttons, "callback" : callback, "settings" : settings });
     });
 
     it("creates a standard dialog", function () {
@@ -79,7 +79,7 @@ describe("ui.dialog", function () {
             settings = {};
 
         client.standardAskAsync(message, type, callback, settings);
-        expect(mockedWebworks.event.once).toHaveBeenCalledWith(ID, "ui.dialogEventId", callback);
-        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(ID, "standardAskAsync", { "eventId" : "ui.dialogEventId", "message" : message, "type" : type, "callback" : callback, "settings" : settings });
+        expect(mockedWebworks.event.once).toHaveBeenCalledWith(ID, jasmine.any(String), callback);
+        expect(mockedWebworks.execAsync).toHaveBeenCalledWith(ID, "standardAskAsync", { "eventId" : jasmine.any(String), "message" : message, "type" : type, "callback" : callback, "settings" : settings });
     });
 });
