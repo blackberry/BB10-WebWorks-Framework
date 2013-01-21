@@ -430,4 +430,38 @@ describe('blackberry.ui.dialog', function () {
             });
         });
     });
+    it('blackberry.ui.dialog.standardAskAsync should be able to create two dialogs simultaneously', function () {
+        var type = blackberry.ui.dialog.D_OK,
+        settings = {title : 'Ok Dialog'},
+        callback2 = jasmine.createSpy('callback'),
+        callback = function () { 
+            blackberry.ui.dialog.standardAskAsync('Ok - Second', type, callback2, settings); 
+        };
+
+        blackberry.ui.dialog.standardAskAsync('Ok - First', type, callback, settings);
+
+        waits(timeout);
+
+        runs(function () {
+
+            internal.automation.touch((screen.availWidth / 2) - 50, 450);
+            
+            runs(function () {
+
+                waits(timeout);
+
+                setTimeout(function () { 
+                    internal.automation.touch((screen.availWidth / 2) - 50, 450); 
+                }, timeout);
+                
+                waitsFor(function () {
+                    return callback2.argsForCall.length > 0;
+                }, 'dialog callback was never called', timeout);
+
+                runs(function () {
+                    expect(callback2).toHaveBeenCalled();
+                });
+            });
+        });
+    });
 });
