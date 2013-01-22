@@ -21,8 +21,15 @@ describe("blackberry.ui.cover", function () {
 
     it('can get coverSize', function () {
         var size = blackberry.ui.cover.coverSize;
-        expect(size.width).toBe(334);
-        expect(size.height).toBe(396);
+        if ((screen.availHeight === 1280 && screen.availWidth === 768) || (screen.availHeight === 768 && screen.availWidth === 1280)) {
+            expect(size.width).toBe(334);
+            expect(size.height).toBe(396);
+        } else if (screen.availHeight === 720 && screen.availWidth === 720) {
+            expect(size.width).toBe(310);
+            expect(size.height).toBe(211);
+        } else {
+            //unknown device size
+        }
     });
 
     it('allows an application to update the window cover', function () {
