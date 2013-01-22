@@ -30,6 +30,20 @@ CLITest = function () {
     this.assertions_    = 0;
     this.failures_      = 0;
 
+    this.execCmd = function (cmd, done) {
+        console.log("EXECUTING " + cmd);
+        var c = childProcess.exec(cmd, function (error, stdout, stderr) {
+            done();
+        });
+        c.stdout.on('data', function (data) {
+            console.log(data);
+        });
+
+        c.stderr.on('data', function (data) {
+            console.log(data);
+        });
+    };
+
     this.addOption = function (name, value) {
         this.option.push(name + " " + (value || ""));
     };
@@ -37,12 +51,7 @@ CLITest = function () {
         var cmd = this.option.reduce(function (previousValue, currentValue, index, array) {
             return (index === 0 ? "" : " ") + previousValue + " " + currentValue;
         }, "node " + path.join(packager, "lib", "bbwp.js"));
-        console.log(cmd);
-        childProcess.exec(cmd, function (error, stdout, stderr) {
-            console.log(stderr);
-            console.log(stdout);
-            done();
-        });
+        this.execCmd(cmd, done);
         this.option = [];
     };
 
@@ -87,11 +96,13 @@ CLITest = function () {
         sys.print('\n');
 
         this.log_.forEach(function(entry) {
-            sys.print(entry);
-            sys.print('\n');
+            if (typeof entry === "string" && entry.length) {
+                sys.print(entry);
+                sys.print('\n');
+            }
         });
 
-        sys.print('Finished all suites in ' + this.elapsed_ + ' seconds');
+        sys.print('Finished all suites in ' + this.elapsed_ + ' seconds ');
 
         summary += this.suites_ + ' test' + ((this.suites_.length === 1) ? '' : 's') + ', ';
         summary += this.assertions_ + ' assertion' + ((this.assertions_ === 1) ? '' : 's') + ', ';
@@ -138,7 +149,9 @@ CLITest = function () {
             if (spec.failedCount > 0 && spec.description) {
                 outerThis.log_.push('  it ' + spec.description);
                 spec.items_.forEach(function(result){
-                    outerThis.log_.push('  ' + result.trace.stack + '\n');
+                    if (result.trace && result.trace.stack) {
+                        outerThis.log_.push('  ' + result.trace.stack + '\n');
+                    }
                 });
             }
         });
