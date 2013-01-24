@@ -58,7 +58,7 @@ describe("blackberry.system", function () {
         it("should be called when the battery level decreases", function () {
             var batteryStatus = internal.automation.getBatteryStatus(),
                 curCharge = batteryStatus.status.BatteryInfo.BatteryStatus.StateOfCharge;
-            internal.automation.setBatteryStatus(curCharge - 1,"NONE");
+            internal.automation.setBatteryStatus(curCharge - 1, "NONE");
             
             waitsFor(function () {
                 return onBatteryStatusChange.callCount;
@@ -89,7 +89,7 @@ describe("blackberry.system", function () {
         it("should be called when the battery level increases", function () {
             var batteryStatus = internal.automation.getBatteryStatus(),
                 curCharge = batteryStatus.status.BatteryInfo.BatteryStatus.StateOfCharge;
-            internal.automation.setBatteryStatus(curCharge + 1,"CHARGING");
+            internal.automation.setBatteryStatus(curCharge + 1, "CHARGING");
 
             waitsFor(function () {
                 return onBatteryStatusChange.callCount;
