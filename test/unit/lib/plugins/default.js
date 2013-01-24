@@ -77,16 +77,25 @@ describe("default plugin", function () {
         it("returns 404 if the extension is not found", function () {
             var ext = "NotAnExt",
                 errMsg = "Extension " + ext + " not found";
+
             req.params.ext = ext;
+            spyOn(console, "warn");
+
             defaultPlugin.exec(req, succ, fail, args);
+
             expect(fail).toHaveBeenCalledWith(-1, errMsg, 404);
+            expect(console.warn).toHaveBeenCalledWith(errMsg);
         });
 
         it("returns 404 if the method is not found", function () {
             req.params.ext = "blackberry.app";
             req.params.method = "NotAMethod";
+            spyOn(console, "warn");
+
             defaultPlugin.exec(req, succ, fail, args);
+
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
+            expect(console.warn).toHaveBeenCalledWith("Method " + req.params.method + " for " + req.params.ext + " not found");
         });
 
         it("checks if the feature is white listed if it exists", function () {
@@ -107,15 +116,15 @@ describe("default plugin", function () {
         it("returns 403 if the feature is not white listed", function () {
             var errMsg = "Feature denied by whitelist";
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
-            spyOn(console, "log");
+            spyOn(console, "warn");
 
             req.params.ext = "blackberry.app";
             req.params.method = "getReadOnlyFields";
 
             defaultPlugin.exec(req, succ, fail, args);
 
-            expect(console.log).toHaveBeenCalledWith(errMsg + ": " + {});
             expect(fail).toHaveBeenCalledWith(-1, errMsg, 403);
+            expect(console.warn).toHaveBeenCalledWith("Feature denied by whitelist");
         });
 
         it("calls the method of the extension", function () {
@@ -156,6 +165,7 @@ describe("default plugin", function () {
             var env = {"request": req, "response": res};
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
+            spyOn(console, "warn");
             spyOn(testExtension, "getReadOnlyFields");
             testExtension.getReadOnlyFields.a = {
             };
@@ -166,6 +176,7 @@ describe("default plugin", function () {
             defaultPlugin.exec(req, succ, fail, args, env);
 
             expect(fail).toHaveBeenCalledWith(-1, jasmine.any(String), 404);
+            expect(console.warn).toHaveBeenCalledWith("Method " + req.params.method + " for " + req.params.ext + " not found");
         });
     });
 });
