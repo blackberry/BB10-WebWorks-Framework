@@ -88,11 +88,11 @@ describe("server", function () {
             req.params.service = "default";
             req.params.action = "ThisActionDoesNotExist";
 
-            spyOn(console, "log");
+            spyOn(console, "error");
 
             server.handle(req, res);
             expect(res.send).toHaveBeenCalledWith(404, jasmine.any(String));
-            expect(console.log).toHaveBeenCalledWith(jasmine.any(Error));
+            expect(console.error).toHaveBeenCalled();
         });
 
         it("calls the action method on the plugin", function () {
@@ -179,12 +179,12 @@ describe("server", function () {
             var errMsg = "Feature denied by whitelist";
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
-            spyOn(console, "log");
+            spyOn(console, "warn");
 
             server.handle(req, res);
 
-            expect(console.log).toHaveBeenCalledWith(errMsg + ": " + {});
             expect(res.send).toHaveBeenCalledWith(403, encodeURIComponent(JSON.stringify({code: -1, data: null, msg: errMsg})));
+            expect(console.warn).toHaveBeenCalledWith(errMsg);
         });
 
         it("calls the action method on the feature", function () {
