@@ -17,6 +17,7 @@
 var filetransfer,
     _event = require("../../lib/event"),
     _webview = require("../../lib/webview"),
+    _utils = require("./../../lib/utils"),
     Whitelist = require('../../lib/policy/whitelist').Whitelist,
     _whitelist = new Whitelist();
 
@@ -61,6 +62,9 @@ module.exports = {
             return;
         }
 
+        // translate paths
+        args.filePath = _utils.translatePath(args.filePath).replace(/file:\/\//, '');
+
         // check if url is whitelisted
         if (!_whitelist.isAccessAllowed(args.server)) {
             fail(-1, "URL denied by whitelist: " + args.server);
@@ -101,6 +105,9 @@ module.exports = {
             fail(-1, undefined_params + (undefined_params.length === 1 ? " is " : " are ") + "null");
             return;
         }
+
+        // translate paths
+        args.target = _utils.translatePath(args.target).replace(/file:\/\//, '');
 
         // check if url is whitelisted
         if (!_whitelist.isAccessAllowed(args.source)) {
