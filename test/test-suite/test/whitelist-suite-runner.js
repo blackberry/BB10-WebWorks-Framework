@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var input = __dirname + "/../Apps",
+var path = require("path"),
+    conf = require("../../../build/build/conf"),
+    settings = conf.COMMAND_DEFAULTS,
+    input = path.join(__dirname, "..", "Apps"),
     wrench = require("wrench"),
-    output = __dirname + "/../data/output",
-    path = require("path"),
+    output = path.normalize(path.join(conf.ROOT, conf.COMMAND_DEFAULTS.output_folder)),
     cliTest,
     CLITest = require('./CLITest'),
     DeployTest = require('./DeployTest'),
-    flag,
-    settings = require('../../../test-runner.json');
+    flag;
 
 describe("whitelist", function () {
     beforeEach(function () {
-        cliTest = new CLITest(settings.packager);
+        cliTest = new CLITest(settings.packager + "bbwp");
         flag = false;
         wrench.rmdirSyncRecursive(output, true);
         wrench.mkdirSyncRecursive(output, "0755");
@@ -37,7 +38,7 @@ describe("whitelist", function () {
     });
 
     it("runs the disable websecurity tests", function () {
-        cliTest.addOption(input + "/DisableWebSecurity/");
+        cliTest.addOption(path.join(input, "DisableWebSecurity"));
         cliTest.addOption("-d");
         cliTest.addOption("-o", output);
         cliTest.run(function () {
@@ -53,7 +54,7 @@ describe("whitelist", function () {
                 flag = false,
                 dt;
             runs(function () {
-                dt = new DeployTest(output + "/device/DisableWebSecurity.bar");
+                dt = new DeployTest(path.join(output, "device", "DisableWebSecurity.bar"));
                 dt.listen(function (request) {
                     if (request.status === 'finished') {
                         flag = true;
@@ -100,7 +101,7 @@ describe("whitelist", function () {
     });
 
     it("runs the disable websecurity tests", function () {
-        cliTest.addOption(input + "/SubfolderStartupPage/");
+        cliTest.addOption(path.join(input, "SubfolderStartupPage"));
         cliTest.addOption("-d");
         cliTest.addOption("-o", output);
         cliTest.run(function () {
@@ -116,7 +117,7 @@ describe("whitelist", function () {
                 flag = false,
                 dt;
             runs(function () {
-                dt = new DeployTest(output + "/device/SubfolderStartupPage.bar");
+                dt = new DeployTest(path.join(output, "device", "SubfolderStartupPage.bar"));
                 dt.listen(function (request) {
                     if (request.status === 'finished') {
                         flag = true;

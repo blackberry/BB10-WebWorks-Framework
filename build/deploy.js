@@ -23,17 +23,17 @@ module.exports = function (barFile, deviceIp, password) {
 
     if (!barFile || !fs.existsSync(barFile)) {
         utils.displayOutput("Invalid bar file specified - " + barFile);
-        process.exit();
+        process.exit(-1);
     }
 
     if (!deviceIp) {
-        deviceIp = conf.DEPLOY_COMMAND_DEFAULT_IP;
-        utils.displayOutput("Device IP not specified, using default from build/conf.js - " + deviceIp);
+        deviceIp = conf.COMMAND_DEFAULTS.ip;
+        utils.displayOutput("Device IP not specified, using default from test-runner.json - " + deviceIp);
     }
 
     if (!password) {
-        password = conf.DEPLOY_COMMAND_DEFAULT_PW;
-        utils.displayOutput("Device password not specified, using default from build/conf.js - " + password);
+        password = conf.COMMAND_DEFAULTS.password;
+        utils.displayOutput("Device password not specified, using default from test-runner.json - " + password);
     }
 
     deployBar.andThen(utils.execCommandWithJWorkflow("blackberry-deploy -terminateApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password, {}, true))

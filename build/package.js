@@ -19,32 +19,9 @@ var wrench = require("wrench"),
     utils = require("./build/utils"),
     conf = require("./build/conf"),
     path = require("path"),
+    jWorkflow = require("jWorkflow"),
     fs = require('fs');
 
-function _exec(cmdExpr, prev, baton) {
-    if (baton) {
-        baton.take();
-    }
-    var proc = childProcess.exec(cmdExpr, function (error, stdout, stderr) {
-    });
-
-    proc.stdout.on('data', function (data) {
-        utils.displayOutput(data);
-    });
-
-    proc.stderr.on('data', function (data) {
-        utils.displayOutput(data);
-    });
-
-    proc.on("exit", function (code) {
-        if (code) {
-            process.exit(code);
-        }
-        if (baton) {
-            baton.pass(prev);
-        }
-    });
-}
 /**
  * This function will call the function argument with the commandline arguments.
  */
@@ -53,34 +30,36 @@ function _handle(func) {
         try {
             func.apply(func, Array.prototype.slice.call(process.argv, 3));
         } catch (e) {
-            util.puts(e.message + "\n" + e.stack);
+            utils.displayOutput(e.message + "\n" + e.stack);
         }
     };
 }
 
-module.exports = function (pathToPackager, pathToApp, packagerOptions) {
-
+module.exports = function (pathToApp, pathToPackager, packagerOptions) {
     var frameworkPath,
         intExtPath,
+        outputPath,
         cmd;
 
+    pathToApp = path.normalize(pathToApp);
+    if (!pathToApp || !fs.existsSync(pathToApp)) {
+        utils.displayOutput("Invalid bar file specified - " + pathToApp);
+        process.exit(-1);
+    }
 
     if (!pathToPackager) {
-        pathToPackager = conf.PACKAGE_COMMAND_DEFAULT_PACKAGER;
-        util.puts("No packager specified, using default from build/conf.js - " + pathToPackager);
+        pathToPackager = conf.COMMAND_DEFAULTS.packager;
+        utils.displayOutput("No packager specified, using default from test-runner.json - " + pathToPackager);
     }
 
     pathToPackager = path.normalize(pathToPackager);
     frameworkPath = path.join(pathToPackager, "Framework");
 
-    if (!pathToApp) {
-        pathToApp = conf.PACKAGE_COMMAND_DEFAULT_APP;
-        util.puts("No app path specified, using default from build/conf.js - " + pathToApp);
-    }
 
     if (!packagerOptions) {
-        packagerOptions = conf.PACKAGE_COMMAND_DEFAULT_OPTIONS;
-        util.puts("No packager options specified, using default from build/conf.js - " + packagerOptions);
+        outputPath = path.normalize(conf.COMMAND_DEFAULTS.output_folder);
+        packagerOptions = conf.COMMAND_DEFAULTS.packager_options + " -o \"" + outputPath + "\"";
+        utils.displayOutput("No packager options specified, using default from test-runner.json - " + packagerOptions);
     }
 
     //First delete the old directory
@@ -97,7 +76,11 @@ module.exports = function (pathToPackager, pathToApp, packagerOptions) {
     });
 
     //Call bbwp using node
-    cmd = "node " + path.join(pathToPackager, "lib/bbwp.js") + " " + pathToApp + " " + packagerOptions;
-    _exec(cmd);
+    cmd = "node " + path.join(pathToPackager, "lib/bbwp.js") + ' "' + pathToApp + '" ' + packagerOptions;
+
+    jWorkflow.order(utils.execCommandWithJWorkflow(cmd))
+        .start(function (error) {
+            process.exit(error);
+        });
 
 };
