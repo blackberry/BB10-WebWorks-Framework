@@ -29,7 +29,10 @@ describe("Event Listener", function () {
 
     beforeEach(function () {
         //Set up mocking, no need to "spyOn" since spies are included in mock
-        GLOBAL.window  = {webworks : mockedWebworks};
+        GLOBAL.window  = {
+            webworks : mockedWebworks,
+            addEventListener: jasmine.createSpy()
+        };
         client = require(_apiDir + "client");
     });
 
