@@ -16,31 +16,25 @@
  
 var _self = {},
     _ID = require("./manifest.json").namespace,
-    _eventId = "ui.dialogEventId";
-
-function createEventHandler(callback) {
-    if (!window.webworks.event.isOn(_eventId)) {
-        window.webworks.event.once(_ID, _eventId, callback);
-    }
-}
+    utils = require("../../lib/utils.js");
 
 _self.customAskAsync = function (message, buttons, callback, settings) {
-    var args = { "eventId" : _eventId, "message" : message, "buttons" : buttons, "callback" : callback};
+    var args = { "eventId" : utils.guid(), "message" : message, "buttons" : buttons, "callback" : callback};
     if (settings) {
         args.settings = settings;
     }
-
-    createEventHandler(callback);
+    
+    window.webworks.event.once(_ID, args.eventId, callback);
     return window.webworks.execAsync(_ID, "customAskAsync", args);
 };
 
 _self.standardAskAsync = function (message, type, callback, settings) {
-    var  args = { "eventId" : _eventId, "message" : message, "type" : type, "callback" : callback };
+    var args = { "eventId" : utils.guid(), "message" : message, "type" : type, "callback" : callback };
     if (settings) {
         args.settings = settings;
     }
 
-    createEventHandler(callback);
+    window.webworks.event.once(_ID, args.eventId, callback);
     return window.webworks.execAsync(_ID, "standardAskAsync", args);
 };
 
