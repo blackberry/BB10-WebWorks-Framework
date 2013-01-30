@@ -91,7 +91,7 @@ function onGetExistingPurchasesError(error) {
 
 function getPrice() {
     try {
-        blackberry.payment.getPrice("BB10-CG-01", onGetPriceSuccess, onGetPriceError);
+        blackberry.payment.getPrice({"id": "BB10-CG-01"}, onGetPriceSuccess, onGetPriceError);
     } catch (e) {
         console.log(e);
     }
@@ -135,7 +135,7 @@ function onCheckAppSubscriptionError(error) {
 
 function checkExisting() {
     try {
-        blackberry.payment.checkExisting("BB10-CG-01", onCheckExistingSuccess, onCheckExistingError);
+        blackberry.payment.checkExisting({"id" : "BB10-CG-01"}, onCheckExistingSuccess, onCheckExistingError);
     } catch (e) {
         console.log(e);
     }

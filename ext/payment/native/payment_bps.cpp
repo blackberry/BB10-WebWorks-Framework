@@ -88,14 +88,14 @@ int PaymentBPS::GetPrice(const Json::Value obj, const bool developmentMode)
 {
     unsigned int requestID;
     paymentservice_set_connection_mode(developmentMode);
-    return paymentservice_get_price(obj["sku"].asCString(), obj["sku"].asCString(), obj["windowGroup"].asCString(), &requestID);
+    return paymentservice_get_price(obj["id"].asCString(), obj["sku"].asCString(), obj["windowGroup"].asCString(), &requestID);
 }
 
 int PaymentBPS::CheckExisting(const Json::Value obj, const bool developmentMode)
 {
     unsigned int requestID;
     paymentservice_set_connection_mode(developmentMode);
-    return paymentservice_check_existing(obj["sku"].asCString(), obj["sku"].asCString(), obj["windowGroup"].asCString(), &requestID);
+    return paymentservice_check_existing(obj["id"].asCString(), obj["sku"].asCString(), obj["windowGroup"].asCString(), &requestID);
 }
 
 int PaymentBPS::WaitForEvents(bool developmentMode)
