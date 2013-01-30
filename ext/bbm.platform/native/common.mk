@@ -14,4 +14,4 @@ SRCS+=bbm_bps.cpp \
 
 include $(MKFILES_ROOT)/qtargets.mk
 
-LIBS+=bps bbmsp socket QtCore
+LIBS+=bps bbmsp QtCore
