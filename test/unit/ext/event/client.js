@@ -27,11 +27,18 @@ var _apiDir = __dirname + "./../../../../ext/event/",
 
 describe("Event Listener", function () {
 
+    var cleanup;
+
     beforeEach(function () {
         //Set up mocking, no need to "spyOn" since spies are included in mock
         GLOBAL.window  = {
             webworks : mockedWebworks,
-            addEventListener: jasmine.createSpy()
+            addEventListener: jasmine.createSpy().andCallFake(function (type, func) {
+                cleanup = {
+                    type: type,
+                    func: func
+                };
+            })
         };
         client = require(_apiDir + "client");
     });
@@ -55,4 +62,14 @@ describe("Event Listener", function () {
         expect(mockedWebworks.event.remove).toHaveBeenCalledWith(_ID, eventType, JamesBond);
     });
 
+    it("added a listener to beforeunload", function () {
+        expect(cleanup).toEqual({type: "beforeunload", func: jasmine.any(Function)});
+    });
+
+    it("calls removeEventListener when the beforeunload callback is triggered", function () {
+        spyOn(client, "removeEventListener");
+        client.addEventListener("awesome", function () { });
+        cleanup.func();
+        expect(client.removeEventListener).toHaveBeenCalled();
+    });
 });
