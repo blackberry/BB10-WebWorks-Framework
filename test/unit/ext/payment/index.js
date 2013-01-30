@@ -91,7 +91,8 @@ function testGetPrice(mockSuccess) {
         failCb = jasmine.createSpy("fail"),
         args = {};
 
-    args.sku = encodeURIComponent(JSON.stringify("12345"));
+    args.id = encodeURIComponent(JSON.stringify("123"));
+    args.sku = encodeURIComponent(JSON.stringify("abc"));
 
     bpsSuccess = mockSuccess;
 
@@ -133,7 +134,8 @@ function testCheckExisting(mockSuccess) {
         failCb = jasmine.createSpy("fail"),
         args = {};
 
-    args.sku = encodeURIComponent(JSON.stringify("12345s"));
+    args.id = encodeURIComponent(JSON.stringify("123"));
+    args.sku = encodeURIComponent(JSON.stringify("abc"));
 
     bpsSuccess = mockSuccess;
 

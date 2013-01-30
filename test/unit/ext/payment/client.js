@@ -152,19 +152,67 @@ describe("payment client", function () {
             expect(successCb).not.toHaveBeenCalled();
             expect(errorCb).toHaveBeenCalledWith({
                 errorID: "-1",
-                errorText: "SKU is not provided or not a string value."
+                errorText: "Either ID or SKU needs to be provided as string."
             });
             expect(mockedWebworks.exec).not.toHaveBeenCalled();
         });
 
-        it("calling getPrice with right params should call exec", function () {
+        it("calling getPrice with missing sku or id will invoke error callback", function () {
             var successCb = jasmine.createSpy("success"),
                 errorCb = jasmine.createSpy("error");
 
-            client.getPrice("abc", successCb, errorCb);
+            client.checkExisting({
+                foo: "bar"
+            }, successCb, errorCb);
+
+            expect(successCb).not.toHaveBeenCalled();
+            expect(errorCb).toHaveBeenCalledWith({
+                errorID: "-1",
+                errorText: "Either ID or SKU needs to be provided as string."
+            });
+            expect(mockedWebworks.exec).not.toHaveBeenCalled();
+        });
+
+        it("calling getPrice with sku should call exec", function () {
+            var successCb = jasmine.createSpy("success"),
+                errorCb = jasmine.createSpy("error");
+
+            client.getPrice({
+                "sku": "abc"
+            }, successCb, errorCb);
 
             expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "getPrice", {
+                "id": "",
                 "sku": "abc"
+            }, true);
+        });
+
+        it("calling getPrice with id should call exec", function () {
+            var successCb = jasmine.createSpy("success"),
+                errorCb = jasmine.createSpy("error");
+
+            client.getPrice({
+                "id": "123"
+            }, successCb, errorCb);
+
+            expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "getPrice", {
+                "sku": "",
+                "id": "123"
+            }, true);
+        });
+
+        it("calling getPrice with both id and sku should call exec", function () {
+            var successCb = jasmine.createSpy("success"),
+                errorCb = jasmine.createSpy("error");
+
+            client.getPrice({
+                "sku": "abc",
+                "id": "123"
+            }, successCb, errorCb);
+
+            expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "getPrice", {
+                "sku": "abc",
+                "id": "123"
             }, true);
         });
     });
@@ -179,19 +227,67 @@ describe("payment client", function () {
             expect(successCb).not.toHaveBeenCalled();
             expect(errorCb).toHaveBeenCalledWith({
                 errorID: "-1",
-                errorText: "SKU is not provided or not a string value."
+                errorText: "Either ID or SKU needs to be provided as string."
             });
             expect(mockedWebworks.exec).not.toHaveBeenCalled();
         });
 
-        it("calling checkExisting with right params should call exec", function () {
+        it("calling checkExisting with missing sku or id will invoke error callback", function () {
             var successCb = jasmine.createSpy("success"),
                 errorCb = jasmine.createSpy("error");
 
-            client.checkExisting("abc", successCb, errorCb);
+            client.checkExisting({
+                foo: "bar"
+            }, successCb, errorCb);
+
+            expect(successCb).not.toHaveBeenCalled();
+            expect(errorCb).toHaveBeenCalledWith({
+                errorID: "-1",
+                errorText: "Either ID or SKU needs to be provided as string."
+            });
+            expect(mockedWebworks.exec).not.toHaveBeenCalled();
+        });
+
+        it("calling checkExisting with sku should call exec", function () {
+            var successCb = jasmine.createSpy("success"),
+                errorCb = jasmine.createSpy("error");
+
+            client.checkExisting({
+                "sku": "abc"
+            }, successCb, errorCb);
 
             expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "checkExisting", {
-                "sku": "abc"
+                "sku": "abc",
+                "id": ""
+            }, true);
+        });
+
+        it("calling checkExisting with id should call exec", function () {
+            var successCb = jasmine.createSpy("success"),
+                errorCb = jasmine.createSpy("error");
+
+            client.checkExisting({
+                "id": "123"
+            }, successCb, errorCb);
+
+            expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "checkExisting", {
+                "sku": "",
+                "id": "123"
+            }, true);
+        });
+
+        it("calling checkExisting with both id and sku should call exec", function () {
+            var successCb = jasmine.createSpy("success"),
+                errorCb = jasmine.createSpy("error");
+
+            client.checkExisting({
+                "sku": "abc",
+                "id": "123"
+            }, successCb, errorCb);
+
+            expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "checkExisting", {
+                "sku": "abc",
+                "id": "123"
             }, true);
         });
     });
@@ -204,7 +300,8 @@ describe("payment client", function () {
             client.checkAppSubscription(successCb, errorCb);
 
             expect(mockedWebworks.exec).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function), _ID, "checkExisting", {
-                "sku": "-1"
+                "sku": "",
+                "id": "-1"
             }, true);
         });
     });
