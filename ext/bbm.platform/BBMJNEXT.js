@@ -121,6 +121,11 @@ JNEXT.BBM = function ()
     _self.users.inviteToDownload = function () {
         JNEXT.invoke(_self.m_id, "users.inviteToDownload");
     };
+	
+	_self.users.getContactsWithApp = function (eventId) {
+        _self.contactsWithAppEventId = eventId;
+        return JNEXT.invoke(_self.m_id, "users.getContactsWithApp");
+    };
 
     _self.getId = function () {
         return _self.m_id;
@@ -176,7 +181,12 @@ JNEXT.BBM = function ()
         } else if (strEventDesc === "self.profilebox.getItemIcon") {
             obj = arData.slice(1, arData.length).join(" ");
             _event.trigger(_self.profileBoxGetItemIconEventId);
-        }
+        } else if (strEventDesc === "users.getContactsWithApp") {
+            obj = arData.slice(1, arData.length).join(" ");
+            obj = JSON.parse(obj) || [];
+
+            _event.trigger(_self.contactsWithAppEventId, obj);
+		}
     };
 
     _self.m_id = "";
@@ -186,6 +196,7 @@ JNEXT.BBM = function ()
     _self.profileBoxRemoveItemEventId = "";
     _self.profileBoxRegisterIconEventId = "";
     _self.profileBoxGetItemIconEventId = "";
+	_self.contactsWithAppEventId = "";
 
     _self.getInstance = function () {
         if (!hasInstance) {

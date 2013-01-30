@@ -21,7 +21,8 @@ var _self = {},
     _profileBoxAddItemEventId = "bbm.self.profilebox.addItem",
     _profileBoxRemoveItemEventId = "bbm.self.profilebox.removeItem",
     _profileBoxRegisterIconEventId = "bbm.self.profilebox.registerIcon",
-    _profileBoxGetItemIconEventId = "bbm.self.profilebox.getItemIcon";
+    _profileBoxGetItemIconEventId = "bbm.self.profilebox.getItemIcon",
+    _contactsWithAppEventId = "bbm.users.getContactsWithApp";
 
 _self.self = {};
 _self.self.profilebox = {};
@@ -140,6 +141,12 @@ _self.self.profilebox.getItemIcon = function (options, success, error) {
 
 _self.users.inviteToDownload = function () {
     return window.webworks.execSync(_ID, "users/inviteToDownload");
+};
+
+_self.users.getContactsWithApp = function (callback) {
+    var args = { "eventId" : _contactsWithAppEventId };
+    createEventHandler(callback, _contactsWithAppEventId);
+    return window.webworks.execAsync(_ID, "users/getContactsWithApp", args);
 };
 
 Object.defineProperty(_self.self.profilebox, "accessible", {

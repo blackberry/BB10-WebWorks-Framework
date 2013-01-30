@@ -44,6 +44,7 @@ pthread_mutex_t BBMBPS::m_lock = PTHREAD_MUTEX_INITIALIZER;
 int BBMBPS::m_eventChannel = -1;
 int BBMBPS::m_BBMInternalDomain = -1;
 ProfileFieldMap *BBMBPS::m_pProfileFieldMap = NULL;
+bbmsp_contact_list_t *BBMBPS::m_pContactList;
 
 BBMBPS::BBMBPS(BBM *parent) : m_pParent(parent)
 {
@@ -149,11 +150,15 @@ void BBMBPS::processProfileUpdate(bbmsp_event_t *event)
                 updateString += "status " + getFullProfile();
                 break;
             case BBMSP_INSTALL_APP:
+                updateString += "install " + getFullProfile();
                 return;
             case BBMSP_UNINSTALL_APP:
+                updateString += "uninstall " + getFullProfile();
                 return;
             case BBMSP_INVITATION_RECEIVED:
+                updateString += "invitation " + getFullProfile();
                 return;
+
         }
         m_pParent->NotifyEvent(updateString);
     }
@@ -161,6 +166,8 @@ void BBMBPS::processProfileUpdate(bbmsp_event_t *event)
 
 void BBMBPS::processContactUpdate(bbmsp_event_t *event)
 {
+	Json::FastWriter writer;
+
     bbmsp_presence_update_types_t updateType;
     bbmsp_contact_t *contact;
     std::string updateString = "onupdate ";
@@ -171,26 +178,56 @@ void BBMBPS::processContactUpdate(bbmsp_event_t *event)
         switch (updateType)
         {
             case BBMSP_DISPLAY_NAME:
-                updateString += "displayname " + getFullContact(contact);
+                updateString += "displayname " + writer.write(getFullContact(contact));
                 break;
             case BBMSP_DISPLAY_PICTURE:
-                updateString += "displaypicture " + getFullContact(contact);
+                updateString += "displaypicture " + writer.write(getFullContact(contact));
                 break;
             case BBMSP_PERSONAL_MESSAGE:
-                updateString += "personalmessage " + getFullContact(contact);
+                updateString += "personalmessage " + writer.write(getFullContact(contact));
                 break;
             case BBMSP_STATUS:
-                updateString += "status " + getFullContact(contact);
+                updateString += "status " + writer.write(getFullContact(contact));
                 break;
             case BBMSP_INSTALL_APP:
+				updateString += "install " + writer.write(getFullContact(contact));
                 return;
             case BBMSP_UNINSTALL_APP:
+				updateString += "uninstall " + writer.write(getFullContact(contact));
                 return;
             case BBMSP_INVITATION_RECEIVED:
+				updateString += "invitation " + writer.write(getFullContact(contact));
                 return;
         }
         m_pParent->NotifyEvent(updateString);
     }
+}
+
+void BBMBPS::GetContactsWithApp() {
+	bps_event_t *event = NULL;
+
+    bps_event_create(&event, m_BBMInternalDomain, INTERNAL_EVENT_GET_CONTACT_LIST, NULL, NULL);
+    bps_channel_push_event(m_eventChannel, event);
+}
+
+void BBMBPS::processContactList(bbmsp_event_t* event) {
+	Json::FastWriter writer;
+	Json::Value root;
+    bbmsp_contact_list_t *list;
+
+    if (bbmsp_event_contact_list_get_full_contact_list(event, &list) == BBMSP_SUCCESS) {
+    	int size = bbmsp_contact_list_get_size(list);
+
+    	bbmsp_contact_t **contactArray = (bbmsp_contact_t**) malloc(sizeof(bbmsp_contact_t*) * size);
+
+    	if (bbmsp_contact_list_get_all_contacts(list, contactArray) == BBMSP_SUCCESS) {
+
+			for (int i=0; i<size; i++) {
+				root.append(getFullContact(contactArray[i]));
+			}
+    	}
+    }
+    m_pParent->NotifyEvent(std::string("users.getContactsWithApp ").append(writer.write(root)));
 }
 
 Json::Value BBMBPS::processProfileBoxItem(const bbmsp_user_profile_box_item_t *item)
@@ -308,7 +345,7 @@ std::string BBMBPS::getProfileDisplayPicture(bbmsp_profile_t *profile)
     return result;
 }
 
-std::string BBMBPS::getFullContact(bbmsp_contact_t *contact)
+JSON::Value BBMBPS::getFullContact(bbmsp_contact_t *contact)
 {
     Json::Value root;
 
@@ -321,7 +358,7 @@ std::string BBMBPS::getFullContact(bbmsp_contact_t *contact)
     root["appVersion"] = GetContact(contact, BBM_APP_VERSION);
     root["bbmsdkVersion"] = GetContact(contact, BBM_SDK_VERSION);
 
-    return Json::FastWriter().write(root);
+    return root;
 }
 
 size_t BBMBPS::loadImage(const std::string& imgPath, bbmsp_image_t **img)
@@ -479,6 +516,8 @@ int BBMBPS::WaitForEvents()
                     }
 
                     bbmsp_profile_destroy(&profile);
+                } else if (code == INTERNAL_EVENT_GET_CONTACT_LIST) {
+                    bbmsp_contact_list_get();
                 } else if (code == INTERNAL_EVENT_STOP) {
                     break;
                 }

@@ -263,6 +263,15 @@ module.exports = {
         inviteToDownload: function (success, fail, args, env) {
             bbm.getInstance().users.inviteToDownload();
             success();
-        }
+        },
+		
+		getContactsWithApp : function (success, fail, args, env) {
+            if (args) {
+                args.eventId = JSON.parse(decodeURIComponent(args.eventId));
+
+                bbm.getInstance().users.getContactsWithApp(args.eventId);
+                success();
+            }
+		}
     }
 };

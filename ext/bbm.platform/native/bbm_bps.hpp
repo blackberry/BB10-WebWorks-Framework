@@ -44,6 +44,7 @@ enum BBMInternalEvents {
     INTERNAL_EVENT_REGISTER = 0,
     INTERNAL_EVENT_CONTACT_EVENTS,
     INTERNAL_EVENT_GET_DISPLAY_PICTURE,
+	INTERNAL_EVENT_GET_CONTACT_LIST,
     INTERNAL_EVENT_STOP,
 };
 
@@ -84,7 +85,7 @@ public:
     std::string ProfileBoxGetAccessible();
 
     void InviteToDownload();
-
+	void GetContactsWithApp();
 private:
     BBM *m_pParent;
 
@@ -97,18 +98,20 @@ private:
     void processProfileBoxItemRemoved(bbmsp_event_t *event);
     void processProfileBoxGetItemIcon(bbmsp_event_t *event);
     void processProfileBoxRegisterIcon(bbmsp_event_t *event);
+	void processContactList(bbmsp_event_t *event);
 
     // private functions
     void createProfileFieldMap();
     std::string getFullProfile();
     std::string getProfileDisplayPicture(bbmsp_profile_t *profile);
-    std::string getFullContact(bbmsp_contact_t *contact);
+    Json::Value getFullContact(bbmsp_contact_t *contact);
     size_t loadImage(const std::string& imgPath, bbmsp_image_t **img);
     static bool contactEventsEnabled;
     static pthread_mutex_t m_lock;
     static int m_eventChannel;
     static int m_BBMInternalDomain;
     static ProfileFieldMap *m_pProfileFieldMap;
+	static bbmsp_contact_list_t *m_pContactList;
 };
 
 } // namespace webworks
