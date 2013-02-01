@@ -138,22 +138,22 @@ _self.cancelSubscription = function (transactionID, success, fail) {
     window.webworks.exec(onSuccess, onFail, _ID, "cancelSubscription", args, true);
 };
 
-_self.getPrice = function (sku, success, fail) {
-    if (!sku || typeof sku !== "string") {
+_self.getPrice = function (args, success, fail) {
+    if (!args || typeof args !== "object" || (typeof args.sku !== "string" && typeof args.id !== "string")) {
         if (fail && typeof fail === "function") {
             fail({
                 errorID: "-1",
-                errorText: "SKU is not provided or not a string value."
+                errorText: "Either ID or SKU needs to be provided as string."
             });
         }
 
         return;
     }
 
-    var args = {
-            "sku" : sku
-        },
-        onSuccess = function (result) {
+    args.id = args.id || "";
+    args.sku = args.sku || "";
+
+    var onSuccess = function (result) {
             invokeClientCallback(result, "dataItem", success, fail, "GetPrice Failed. Unexpected Error Occured.");
         },
         onFail = getXHRFailCallback(fail);
@@ -161,22 +161,22 @@ _self.getPrice = function (sku, success, fail) {
     window.webworks.exec(onSuccess, onFail, _ID, "getPrice", args, true);
 };
 
-_self.checkExisting = function (sku, success, fail) {
-    if (!sku || typeof sku !== "string") {
+_self.checkExisting = function (args, success, fail) {
+    if (!args || typeof args !== "object" || (typeof args.sku !== "string" && typeof args.id !== "string")) {
         if (fail && typeof fail === "function") {
             fail({
                 errorID: "-1",
-                errorText: "SKU is not provided or not a string value."
+                errorText: "Either ID or SKU needs to be provided as string."
             });
         }
 
         return;
     }
 
-    var args = {
-            "sku" : sku
-        },
-        onSuccess = function (result) {
+    args.id = args.id || "";
+    args.sku = args.sku || "";
+
+    var onSuccess = function (result) {
             invokeClientCallback(result, "dataItem", success, fail, "CheckExisting Failed. Unexpected Error Occured.");
         },
         onFail = getXHRFailCallback(fail);
@@ -187,7 +187,8 @@ _self.checkExisting = function (sku, success, fail) {
 _self.checkAppSubscription = function (success, fail) {
     //-1 represents the PAYMENTSERVICE_APP_SUBSCRIPTION constant
     var args = {
-            "sku" : "-1"
+            "sku": "",
+            "id": "-1"
         },
         onSuccess = function (result) {
             invokeClientCallback(result, "dataItem", success, fail, "CheckExisting Failed. Unexpected Error Occured.");
