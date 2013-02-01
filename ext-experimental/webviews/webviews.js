@@ -57,9 +57,9 @@ module.exports = {
             webviewObj.addEventListener("Destroyed", function () {
                 webviewObj.delete(function () {
                     if (_destroyedTrigger && typeof _destroyedTrigger === 'function') {
-                        _destroyedTrigger({id: id});
+                        _destroyedTrigger({id: webviewObj.id});
                     }
-                    delete _webviews[id];
+                    delete _webviews[webviewObj.id];
                 });
             });
 
