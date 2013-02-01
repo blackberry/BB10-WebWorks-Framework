@@ -34,6 +34,7 @@ ifeq ($(UTILS),yes)
           $(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_value.cpp \
           $(WEBWORKS_DIR)/dependencies/JsonCpp/jsoncpp-src-0.6.0-rc2/src/json_writer.cpp \
           $(WEBWORKS_DIR)/ext/utils/native/webworks_utils.cpp
+    	  LDFLAGS+=-lsocket
     else
     LDFLAGS+=-lutils
     endif

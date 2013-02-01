@@ -17,6 +17,8 @@
 var bbm = require("./BBMJNEXT").bbm,
     _event = require("../../lib/event"),
     _utils = require("../../lib/utils"),
+    Whitelist = require("../../lib/policy/whitelist").Whitelist,
+    _whitelist = new Whitelist(),
     _actionMap = {
         onaccesschanged: {
             context: require("./BBMEvents"),
@@ -32,15 +34,7 @@ var bbm = require("./BBMJNEXT").bbm,
                 _event.trigger("onupdate", user, event);
             }
         }
-    },
-    BBM_DISPLAY_NAME = 0,
-    BBM_STATUS = 1,
-    BBM_STATUS_MESSAGE = 2,
-    BBM_PERSONAL_MESSAGE = 3,
-    BBM_PPID = 4,
-    BBM_HANDLE = 5,
-    BBM_APP_VERSION = 6,
-    BBM_SDK_VERSION = 7;
+    };
 
 module.exports = {
     registerEvents: function (success, fail, args, env) {
@@ -57,8 +51,12 @@ module.exports = {
         if (args) {
             args.options = JSON.parse(decodeURIComponent(args.options));
 
+            if (!args.options.uuid || args.options.uuid.length === 0) {
+                fail(-1, "Must specifiy UUID");
+            }
+
             if (args.options.uuid.length < 32) {
-                fail(-1, "options are not valid");
+                fail(-1, "UUID is not valid length");
                 return;
             }
 
@@ -69,38 +67,38 @@ module.exports = {
 
     self : {
         appVersion : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_APP_VERSION));
+            success(bbm.getInstance().self.getProfile("appVersion"));
         },
 
-        bbmsdkVersion : function (success, fail, args, env) {
-            success(parseInt(bbm.getInstance().self.getProfile(BBM_SDK_VERSION), 10));
+        bbmsdkVersion: function (success, fail, args, env) {
+            success(parseInt(bbm.getInstance().self.getProfile("bbmsdkVersion"), 10));
         },
 
-        displayName : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_DISPLAY_NAME));
+        displayName: function (success, fail, args, env) {
+            success(bbm.getInstance().self.getProfile("displayName"));
         },
 
-        handle : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_HANDLE));
+        handle: function (success, fail, args, env) {
+            success(bbm.getInstance().self.getProfile("handle"));
         },
 
-        personalMessage : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_PERSONAL_MESSAGE));
+        personalMessage: function (success, fail, args, env) {
+            success(bbm.getInstance().self.getProfile("personalMessage"));
         },
 
-        ppid : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_PPID));
+        ppid: function (success, fail, args, env) {
+            success(bbm.getInstance().self.getProfile("ppid"));
         },
 
-        status : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_STATUS));
+        status: function (success, fail, args, env) {
+            success(bbm.getInstance().self.getProfile("status"));
         },
 
-        statusMessage : function (success, fail, args, env) {
-            success(bbm.getInstance().self.getProfile(BBM_STATUS_MESSAGE));
+        statusMessage: function (success, fail, args, env) {
+            success(bbm.getInstance().self.getProfile("statusMessage"));
         },
 
-        getDisplayPicture : function (success, fail, args, env) {
+        getDisplayPicture: function (success, fail, args, env) {
             if (args) {
                 args.eventId = JSON.parse(decodeURIComponent(args.eventId));
 
@@ -109,13 +107,13 @@ module.exports = {
             }
         },
 
-        setStatus : function (success, fail, args, env) {
+        setStatus: function (success, fail, args, env) {
             if (args) {
                 args.status = JSON.parse(decodeURIComponent(args.status));
                 args.statusMessage = JSON.parse(decodeURIComponent(args.statusMessage));
 
                 if (args.status !== "available" && args.status !== "busy") {
-                    fail(-1, "status is not valid");
+                    fail(-1, "Status is not valid");
                     return;
                 }
             }
@@ -124,12 +122,12 @@ module.exports = {
             success();
         },
 
-        setPersonalMessage : function (success, fail, args, env) {
+        setPersonalMessage: function (success, fail, args, env) {
             if (args) {
                 args.personalMessage = JSON.parse(decodeURIComponent(args.personalMessage));
 
                 if (args.personalMessage.length === 0) {
-                    fail(-1, "personal message must not be empty");
+                    fail(-1, "Personal message must not be empty");
                     return;
                 }
             }
@@ -138,23 +136,116 @@ module.exports = {
             success();
         },
 
-        setDisplayPicture : function (success, fail, args, env) {
+        setDisplayPicture: function (success, fail, args, env) {
             if (args) {
                 args.displayPicture = JSON.parse(decodeURIComponent(args.displayPicture));
+                args.eventId = JSON.parse(decodeURIComponent(args.eventId));
 
                 if (args.displayPicture.length === 0) {
-                    fail(-1, "display picture must not be empty");
+                    fail(-1, "Display picture must not be empty");
                     return;
                 }
+
+                if (!_whitelist.isAccessAllowed(args.displayPicture)) {
+                    fail(-1, "URL denied by whitelist: " + args.displayPicture);
+                    return;
+                }
+
+                args.displayPicture = _utils.translatePath(args.displayPicture).replace(/file:\/\//, '');
             }
 
-            bbm.getInstance().self.setDisplayPicture(args.displayPicture);
+            bbm.getInstance().self.setDisplayPicture(args.displayPicture, args.eventId);
             success();
+        },
+
+        profilebox: {
+            addItem: function (success, fail, args, env) {
+                if (args) {
+                    args.options = JSON.parse(decodeURIComponent(args.options));
+                    args.eventId = JSON.parse(decodeURIComponent(args.eventId));
+                    
+                    if (!args.options.text || args.options.text.length === 0) {
+                        fail(-1, "must specify text");
+                        return;
+                    }
+                    
+                    if (!args.options.cookie || args.options.cookie.length === 0) {
+                        fail(-1, "Must specify cookie");
+                        return;
+                    }
+
+                    if (args.options.iconId && args.options.iconId < 1) {
+                        fail(-1, "Invalid icon ID");
+                        return;
+                    }
+
+                    bbm.getInstance().self.profilebox.addItem(args.options, args.eventId);
+                    success();
+                }
+            },
+
+            removeItem: function (success, fail, args, env) {
+                if (args) {
+                    args.options = JSON.parse(decodeURIComponent(args.options));
+                    args.eventId = JSON.parse(decodeURIComponent(args.eventId));
+
+                    if (!args.options.id || args.options.id.length === 0 || typeof args.options.id !== "string") {
+                        fail(-1, "Must specify valid item id");
+                        return;
+                    }
+
+                    bbm.getInstance().self.profilebox.removeItem(args.options, args.eventId);
+                    success();
+                }
+            },
+
+            clearItems: function (success, fail, args, env) {
+                bbm.getInstance().self.profilebox.clearItems();
+                success(); 
+            },
+
+            registerIcon: function (success, fail, args, env) {
+                if (args) {
+                    args.options = JSON.parse(decodeURIComponent(args.options));
+                    args.eventId = JSON.parse(decodeURIComponent(args.eventId));
+
+                    if (!args.options.iconId || args.options.iconId <= 0) {
+                        fail(-1, "Must specify valid ID for icon");
+                        return;
+                    }
+
+                    if (!args.options.icon || args.options.icon.length === 0) {
+                        fail(-1, "Must specify icon to register");
+                        return;
+                    }
+
+                    if (args.options.icon) {
+
+                        if (!_whitelist.isAccessAllowed(args.options.icon)) {
+                            fail(-1, "URL denied by whitelist: " + args.displayPicture);
+                            return;
+                        }
+
+                        args.options.icon = _utils.translatePath(args.options.icon).replace(/file:\/\//, '');
+                    }
+
+                    bbm.getInstance().self.profilebox.registerIcon(args.options, args.eventId);
+                    success();
+                }
+            },
+
+            getItems: function (success, fail, args, env) {
+                success(bbm.getInstance().self.profilebox.getItems());
+            },
+
+            getAccessible : function (success, fail, args, env) {
+                success(bbm.getInstance().self.profilebox.getAccessible());
+            }
         }
     },
 
     users : {
-        inviteToDownload : function (success, fail, args) {
+        inviteToDownload: function (success, fail, args, env) {
             bbm.getInstance().users.inviteToDownload();
             success();
         }
