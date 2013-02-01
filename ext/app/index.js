@@ -176,6 +176,19 @@ module.exports = {
         }
     },
 
+    unregisterEvents: function (success, fail, args, env) {
+        try {
+            //HACK: These events are registered differently than
+            //      all the others so we need to remove them manually
+            _appEvents.removeEventListener("rotate", rotateTrigger);
+            _appEvents.removeEventListener("rotateWhenLocked", rotateWhenLockedTrigger);
+
+            success();
+        } catch (e) {
+            fail(-1, e);
+        }
+    },
+
     getReadOnlyFields : function (success, fail, args, env) {
         var ro = {
             author: _config.author,
