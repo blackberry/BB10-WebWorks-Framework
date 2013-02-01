@@ -38,6 +38,8 @@
     <feature id="blackberry.invoked" required="true" version="1.0.0.0" />
     <feature id="blackberry.notification" required="true" version="1.0.0.0" />
     <feature id="blackberry.sensors" required="true" version="1.0.0.0" />
+    //Experimental
+    <feature id="qnx.webviews" required="true" version="1.0.0.0" />
     <feature id="enable-flash" />
     <feature id="internal.automation" required="true" version="1.0.0.0" />
     <feature id="internal.pps" required="true" version="1.0.0.0" />

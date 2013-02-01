@@ -82,4 +82,40 @@ describe("blackberry.event index", function () {
             expect(index.isEventRegistered("MyEvent2")).toBeTruthy();
         });
     });
+
+    describe("add/once functions", function () {
+        var libEvent = require(root + "lib/event");
+
+
+        beforeEach(function () {
+            spyOn(libEvent, "add");
+        });
+
+        describe("add", function () {
+            var args = {
+                eventName: encodeURIComponent(JSON.stringify("GRRRRR"))
+            };
+
+            it("calls success if no error", function () {
+                var success = jasmine.createSpy(),
+                    webview = {};
+                index.add(success, undefined, args, {webview: webview});
+                expect(libEvent.add).toHaveBeenCalledWith(
+                    undefined,
+                    webview
+                );
+
+                expect(success).toHaveBeenCalled();
+            });
+
+            it("calls fail if there is an error", function () {
+                var fail = jasmine.createSpy();
+
+                index.add(undefined, fail);
+
+                expect(libEvent.add).not.toHaveBeenCalled();
+                expect(fail).toHaveBeenCalled();
+            });
+        });
+    });
 });

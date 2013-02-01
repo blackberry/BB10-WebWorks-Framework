@@ -93,10 +93,10 @@ describe("public/event", function () {
     });
 
     describe("once", function () {
-        it("it WILL NOT call webworks.exec action 'on' given valid featureId, eventName and callback", function () {
+        it("will call webworks.exec action 'once' given valid featureId, eventName and callback", function () {
             var callback = function () {};
             event.once("blackberry.system.event", "foo", callback);
-            expect(_window.webworks.exec).wasNotCalled();
+            expect(_window.webworks.exec).toHaveBeenCalledWith(undefined, undefined, "event", "once", {"eventName": "foo"});
             event.remove("blackberry.system.event", "foo", callback);
         });
     });
