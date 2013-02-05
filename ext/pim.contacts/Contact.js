@@ -303,7 +303,7 @@ Contact.prototype.clone = function () {
 
     for (key in this) {
         if (this.hasOwnProperty(key)) {
-            contact[key] = this[key];
+            contact[key] = utils.deepclone(this[key]);
         }
     }
 

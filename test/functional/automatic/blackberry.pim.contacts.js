@@ -359,7 +359,7 @@ describe("blackberry.pim.contacts", function () {
 
             contactObj2 = contactObj.clone();
 
-            expect(contactObj2.name).toBe(name);
+            expect(contactObj2.name).toEqual(name);
             expect(contactObj2.emails).toContain(workEmail);
             expect(contactObj2.emails).toContain(homeEmail);
             expect(contactObj2.emails.length).toBe(2);
