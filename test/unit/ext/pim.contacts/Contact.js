@@ -216,7 +216,13 @@ describe("pim.contacts Contact", function () {
             for (field in contact) {
                 if (contact.hasOwnProperty(field)) {
                     if (field !== "id") {
-                        expect(clonedContact[field]).toBe(contact[field]);
+                        expect(clonedContact[field]).toEqual(contact[field]);
+
+                        if (contact[field] !== null &&
+                            contact[field] !== undefined &&
+                            typeof contact[field] === "object") {
+                            expect(clonedContact[field]).not.toBe(contact[field], field + " was not deeply cloned");
+                        }
                     }
                 }
             }
