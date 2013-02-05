@@ -1,4 +1,53 @@
 #!/bin/bash
+USAGE_TXT="
+Usage: $(basename $0) [set property=value ...] [-scm]
+    set - come with options to indicate that you are intent to change the 
+          values in test-runner.json
+        property: the propertie name
+        value: the value of property, and it MUST be enclosed within single quotation mark ''
+
+    -scm - indicate it is a SCM build
+
+    Example:
+    configure set packager='\"/path/to/packager\"' password='\"mypassword\"'
+"
+usage() {
+    printf "$USAGE_TXT"
+}
+
+if [ ! -f test-runner.json ]; then
+    cp test-runner.default.json test-runner.json
+fi
+
+if [ $# -gt 0 ]; then
+    
+    for arg in "$@"; do
+        case $arg in
+        "-scm") IS_SCMBUILD="yes" ;;
+        "set") IS_SETTING_TEST="yes" ;;
+        "-h") 
+            usage
+            exit 0
+            ;;
+        *)
+            if [ "$IS_SETTING_TEST" == 'yes' ]; then
+                key="$(echo $arg|cut -d = -f 1)"
+                value="$(echo $arg|cut -d = -f 2)"
+                if [ -n "$value" ]; then
+                    tmpfile=$(mktemp ./tmp.$$.XXXXXXXX)
+                    sed "s#\(\"$key\":\).*\([,]\{0,1\}\)#\1 $value\2#" < test-runner.json > $tmpfile
+                    cp $tmpfile test-runner.json
+                    rm $tmpfile
+                fi
+            else
+                printf "Invalid argument, did you miss the set?"
+                exit 1
+            fi
+            ;;
+        esac
+    done
+fi
+
 echo "Please note: If you are running a Linux or Mac OS, you may be prompted for the system password"
 echo "This is to allow the Packager to install node dependencies globally."
 if [[ "$OS" == *Windows* ]] ; then
@@ -10,13 +59,8 @@ fi
 npm install jasmine-node express wrench@1.3.9 jWorkflow mustache
 
 #Don't grab submodules for SCM builds (already included in productization repo)
-if [ "$1" != "-scm" ]; then
+if [ -z "$IS_SCMBUILD" ]; then
     git submodule update --init;
-fi
-
-if [ ! -f test-runner.json ]
-then
-    cp test-runner.default.json test-runner.json
 fi
 
 echo -e "\nConfiguring complete. Please proceed with running \"jake\"."
