@@ -195,7 +195,7 @@ Json::Value PimContactsQt::DeleteContact(const Json::Value& contactObj)
         bbpim::ContactId contactId = contactObj["contactId"].asInt();
 
         bbpim::ContactService service;
-        bbpim::Contact contact = service.filteredContact(contactId, bbpim::ContactListFilters());
+        bbpim::Contact contact = service.contactDetails(contactId);
 
         if (contact.isValid()) {
             service.deleteContact(contactId);

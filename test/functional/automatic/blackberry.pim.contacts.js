@@ -451,9 +451,6 @@ describe("blackberry.pim.contacts", function () {
                                               {"name": "IBM", "title": "Manager"},
                                               {"name": "The Cool Co.", "department": "Cooler", "title": "Mr. Cool"} ];
 
-                new_contact.photos = [ {originalFilePath: blackberry.io.sharedFolder + "/camera/earth.gif", pref: false},
-                                       {originalFilePath: blackberry.io.sharedFolder + "/camera/twitter.jpg", pref: true} ];
-
                 new_contact.note = "This is a test contact for the PIM WebWorks API";
                 new_contact.videoChat = ["abc", "def"];
                 new_contact.ringtone = "qwerty";
@@ -645,10 +642,14 @@ describe("blackberry.pim.contacts", function () {
             if (clonedContact) {
                 // emails field was set null previously
                 expect(clonedContact.emails.length).toBe(2);
-                expect(clonedContact.emails[0].type).toBe("home");
-                expect(clonedContact.emails[0].value).toBe("abc@person.com");
-                expect(clonedContact.emails[1].type).toBe("work");
-                expect(clonedContact.emails[1].value).toBe("fgh@rim.com");
+                expect(clonedContact.emails).toContain({
+                    "type": "home",
+                    "value": "abc@person.com"
+                });
+                expect(clonedContact.emails).toContain({
+                    "type": "work",
+                    "value": "fgh@rim.com"
+                });
             } else {
                 console.log("clonedContact not defined");
             }
