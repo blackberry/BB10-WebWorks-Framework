@@ -67,6 +67,7 @@ _actionMap = {
     connectionchange: {
         context: require("../../lib/events/deviceEvents"),
         event: "connectionChange",
+        triggerEvent: "connectionchange",
         trigger: function (args) {
             var currentType = currentConnectionType();
             if (currentType ===  connectionChangeOldType) {

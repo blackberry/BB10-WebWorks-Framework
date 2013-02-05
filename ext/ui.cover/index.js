@@ -21,6 +21,7 @@ var _utils = require("./../../lib/utils"),
         entercover: {
             context: _appEvents,
             event: "windowCoverEnter",
+            triggerEvent: "entercover",
             trigger: function () {
                 _event.trigger("entercover");
             }
@@ -28,6 +29,7 @@ var _utils = require("./../../lib/utils"),
         exitcover: {
             context: _appEvents,
             event: "windowCoverExit",
+            triggerEvent: "exitcover",
             trigger: function () {
                 _event.trigger("exitcover");
             }

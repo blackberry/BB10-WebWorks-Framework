@@ -24,6 +24,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         batterystatus: {
             context: _deviceEvents,
             event: "battery.statusChange",
+            triggerEvent: "batterystatus",
             trigger: function (data) {
                 _event.trigger("batterystatus", data);
             }
@@ -31,6 +32,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         batterylow: {
             context: _deviceEvents,
             event: "battery.chargeLow",
+            triggerEvent: "batterylow",
             trigger: function (data) {
                 _event.trigger("batterylow", data);
             }
@@ -38,6 +40,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         batterycritical: {
             context: _deviceEvents,
             event: "battery.chargeCritical",
+            triggerEvent: "batterycritical",
             trigger: function (data) {
                 _event.trigger("batterycritical", data);
             }
@@ -45,6 +48,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         languagechanged: {
             context: _applicationEvents,
             event: "systemLanguageChange",
+            triggerEvent: "languagechanged",
             trigger: function (language) {
                 _event.trigger("languagechanged", language);
             }
@@ -52,6 +56,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         regionchanged: {
             context: _applicationEvents,
             event: "systemRegionChange",
+            triggerEvent: "regionchanged",
             trigger: function (region) {
                 _event.trigger("regionchanged", region);
             }
@@ -59,6 +64,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         fontchanged: {
             context: _applicationEvents,
             event: "fontchanged",
+            triggerEvent: "fontchanged",
             trigger: function (fontFamily, fontSize) {
                 _event.trigger("fontchanged", {'fontFamily': fontFamily, 'fontSize': fontSize});
             }
@@ -66,6 +72,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         perimeterlocked: {
             context: _applicationEvents,
             event: "windowLock",
+            triggerEvent: "perimeterlocked",
             trigger: function () {
                 _event.trigger("perimeterlocked", null);
             }
@@ -73,6 +80,7 @@ var Whitelist = require("../../lib/policy/whitelist").Whitelist,
         perimeterunlocked: {
             context: _applicationEvents,
             event: "windowUnlock",
+            triggerEvent: "perimeterunlocked",
             trigger: function () {
                 _event.trigger("perimeterunlocked", null);
             }
