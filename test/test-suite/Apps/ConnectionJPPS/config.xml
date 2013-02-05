@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:rim="http://www.blackberry.com/ns/widgets"
+		version="1.0.0"
+        id="ConnectionJPPS">
+    <name>ConnectionJPPS</name>
+    <content src="index.htm"/>
+    <author>
+			Research In Motion Ltd.
+	</author>
+    <description>This app tests the connection API.</description>
+    <feature id="blackberry.connection" />
+    <!--<feature id="blackberry.system" />-->
+    <license href="http://www.apache.org/licenses/LICENSE-2.0">My License</license>
+</widget>
