@@ -23,6 +23,7 @@ var bbm = require("./BBMJNEXT").bbm,
         onaccesschanged: {
             context: require("./BBMEvents"),
             event: "onaccesschanged",
+            triggerEvent: "onaccesschanged",
             trigger: function (allowed, reason) {
                 _event.trigger("onaccesschanged", allowed, reason);
             }
@@ -30,6 +31,7 @@ var bbm = require("./BBMJNEXT").bbm,
         onupdate: {
             context: require("./BBMEvents"),
             event: "onupdate",
+            triggerEvent: "onupdate",
             trigger: function (user, event) {
                 _event.trigger("onupdate", user, event);
             }
@@ -163,12 +165,12 @@ module.exports = {
                 if (args) {
                     args.options = JSON.parse(decodeURIComponent(args.options));
                     args.eventId = JSON.parse(decodeURIComponent(args.eventId));
-                    
+
                     if (!args.options.text || args.options.text.length === 0) {
                         fail(-1, "must specify text");
                         return;
                     }
-                    
+
                     if (!args.options.cookie || args.options.cookie.length === 0) {
                         fail(-1, "Must specify cookie");
                         return;
@@ -201,7 +203,7 @@ module.exports = {
 
             clearItems: function (success, fail, args, env) {
                 bbm.getInstance().self.profilebox.clearItems();
-                success(); 
+                success();
             },
 
             registerIcon: function (success, fail, args, env) {

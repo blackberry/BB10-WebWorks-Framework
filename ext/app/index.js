@@ -22,6 +22,7 @@ var _config = require("./../../lib/config"),
         swipedown: {
             context: _appEvents,
             event: "swipedown",
+            triggerEvent: "swipedown",
             trigger: function () {
                 _event.trigger("swipedown");
             }
@@ -29,6 +30,7 @@ var _config = require("./../../lib/config"),
         pause: {
             context: _appEvents,
             event: "inactive",
+            triggerEvent: "pause",
             trigger: function () {
                 _event.trigger("pause");
             }
@@ -36,6 +38,7 @@ var _config = require("./../../lib/config"),
         resume: {
             context: _appEvents,
             event: "active",
+            triggerEvent: "resume",
             trigger: function () {
                 _event.trigger("resume");
             }
@@ -43,6 +46,7 @@ var _config = require("./../../lib/config"),
         keyboardOpening: {
             context: _appEvents,
             event: "keyboardOpening",
+            triggerEvent: "keyboardOpening",
             trigger: function () {
                 _event.trigger("keyboardOpening");
             }
@@ -50,6 +54,7 @@ var _config = require("./../../lib/config"),
         keyboardOpened: {
             context: _appEvents,
             event: "keyboardOpened",
+            triggerEvent: "keyboardOpened",
             trigger: function () {
                 _event.trigger("keyboardOpened");
             }
@@ -57,6 +62,7 @@ var _config = require("./../../lib/config"),
         keyboardClosing: {
             context: _appEvents,
             event: "keyboardClosing",
+            triggerEvent: "keyboardClosing",
             trigger: function () {
                 _event.trigger("keyboardClosing");
             }
@@ -64,6 +70,7 @@ var _config = require("./../../lib/config"),
         keyboardClosed: {
             context: _appEvents,
             event: "keyboardClosed",
+            triggerEvent: "keyboardClosed",
             trigger: function () {
                 _event.trigger("keyboardClosed");
             }
@@ -71,6 +78,7 @@ var _config = require("./../../lib/config"),
         keyboardPosition: {
             context: _appEvents,
             event: "keyboardPosition",
+            triggerEvent: "keyboardPosition",
             trigger: function (yPosition) {
                 var _yPosition = JSON.parse(yPosition);
                 _event.trigger("keyboardPosition", _yPosition);
@@ -79,6 +87,7 @@ var _config = require("./../../lib/config"),
         windowstatechanged: {
             context: _appEvents,
             event: "stateChange",
+            triggerEvent: "windowstatechanged",
             trigger: function (state) {
                 _event.trigger("windowstatechanged", state);
             }
@@ -228,7 +237,7 @@ module.exports = {
         window.qnx.webplatform.getApplication().exit();
         success();
     },
-    
+
     windowState : function (success, fail, args, env) {
         success(qnx.webplatform.getApplication().windowState);
     }

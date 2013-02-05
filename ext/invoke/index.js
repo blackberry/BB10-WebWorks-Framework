@@ -18,6 +18,7 @@ var _event = require("../../lib/event"),
         onChildCardStartPeek: {
             context: require("./invocationEvents"),
             event: "onChildCardStartPeek",
+            triggerEvent: "onChildCardStartPeek",
             trigger: function (peekType) {
                 _event.trigger("onChildCardStartPeek", peekType);
             }
@@ -25,6 +26,7 @@ var _event = require("../../lib/event"),
         onChildCardEndPeek: {
             context: require("./invocationEvents"),
             event: "onChildCardEndPeek",
+            triggerEvent: "onChildCardEndPeek",
             trigger: function () {
                 _event.trigger("onChildCardEndPeek");
             }
@@ -32,6 +34,7 @@ var _event = require("../../lib/event"),
         onChildCardClosed: {
             context: require("./invocationEvents"),
             event: "onChildCardClosed",
+            triggerEvent: "onChildCardClosed",
             trigger: function (info) {
                 _event.trigger("onChildCardClosed", info);
             }
