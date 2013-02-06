@@ -179,7 +179,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: appEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "languagechanged"
             }, env.webview);
         });
 
@@ -194,7 +195,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: appEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "languagechanged"
             }, env.webview);
         });
     });
@@ -220,7 +222,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: appEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "regionchanged"
             }, env.webview);
         });
 
@@ -235,7 +238,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: appEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "regionchanged"
             }, env.webview);
         });
     });
@@ -262,7 +266,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: deviceEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "batterystatus"
             }, env.webview);
         });
 
@@ -277,7 +282,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: deviceEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "batterystatus"
             }, env.webview);
         });
     });
@@ -304,7 +310,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: deviceEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "batterylow"
             }, env.webview);
         });
 
@@ -319,7 +326,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: deviceEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "batterylow"
             }, env.webview);
         });
     });
@@ -346,7 +354,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: deviceEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "batterycritical"
             }, env.webview);
         });
 
@@ -361,7 +370,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: deviceEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "batterycritical"
             }, env.webview);
         });
     });
@@ -388,7 +398,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: applicationEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "perimeterlocked"
             }, env.webview);
         });
 
@@ -403,7 +414,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: applicationEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "perimeterlocked"
             }, env.webview);
         });
     });
@@ -430,7 +442,8 @@ describe("system index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: applicationEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "perimeterunlocked"
             }, env.webview);
         });
 
@@ -445,7 +458,8 @@ describe("system index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: applicationEvents,
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "perimeterunlocked"
             }, env.webview);
         });
     });
@@ -525,7 +539,8 @@ describe("system index", function () {
                 expect(events.add).toHaveBeenCalledWith({
                     context: appEvents,
                     event: eventName,
-                    trigger: jasmine.any(Function)
+                    trigger: jasmine.any(Function),
+                    triggerEvent: "fontchanged"
                 }, env.webview);
             });
 
@@ -539,7 +554,8 @@ describe("system index", function () {
                 expect(events.remove).toHaveBeenCalledWith({
                     context: appEvents,
                     event: eventName,
-                    trigger: jasmine.any(Function)
+                    trigger: jasmine.any(Function),
+                    triggerEvent: "fontchanged"
                 }, env.webview);
             });
         });

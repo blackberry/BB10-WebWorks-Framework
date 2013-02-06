@@ -355,7 +355,8 @@ describe("invoke index", function () {
                 expect(events.add).toHaveBeenCalledWith({
                     context: require(_apiDir + "invocationEvents"),
                     event: eventName,
-                    trigger: jasmine.any(Function)
+                    trigger: jasmine.any(Function),
+                    triggerEvent: "onChildCardClosed"
                 }, env.webview);
                 expect(successCB).not.toHaveBeenCalled();
                 expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
@@ -374,7 +375,8 @@ describe("invoke index", function () {
                     expect(events.remove).toHaveBeenCalledWith({
                         context: require(_apiDir + "invocationEvents"),
                         event: e,
-                        trigger: jasmine.any(Function)
+                        trigger: jasmine.any(Function),
+                        triggerEvent: e
                     }, env.webview);
                     expect(events.remove.mostRecentCall.args[0].event).toEqual(e);
                     expect(events.remove.mostRecentCall.args[0].trigger).toEqual(jasmine.any(Function));
@@ -406,7 +408,8 @@ describe("invoke index", function () {
                 expect(events.remove).toHaveBeenCalledWith({
                     context: require(_apiDir + "invocationEvents"),
                     event: eventName,
-                    trigger: jasmine.any(Function)
+                    trigger: jasmine.any(Function),
+                    triggerEvent: "onChildCardClosed"
                 }, env.webview);
                 expect(successCB).not.toHaveBeenCalled();
                 expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));

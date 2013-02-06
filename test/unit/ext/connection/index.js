@@ -113,7 +113,8 @@ describe("connection index", function () {
                     connectionchange: {
                         context: jasmine.any(Object),
                         event: "connectionChange",
-                        trigger: jasmine.any(Function)
+                        trigger: jasmine.any(Function),
+                        triggerEvent: "connectionchange"
                     }
                 });
             });
