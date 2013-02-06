@@ -110,7 +110,8 @@ describe("invoked index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: jasmine.any(Object),
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "invoked"
             }, env.webview);
             expect(successCB).toHaveBeenCalled();
             expect(failCB).not.toHaveBeenCalled();
@@ -130,7 +131,8 @@ describe("invoked index", function () {
             expect(events.add).toHaveBeenCalledWith({
                 context: jasmine.any(Object),
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "invoked"
             }, env.webview);
             expect(successCB).not.toHaveBeenCalled();
             expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));
@@ -149,7 +151,8 @@ describe("invoked index", function () {
                 expect(events.remove).toHaveBeenCalledWith({
                     context: jasmine.any(Object),
                     event: e,
-                    trigger: jasmine.any(Function)
+                    trigger: jasmine.any(Function),
+                    triggerEvent: e
                 }, env.webview);
             });
         });
@@ -178,7 +181,8 @@ describe("invoked index", function () {
             expect(events.remove).toHaveBeenCalledWith({
                 context: jasmine.any(Object),
                 event: eventName,
-                trigger: jasmine.any(Function)
+                trigger: jasmine.any(Function),
+                triggerEvent: "invoked"
             }, env.webview);
             expect(successCB).not.toHaveBeenCalled();
             expect(failCB).toHaveBeenCalledWith(-1, jasmine.any(String));

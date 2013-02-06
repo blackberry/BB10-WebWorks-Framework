@@ -17,9 +17,11 @@ var libRoot = __dirname + "/../../../lib/";
 
 describe("lib/event", function () {
     var event = require(libRoot + "event"),
+        webview = require(libRoot + "webview"),
         mockedWebview;
 
     beforeEach(function () {
+        spyOn(webview, "executeJavascript");
         mockedWebview = {
             executeJavaScript: jasmine.createSpy(),
             id: (new Date()).getTime()
@@ -29,9 +31,10 @@ describe("lib/event", function () {
     describe("trigger", function () {
 
 
-        it("will not invoke anything unless a webview is listening", function () {
+        it("will trigger on the content webview when no webview is registered (for backwards compatability)", function () {
             event.trigger("foo", {"id": 123});
             expect(mockedWebview.executeJavaScript).not.toHaveBeenCalled();
+            expect(webview.executeJavascript).toHaveBeenCalled();
         });
 
         it("can invoke the webview execute javascript", function () {
@@ -39,6 +42,7 @@ describe("lib/event", function () {
             event.add({event: "foo", context: {addEventListener: jasmine.createSpy()}}, mockedWebview);
             event.trigger("foo", data);
             expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([data]))) + "')");
+            expect(webview.executeJavascript).not.toHaveBeenCalled();
             this.after(function () {
                 event.remove({event: "foo", context: {removeEventListener: jasmine.createSpy()}}, mockedWebview);
             });
@@ -49,6 +53,7 @@ describe("lib/event", function () {
             event.add({event: "foo", context: {addEventListener: jasmine.createSpy()}}, mockedWebview);
             event.trigger.apply(null, ["foo"].concat(args));
             expect(mockedWebview.executeJavaScript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify(args))) + "')");
+            expect(webview.executeJavascript).not.toHaveBeenCalled();
             this.after(function () {
                 event.remove({event: "foo", context: {removeEventListener: jasmine.createSpy()}}, mockedWebview);
             });
@@ -75,6 +80,7 @@ describe("lib/event", function () {
             expect(mockedWebview2.executeJavaScript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([{"id": 123}]))) + "')");
             expect(mockedWebview3.executeJavaScript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([{"id": 123}]))) + "')");
             expect(mockedWebview4.executeJavaScript).not.toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([{"id": 123}]))) + "')");
+            expect(webview.executeJavascript).not.toHaveBeenCalled();
 
 
             event.remove({event: "foo", context: {removeEventListener: jasmine.createSpy()}}, mockedWebview3);
@@ -87,6 +93,7 @@ describe("lib/event", function () {
             expect(mockedWebview2.executeJavaScript).toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([{"id": 123}]))) + "')");
             expect(mockedWebview3.executeJavaScript).not.toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([{"id": 123}]))) + "')");
             expect(mockedWebview4.executeJavaScript).not.toHaveBeenCalledWith("webworks.event.trigger('foo', '" + escape(encodeURIComponent(JSON.stringify([{"id": 123}]))) + "')");
+            expect(webview.executeJavascript).not.toHaveBeenCalled();
             this.after(function () {
                 event.remove({event: "foo", context: {removeEventListener: jasmine.createSpy()}}, mockedWebview);
                 event.remove({event: "foo", context: {removeEventListener: jasmine.createSpy()}}, mockedWebview2);
