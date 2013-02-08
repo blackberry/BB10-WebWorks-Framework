@@ -61,16 +61,24 @@ function _done(error) {
 module.exports = function (pathToPackager, packagerOptions, target, deviceIp, password) {
     var jakeDir = __dirname + "/../",
         deployTests,
+        outputPath = path.normalize(conf.COMMAND_DEFAULTS.output_folder),
         packageCmd = "jake package[" + path.normalize("test/test-app"),
         deployCmd = "jake deploy[";
 
-
-    if (pathToPackager) {
-        packageCmd += ",\"" + pathToPackager + "\"";
+    if (!pathToPackager || pathToPackager.length === 0) {
+        pathToPackager = conf.COMMAND_DEFAULTS.packager;
     }
+    packageCmd += ",\"" + pathToPackager + "\"";
 
     if (packagerOptions) {
-        packageCmd += "," + packagerOptions;
+        packageCmd += "," + '"' + packagerOptions + '"';
+
+        if (packagerOptions.indexOf('-o') !== -1) {
+            outputPath = packagerOptions.slice(packagerOptions.indexOf('-o')).slice(3).trim();
+            if (outputPath.indexOf('-d') !== -1) {
+                outputPath = outputPath.slice(0, outputPath.indexOf('-d')).trim();
+            }
+        }
     }
 
     packageCmd += "]";
@@ -79,16 +87,19 @@ module.exports = function (pathToPackager, packagerOptions, target, deviceIp, pa
         target = ((!!conf.COMMAND_DEFAULTS.device) ? "device" : "simulator");
         utils.displayOutput("No deploy target specified, using default from test-runner.json - " + target);
     }
-    deployCmd += "\"" + path.join("test", "output", target,  "test-app.bar") + "\"";
 
-    if (deviceIp) {
-        deployCmd += "," + deviceIp;
+
+    deployCmd += "\"" + path.join(outputPath, target,  "test-app.bar") + "\"";
+
+    if (!deviceIp) {
+        deviceIp = conf.COMMAND_DEFAULTS.ip;
     }
+    deployCmd += "," + deviceIp;
 
-    if (password) {
-        deployCmd += "," + password;
+    if (!password) {
+        password = conf.COMMAND_DEFAULTS.password;
     }
-
+    deployCmd += "," + password;
     deployCmd += "]";
 
     deployTests = jWorkflow.order(_exec("jake build[test]", {cwd: jakeDir}))
