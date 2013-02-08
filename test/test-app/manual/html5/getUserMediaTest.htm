@@ -1,28 +1,71 @@
-﻿<html>
-<head>
-    <title>getUserMedia</title>
-	<script src="local:///chrome/webworks.js" type="text/javascript"></script>
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>GetUserMedia Test</title>
+    <script type="text/javascript">
+        function hookup() {
+            var v = document.getElementById('output');
+            var canvas = document.getElementById('mirror');
+            v.addEventListener('play', function(){
+            draw(this,canvas);
+            },false);
+        }
+
+        function draw(v,c) {
+            if(v.paused || v.ended)  return false;
+            if (c.width != v.videoWidth || c.height != v.videoHeight) {
+                c.width = v.videoWidth;
+                c.height = v.videoHeight;
+            }
+            var context = c.getContext('2d');
+            context.drawImage(v, 0, 0, v.videoWidth, v.videoHeight);
+            setTimeout(draw, 50, v, c);
+        }
+
+        function onSuccess(stream) {
+            var startBtn = document.getElementById('startBtn'); //start button
+            var stopBtn = document.getElementById('stopBtn');   //stop button
+            var output = document.getElementById('output'); // a video element
+            var source;
+            output.autoplay = true;
+            source = window.webkitURL.createObjectURL(stream);
+            output.src = source;
+            hookup();
+            startBtn.disabled = true;
+            stopBtn.addEventListener('click', function(e) {
+                output.pause();
+                stream.stop(); // stop getusermedia.
+                stopBtn.disabled = true;
+            }, false);
+            stopBtn.disabled = false;
+        }
+
+        function onError() {
+            alert("getUserMedia failed!");
+        }
+
+        function startGetuserMedia() {
+            if (navigator.webkitGetUserMedia) {
+            try {
+                navigator.webkitGetUserMedia({video: true}, onSuccess, onError);
+            } catch (e) {
+                navigator.webkitGetUserMedia("video", onSuccess, onError);
+            }
+            } else {
+                alert("getUserMedia not implemented!");
+            }
+        }
+    </script>
 </head>
 <body>
-	<div data-bb-type="screen">
-		<video autoplay controls></video>
+   <p></p><h2>Get User Media Test</h2><p></p>
+   <br>
+   <video tabindex="0" id="output" style="visibility: hidden; position: absolute;"></video>
+   <canvas id="mirror"></canvas>
+   <br>
+   <br>
+       <input value="Start" onclick="startGetuserMedia()" id="startBtn" type="button">
+   <br>
+   <p><a href="main.htm">Main</a></p>
 
-		<script type="text/javascript">
-			function onFailSoHard(ex) {
-				console.log(ex);
-			}
-
-			navigator.getUserMedia = navigator.getUserMedia||navigator.webkitGetUserMedia||false;
-
-			if(!!navigator.getUserMedia) {
-			  navigator.getUserMedia({audio: true, video: true}, function(stream) {
-				var video = document.querySelector('video');
-				video.src = ('webkitURL' in window)?window.webkitURL.createObjectURL(stream):stream;
-			  }, onFailSoHard);
-			} else {
-			   alert("not supported"); // fallback.
-			}
-		</script>
-	</div>
-</body>
-</html>
+</body></html>

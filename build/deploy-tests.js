@@ -79,7 +79,7 @@ module.exports = function (pathToPackager, packagerOptions, target, deviceIp, pa
         target = ((!!conf.COMMAND_DEFAULTS.device) ? "device" : "simulator");
         utils.displayOutput("No deploy target specified, using default from test-runner.json - " + target);
     }
-    deployCmd += "\"" + path.join("test", "output", target,  "test-app.bar") + "\"";
+    deployCmd += "\"" + path.join("test", target, "test-app.bar") + "\"";
 
     if (deviceIp) {
         deployCmd += "," + deviceIp;
