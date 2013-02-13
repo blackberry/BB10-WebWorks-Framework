@@ -25,6 +25,34 @@ var _ID = require("./manifest.json").namespace,
     },
     textLabels = [];
 
+_self.saveUri = function (blob, onComplete, onError) {
+    window.requestFileSystem(window.TEMPORARY, 1024 * 1024, function (fs) {
+        fs.root.getFile("cover.png", {create: true}, function (fileEntry) {
+            fileEntry.createWriter(function (fileWriter) {
+                cover.cover.path = fileEntry.file.fullPath;
+                fileWriter.onwriteend = onComplete;
+                fileWriter.write(blob);
+            }, onError);
+        }, onError);
+    }, onError);
+};
+
+_self.processUri = function (uri) {
+    var i,
+        baseParts = uri.split(','),
+        bytes = atob(baseParts[1]),
+        byteLen = bytes.length,
+        mimeString = baseParts[0].split(':')[1].split(';')[0],
+        ab = new ArrayBuffer(byteLen),
+        ia = new Uint8Array(ab);
+
+    for (i = byteLen; i >= 0; i--) {
+        ia[i] = bytes.charCodeAt(i);
+    }
+
+    return new Blob([ia], {type: mimeString});
+};
+
 _self.setContent = function (type, options) {
     switch (type) {
     case _self.TYPE_IMAGE:
@@ -33,6 +61,13 @@ _self.setContent = function (type, options) {
         }
         cover.cover.type = type;
         cover.cover.path = options.path;
+        break;
+    case _self.TYPE_URI:
+        if (cover.cover.capture) {
+            delete cover.cover.capture;
+        }
+        cover.cover.type = type;
+        cover.cover.uri = options.uri;
         break;
     case _self.TYPE_SNAPSHOT:
         if (cover.cover.path) {
@@ -62,7 +97,21 @@ _self.resetCover = function () {
 _self.updateCover = function () {
     cover["text"] = _self.labels;
     cover["badges"] = _self.showBadges;
-    window.webworks.execSync(_ID, "updateCover", {"cover": cover});
+
+    var blob,
+        exec = function (e) {
+        window.webworks.execSync(_ID, "updateCover", {"cover": cover});
+    };
+
+    if (cover.cover.type === 'uri') {
+        blob = _self.processUri(cover.cover.uri);
+        cover.cover.type = _self.TYPE_IMAGE;
+        _self.saveUri(blob, exec, function(e) {
+			// Handle error
+		});
+        return;
+    }
+    exec();
 };
 
 Object.defineProperty(_self, "coverSize", {
@@ -90,6 +139,7 @@ Object.defineProperty(_self, "showBadges", {
 });
 
 Object.defineProperty(_self, "TYPE_IMAGE", {"value": "file", "writable": false});
+Object.defineProperty(_self, "TYPE_DATA_URI", {"value": "uri", "writable": false});
 Object.defineProperty(_self, "TYPE_SNAPSHOT", {"value": "snapshot", "writable": false});
 Object.defineProperty(_self, "TRANSITION_FADE", {"value": "fade", "writable": false});
 Object.defineProperty(_self, "TRANSITION_NONE", {"value": "none", "writable": false});
