@@ -34,26 +34,61 @@ describe("calendar cards", function () {
         onCancel = null;
     });
 
+    /*
+     * @param func Function function that will cause some change in the foreground application
+     * @param test Function boolean condition that guarantees the foreground application has changed
+     * @param onComplete callback triggered condition in test function is satisfied
+     */
+    function testForegroundApp(func, test, onComplete) {
+        var intervalId,
+            flag,
+            checkForeground = function () {
+                flag = test();
+            };
+        runs(function () {
+            func();
+            intervalId = setInterval(checkForeground, 500);
+        });
+        waitsFor(function () {
+            return flag;
+        });
+        runs(function () {
+            clearInterval(intervalId);
+            onComplete();
+        });
+    }
 
     it("opens and cancels calendarPicker", function () {
-        blackberry.invoke.card.invokeCalendarPicker({}, onDone, onCancel, invokeCallback);
-        waits(waitTimeout);
-        runs(function () {
-            internal.automation.touchTopLeft();
-            waits(waitTimeout);
-            runs(function () {
+        var intervalId;
+        testForegroundApp(function () {
+            blackberry.invoke.card.invokeCalendarPicker({}, onDone, onCancel, invokeCallback);
+        }, function () {
+            return (internal.automation.getForegroundAppInfo()["label-card0"] === "calendar.viewer.nav");
+        }, function () {
+            testForegroundApp(function () {
+                intervalId = setInterval(internal.automation.touchTopLeft, 500);
+            }, function () {
+                var appInfo = internal.automation.getForegroundAppInfo();
+                return !(appInfo.hasOwnProperty("label-card0"));
+            }, function () {
+                clearInterval(intervalId);
                 expect(onCancel).toHaveBeenCalledWith('cancel');
             });
         });
     });
 
     it("opens and cancels calendarComposer", function () {
-        blackberry.invoke.card.invokeCalendarComposer({}, onDone, onCancel, invokeCallback);
-        waits(waitTimeout);
-        runs(function () {
-            internal.automation.touchTopLeft();
-            waits(waitTimeout);
-            runs(function () {
+        testForegroundApp(function () {
+            blackberry.invoke.card.invokeCalendarComposer({}, onDone, onCancel, invokeCallback);
+        }, function () {
+            return (internal.automation.getForegroundAppInfo()["label-card0"] === "calendar.eventcreate");
+        }, function () {
+            testForegroundApp(function () {
+                internal.automation.touchTopLeft();
+            }, function () {
+                var appInfo = internal.automation.getForegroundAppInfo();
+                return !(appInfo.hasOwnProperty("label-card0"));
+            }, function () {
                 expect(onDone).toHaveBeenCalled();
             });
         });
