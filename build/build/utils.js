@@ -45,6 +45,11 @@ module.exports = {
 
     },
 
+    cp: function (srcFile, dstFile) {
+        var fileBuffer = fs.readFileSync(srcFile);
+        fs.writeFileSync(dstFile, fileBuffer);
+    },
+
     listFiles: function (directory, filter) {
         var files = wrench.readdirSyncRecursive(directory),
             filteredFiles = [];

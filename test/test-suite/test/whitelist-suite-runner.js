@@ -19,14 +19,12 @@ var path = require("path"),
     input = path.join(__dirname, "..", "Apps"),
     wrench = require("wrench"),
     output = path.normalize(path.join(conf.ROOT, conf.COMMAND_DEFAULTS.output_folder)),
-    cliTest,
-    CLITest = require('./CLITest'),
-    DeployTest = require('./DeployTest'),
+    cliTest = require('../helpers/CLITest'),
+    DeployTest = require('../helpers/DeployTest'),
     flag;
 
 describe("whitelist", function () {
     beforeEach(function () {
-        cliTest = new CLITest(settings.packager + "bbwp");
         flag = false;
         wrench.rmdirSyncRecursive(output, true);
         wrench.mkdirSyncRecursive(output, "0755");
@@ -41,7 +39,7 @@ describe("whitelist", function () {
         cliTest.addOption(path.join(input, "DisableWebSecurity"));
         cliTest.addOption("-d");
         cliTest.addOption("-o", output);
-        cliTest.run(function () {
+        cliTest.run(settings.packager, function () {
             flag = true;
         });
 
@@ -57,9 +55,14 @@ describe("whitelist", function () {
                 dt = new DeployTest(path.join(output, "device", "DisableWebSecurity.bar"));
                 dt.listen(function (request) {
                     if (request.status === 'finished') {
+                        cliTest.reportRunnerFinished("DisableWebSecurity", request.data);
                         flag = true;
-                    } else {
-                        reqData.push(request.data);
+                    } else if (request.status === "SuiteResults") {
+                        cliTest.reportSuiteResults(request.data);
+                    } else if (request.status === "SpecResults") {
+                        cliTest.reportSpecResults(request.data);
+                    } else if (request.status === "RunnerStarting") {
+                        cliTest.reportRunnerStarting("DisableWebSecurity");
                     }
                 });
                 dt.startServer();
@@ -70,7 +73,7 @@ describe("whitelist", function () {
             }, "Something", 100000);
 
             runs(function () {
-                flag = false;
+                var flag = false;
                 dt.terminate(function () {
                     flag = true;
                 });
@@ -78,22 +81,6 @@ describe("whitelist", function () {
                     return flag;
                 });
                 runs(function () {
-                    reqData.forEach(function (spec) {
-                        if (spec.failedCount === 0) {
-                            console.log("Success - " + spec.description);
-                        } else {
-                            console.log("Failed - " + spec.description);
-                            spec.items.forEach(function (item) {
-                                if (!item.passed_) {
-                                    console.log(item.message);
-                                    if (item.trace && item.trace.stack) {
-                                        console.log(item.trace.stack);
-                                    }
-                                }
-                            });
-                        }
-                        console.log("");
-                    });
                 });
             });
         });
@@ -104,7 +91,7 @@ describe("whitelist", function () {
         cliTest.addOption(path.join(input, "SubfolderStartupPage"));
         cliTest.addOption("-d");
         cliTest.addOption("-o", output);
-        cliTest.run(function () {
+        cliTest.run(settings.packager, function () {
             flag = true;
         });
 
@@ -120,9 +107,14 @@ describe("whitelist", function () {
                 dt = new DeployTest(path.join(output, "device", "SubfolderStartupPage.bar"));
                 dt.listen(function (request) {
                     if (request.status === 'finished') {
+                        cliTest.reportRunnerFinished("SubfolderStartupPage", request.data);
                         flag = true;
-                    } else {
-                        reqData.push(request.data);
+                    } else if (request.status === "SuiteResults") {
+                        cliTest.reportSuiteResults(request.data);
+                    } else if (request.status === "SpecResults") {
+                        cliTest.reportSpecResults(request.data);
+                    } else if (request.status === "RunnerStarting") {
+                        cliTest.reportRunnerStarting("SubfolderStartupPage");
                     }
                 });
                 dt.startServer();
@@ -133,7 +125,7 @@ describe("whitelist", function () {
             }, "Something", 100000);
 
             runs(function () {
-                flag = false;
+                var flag = false;
                 dt.terminate(function () {
                     flag = true;
                 });
@@ -141,25 +133,59 @@ describe("whitelist", function () {
                     return flag;
                 });
                 runs(function () {
-                    reqData.forEach(function (spec) {
-                        if (spec.failedCount === 0) {
-                            console.log("Success - " + spec.description);
-                        } else {
-                            console.log("Failed - " + spec.description);
-                            spec.items.forEach(function (item) {
-                                if (!item.passed_) {
-                                    console.log(item.message);
-                                    if (item.trace && item.trace.stack) {
-                                        console.log(item.trace.stack);
-                                    }
-                                }
-                            });
-                        }
-                        console.log("");
-                    });
                 });
             });
         });
+    });
 
+    it("runs the wildcard domain tests", function () {
+        cliTest.addOption(path.join(input, "WildcardDomain"));
+        cliTest.addOption("-d");
+        cliTest.addOption("-o", output);
+        cliTest.run(settings.packager, function () {
+            flag = true;
+        });
+
+        waitsFor(function () {
+            return flag;
+        }, "Something", 100000);
+
+        runs(function () {
+            var reqData = [],
+                flag = false,
+                dt;
+            runs(function () {
+                dt = new DeployTest(output + "/device/WildcardDomain.bar");
+                dt.listen(function (request) {
+                    if (request.status === 'finished') {
+                        cliTest.reportRunnerFinished("WildcardDomain", request.data);
+                        flag = true;
+                    } else if (request.status === "SuiteResults") {
+                        cliTest.reportSuiteResults(request.data);
+                    } else if (request.status === "SpecResults") {
+                        cliTest.reportSpecResults(request.data);
+                    } else if (request.status === "RunnerStarting") {
+                        cliTest.reportRunnerStarting("WildcardDomain");
+                    }
+                });
+                dt.startServer();
+                dt.deploy();
+            });
+            waitsFor(function () {
+                return flag;
+            }, "Something", 100000);
+
+            runs(function () {
+                var flag = false;
+                dt.terminate(function () {
+                    flag = true;
+                });
+                waitsFor(function () {
+                    return flag;
+                });
+                runs(function () {
+                });
+            });
+        });
     });
 });
