@@ -26,26 +26,94 @@
     <script type="text/javascript" src="local:///chrome/webworks.js"></script>
 
     <script type="text/javascript">
+        function sendReport(report, data) {
+            var xmlhttp = new XMLHttpRequest();
+            console.log("Sending testing result now...");
+            xmlhttp.onreadystatechange=function()
+            {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    console.log(xmlhttp.responseText);
+                }
+            }
+            xmlhttp.open("POST", "http://169.254.0.2:9644", true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.send(JSON.stringify({status: report, data: data}));
+        }
+
         var jasmineEnv = jasmine.getEnv();
         jasmineEnv.updateInterval = 1000;
 
-        var htmlReporter = new jasmine.HtmlReporter();
+        var htmlReporter = new jasmine.HtmlReporter(),
+            originalReportSuiteResults = htmlReporter.reportSuiteResults,
+            originalReportSpecResults = htmlReporter.reportSpecResults,
+            originalReportRunnerResults = htmlReporter.reportRunnerResults,
+            originalReportRunnerStarting = htmlReporter.reportRunnerStarting,
+            knownFailures;
 
+            htmlReporter.reportSuiteResults = function (suite) {
+                function createNonCyclicalSuite(suite) {
+                    if (suite) {
+                        return {
+                            results: suite.results(),
+                            description: suite.description,
+                            parentSuite: createNonCyclicalSuite(suite.parentSuite)
+                        };
+                    } else {
+                        return suite
+                    }
+                }
+                sendReport("SuiteResults", createNonCyclicalSuite(suite));
+                originalReportSuiteResults(suite);
+            };
+
+            htmlReporter.reportSpecResults = function (spec) {
+                var data = {
+                    results: spec.results()
+                };
+                sendReport("SpecResults", data);
+                originalReportSpecResults(spec);
+            };
+
+            htmlReporter.reportRunnerResults = function (runner) {
+                var data = {
+                    results: runner.results(),
+                    suites: {
+                        length: runner.suites().length
+                    }
+                };
+
+                if (data.results.totalCount) {
+                    sendReport("finished", data);
+                    originalReportRunnerResults(runner);
+                }
+            }
+
+            htmlReporter.reportRunnerStarting = function (runner) {
+                sendReport("RunnerStarting", "Grrrrrrrrrrrrrreat");
+                originalReportRunnerStarting(runner);
+            }
         jasmineEnv.addReporter(htmlReporter);
 
         jasmineEnv.specFilter = function(spec) {
             return htmlReporter.specFilter(spec);
         };
 
-        function addChosenSpecs() {
+        function execJasmine() {
+            jasmineEnv.execute();
+        }
+
+        function addChosenSpecs(beQuiet) {
             var checkBoxes = document.getElementById('featureList').elements;
             for (var i = 0; i < checkBoxes.length; i++) {
                 if (checkBoxes[i].checked)
                 {
-                    addScript("local:///automation/spec/" + checkBoxes[i].value + ".js");
+                    addScript("spec/" + checkBoxes[i].value + ".js");
                 }
             }
-            alert("The selected tests have been added, click the Run Jasmine button to execute the SpecRunner");
+            if (!beQuiet) {
+                alert("The selected tests have been added, click the Run Jasmine button to execute the SpecRunner");
+            }
         }
 
         function addScript(filePath) {
@@ -65,6 +133,15 @@
             }
         }
 
+        function runSelectedSpecs () {
+            var oldTests = document.getElementsByClassName('jasmine_reporter');
+            for (var i = 0; i < oldTests.length; i++)
+            {
+                oldTests[i].parentNode.removeChild(oldTests[i]);
+            }
+            execJasmine();
+        }
+
         document.addEventListener("webworksready", function () {
             document.getElementById('addSpecs').onclick = addChosenSpecs;
             document.getElementById('selectAll').onclick = function () {
@@ -73,35 +150,36 @@
             document.getElementById('deselectAll').onclick = function () {
                 setAllBoxes(false);
             }
-            document.getElementById('start').onclick = function () {
-                var oldTests = document.getElementsByClassName('jasmine_reporter');
-                for (var i = 0; i < oldTests.length; i++)
-                {
-                    oldTests[i].parentNode.removeChild(oldTests[i]);
-                }
-                document.getElementById('controls').style.display = "none";
-                jasmineEnv.execute();
-                jasmineEnv.currentRunner_.finishCallback = function () { 
-                    document.getElementById('controls').style.display = "block"; 
-                };
-            };
+            document.getElementById('start').onclick = runSelectedSpecs;
+            //Check whether the URL contains index.html
+            //In this case we are being run in test-suite so just execute
+            var runAllTests = document.URL.match(/index.html/i);
+            if (runAllTests) {
+                setAllBoxes(true);
+                addChosenSpecs(true);
+                window.setTimeout(runSelectedSpecs, 1000);
+            }
+
         });
 
+    </script>
+
+    <script>
         function showOverlay() {
             var o = document.getElementById('overlay');
             o.style.visibility = 'visible';
             window.scrollTo(0,0);
         }
+
         function hideOverlay() {
             var o = document.getElementById('overlay');
             o.style.visibility = 'hidden';
         }
 
-    function takeScreenshot() {
-       internal.automation.takeScreenshot("/accounts/1000/shared/camera/WebWorksScreenShot.bmp");
-    }
-
-  </script>
+        function takeScreenshot() {
+            internal.automation.takeScreenshot("/accounts/1000/shared/camera/WebWorksScreenShot.bmp");
+        }
+    </script>
 
 </head>
 
