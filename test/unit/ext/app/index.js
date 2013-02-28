@@ -340,4 +340,37 @@ describe("app index", function () {
             testUnRegisterEvent("keyboardPosition");
         });
     });
+
+    describe("unregisterEvents", function () {
+        var appEvents = require(_libDir + "events/applicationEvents"),
+            success,
+            error;
+
+        beforeEach(function () {
+            spyOn(appEvents, "removeEventListener");
+            success = jasmine.createSpy("success");
+            error = jasmine.createSpy("error");
+        });
+
+        it("removes the rotate event", function () {
+            index.unregisterEvents(success);
+            expect(appEvents.removeEventListener).toHaveBeenCalledWith("rotate", jasmine.any(Function));
+        });
+
+        it("removes the rotateWhenLocked event", function () {
+            index.unregisterEvents(success);
+            expect(appEvents.removeEventListener).toHaveBeenCalledWith("rotateWhenLocked", jasmine.any(Function));
+        });
+
+        it("calls the success callback", function () {
+            index.unregisterEvents(success, error);
+            expect(success).toHaveBeenCalledWith();
+            expect(error).not.toHaveBeenCalled();
+        });
+
+        it("calls the error callback when there is an exception thrown", function () {
+            index.unregisterEvents(null, error);
+            expect(error).toHaveBeenCalledWith(-1, jasmine.any(Error));
+        });
+    });
 });

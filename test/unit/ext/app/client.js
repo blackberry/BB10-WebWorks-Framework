@@ -17,6 +17,7 @@ var _extDir = __dirname + "./../../../../ext",
     _apiDir = _extDir + "/app",
     _ID = require(_apiDir + "/manifest").namespace,
     client,
+    cleanup,
     mockData = {
         author: "testAuthor",
         authorEmail: "testEmail",
@@ -50,6 +51,12 @@ describe("app client", function () {
         };
         GLOBAL.window = {
             webworks: mockedWebworks,
+            addEventListener: jasmine.createSpy().andCallFake(function (type, func) {
+                cleanup = {
+                    type: type,
+                    func: func
+                };
+            }),
             orientation: 0
         };
         GLOBAL.navigator = {
@@ -200,6 +207,17 @@ describe("app client", function () {
             mockedWebworks.execSync = jasmine.createSpy();
             client.rotate('landscape');
             expect(mockedWebworks.execSync).toHaveBeenCalledWith(_ID, "rotate", {orientation: 'landscape'});
+        });
+    });
+
+    describe("when cleaning up", function () {
+        it("added a listener to beforeunload", function () {
+            expect(cleanup).toEqual({type: "beforeunload", func: jasmine.any(Function)});
+        });
+
+        it("calls unregister events when the beforeunload calback is triggered", function () {
+            cleanup.func();
+            expect(window.webworks.execSync).toHaveBeenCalledWith(_ID, "unregisterEvents");
         });
     });
 });

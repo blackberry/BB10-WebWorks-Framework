@@ -122,6 +122,10 @@ Object.defineProperty(_self, "lockOrientation", {"value": lockOrientation, "writ
 Object.defineProperty(_self, "unlockOrientation", {"value": unlockOrientation, "writable": false});
 Object.defineProperty(_self, "rotate", {"value": rotate, "writable": false});
 
-window.webworks.execSync(ID, "registerEvents", null);
+window.webworks.execSync(ID, "registerEvents");
+
+window.addEventListener("beforeunload", function () {
+    window.webworks.execSync(ID, "unregisterEvents");
+});
 
 module.exports = _self;

@@ -15,9 +15,11 @@
  */
 
 var _self = {}, 
-    _ID = require("./manifest.json").namespace;
+    _ID = require("./manifest.json").namespace,
+    events = [];
 
 _self.addEventListener = function (eventType, cb) {
+    events.push({type: eventType, func: cb});
     window.webworks.event.add(_ID, eventType, cb);
 };
 
@@ -25,5 +27,10 @@ _self.removeEventListener = function (eventType, cb) {
     window.webworks.event.remove(_ID, eventType, cb);
 };
 
+window.addEventListener("beforeunload", function () {
+    events.forEach(function (event) {
+        _self.removeEventListener(event.type, event.func);
+    });
+});
 
 module.exports = _self;
