@@ -141,14 +141,6 @@
         </filter>
     </rim:invoke-target>
 
-    <rim:invoke-target id="com.webworks.test.functional.invoke.card.target">
-        <type>card.previewer</type>
-        <filter>
-            <action>bb.action.WWTEST</action>
-            <mime-type>text/plain</mime-type>
-        </filter>
-    </rim:invoke-target>
-
     <rim:invoke-target id="com.webworks.test.functional.push.target">
         <type>APPLICATION</type>
         <filter>
@@ -163,6 +155,14 @@
             <action>bb.action.WWTEST</action>
             <mime-type>text/plain</mime-type>
             <property var="uris" value="file://" />
+        </filter>
+    </rim:invoke-target>
+
+    <rim:invoke-target id="com.webworks.test.functional.invoke.card.target">
+        <type>card.previewer</type>
+        <filter>
+            <action>bb.action.WWTEST</action>
+            <mime-type>text/plain</mime-type>
         </filter>
     </rim:invoke-target>
 

@@ -17,7 +17,7 @@ var onSuccess,
     onError,
     onSuccessFlag,
     onErrorFlag,
-    delay = 750;
+    delay = 950;
 
 describe("blackberry.invoke", function () {
     beforeEach(function () {
@@ -93,9 +93,9 @@ describe("blackberry.invoke", function () {
     });
 
     describe("Cards", function () {
-        var request = {
-                target: "net.rim.webworks.invoke.invoke.card.type",
-            },
+        var request = {                
+                target: "com.webworks.test.functional.invoke.card.target"                                
+             },   
             onChildCardClosed,
             onChildCardStartPeek,
             onChildCardEndPeek,
@@ -120,7 +120,7 @@ describe("blackberry.invoke", function () {
             confirm = null;
         });
 
-        it('invoke should invoke card', function () {
+        it('invoke should invoke card', function () { 
             try {
                 blackberry.invoke.invoke(request, onSuccess, onError);
             } catch (e) {
@@ -145,8 +145,7 @@ describe("blackberry.invoke", function () {
         });
 
         it('invoke should not invoke card whith invalid target name', function () {
-            request.target = "net.rim.webworks.invoke.invoke.invalid.card.target";
-
+            request.target = "com.webworks.test.functional.invoke.invalid.card.target";
             try {
                 blackberry.invoke.invoke(request, onSuccess, onError);
             } catch (e) {
@@ -166,8 +165,7 @@ describe("blackberry.invoke", function () {
         });
 
         it('invoke should be able to call closeChildCard after successfully invoking a card', function () {
-            request.target = "net.rim.webworks.invoke.invoke.card.type";
-
+            request.target = "com.webworks.test.functional.invoke.card.target";
             alert("This test will invoke card and close it without user interaction.");
 
             try {
