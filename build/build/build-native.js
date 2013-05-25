@@ -20,7 +20,7 @@ var utils = require("./utils"),
     _c = require("./conf");
 
 module.exports = function (isForUnitTest) {
-    var MAKE_CMD = "make " + "JLEVEL=" + _c.COMPILER_THREADS,
+    var MAKE_CMD = "make " + "JLEVEL=" + _c.COMMAND_DEFAULTS.compiler_threads,
         buildEnv = process.env;
 
     return function (prev, baton) {

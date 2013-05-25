@@ -14,26 +14,26 @@
 * limitations under the License.
 */
 var jWorkflow = require("jWorkflow"),
-    path = require("path"),
+    fs = require("fs"),
     conf = require("./build/conf"),
     utils = require("./build/utils");
 
 module.exports = function (barFile, deviceIp, password) {
     var deployBar = jWorkflow.order();
 
-    if (!barFile || !path.existsSync(barFile)) {
+    if (!barFile || !fs.existsSync(barFile)) {
         utils.displayOutput("Invalid bar file specified - " + barFile);
-        process.exit();
+        process.exit(-1);
     }
 
     if (!deviceIp) {
-        deviceIp = conf.DEPLOY_COMMAND_DEFAULT_IP;
-        utils.displayOutput("Device IP not specified, using default from build/conf.js - " + deviceIp);
+        deviceIp = conf.COMMAND_DEFAULTS.ip;
+        utils.displayOutput("Device IP not specified, using default from test-runner.json - " + deviceIp);
     }
 
     if (!password) {
-        password = conf.DEPLOY_COMMAND_DEFAULT_PW;
-        utils.displayOutput("Device password not specified, using default from build/conf.js - " + password);
+        password = conf.COMMAND_DEFAULTS.password;
+        utils.displayOutput("Device password not specified, using default from test-runner.json - " + password);
     }
 
     deployBar.andThen(utils.execCommandWithJWorkflow("blackberry-deploy -terminateApp " + "-package " +  barFile + " -device " + deviceIp + " -password " + password, {}, true))

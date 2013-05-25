@@ -22,6 +22,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         deviceaccelerometer: {
             context: _sensorEvents,
             event: "deviceaccelerometer",
+            triggerEvent: "deviceaccelerometer",
             trigger: function (obj) {
                 _event.trigger("deviceaccelerometer", obj);
             }
@@ -29,6 +30,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicemagnetometer: {
             context: _sensorEvents,
             event: "devicemagnetometer",
+            triggerEvent: "devicemagnetometer",
             trigger: function (obj) {
                 _event.trigger("devicemagnetometer", obj);
             }
@@ -36,6 +38,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicegyroscope: {
             context: _sensorEvents,
             event: "devicegyroscope",
+            triggerEvent: "devicegyroscope",
             trigger: function (obj) {
                 _event.trigger("devicegyroscope", obj);
             }
@@ -43,13 +46,15 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicecompass: {
             context: _sensorEvents,
             event: "devicecompass",
+            triggerEvent: "devicecompass",
             trigger: function (obj) {
                 _event.trigger("devicecompass", obj);
             }
-        },                        
+        },
         deviceproximity: {
             context: _sensorEvents,
             event: "deviceproximity",
+            triggerEvent: "deviceproximity",
             trigger: function (obj) {
                 _event.trigger("deviceproximity", obj);
             }
@@ -57,6 +62,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicelight: {
             context: _sensorEvents,
             event: "devicelight",
+            triggerEvent: "devicelight",
             trigger: function (obj) {
                 _event.trigger("devicelight", obj);
             }
@@ -64,6 +70,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicegravity: {
             context: _sensorEvents,
             event: "devicegravity",
+            triggerEvent: "devicegravity",
             trigger: function (obj) {
                 _event.trigger("devicegravity", obj);
             }
@@ -71,6 +78,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicelinearacceleration: {
             context: _sensorEvents,
             event: "devicelinearacceleration",
+            triggerEvent: "devicelinearacceleration",
             trigger: function (obj) {
                 _event.trigger("devicelinearacceleration", obj);
             }
@@ -78,6 +86,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         devicerotationmatrix: {
             context: _sensorEvents,
             event: "devicerotationmatrix",
+            triggerEvent: "devicerotationmatrix",
             trigger: function (obj) {
                 _event.trigger("devicerotationmatrix", obj);
             }
@@ -85,13 +94,15 @@ var sensors = require("./sensorsJNEXT").sensors,
         deviceorientation: {
             context: _sensorEvents,
             event: "deviceorientation",
+            triggerEvent: "deviceorientation",
             trigger: function (obj) {
                 _event.trigger("deviceorientation", obj);
             }
-        },        
+        },
         deviceazimuthpitchroll: {
             context: _sensorEvents,
             event: "deviceazimuthpitchroll",
+            triggerEvent: "deviceazimuthpitchroll",
             trigger: function (obj) {
                 _event.trigger("deviceazimuthpitchroll", obj);
             }
@@ -99,6 +110,7 @@ var sensors = require("./sensorsJNEXT").sensors,
         deviceholster: {
             context: _sensorEvents,
             event: "deviceholster",
+            triggerEvent: "deviceholster",
             trigger: function (obj) {
                 _event.trigger("deviceholster", obj);
             }

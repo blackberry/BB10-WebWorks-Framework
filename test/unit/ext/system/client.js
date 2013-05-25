@@ -100,6 +100,15 @@ describe("system client", function () {
         expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "setWallpaper", {"wallpaper": filePath});
     });
 
+    it("deviceLockedStatus", function () {
+        spyOn(mockedWebworks, "execSync").andCallFake(function () {
+            return "notLocked";
+        });
+
+        expect(sysClient.deviceLockedStatus).toEqual("notLocked");
+        expect(mockedWebworks.execSync).toHaveBeenCalledWith(ID, "deviceLockedStatus", null);
+    });
+
     it("ALLOW", function () {
         expect(mockedWebworks.defineReadOnlyField).toHaveBeenCalledWith(sysClient, "ALLOW", 0);
     });

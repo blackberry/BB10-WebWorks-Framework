@@ -353,6 +353,9 @@ std::string FileTransferCurl::Download(FileDownloadInfo *downloadInfo)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, DownloadWriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
+    // Allow redirects
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+
     // Check domain
     bool blockedDomain = false;
     const std::string parsedDomain(parseDomain(downloadInfo->source.c_str()));

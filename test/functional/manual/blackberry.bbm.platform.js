@@ -83,7 +83,7 @@ describe("blackberry.bbm.platform.self", function () {
             runs(function () {
                 onDisplayPicture = jasmine.createSpy();
 
-                blackberry.bbm.platform.self.setDisplayPicture("./app/native/default-icon.png");
+                blackberry.bbm.platform.self.setDisplayPicture("local://default-icon.png");
                 blackberry.bbm.platform.self.getDisplayPicture(onDisplayPicture);
             });
 

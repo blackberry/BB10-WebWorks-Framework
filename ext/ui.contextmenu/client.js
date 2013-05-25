@@ -27,8 +27,10 @@ function defineReadOnlyActions(name, value) {
 }
 
 function listen() {
-    window.blackberry.event.addEventListener('contextmenu.executeMenuAction', function (actionId) {
-        _storedCallbacks[actionId]();
+    window.blackberry.event.addEventListener('contextmenu.executeMenuAction', function (actionId, elementId) {
+        if (typeof _storedCallbacks[actionId] === 'function') {
+            _storedCallbacks[actionId](elementId);
+        }
     });
 }
 
@@ -52,6 +54,34 @@ Object.defineProperty(contextmenu, "enabled", {
         }
     }
 });
+
+contextmenu.clearOverride = function (actionId) {
+
+    if (typeof actionId === 'undefined') {
+        return 'Clearing override on a menu item requires an actionId';
+    }
+
+    if (_storedCallbacks[actionId]) {
+        delete _storedCallbacks[actionId];
+    }
+
+    window.webworks.execSync(_ID, 'clearOverride', { actionId: actionId});
+};
+
+contextmenu.overrideItem = function (action, callback) {
+
+    if (typeof action.actionId === 'undefined') {
+        return 'Overriding a menu item requires an actionId';
+    }
+
+    _storedCallbacks[action.actionId] = callback;
+    if (!_listeningForCallbacks) {
+        _listeningForCallbacks = true;
+        listen();
+    }
+    window.webworks.execSync(_ID, 'overrideItem', {action: action});
+};
+
 
 contextmenu.addItem = function (contexts, action, callback) {
 
@@ -103,7 +133,6 @@ defineReadOnlyActions("COPY", "Copy");
 defineReadOnlyActions("PASTE", "Paste");
 defineReadOnlyActions("SELECT", "Select");
 defineReadOnlyActions("COPY_LINK", "CopyLink");
-defineReadOnlyActions("OPEN_LINK", "OpenLink");
 defineReadOnlyActions("SAVE_LINK_AS", "SaveLinkAs");
 defineReadOnlyActions("SAVE_IMAGE", "SaveImage");
 defineReadOnlyActions("COPY_IMAGE_LINK", "CopyImageLink");

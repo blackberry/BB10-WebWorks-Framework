@@ -30,15 +30,14 @@ task('bundle', [], function () {
 desc("runs jake build cleaning native");
 task('clean', [], require('./build/clean-native'));
 
-
-desc("start server");
-task('start', [], function () {
-    require('./lib/server').start(process.argv);
-});
-
 desc("run all tests in node - jake test [path,path2]");
 task('test', [], function () {
     require('./build/test')(null, process.argv.length >= 4 ? process.argv[3] : null);
+});
+
+desc("run all tests in node - jake test [path,path2]");
+task('test-suite', [], function () {
+    require('./build/test-suite')(null, process.argv.length >= 4 ? process.argv[3] : null);
 });
 
 desc("Grabs the latest ScreenShot from the device located at /accounts/1000/shared/camera/WebWorksScreenShot.bmp " +
@@ -75,7 +74,7 @@ task('native-test', [], function () {
  * To run with default params use-
  * jake upload-ssh-key
  */
-desc("upload ssh key to device or sim - jake upload-ssh-key[<ip address>,<path to ssh key>]");
+desc("upload ssh key to device or sim - jake upload-ssh-key[<ip address>,<path to ssh key>, <path to super key>]");
 task('upload-ssh-key', [], function () {
     require('./build/upload-ssh-key')(Array.prototype.slice.call(arguments));
 });
@@ -91,8 +90,8 @@ task('stats', [], require('./build/stats'));
 desc("Packages an app using the framework produced by this repo." + DESC_NEW_LINE +
      " This will replace the framework folder in the packager specified." + DESC_NEW_LINE +
      " The packager path MUST be absolute (ie no ~)" + DESC_NEW_LINE +
-     " Expected usage - jake package[<pathToPackager>,<pathToAppZip>,<packagerOptions>]" + DESC_NEW_LINE +
-     " Example - jake package[/Users/jheifets/Downloads/BB10webworks-next-42/,test/test-app/wwTest.zip,-d]");
+     " Expected usage - jake package[<pathToApp>,<pathToPackager>,<packagerOptions>]" + DESC_NEW_LINE +
+     " Example - jake package['test/test-app','/Users/jheifets/Downloads/BB10webworks-next-42/','-d']");
 task('package', [], require('./build/package'));
 
 desc("Deploys a bar file to the given device/sim - jake deploy[<pathToBar>,<deviceIP>,<devicePassword>]");
@@ -107,5 +106,5 @@ desc("Builds the framework, creates the test-app, packages it and deploys it" + 
      " Example - jake deploy-tests[/Users/jheifetz/Downloads/BB10webworks-next-42/,-d,device,169.254.0.1,qaqa]");
 task("deploy-tests", [], require("./build/deploy-tests"));
 
-desc("Deploys and runs QNX automation agents (internal only) - jake deploy-automation[<deviceIP>,<domainUserName>]");
+desc("Deploys and runs QNX automation agents (internal only) - jake deploy-automation[<domainUserName>, <deviceIP>]");
 task("deploy-automation", [], require("./build/deploy-automation"));

@@ -32,28 +32,34 @@ function deleteContactWithMatchingLastName(lastName) {
             filter: [{
                 fieldName: ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
                 fieldValue: lastName
-            }], 
+            }]
         },
         numContactsRemoved = 0,
-        numContactsFound = 0,
+        numContactsNotRemoved = 0,
+        numContactsFound = -1,
         successCb = function () {
             numContactsRemoved++;
-        };
+        },
+        errorCb = function () {
+            numContactsNotRemoved++;
+        },
+        curIndex;
 
-    contacts.find(["name"], findOptions, function (contacts, index) {
+    contacts.find(["name"], findOptions, function (contacts) {
         numContactsFound = contacts.length;
         contacts.forEach(function (c, index) {
-            c.remove(successCb);
+            curIndex = index;
+            c.remove(successCb, errorCb);
             waitsFor(function () {
-                return numContactsRemoved === index + 1;
+                return numContactsRemoved + numContactsNotRemoved === curIndex + 1;
             }, "Contact not removed", 15000);
         });
     }, function (error) {
         console.log("Failed to clean up contacts with last name '" + lastName + "', error code=" + error.code);
-    }); 
+    });
 
     waitsFor(function () {
-        return numContactsRemoved === numContactsFound;
+        return numContactsFound !== -1 && (numContactsRemoved + numContactsNotRemoved === numContactsFound);
     }, "Not all contacts removed", 15000);
 
     runs(function () {
@@ -179,7 +185,7 @@ describe("blackberry.pim.contacts", function () {
             expect(ContactActivity.INCOMING).toBeDefined();
             expect(ContactActivity.OUTGOING).toBeDefined();
         });
-        
+
         it('blackberry.pim.contacts.ContactActivity constants should be read-only', function () {
             testReadOnly(ContactActivity, "INCOMING");
             testReadOnly(ContactActivity, "OUTGOING");
@@ -268,10 +274,10 @@ describe("blackberry.pim.contacts", function () {
 
         it('Can create blackberry.pim.contacts.ContactPhoto object', function () {
             var photo = {
-                originalFilePath: "/accounts/1000/shared/pictures/001.jpg", 
+                originalFilePath: blackberry.io.sharedFolder + "/pictures/001.jpg",
                 pref: true
             };
-            expect(photo.originalFilePath).toBe("/accounts/1000/shared/pictures/001.jpg");
+            expect(photo.originalFilePath).toBe(blackberry.io.sharedFolder + "/pictures/001.jpg");
             expect(photo.pref).toBe(true);
         });
 
@@ -309,7 +315,7 @@ describe("blackberry.pim.contacts", function () {
                     name: "Research In Motion"
                 },
                 workEmail = {
-                    type: ContactField.WORK, 
+                    type: ContactField.WORK,
                     value: "jfk@rim.com"
                 },
                 homeEmail = {
@@ -353,7 +359,7 @@ describe("blackberry.pim.contacts", function () {
 
             contactObj2 = contactObj.clone();
 
-            expect(contactObj2.name).toBe(name);
+            expect(contactObj2.name).toEqual(name);
             expect(contactObj2.emails).toContain(workEmail);
             expect(contactObj2.emails).toContain(homeEmail);
             expect(contactObj2.emails.length).toBe(2);
@@ -445,9 +451,6 @@ describe("blackberry.pim.contacts", function () {
                                               {"name": "IBM", "title": "Manager"},
                                               {"name": "The Cool Co.", "department": "Cooler", "title": "Mr. Cool"} ];
 
-                new_contact.photos = [ {originalFilePath: "/accounts/1000/shared/camera/earth.gif", pref: false},
-                                       {originalFilePath: "/accounts/1000/shared/camera/twitter.jpg", pref: true} ];
-
                 new_contact.note = "This is a test contact for the PIM WebWorks API";
                 new_contact.videoChat = ["abc", "def"];
                 new_contact.ringtone = "qwerty";
@@ -523,7 +526,7 @@ describe("blackberry.pim.contacts", function () {
                     expect(contact.id).toBeDefined();
 
                     if (foundContact) {
-                        expect(contact.id).not.toBe(foundContact.id);
+                        expect(contact.id).not.toEqual(foundContact.id);
                     }
 
                     expect(contact.id).not.toBe("");
@@ -639,10 +642,14 @@ describe("blackberry.pim.contacts", function () {
             if (clonedContact) {
                 // emails field was set null previously
                 expect(clonedContact.emails.length).toBe(2);
-                expect(clonedContact.emails[0].type).toBe("home");
-                expect(clonedContact.emails[0].value).toBe("abc@person.com");
-                expect(clonedContact.emails[1].type).toBe("work");
-                expect(clonedContact.emails[1].value).toBe("fgh@rim.com");
+                expect(clonedContact.emails).toContain({
+                    "type": "home",
+                    "value": "abc@person.com"
+                });
+                expect(clonedContact.emails).toContain({
+                    "type": "work",
+                    "value": "fgh@rim.com"
+                });
             } else {
                 console.log("clonedContact not defined");
             }
@@ -860,12 +867,12 @@ describe("blackberry.pim.contacts", function () {
             deleteContactWithMatchingLastName("WebWorksTest");
         });
 
-        it('can get the contact with specified contactId', function () {
+        it('can get the contact with specified contactId as a String', function () {
             var contactFound,
                 name = {
-                "familyName": "WebWorksTest",
-                "givenName": "John"
-            },
+                    "familyName": "WebWorksTest",
+                    "givenName": "John"
+                },
                 workPhone = { type: ContactField.WORK, value: "123-456-789" },
                 workEmail = { type: ContactField.WORK, value: "abc@blah.com" },
                 contact = contacts.create({
@@ -886,11 +893,21 @@ describe("blackberry.pim.contacts", function () {
                 return !!contactToFind;
             }, "create new contact was failed", 15000);
             runs(function () {
-                contactFound = contacts.getContact(contactToFind.id);
+                contactFound = contacts.getContact(contactToFind.id.toString());
                 expect(contactFound.id).toBe(contactToFind.id);
                 expect(contactFound.name).toEqual(contactToFind.name);
                 expect(contactFound.phoneNumbers).toEqual([workPhone]);
                 expect(contactFound.emails).toEqual([workEmail]);
+            });
+        });
+
+        it('cannot get the contact with if the specified contactId is a Number', function () {
+            var contactFound;
+
+            runs(function () {
+                expect(typeof parseInt(contactToFind.id, 10)).toEqual("number");
+                contactFound = contacts.getContact(parseInt(contactToFind.id, 10));
+                expect(contactFound).toBe(null);
             });
         });
     });
@@ -1101,7 +1118,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                         fieldValue: "Alessandro"
-                    }], 
+                    }],
                     sort: [{
                         fieldName: 23423,
                         desc: false
@@ -1144,7 +1161,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         fieldName: ContactFindOptions.SEARCH_FIELD_GIVEN_NAME,
                         fieldValue: "Alessandro"
-                    }], 
+                    }],
                     sort: [{
                         fieldName: ContactFindOptions.SORT_FIELD_FAMILY_NAME
                     }]
@@ -1329,7 +1346,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
                         "fieldValue": "S"
-                    }], 
+                    }],
                     sort: [{
                         "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
                         "desc": false
@@ -1388,7 +1405,7 @@ describe("blackberry.pim.contacts", function () {
                     }, {
                         "fieldName": ContactFindOptions.SEARCH_FIELD_FAMILY_NAME,
                         "fieldValue": "S"
-                    }], 
+                    }],
                     sort: [{
                         "fieldName": ContactFindOptions.SORT_FIELD_FAMILY_NAME,
                         "desc": false
@@ -1632,6 +1649,17 @@ describe("blackberry.pim.contacts", function () {
 
         it("Signal the end of all find tests", function () {
             doneTestingFind = true;
+        });
+    });
+
+    describe("blackberry.pim.contact.getContactAccounts", function () {
+        it("returns at least one account", function () {
+            var accounts;
+
+            accounts = contacts.getContactAccounts();
+            expect(accounts).toBeDefined();
+            expect(accounts.length).toBeGreaterThan(0);
+
         });
     });
 });

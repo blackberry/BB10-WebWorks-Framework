@@ -5,12 +5,23 @@
   <title>WebWorks Smoke Test for BB10</title>
 </head>
 <body>
+    <a href="../index.htm">Back</a>
+
     <h1>Test Child Web Views</h1>
     <p>
         A new web view should be created when a link with target=_blank is clicked,
         or when window.open() is called in response to a user's click event.
 
         When target is _self the content should be loaded in the current webview
+    </p>
+
+    <h1>Special Cases</h1>
+    <h3><a href="http://wechoosethemoon.org/" target="_blank">Click Here to Open a Flash Site</a></h3>
+    <br />
+    <h3><a href="http://mobile.theverge.com" target="_blank">Click here to Open Mobile version of theverge</a></h3>
+    <p>
+        The above link has a <em>target=_blank</em> attribute and should load
+        a new page in a separate web view when clicked and be scaled well :).
     </p>
 
     <h1>Declarative API</h1>
@@ -188,6 +199,7 @@
             results.textContent = childWindow ? 'Success! ' + childWindow.toString() : 'Failed to get child window reference';
         });
     }());
-    </script>
+</script>
+    <a href="../index.htm">Back</a>
 </body>
 </html>

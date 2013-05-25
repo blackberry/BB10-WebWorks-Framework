@@ -18,6 +18,7 @@ var _event = require("./../../lib/event"),
         invoked: {
             context: require("./invocationEvents"),
             event: "invoked",
+            triggerEvent: "invoked",
             trigger: function (request) {
                 var onInvokedInfo = JSON.parse(request);
 
@@ -30,6 +31,7 @@ var _event = require("./../../lib/event"),
         onCardResize: {
             context: require("./invocationEvents"),
             event: "onCardResize",
+            triggerEvent: "onCardResize",
             trigger: function (info) {
                 _event.trigger("onCardResize", info);
             }
@@ -37,6 +39,7 @@ var _event = require("./../../lib/event"),
         onCardClosed: {
             context: require("./invocationEvents"),
             event: "onCardClosed",
+            triggerEvent: "onCardClosed",
             trigger: function (info) {
                 _event.trigger("onCardClosed", info);
             }

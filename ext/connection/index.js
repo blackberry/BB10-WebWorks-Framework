@@ -40,6 +40,7 @@ function mapConnectionType(type, technology) {
     case 'cellular':
         switch (technology) {
         case 'edge':
+        case 'gsm':
             return '2g';
         case 'evdo':
             return '3g';
@@ -49,7 +50,7 @@ function mapConnectionType(type, technology) {
             return '4g';
         }
     }
-    return '';
+    return 'unknown';
 }
 
 function currentConnectionType() {
@@ -66,6 +67,7 @@ _actionMap = {
     connectionchange: {
         context: require("../../lib/events/deviceEvents"),
         event: "connectionChange",
+        triggerEvent: "connectionchange",
         trigger: function (args) {
             var currentType = currentConnectionType();
             if (currentType ===  connectionChangeOldType) {

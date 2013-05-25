@@ -23,7 +23,8 @@ describe("server", function () {
         applicationAPIServer,
         utils,
         DEFAULT_SERVICE = "default",
-        DEFAULT_ACTION = "exec";
+        DEFAULT_ACTION = "exec",
+        config = {};
 
     beforeEach(function () {
         applicationAPIServer = require(ROOT + "ext/app/index");
@@ -65,46 +66,120 @@ describe("server", function () {
 
         it("calls the default plugin if the service doesn't exist", function () {
             var rebuiltRequest = {
-                params: {
-                    service: DEFAULT_SERVICE,
-                    action: DEFAULT_ACTION,
-                    ext: "not",
-                    method: "here",
-                    args: null
+                    params: {
+                        service: DEFAULT_SERVICE,
+                        action: DEFAULT_ACTION,
+                        ext: "not",
+                        method: "here",
+                        args: null
+                    },
+                    body: "",
+                    origin: ""
                 },
-                body: "",
-                origin: ""
-            };
+                webview = {};
+
             spyOn(plugin, DEFAULT_ACTION);
             req.params.service = "not";
             req.params.action = "here";
 
-            server.handle(req, res);
+            server.handle(req, res, webview, config);
 
-            expect(plugin[DEFAULT_ACTION]).toHaveBeenCalledWith(rebuiltRequest, jasmine.any(Function), jasmine.any(Function), null, jasmine.any(Object));
+            expect(plugin[DEFAULT_ACTION]).toHaveBeenCalledWith(
+                rebuiltRequest, jasmine.any(Function),
+                jasmine.any(Function),
+                rebuiltRequest.params.args,
+                {
+                    request: rebuiltRequest,
+                    response: res,
+                    webview: webview,
+                    config: config
+                }
+            );
         });
 
         it("returns 404 if the action doesn't exist", function () {
             req.params.service = "default";
             req.params.action = "ThisActionDoesNotExist";
 
-            spyOn(console, "log");
+            spyOn(console, "error");
 
             server.handle(req, res);
             expect(res.send).toHaveBeenCalledWith(404, jasmine.any(String));
-            expect(console.log).toHaveBeenCalledWith(jasmine.any(Error));
+            expect(console.error).toHaveBeenCalled();
         });
 
         it("calls the action method on the plugin", function () {
+            var webview = "BLAHBLAHBLAH";
+
             spyOn(extensionPlugin, "get");
 
             req.params.service = "extensions";
             req.params.action = "get";
 
             expect(function () {
-                return server.handle(req, res);
+                return server.handle(req, res, webview, config);
             }).not.toThrow();
-            expect(extensionPlugin.get).toHaveBeenCalled();
+            expect(extensionPlugin.get).toHaveBeenCalledWith(
+                req,
+                jasmine.any(Function),
+                jasmine.any(Function),
+                req.params.args,
+                {
+                    request: req,
+                    response: res,
+                    webview: webview,
+                    config: config
+                });
+        });
+
+        it("parses url encoded args", function () {
+            var webview = "BLAHBLAHBLAH";
+
+            spyOn(extensionPlugin, "get");
+
+            expect(function () {
+                req.params.service = "extensions";
+                req.params.action = "get";
+                req.params.args = "a=1&b=2&c=3";
+
+                return server.handle(req, res, webview);
+            }).not.toThrow();
+            expect(extensionPlugin.get).toHaveBeenCalledWith(
+                jasmine.any(Object),
+                jasmine.any(Function),
+                jasmine.any(Function),
+                {
+                    a: '1',
+                    b: '2',
+                    c: '3'
+                },
+                jasmine.any(Object)
+            );
+        });
+
+        it("parses url encoded args", function () {
+            var webview = "BLAHBLAHBLAH";
+
+            spyOn(extensionPlugin, "get");
+
+            expect(function () {
+                req.params.service = "extensions";
+                req.params.action = "get";
+                req.body = JSON.stringify({a: '1', b: '2', c: '3'});
+
+                return server.handle(req, res, webview);
+            }).not.toThrow();
+            expect(extensionPlugin.get).toHaveBeenCalledWith(
+                jasmine.any(Object),
+                jasmine.any(Function),
+                jasmine.any(Function),
+                {
+                    a: '1',
+                    b: '2',
+                    c: '3'
+                },
+                jasmine.any(Object)
+            );
         });
 
         it("returns the result and code 1 when success callback called", function () {
@@ -149,8 +224,7 @@ describe("server", function () {
                     action: "exec",
                     ext: "blackberry.app",
                     method: "getReadOnlyFields",
-                    args: null,
-                    origin: null
+                    args: null
                 },
                 headers: {
                     host: ""
@@ -176,22 +250,33 @@ describe("server", function () {
         });
 
         it("returns 403 if the feature is not white listed", function () {
-            var errMsg = "Feature denied by whitelist";
+            var errMsg = "Feature " + req.params.ext + " denied access by whitelist for origin " + req.origin;
 
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(false);
-            spyOn(console, "log");
+            spyOn(console, "warn");
 
             server.handle(req, res);
 
-            expect(console.log).toHaveBeenCalledWith(errMsg + ": " + {});
             expect(res.send).toHaveBeenCalledWith(403, encodeURIComponent(JSON.stringify({code: -1, data: null, msg: errMsg})));
+            expect(console.warn).toHaveBeenCalledWith(errMsg);
         });
 
         it("calls the action method on the feature", function () {
+            var webview = {};
             spyOn(Whitelist.prototype, "isFeatureAllowed").andReturn(true);
             spyOn(applicationAPIServer, "getReadOnlyFields");
-            server.handle(req, res);
-            expect(applicationAPIServer.getReadOnlyFields).toHaveBeenCalled();
+            server.handle(req, res, webview, config);
+            expect(applicationAPIServer.getReadOnlyFields).toHaveBeenCalledWith(
+                jasmine.any(Function),
+                jasmine.any(Function),
+                req.params.args,
+                {
+                    request: req,
+                    response: res,
+                    webview: webview,
+                    config: config
+                }
+            );
         });
 
         it("returns the result and code 1 when success callback called", function () {

@@ -1,0 +1,26 @@
+﻿<html>
+<head>
+    <title>Connection API</title>
+	<script type="text/javascript" src="script.js"></script>
+	<script type="text/javascript" src="local:///chrome/webworks.js"></script>
+</head>
+<body>
+	<button onclick="alert(blackberry.connection.type)">blackberry.connection.type</button><br /><br />
+	<button onclick="alert(blackberry.connection.BB)">blackberry.connection.BB</button><br /><br />
+	<button onclick="alert(blackberry.connection.BLUETOOTH_DUN)">blackberry.connection.BLUETOOTH_DUN</button><br /><br />
+	<button onclick="alert(blackberry.connection.CELL_2G)">blackberry.connection.CELL_2G</button><br /><br />
+	<button onclick="alert(blackberry.connection.CELL_3G)">blackberry.connection.CELL_3G</button><br /><br />
+	<button onclick="alert(blackberry.connection.CELL_4G)">blackberry.connection.CELL_4G</button><br /><br />
+	<button onclick="alert(blackberry.connection.ETHERNET)">blackberry.connection.ETHERNET</button><br /><br />
+	<button onclick="alert(blackberry.connection.NONE)">blackberry.connection.NONE</button><br /><br />
+	<button onclick="alert(blackberry.connection.UNKNOWN)">blackberry.connection.UNKNOWN</button><br /><br />
+	<button onclick="alert(blackberry.connection.USB)">blackberry.connection.USB</button><br /><br />
+	<button onclick="alert(blackberry.connection.VPN)">blackberry.connection.VPN</button><br /><br />
+	<button onclick="alert(blackberry.connection.WIFI)">blackberry.connection.WIFI</button><br /><br />
+	<button onclick="changeValues()">Change blackberry.connection values</button><br /><br />
+	<button onclick="blackberry.event.addEventListener('connectionchange', onConnectionChange)">blackberry.event.addEventListener('connectionchange', onConnectionChange)</button><br /><br />
+	<button onclick="blackberry.event.removeEventListener('connectionchange', onConnectionChange)">blackberry.event.removeEventListener('connectionchange', onConnectionChange)</button><br /><br />
+	<button onclick="blackberry.event.addEventListener('batterystatus', onBatteryStatusChange)">blackberry.event.addEventListener('batterystatus', onBatteryStatusChange)</button><br /><br />
+	<button onclick="blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange)">blackberry.event.removeEventListener('batterystatus', onBatteryStatusChange)</button>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jasmine Spec Runner</title>
+    <style type="text/css">
+        #overlay {
+            z-index:1000;
+            position:absolute;
+            top:0;
+            bottom:0;
+            left:0;
+            width:100%;
+            background:#fff;
+            visibility:hidden;
+        }
+
+        .description, .runningAlert {
+            pointer-events: none;
+        }
+
+    </style>
+    <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
+    <script type="text/javascript" src="../js/jasmine.js"></script>
+    <script type="text/javascript" src="../js/jasmine-html.js"></script>
+    <script type="text/javascript" src="local:///chrome/webworks.js"></script>
+
+    <script type="text/javascript">
+        var jasmineEnv = jasmine.getEnv();
+        jasmineEnv.updateInterval = 1000;
+
+        var htmlReporter = new jasmine.HtmlReporter();
+
+        jasmineEnv.addReporter(htmlReporter);
+
+        jasmineEnv.specFilter = function(spec) {
+            return htmlReporter.specFilter(spec);
+        };
+
+        function addChosenSpecs() {
+            var checkBoxes = document.getElementById('featureList').elements;
+            for (var i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].checked)
+                {
+                    addScript("local:///automation/spec/" + checkBoxes[i].value + ".js");
+                }
+            }
+            alert("The selected tests have been added, click the Run Jasmine button to execute the SpecRunner");
+        }
+
+        function addScript(filePath) {
+            var script = document.createElement("script");
+                head = document.getElementsByTagName("head")[0];
+            script.type = "text/javascript";
+            script.src = filePath;
+            head.appendChild(script);
+        }
+
+        function setAllBoxes(value) {
+            var checkBoxes = document.getElementById('featureList').elements;
+            for (var i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].hasOwnProperty('checked')) {
+                    checkBoxes[i].checked = value;
+                }
+            }
+        }
+
+        document.addEventListener("webworksready", function () {
+            document.getElementById('addSpecs').onclick = addChosenSpecs;
+            document.getElementById('selectAll').onclick = function () {
+                setAllBoxes(true);
+            };
+            document.getElementById('deselectAll').onclick = function () {
+                setAllBoxes(false);
+            }
+            document.getElementById('start').onclick = function () {
+                var oldTests = document.getElementsByClassName('jasmine_reporter');
+                for (var i = 0; i < oldTests.length; i++)
+                {
+                    oldTests[i].parentNode.removeChild(oldTests[i]);
+                }
+                document.getElementById('controls').style.display = "none";
+                jasmineEnv.execute();
+                jasmineEnv.currentRunner_.finishCallback = function () { 
+                    document.getElementById('controls').style.display = "block"; 
+                };
+            };
+        });
+
+        function showOverlay() {
+            var o = document.getElementById('overlay');
+            o.style.visibility = 'visible';
+            window.scrollTo(0,0);
+        }
+        function hideOverlay() {
+            var o = document.getElementById('overlay');
+            o.style.visibility = 'hidden';
+        }
+
+    function takeScreenshot() {
+       internal.automation.takeScreenshot("/accounts/1000/shared/camera/WebWorksScreenShot.bmp");
+    }
+
+  </script>
+
+</head>
+
+<body>
+
+    <h1> Automation tests </h1>
+
+    <div id="controls">
+
+    <input id="backButton" type="button" value="Back" onclick="history.back();"/>
+    <input id="reloadPage" type="button" value="Reload Page" onclick="window.location.reload(true);"><br /><br />
+
+    <form id="featureList">
+        <input type="checkbox" value="blackberry.app">blackberry.app</input><br />
+        <input type="checkbox" value="blackberry.connection">blackberry.connection</input><br />
+        <input type="checkbox" value="blackberry.invoke">blackberry.invoke</input><br />
+        <input type="checkbox" value="blackberry.invoke.card.calendar">blackberry.invoke.card.calendar</input><br />
+        <input type="checkbox" value="blackberry.invoke.card.camera">blackberry.invoke.card.camera</input><br />
+        <input type="checkbox" value="blackberry.invoke.card.emailComposer">blackberry.invoke.card.emailComposer</input><br />
+        <input type="checkbox" value="blackberry.invoke.card.filepicker">blackberry.invoke.card.filepicker</input><br />
+        <input type="checkbox" value="blackberry.invoke.card.ics">blackberry.invoke.card.ics</input><br />
+        <input type="checkbox" value="blackberry.invoke.card.mediaplayer">blackberry.invoke.card.mediaplayer</input><br />
+        <input type="checkbox" value="blackberry.system">blackberry.system</input><br />
+        <input type="checkbox" value="blackberry.ui.contextmenu">blackberry.ui.contextmenu</input><br />
+        <input type="checkbox" value="blackberry.ui.dialog">blackberry.ui.dialog</input><br />
+        <input type="checkbox" value="blackberry.ui.toast">blackberry.ui.toast</input><br />
+        <input type="checkbox" value="childWebView">ChildWebView</input><br />
+    </form>
+    <br />
+
+    <input id="selectAll" type="button" value="Select All" />
+    <input id="deselectAll" type="button" value="De-select All" />
+    <input id="addSpecs" type="button" value="Add Specs" />
+    <input id="start" type="button" value="Run Jasmine" /><br />
+
+    </div>
+
+    <div id="overlay">
+        <button onclick="takeScreenshot()" > Take ScreenShot </button>
+    </div>
+</body>
+</html>

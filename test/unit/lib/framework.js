@@ -78,7 +78,8 @@ describe("framework", function () {
                 getApplicationWindow : function () {
                     return mockedApplicationWindow;
                 },
-                device : mockedDevice
+                device : mockedDevice,
+                nativeCall: jasmine.createSpy("qnx.webplatform.nativeCall")
             }
         };
         GLOBAL.window = {
@@ -89,20 +90,25 @@ describe("framework", function () {
 
         delete require.cache[require.resolve(srcPath + "webview")];
         webview = require(srcPath + "webview");
-        delete require.cache[require.resolve(srcPath + "overlayWebview")];
+        delete require.cache[require.resolve(srcPath + "overlayWebView")];
         overlayWebView = require(srcPath + "overlayWebView");
-        delete require.cache[require.resolve(srcPath + "controllerWebview")];
+        delete require.cache[require.resolve(srcPath + "controllerWebView")];
         controllerWebView = require(srcPath + "controllerWebView");
 
         spyOn(webview, "create").andCallFake(function (done) {
             done();
         });
 
-        spyOn(overlayWebView, "create").andCallFake(function (done) {
-            overlayWebViewObj = overlayWebView.getWebViewObj();
-            overlayWebViewObj.formcontrol = {
-                subscribeTo: jasmine.createSpy()
+        spyOn(overlayWebView, "getWebViewObj").andCallFake(function () {
+            overlayWebViewObj = {
+                formcontrol: {
+                    subscribeTo: jasmine.createSpy()
+                }
             };
+            return overlayWebViewObj;
+        });
+
+        spyOn(overlayWebView, "create").andCallFake(function (done) {
             done();
         });
 
@@ -373,6 +379,15 @@ describe("framework", function () {
     });
 
     describe('enabling form control', function () {
+        var originalConfigVal;
+
+        beforeEach(function () {
+            originalConfigVal = config.enableFormControl;
+        });
+
+        afterEach(function () {
+            config.enableFormControl = originalConfigVal;
+        });
 
         it('subscribes webview to formcontrol', function () {
             config.enableFormControl = true;
@@ -384,6 +399,30 @@ describe("framework", function () {
             config.enableFormControl = false;
             framework.start();
             expect(overlayWebViewObj.formcontrol.subscribeTo).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('enabling popup blocker', function () {
+        var originalConfigVal;
+
+        beforeEach(function () {
+            originalConfigVal = config.enablePopupBlocker;
+        });
+
+        afterEach(function () {
+            config.enablePopupBlocker = originalConfigVal;
+        });
+
+        it('does nothing when enablePopupBlocker is true', function () {
+            config.enablePopupBlocker = true;
+            framework.start();
+            expect(mockedQnx.webplatform.nativeCall).not.toHaveBeenCalledWith('webview.setBlockPopups', webview.id, false);
+        });
+
+        it('Disables popupblocker when enablePopupBlocker is false', function () {
+            config.enablePopupBlocker = false;
+            framework.start();
+            expect(mockedQnx.webplatform.nativeCall).toHaveBeenCalledWith('webview.setBlockPopups', webview.id, false);
         });
     });
 

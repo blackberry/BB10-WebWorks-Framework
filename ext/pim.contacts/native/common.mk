@@ -10,7 +10,8 @@ UTILS=yes
 include ../../../../meta.mk
 
 SRCS+=pim_contacts_qt.cpp \
-      pim_contacts_js.cpp
+      pim_contacts_js.cpp \
+      contact_account.cpp
 
 ifeq ($(UNITTEST),yes)
 NAME=test

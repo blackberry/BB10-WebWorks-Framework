@@ -69,6 +69,39 @@ describe("Utils", function () {
         expect(utils.fileNameToImageMIME("test.svg")).toEqual("image/svg+xml");
     });
 
+    it("has an invokeInBrowser function", function () {
+        var url = "http://www.webworks.com",
+            mockApplication = {
+                invocation: {
+                    invoke: jasmine.createSpy("invocation.invoke")
+                }
+            },
+            mockWindow = {
+                qnx: {
+                    webplatform: {
+                        getApplication: function () {
+                            return mockApplication;
+                        }
+                    }
+                }
+            };
+
+        GLOBAL.window = mockWindow;
+
+        this.after(function () {
+            delete GLOBAL.window;
+        });
+
+        expect(utils.invokeInBrowser).toBeDefined();
+
+        utils.invokeInBrowser(url);
+
+        expect(mockApplication.invocation.invoke).toHaveBeenCalledWith({
+            uri: url,
+            target: "sys.browser"
+        });
+    });
+
     // A cascading method invoker, kinda like jWorkflow
     describe("series", function () {
         var tasks,
@@ -192,4 +225,56 @@ describe("Utils", function () {
         });
     });
 
+    describe("deepclone", function () {
+        it("passes through null", function () {
+            expect(utils.deepclone(null)).toBe(null);
+        });
+
+        it("passes through undefined", function () {
+            expect(utils.deepclone(undefined)).toBe(undefined);
+        });
+
+        it("passes through a Number", function () {
+            expect(utils.deepclone(1)).toBe(1);
+        });
+
+        it("passes through a String", function () {
+            var str = "hello world";
+            expect(utils.deepclone(str)).toBe(str);
+        });
+
+        it("passes through a Boolean", function () {
+            expect(utils.deepclone(true)).toBe(true);
+            expect(utils.deepclone(false)).toBe(false);
+        });
+
+        it("returns a new Date", function () {
+            var date = new Date(),
+                dateCopy = utils.deepclone(date);
+
+            expect(dateCopy instanceof Date).toBe(true, "Not a Date");
+            expect(date).not.toBe(dateCopy);
+            expect(date.getTime()).toBe(dateCopy.getTime());
+        });
+
+        it("returns a new RegExp", function () {
+            var regex = /a/,
+                regexCopy = utils.deepclone(regex);
+
+            expect(regexCopy instanceof RegExp).toBe(true, "Not a RegExp");
+            expect(regexCopy).not.toBe(regex);
+            expect(regexCopy.toString()).toBe(regex.toString());
+        });
+
+        it("copies nested Object properties", function () {
+            var obj = {
+                    a: "hello world",
+                    b: "hello again"
+                },
+                objCopy = utils.deepclone(obj);
+
+            expect(obj).not.toBe(objCopy);
+            expect(obj).toEqual(objCopy);
+        });
+    });
 });

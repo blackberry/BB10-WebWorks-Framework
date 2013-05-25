@@ -18,7 +18,7 @@ var childProcess = require("child_process"),
     fs = require("fs"),
     path = require("path"),
     jWorkflow = require("jWorkflow"),
-    _c = require("./conf");
+    conf = require("./conf");
 
 function _getCmd(ext, device, ip) {
     var cmd = "",
@@ -27,12 +27,12 @@ function _getCmd(ext, device, ip) {
         testDir;
 
     //unit tests directories
-    deviceDir = path.join(_c.UNIT_TEST_DEVICE_BUILD, ext, "native/arm/o.le-v7/test");
-    simDir = path.join(_c.UNIT_TEST_SIM_BUILD, ext, "native/x86/o/test");
+    deviceDir = path.join(conf.UNIT_TEST_DEVICE_BUILD, ext, "native/arm/o.le-v7/test");
+    simDir = path.join(conf.UNIT_TEST_SIM_BUILD, ext, "native/x86/o/test");
     testDir = device === "device" ? deviceDir : simDir;
-    
+
     //If the folder exists, grab the test
-    if (path.existsSync(testDir)) {
+    if (fs.existsSync(testDir)) {
         console.log("Running Unit tests for " + ext);
         cmd += " " +
             "scp " + testDir  + " root@" + ip + ":/tmp/test && " +
@@ -44,13 +44,38 @@ function _getCmd(ext, device, ip) {
 module.exports = function (prev, baton) {
     var build = jWorkflow.order(),
         thisBaton = baton,
+        exts = fs.readdirSync(path.join(conf.ROOT, "ext")),
         args = Array.prototype.slice.call(prev)[0] || [],
-        device = args[0] === "simulator" ? "simulator" : "device",
-        ip = utils.isValidIPAddress(args[1]) ? args[1] : _c.USB_IP,
-        omitList = args.slice(2) || [],
-        exts = fs.readdirSync(path.join(_c.ROOT, "ext")),
+        device,
+        ip,
+        omitList,
         i;
-    
+
+    if (!args[0]) {
+        device = ((!!conf.COMMAND_DEFAULTS.device) ? "device" : "simulator");
+        utils.displayOutput("No target specified, using default from test-runner.json - " + device);
+    } else {
+        device = args[0] === "simulator" ? "simulator" : "device";
+    }
+
+    if (!args[1]) {
+        ip = conf.COMMAND_DEFAULTS.ip;
+        utils.displayOutput("Device IP not specified, using default from test-runner.json - " + ip);
+    } else if (!utils.isValidIPAddress(args[1])) {
+        ip = conf.COMMAND_DEFAULTS.ip;
+        utils.displayOutput("Device IP specified was not valid, using default from test-runner.json - " + ip);
+    } else {
+        ip = args[1];
+    }
+
+    if (args.length < 2) {
+        omitList = conf.COMMAND_DEFAULTS.omit_list;
+        utils.displayOutput("Omit-list not specified, using default from test-runner.json - " + ip);
+    } else {
+        omitList = args.slice(2) || [];
+    }
+
+
     thisBaton.take();
     for (i = 0; i < exts.length; i++) {
         if (!utils.arrayContains(omitList, exts[i])) {
@@ -59,14 +84,11 @@ module.exports = function (prev, baton) {
     }
 
     //catch the success case
-    build = build.andThen(function () {
-        thisBaton.pass();
-    });
-
-    //catch the error case
     build.start(function (error) {
         if (error) {
             thisBaton.drop(error);
+        } else {
+            thisBaton.pass();
         }
     });
 };

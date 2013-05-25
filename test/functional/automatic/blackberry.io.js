@@ -1,5 +1,5 @@
 describe("FileSystem API", function () {
-     
+
     it("Sandboxed FileSystem write file", function () {
         var errorHandler = jasmine.createSpy().andCallFake(function (e) {
                 console.log(e);
@@ -26,7 +26,7 @@ describe("FileSystem API", function () {
                 fs.root.getFile(fileName, {create: true}, gotFile, errorHandler);
             }
 
-            blackberry.io.sandbox = true;           
+            blackberry.io.sandbox = true;
             window.webkitRequestFileSystem(window.PERSISTENT, 1024 * 1024, onInitFs, errorHandler);
         });
 
@@ -50,7 +50,7 @@ describe("FileSystem API", function () {
             fileContent;
 
         runs(function () {
-            
+
             function gotFile(fileEntry) {
                 fileEntry.file(function (file) {
                     var reader = new FileReader();
@@ -83,13 +83,13 @@ describe("FileSystem API", function () {
             expect(fileContent).toBe("this is text data");
         });
     });
-    
+
     it("Unsandboxed FileSystem write file", function () {
         var errorHandler = jasmine.createSpy().andCallFake(function (e) {
                 console.log(e);
             }),
             fileWritten = false,
-            dir = "/accounts/1000/shared/documents/",
+            dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "textData.txt",
             bb = new window.WebKitBlobBuilder();
 
@@ -112,7 +112,7 @@ describe("FileSystem API", function () {
                 fs.root.getFile(dir + fileName, {create: true}, gotFile, errorHandler);
             }
 
-            
+
             window.webkitRequestFileSystem(window.PERSISTENT, 1024 * 1024, onInitFs, errorHandler);
         });
 
@@ -132,7 +132,7 @@ describe("FileSystem API", function () {
                 console.log(e);
             }),
             fileRead = false,
-            dir = "/accounts/1000/shared/documents/",
+            dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "textData.txt",
             fileContent;
 
@@ -170,4 +170,4 @@ describe("FileSystem API", function () {
             expect(fileContent).toBe("this is text data");
         });
     });
-});    
+});

@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-#ifndef BBM_BPS_H_
-#define BBM_BPS_H_
+#ifndef BBM_BPS_HPP_
+#define BBM_BPS_HPP_
 
 #include <bbmsp/bbmsp_contactlist.h>
+#include <bbmsp/bbmsp_userprofile.h>
+#include <bbmsp/bbmsp_user_profile_box.h>
+#include <json/value.h>
 #include <pthread.h>
+#include <map>
 #include <string>
 
 class BBM;
@@ -39,45 +43,72 @@ enum BBMField {
 enum BBMInternalEvents {
     INTERNAL_EVENT_REGISTER = 0,
     INTERNAL_EVENT_CONTACT_EVENTS,
+    INTERNAL_EVENT_GET_DISPLAY_PICTURE,
     INTERNAL_EVENT_STOP,
 };
+
+typedef std::map<std::string, int> ProfileFieldMap;
 
 class BBMBPS {
 public:
     explicit BBMBPS(BBM *parent = NULL);
     ~BBMBPS();
-    void SetActiveChannel(int channel);
+    void SetActiveChannel(const int channel);
     // Events related functions
-    int InitializeEvents();
+    bool InitializeEvents();
     int WaitForEvents();
     static void SendEndEvent();
     static int GetActiveChannel();
     void StartContactEvents();
     void StopContactEvents();
-    // BBM related functions
+
+    // Profile related functions
     void Register(const std::string& uuid);
-    std::string GetProfile(BBMField field);
+    std::string GetProfile(const std::string strField);
+    std::string GetProfile(const BBMField field);
     void GetDisplayPicture();
-    void SetStatus(int status, const std::string& personalMessage);
+    void SetStatus(const int status, const std::string& personalMessage);
     void SetPersonalMessage(const std::string& personalMessage);
     void SetDisplayPicture(const std::string& imgPath);
-    std::string GetContact(bbmsp_contact_t *contact, BBMField field);
+
+    // Contact list functions
+    std::string GetContact(bbmsp_contact_t *contact, const BBMField field);
+
+    // Profile box functions
+    void ProfileBoxAddItem(const Json::Value& item);
+    void ProfileBoxRemoveItem(const Json::Value& item);
+    void ProfileBoxClearItems();
+    void ProfileBoxRegisterIcon(const Json::Value& iconData);
+    std::string ProfileBoxGetItems();
+    std::string ProfileBoxGetAccessible();
+
     void InviteToDownload();
 
 private:
     BBM *m_pParent;
-    void processAccessCode(int code);
+
+    // helper funcitons
+    void processAccessCode(const int code);
     void processProfileUpdate(bbmsp_event_t *event);
     void processContactUpdate(bbmsp_event_t *event);
+    Json::Value processProfileBoxItem(const bbmsp_user_profile_box_item_t *item);
+    void processProfileBoxItemAdded(bbmsp_event_t *event);
+    void processProfileBoxItemRemoved(bbmsp_event_t *event);
+    void processProfileBoxRegisterIcon(bbmsp_event_t *event);
+
+    // private functions
+    void createProfileFieldMap();
     std::string getFullProfile();
+    std::string getProfileDisplayPicture(bbmsp_profile_t *profile);
     std::string getFullContact(bbmsp_contact_t *contact);
+    size_t loadImage(const std::string& imgPath, bbmsp_image_t **img);
     static bool contactEventsEnabled;
     static pthread_mutex_t m_lock;
     static int m_eventChannel;
     static int m_BBMInternalDomain;
-    static bbmsp_contact_list_t *m_pContactList;
+    static ProfileFieldMap *m_pProfileFieldMap;
 };
 
 } // namespace webworks
 
-#endif // BBM_BPS_H_
+#endif // BBM_BPS_HPP_

@@ -51,9 +51,7 @@ describe("blackberry.bbm.platform", function () {
 });
 
 describe("blackberry.bbm.platform.self", function () {
-
     describe("self", function () {
-
         it('makes sure all the profile fields are read only', function () {
             runs(function () {
                 testBBMProfileReadOnly("displayName");
@@ -98,6 +96,159 @@ describe("blackberry.bbm.platform.self", function () {
                 expect(onDisplayPicture).toHaveBeenCalled();
             });
 
+        });
+    });
+
+    describe("profilebox", function () {
+        var onSuccess = jasmine.createSpy(),
+            onError = jasmine.createSpy(),
+            waitForTimeout = 10000,
+            item,
+            itemIconId,
+            itemAdded = function (data) {
+                            item = data;
+                        };
+
+        beforeEach(function () {
+            onSuccess.reset();
+            onError.reset();
+        });
+
+        it("should be able to check the profile box is accessible", function () {
+            expect(blackberry.bbm.platform.self.profilebox.accessible).toEqual(true);
+        });
+
+        it("should invoke success callback when adding an item", function () {
+            runs(function () {
+                item = { text: "hello", cookie: "chocolate" };
+                blackberry.bbm.platform.self.profilebox.addItem(item, onSuccess.andCallFake(itemAdded), onError);
+            });
+
+            waitsFor(function () {
+                return onSuccess.callCount;
+            }, "success never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onSuccess).toHaveBeenCalledWith(item);
+            });
+        });
+        
+        it("should invoke error callback when adding an item", function () {
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.addItem({ }, onSuccess, onError);
+            });
+
+            waitsFor(function () {
+                return onError.callCount;
+            }, "error never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onError).toHaveBeenCalled();
+            });
+        });
+
+        it("should invoke success callback when removing an item", function () {
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.removeItem(item, onSuccess, onError);
+            });
+
+            waitsFor(function () {
+                return onSuccess.callCount;
+            }, "success never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onSuccess).toHaveBeenCalledWith(item);
+            });
+        });
+        
+        it("should invoke error callback when removing an item", function () {
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.removeItem({}, onSuccess, onError);
+            });
+
+            waitsFor(function () {
+                return onError.callCount;
+            }, "error never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onError).toHaveBeenCalled();
+            });
+        });
+
+        it("should invoke success callback when registering an icon", function () {
+            itemIconId = Math.floor(Math.random() * 32000);
+
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.registerIcon({ icon: "local:///default-icon.png", iconId: itemIconId }, onSuccess, onError); 
+            });
+
+            waitsFor(function () {
+                return onSuccess.callCount;
+            }, "success never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onSuccess).toHaveBeenCalledWith({ iconId: itemIconId });
+            });
+        });
+
+        it("should invoke error callback when registering an icon with an invalid file", function () {
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.registerIcon({ icon: "local:///no-icon.png", iconId: itemIconId }, onSuccess, onError); 
+            });
+
+            waitsFor(function () {
+                return onError.callCount;
+            }, "error never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onError).toHaveBeenCalled();
+            });
+        });
+
+        it("should invoke error callback when registering an icon with an invalid iconId", function () {
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.registerIcon({ icon: "local:///no-icon.png", iconId: "9000" }, onSuccess, onError); 
+            });
+
+            waitsFor(function () {
+                return onError.callCount;
+            }, "error never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onError).toHaveBeenCalled();
+            });
+        });
+
+        it("should invoke success callback when adding an item with an icon", function () {
+            runs(function () {
+                item = { text: "text", cookie: "iconItem", iconId: itemIconId };
+                blackberry.bbm.platform.self.profilebox.addItem(item, onSuccess.andCallFake(itemAdded), onError);
+            });
+            
+            waitsFor(function () {
+                return onSuccess.callCount;
+            }, "success never fired", waitForTimeout);
+
+            runs(function () {
+                expect(onSuccess).toHaveBeenCalledWith(item);
+            });
+        });
+        
+        it("should be able to get the amount of items in the profile box", function () {
+            runs(function () {
+                expect(blackberry.bbm.platform.self.profilebox.item.length).toBeGreaterThan(0);
+            });
+        });
+
+        it("should be able to clear the items in the profile box", function () {
+            runs(function () {
+                blackberry.bbm.platform.self.profilebox.clearItems();
+                waits(3000);
+            });
+        });
+
+        it("should be able to check the array length", function () {
+            expect(blackberry.bbm.platform.self.profilebox.item.length).toEqual(0);
         });
     });
 });

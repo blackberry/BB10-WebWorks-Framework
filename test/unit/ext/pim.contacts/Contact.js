@@ -132,7 +132,7 @@ describe("pim.contacts Contact", function () {
             contact.save(null, onSaveError);
 
             expect(once).not.toHaveBeenCalled();
-            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR, message : 'onSuccess should be a function'});
         });
 
         it("calls the error callback when arguments are incorrect", function () {
@@ -147,7 +147,7 @@ describe("pim.contacts Contact", function () {
 
             expect(once).not.toHaveBeenCalled();
             expect(onSaveSuccess).not.toHaveBeenCalled();
-            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR, message: "phoneNumbers.type at index 0 should be a string"});
         });
 
         it("calls the error callback when the id is incorrect", function () {
@@ -162,7 +162,7 @@ describe("pim.contacts Contact", function () {
 
             expect(once).not.toHaveBeenCalled();
             expect(onSaveSuccess).not.toHaveBeenCalled();
-            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+            expect(onSaveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR, message : 'id is required and must be a number'});
         });
 
         it("converts Date objects to strings", function () {
@@ -216,7 +216,13 @@ describe("pim.contacts Contact", function () {
             for (field in contact) {
                 if (contact.hasOwnProperty(field)) {
                     if (field !== "id") {
-                        expect(clonedContact[field]).toBe(contact[field]);
+                        expect(clonedContact[field]).toEqual(contact[field]);
+
+                        if (contact[field] !== null &&
+                            contact[field] !== undefined &&
+                            typeof contact[field] === "object") {
+                            expect(clonedContact[field]).not.toBe(contact[field], field + " was not deeply cloned");
+                        }
                     }
                 }
             }
@@ -290,6 +296,13 @@ describe("pim.contacts Contact", function () {
             contact.remove(null, onRemoveError);
 
             expect(onRemoveError).toHaveBeenCalledWith({"code": ContactError.INVALID_ARGUMENT_ERROR});
+        });
+    });
+
+    describe("remove", function () {
+        it("has property sourceAccounts", function () {
+            var contact = new Contact();
+            expect(contact.sourceAccounts).toBeDefined();
         });
     });
 });

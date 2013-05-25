@@ -60,7 +60,7 @@ module.exports = {
 
         var messageObj = {
             title : args.settings.title,
-            message :  args.message,
+            htmlmessage :  args.message,
             dialogType : "CustomAsk",
             optionalButtons : args.buttons
         };
@@ -104,7 +104,7 @@ module.exports = {
         if (!Array.isArray(buttons[args.type])) {
             messageObj = {
                 title : args.settings.title,
-                message :  args.message,
+                htmlmessage :  args.message,
                 dialogType : buttons[args.type],
             };
             overlayWebView.showDialog(messageObj, function (result) {
@@ -129,7 +129,7 @@ module.exports = {
         } else {
             messageObj = {
                 title : args.settings.title,
-                message :  args.message,
+                htmlmessage :  args.message,
                 dialogType : "JavaScriptConfirm",
                 oklabel : buttons[args.type][0],
                 cancellabel : buttons[args.type][1],

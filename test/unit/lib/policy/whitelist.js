@@ -229,6 +229,7 @@ describe("whitelist", function () {
 
             expect(whitelist.isAccessAllowed("http://www.google.com/search?q=awesome")).toEqual(true);
             expect(whitelist.isAccessAllowed("http://www.google.com/search?a=anyLetter")).toEqual(true);
+            expect(whitelist.isAccessAllowed("http://www.google.com/search")).toEqual(false);
             expect(whitelist.isAccessAllowed("http://www.google.com/blah?q=awesome")).toEqual(false);
         });
 

@@ -106,7 +106,7 @@ function validateFindArguments(findOptions) {
         }
 
         // findOptions.sort is optional
-        if (!error && findOptions.sort && findOptions.sort.length) {
+        if (!error && findOptions.sort && Array.isArray(findOptions.sort)) {
             findOptions.sort.forEach(function (s) {
                 switch (s.fieldName) {
                 case ContactFindOptions.SORT_FIELD_GIVEN_NAME:
@@ -121,6 +121,30 @@ function validateFindArguments(findOptions) {
                     error = true;
                 }
             });
+        }
+
+        if (!error && findOptions.includeAccounts) {
+            if (!Array.isArray(findOptions.includeAccounts)) {
+                error = true;
+            } else {
+                findOptions.includeAccounts.forEach(function (acct) {
+                    if (!error && (!acct.id || window.isNaN(window.parseInt(acct.id, 10)))) {
+                        error = true;
+                    }
+                });
+            }
+        }
+
+        if (!error && findOptions.excludeAccounts) {
+            if (!Array.isArray(findOptions.excludeAccounts)) {
+                error = true;
+            } else {
+                findOptions.excludeAccounts.forEach(function (acct) {
+                    if (!error && (!acct.id || window.isNaN(window.parseInt(acct.id, 10)))) {
+                        error = true;
+                    }
+                });
+            }
         }
     }
     return !error;

@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var fs = require('fs'),
-    path = require('path');
+var fs = require('fs');
 
 module.exports = {
     bundle: function () {
@@ -91,7 +90,7 @@ module.exports = {
 
         //create output folder if it doesn't exist
         clientFilesPath = __dirname.replace(/\\/g, '/') + "/../../clientFiles";
-        if (!path.existsSync(clientFilesPath)) {
+        if (!fs.existsSync(clientFilesPath)) {
             fs.mkdirSync(clientFilesPath, "0777"); //full permissions
         }
 

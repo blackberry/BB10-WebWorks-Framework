@@ -52,8 +52,10 @@ _self.invokeMediaPlayer = function (options, done, cancel, invokeCallback) {
             if (error !== "") {
                 window.webworks.event.remove(_ID, eventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
 
     if (!window.webworks.event.isOn(eventId)) {
         window.webworks.event.once(_ID, eventId, callback);
@@ -72,8 +74,10 @@ _self.invokeCamera = function (mode, done, cancel, invokeCallback) {
             if (error !== "") {
                 window.webworks.event.remove(_ID, _cameraEventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
     if (!window.webworks.event.isOn(_cameraEventId)) {
         window.webworks.event.once(_ID, _cameraEventId, callback);
     }
@@ -105,8 +109,10 @@ _self.invokeFilePicker = function (options, done, cancel, invokeCallback) {
             if (error !== "") {
                 window.webworks.event.remove(_ID, _filePickerEventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
     if (!window.webworks.event.isOn(_filePickerEventId)) {
         window.webworks.event.once(_ID, _filePickerEventId, callback);
     }
@@ -128,8 +134,10 @@ _self.invokeIcsViewer = function (options, done, cancel, invokeCallback) {
             if (error !== "") {
                 window.webworks.event.remove(_ID, _icsEventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
     if (!window.webworks.event.isOn(_icsEventId)) {
         window.webworks.event.once(_ID, _icsEventId, callback);
     }
@@ -151,8 +159,10 @@ _self.invokeCalendarPicker = function (options, done, cancel, invokeCallback) {
             if (error !== "") {
                 window.webworks.event.remove(_ID, _calendarPickerEventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
     if (!window.webworks.event.isOn(_calendarPickerEventId)) {
         window.webworks.event.once(_ID, _calendarPickerEventId, callback);
     }
@@ -180,8 +190,10 @@ _self.invokeCalendarComposer = function (options, done, cancel, invokeCallback) 
             if (error !== "") {
                 window.webworks.event.remove(_ID, _calendarComposerEventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
     if (!window.webworks.event.isOn(_calendarComposerEventId)) {
         window.webworks.event.once(_ID, _calendarComposerEventId, callback);
     }
@@ -208,8 +220,10 @@ _self.invokeEmailComposer = function (options, done, cancel, invokeCallback) {
             if (error !== "") {
                 window.webworks.event.remove(_ID, _emailComposerEventId, callback);
             }
-            invokeCallback();
-        }; 
+            if (typeof invokeCallback === typeof Function) {
+                invokeCallback();
+            }
+        };
     if (!window.webworks.event.isOn(_emailComposerEventId)) {
         window.webworks.event.once(_ID, _emailComposerEventId, callback);
     }
