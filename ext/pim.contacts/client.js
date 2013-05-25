@@ -63,7 +63,7 @@ _self.find = function (contactFields, findOptions, onFindSuccess, onFindError) {
     }
 
     callback = function (args) {
-        var result = JSON.parse(unescape(args.result)),
+        var result = JSON.parse(decodeURIComponent(args.result)),
             contacts = result.contacts,
             realContacts = [];
 
@@ -149,7 +149,7 @@ _self.invokeContactPicker = function (options, onDone, onCancel, onInvoke) {
             }
         },
         invokeCallback = function (args) {
-            var result = JSON.parse(unescape(args.result)),
+            var result = JSON.parse(decodeURIComponent(args.result)),
                 error;
 
             if (!result._success) {
