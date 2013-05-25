@@ -85,6 +85,9 @@ public:
     static Json::Value GetContactAccounts();
 
 private:
+    static QString toQString(std::string const& s);
+    static std::string fromQString(QString const& s);
+
     // Helper functions for Find
     Json::Value assembleSearchResults(const QSet<bbpim::ContactId>& results, const Json::Value& contactFields, int limit);
     Json::Value populateContact(const bbpim::Contact& contact, const Json::Value& contactFields);
