@@ -151,7 +151,7 @@ _self.findEvents = function (findOptions, onFindSuccess, onFindError) {
             realEvents = [];
 
         try {
-            tmp = unescape(args.result);
+            tmp = unescape(decodeURIComponent(args.result));
             result = JSON.parse(tmp);
             events = result.events;
         } catch (e) {

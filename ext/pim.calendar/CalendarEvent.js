@@ -169,7 +169,7 @@ CalendarEvent.prototype.save = function (onSaveSuccess, onSaveError) {
     args._eventId = utils.guid();
 
     saveCallback = function (args) {
-        var result = JSON.parse(unescape(args.result)),
+        var result = JSON.parse(unescape(decodeURIComponent(args.result))),
             errorObj,
             newEvent;
 
@@ -219,7 +219,7 @@ CalendarEvent.prototype.remove = function (onRemoveSuccess, onRemoveError, remov
     }
 
     removeCallback = function (args) {
-        var result = JSON.parse(unescape(args.result)),
+        var result = JSON.parse(unescape(decodeURIComponent(args.result))),
             errorObj;
 
         if (result._success) {

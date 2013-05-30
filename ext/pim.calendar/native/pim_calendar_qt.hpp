@@ -76,6 +76,8 @@ public:
     static Json::Value GetDefaultCalendarAccount();
 
 private:
+    static QString toQString(std::string const& s);
+    static std::string fromQString(QString const& s);
     static QDateTime getDate(const Json::Value& arg);
     static QVariant getFromMap(QMap<QString, QVariant> map, QStringList keys);
     static std::string getSafeString(const std::string& s);
