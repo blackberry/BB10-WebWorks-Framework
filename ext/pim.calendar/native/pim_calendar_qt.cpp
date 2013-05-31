@@ -487,7 +487,7 @@ bool PimCalendarQt::getSearchParams(bbpim::EventSearchParameters& searchParams, 
 
         // filter - substring - optional
         if (filter.isMember("substring") && filter["substring"].isString()) {
-            searchParams.setPrefix(QString(filter["substring"].asCString()));
+            searchParams.setPrefix(toQString(filter["substring"].asString()));
         }
 
         // detail - optional - defaults to Agenda if not set
@@ -599,15 +599,15 @@ QList<QDateTime> PimCalendarQt::setEventFields(bbpim::CalendarEvent& ev, const J
     }
 
     if (args.isMember("summary") && args["summary"].isString()) {
-        ev.setSubject(args["summary"].asCString());
+        ev.setSubject(toQString(args["summary"].asString()));
     }
 
     if (args.isMember("location") && args["location"].isString()) {
-        ev.setLocation(args["location"].asCString());
+        ev.setLocation(toQString(args["location"].asString()));
     }
 
     if (args.isMember("description") && args["description"].isString()) {
-        ev.setBody(args["description"].asCString());
+        ev.setBody(toQString(args["description"].asString()));
     }
 
     if (args.isMember("transparency") && args["transparency"].isInt()) {
@@ -627,7 +627,7 @@ QList<QDateTime> PimCalendarQt::setEventFields(bbpim::CalendarEvent& ev, const J
     }
 
     if (args.isMember("url") && args["url"].isString()) {
-        ev.setUrl(args["url"].asCString());
+        ev.setUrl(toQString(args["url"].asString()));
     }
 
     if (args.isMember("recurrence") && !args["recurrence"].isNull()) {
@@ -673,8 +673,8 @@ QList<QDateTime> PimCalendarQt::setEventFields(bbpim::CalendarEvent& ev, const J
             bbpim::Attendee attendee;
             Json::Value attArgs = args["attendees"][i];
 
-            attendee.setName(QString(attArgs.get("name", "").asCString()));
-            attendee.setEmail(QString(attArgs.get("email", "").asCString()));
+            attendee.setName(toQString(attArgs.get("name", "").asString()));
+            attendee.setEmail(toQString(attArgs.get("email", "").asString()));
             attendee.setType((bbpim::Attendee::Type)(attArgs.get("type", bbpim::Attendee::Host).asInt()));
             attendee.setRole((bbpim::AttendeeRole::Type)(attArgs.get("role", bbpim::AttendeeRole::Chair).asInt()));
             attendee.setStatus((bbpim::AttendeeStatus::Type)(attArgs.get("status", bbpim::AttendeeStatus::Unknown).asInt()));
@@ -708,6 +708,16 @@ QList<QDateTime> PimCalendarQt::setEventFields(bbpim::CalendarEvent& ev, const J
 /****************************************************************
  * Helper functions shared by Find and Save
  ****************************************************************/
+QString PimCalendarQt::toQString(std::string const &s)
+{
+    return QString::fromUtf8(s.c_str());
+}
+
+std::string PimCalendarQt::fromQString(QString const &s)
+{
+    return std::string(s.toUtf8().data());
+}
+
 bbpim::CalendarService* PimCalendarQt::getCalendarService() {
     return m_provider.GetCalendarService();
 }
@@ -761,11 +771,11 @@ Json::Value PimCalendarQt::eventToJson(const bbpim::CalendarEvent& event)
     jsonEvent["accountId"] = Utils::intToStr(event.accountId());
     jsonEvent["start"] =  QString::number(event.startTime().toUTC().toMSecsSinceEpoch()).toStdString();
     jsonEvent["end"] =  QString::number(event.endTime().toUTC().toMSecsSinceEpoch()).toStdString();
-    jsonEvent["description"] = getSafeString(event.body().toStdString());
-    jsonEvent["summary"] = getSafeString(event.subject().toStdString());
-    jsonEvent["location"] = getSafeString(event.location().toStdString());
+    jsonEvent["description"] = getSafeString(fromQString(event.body()));
+    jsonEvent["summary"] = getSafeString(fromQString(event.subject()));
+    jsonEvent["location"] = getSafeString(fromQString(event.location()));
     jsonEvent["timezone"] = event.timezone().toStdString();
-    jsonEvent["url"] = event.url().toStdString();
+    jsonEvent["url"] = fromQString(event.url());
 
     if (event.recurrence().isValid()) {
         jsonEvent["recurrence"] = Json::Value();
@@ -791,8 +801,8 @@ Json::Value PimCalendarQt::eventToJson(const bbpim::CalendarEvent& event)
 
     for (QList<bbpim::Attendee>::const_iterator i = event.attendees().constBegin(); i != event.attendees().constEnd(); ++i) {
         Json::Value jsonAttendee;
-        jsonAttendee["email"] = getSafeString(i->email().toStdString());
-        jsonAttendee["name"] = getSafeString(i->name().toStdString());
+        jsonAttendee["email"] = getSafeString(fromQString(i->email()));
+        jsonAttendee["name"] = getSafeString(fromQString(i->name()));
         jsonAttendee["type"] = i->type();
         jsonAttendee["role"] = i->role();
         jsonAttendee["id"] = Utils::intToStr(i->id());
