@@ -575,7 +575,7 @@ QSet<bbpim::ContactId> PimContactsQt::singleFieldSearch(const Json::Value& searc
         QList<bbpim::Contact> results;
 
         contactFilter.setSearchFields(searchFields);
-        contactFilter.setSearchValue(QString(searchFieldsJson["fieldValue"].asString().c_str()));
+        contactFilter.setSearchValue(toQString(searchFieldsJson["fieldValue"].asString()));
 
         if (favorite) {
             contactFilter.setIsFavourite(favorite);
@@ -680,6 +680,16 @@ std::string PimContactsQt::replaceString(const std::string& s) {
 /****************************************************************
  * Helper functions shared by Find and Save
  ****************************************************************/
+
+QString PimContactsQt::toQString(std::string const &s)
+{
+    return QString::fromUtf8(s.c_str());
+}
+
+std::string PimContactsQt::fromQString(QString const &s)
+{
+    return std::string(s.toUtf8().data());
+}
 
 Json::Value PimContactsQt::populateContact(const bbpim::Contact& contact, const Json::Value& contactFields)
 {
@@ -787,14 +797,14 @@ void PimContactsQt::populateField(const bbpim::Contact& contact, bbpim::Attribut
             if (isContactField) {
                 val["type"] = Json::Value(typeIter->second);
 
-                std::string value = currentAttr.value().toStdString();
+                std::string value = fromQString(currentAttr.value());
                 value = replaceString(value);
 
                 val["value"] = Json::Value(value);
                 contactItem.append(val);
             } else {
                 if (isArray) {
-                    std::string value = currentAttr.value().toStdString();
+                    std::string value = fromQString(currentAttr.value());
                     value = replaceString(value);
 
                     val = Json::Value(value);
@@ -804,12 +814,12 @@ void PimContactsQt::populateField(const bbpim::Contact& contact, bbpim::Attribut
                         QString format = "yyyy-MM-dd";
                         contactItem[typeIter->second] = Json::Value(currentAttr.valueAsDateTime().date().toString(format).toStdString());
                     } else {
-                        contactItem[typeIter->second] = Json::Value(currentAttr.value().toStdString());
+                        contactItem[typeIter->second] = Json::Value(fromQString(currentAttr.value()));
                     }
                 }
             }
         } else if (kind == bbpim::AttributeKind::Note) {
-            std::string note = currentAttr.value().toStdString();
+            std::string note = fromQString(currentAttr.value());
             note = replaceString(note);
             contactItem["note"] = Json::Value(note);
             break;
@@ -829,7 +839,7 @@ void PimContactsQt::populateDisplayNameNickName(const bbpim::Contact& contact, J
             bbpim::ContactAttribute currentAttr = nameAttrs[i];
 
             if (currentAttr.subKind() == subkind) {
-                std::string value = currentAttr.value().toStdString();
+                std::string value = fromQString(currentAttr.value());
                 value = replaceString(value);
                 contactItem[field] = Json::Value(value);
                 break;
@@ -854,12 +864,12 @@ void PimContactsQt::populateAddresses(const bbpim::Contact& contact, Json::Value
             addr["type"] = Json::Value(typeIter->second);
         }
 
-        addr["streetAddress"] = Json::Value(currentAddr.line1().toStdString());
-        addr["streetOther"] = Json::Value(currentAddr.line2().toStdString());
-        addr["country"] = Json::Value(currentAddr.country().toStdString());
-        addr["locality"] = Json::Value(currentAddr.city().toStdString());
-        addr["postalCode"] = Json::Value(currentAddr.postalCode().toStdString());
-        addr["region"] = Json::Value(currentAddr.region().toStdString());
+        addr["streetAddress"] = Json::Value(fromQString(currentAddr.line1()));
+        addr["streetOther"] = Json::Value(fromQString(currentAddr.line2()));
+        addr["country"] = Json::Value(fromQString(currentAddr.country()));
+        addr["locality"] = Json::Value(fromQString(currentAddr.city()));
+        addr["postalCode"] = Json::Value(fromQString(currentAddr.postalCode()));
+        addr["region"] = Json::Value(fromQString(currentAddr.region()));
 
         contactAddrs.append(addr);
     }
@@ -878,7 +888,7 @@ void PimContactsQt::populateOrganizations(const bbpim::Contact& contact, Json::V
             SubKindToStringMap::const_iterator typeIter = _subKindAttributeMap.find(attr.subKind());
 
             if (typeIter != _subKindAttributeMap.end()) {
-                std::string value = attr.value().toStdString();
+                std::string value = fromQString(attr.value());
                 value = replaceString(value);
                 org[typeIter->second] = Json::Value(value);
             }
@@ -918,15 +928,15 @@ void PimContactsQt::populateNews(const bbpim::Contact& contact, Json::Value& con
         Json::Value companies;
         QString format = "yyyy-MM-dd";
 
-        std::string body = k->body().toStdString();
+        std::string body = fromQString(k->body());
         body = replaceString(body);
         news["body"] = Json::Value(body);
 
-        std::string title = k->title().toStdString();
+        std::string title = fromQString(k->title());
         title = replaceString(title);
         news["title"] = Json::Value(title);
 
-        std::string articleSource = k->articleSource().toStdString();
+        std::string articleSource = fromQString(k->articleSource());
         articleSource = replaceString(articleSource);
         news["articleSource"] = Json::Value(articleSource);
 
@@ -957,7 +967,7 @@ void PimContactsQt::populateActivity(const bbpim::Contact& contact, Json::Value&
     while (k != activities.constEnd()) {
         Json::Value activity;
 
-        std::string desc = k->description().toStdString();
+        std::string desc = fromQString(k->description());
         desc = replaceString(desc);
 
         activity["description"] = Json::Value(desc);
@@ -1256,7 +1266,7 @@ void PimContactsQt::addAttribute(bbpim::ContactBuilder& contactBuilder, const bb
             attributeBuilder = attributeBuilder.setValue(QString(value.c_str()));
         }
     } else {
-        attributeBuilder = attributeBuilder.setValue(QString(value.c_str()));
+        attributeBuilder = attributeBuilder.setValue(toQString(value));
     }
 
     if (!groupKey.empty()) {
@@ -1280,12 +1290,12 @@ void PimContactsQt::addPostalAddress(bbpim::ContactBuilder& contactBuilder, cons
         }
     }
 
-    addressBuilder = addressBuilder.setLine1(QString(addressObj.get("streetAddress", "").asCString()));
-    addressBuilder = addressBuilder.setLine2(QString(addressObj.get("streetOther", "").asCString()));
-    addressBuilder = addressBuilder.setCity(QString(addressObj.get("locality", "").asCString()));
-    addressBuilder = addressBuilder.setRegion(QString(addressObj.get("region", "").asCString()));
-    addressBuilder = addressBuilder.setCountry(QString(addressObj.get("country", "").asCString()));
-    addressBuilder = addressBuilder.setPostalCode(QString(addressObj.get("postalCode", "").asCString()));
+    addressBuilder = addressBuilder.setLine1(toQString(addressObj.get("streetAddress", "").asString()));
+    addressBuilder = addressBuilder.setLine2(toQString(addressObj.get("streetOther", "").asString()));
+    addressBuilder = addressBuilder.setCity(toQString(addressObj.get("locality", "").asString()));
+    addressBuilder = addressBuilder.setRegion(toQString(addressObj.get("region", "").asString()));
+    addressBuilder = addressBuilder.setCountry(toQString(addressObj.get("country", "").asString()));
+    addressBuilder = addressBuilder.setPostalCode(toQString(addressObj.get("postalCode", "").asString()));
 
     contactBuilder = contactBuilder.addPostalAddress(address);
 }
@@ -1317,7 +1327,7 @@ void PimContactsQt::syncConvertedList(bbpim::ContactBuilder& contactBuilder, bbp
         } else {
             bbpim::ContactAttributeBuilder attributeBuilder(savedList[index].edit());
             attributeBuilder = attributeBuilder.setSubKind(convertedList[index].first);
-            attributeBuilder = attributeBuilder.setValue(QString(convertedList[index].second.c_str()));
+            attributeBuilder = attributeBuilder.setValue(toQString(convertedList[index].second));
 
             if (!groupKey.empty()) {
                 attributeBuilder = attributeBuilder.setGroupKey(QString(groupKey.c_str()));
@@ -1387,7 +1397,7 @@ void PimContactsQt::syncAttribute(bbpim::ContactBuilder& contactBuilder, QList<b
                     attributeBuilder = attributeBuilder.setValue(QString(value.c_str()));
                 }
             } else {
-                attributeBuilder = attributeBuilder.setValue(QString(value.c_str()));
+                attributeBuilder = attributeBuilder.setValue(toQString(value));
 
                 if (!groupKey.empty()) {
                     attributeBuilder = attributeBuilder.setGroupKey(QString(groupKey.c_str()));
@@ -1418,12 +1428,12 @@ void PimContactsQt::syncPostalAddresses(bbpim::ContactBuilder& contactBuilder, Q
             addressBuilder = addressBuilder.setSubKind(subkindIter->second);
         }
 
-        addressBuilder = addressBuilder.setLine1(QString(addressObj.get("streetAddress", "").asCString()));
-        addressBuilder = addressBuilder.setLine2(QString(addressObj.get("streetOther", "").asCString()));
-        addressBuilder = addressBuilder.setCity(QString(addressObj.get("locality", "").asCString()));
-        addressBuilder = addressBuilder.setRegion(QString(addressObj.get("region", "").asCString()));
-        addressBuilder = addressBuilder.setCountry(QString(addressObj.get("country", "").asCString()));
-        addressBuilder = addressBuilder.setPostalCode(QString(addressObj.get("postalCode", "").asCString()));
+        addressBuilder = addressBuilder.setLine1(toQString(addressObj.get("streetAddress", "").asString()));
+        addressBuilder = addressBuilder.setLine2(toQString(addressObj.get("streetOther", "").asString()));
+        addressBuilder = addressBuilder.setCity(toQString(addressObj.get("locality", "").asString()));
+        addressBuilder = addressBuilder.setRegion(toQString(addressObj.get("region", "").asString()));
+        addressBuilder = addressBuilder.setCountry(toQString(addressObj.get("country", "").asString()));
+        addressBuilder = addressBuilder.setPostalCode(toQString(addressObj.get("postalCode", "").asString()));
     }
 
     if (i < savedList.size()) {
