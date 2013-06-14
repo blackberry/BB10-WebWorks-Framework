@@ -23,7 +23,16 @@ describe("blackberry.invoke.card.ics", function () {
     function pushIcsFileToDevice(callback) {
         var dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "test.ics",
-            bb = new window.WebKitBlobBuilder();
+            blob = new Blob(["BEGIN:VCALENDAR\n",
+                             "PRODID:-//Research In Motion//RIM App//EN\n",
+                             "VERSION:1.0\n",
+                             "BEGIN:VEVENT\n",
+                             "DTEND:20210101T003000Z\n",
+                             "DTSTART:20210101T000000Z\n",
+                             "SUMMARY:invokeIcsViewer Test Event\n",
+                             "UID:" + generateUUID() + "\n",
+                             "END:VEVENT\n",
+                             "END:VCALENDAR\n"], {type: 'text/plain'});
 
         blackberry.io.sandbox = false;
 
@@ -45,18 +54,8 @@ describe("blackberry.invoke.card.ics", function () {
             fileWriter.onwriteend = function (e) {
                 callback();
             };
-            bb.append("BEGIN:VCALENDAR\n");
-            bb.append("PRODID:-//Research In Motion//RIM App//EN\n");
-            bb.append("VERSION:1.0\n");
-            bb.append("BEGIN:VEVENT\n");
-            bb.append("DTEND:20210101T003000Z\n");
-            bb.append("DTSTART:20210101T000000Z\n");
-            bb.append("SUMMARY:invokeIcsViewer Test Event\n");
-            bb.append("UID:" + generateUUID() + "\n");
-            bb.append("END:VEVENT\n");
-            bb.append("END:VCALENDAR\n");
 
-            fileWriter.write(bb.getBlob('text/plain'));
+            fileWriter.write(blob);
         }
 
         function errorHandler(e) {
