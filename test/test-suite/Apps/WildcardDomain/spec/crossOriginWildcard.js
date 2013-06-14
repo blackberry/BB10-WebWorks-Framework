@@ -42,7 +42,7 @@ describe("Cross Origin Wildcard", function () {
             fileWritten = false,
             dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "textData.txt",
-            bb = new window.WebKitBlobBuilder();
+            blob = new Blob(['this is text data'], {type: 'text/plain'});
 
         runs(function () {
             blackberry.io.sandbox = false;
@@ -51,8 +51,7 @@ describe("Cross Origin Wildcard", function () {
                 fileWriter.onwriteend = function (e) {
                     fileWritten = true;
                 };
-                bb.append('this is text data');
-                fileWriter.write(bb.getBlob('text/plain'));
+                fileWriter.write(blob);
             }
 
             function gotFile(fileEntry) {

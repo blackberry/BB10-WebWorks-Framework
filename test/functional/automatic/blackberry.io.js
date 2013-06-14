@@ -6,7 +6,7 @@ describe("FileSystem API", function () {
             }),
             fileWritten = false,
             fileName = "textData.txt",
-            bb = new window.WebKitBlobBuilder();
+            blob = new Blob(['this is text data'], {type: 'text/plain'});
 
         runs(function () {
 
@@ -14,8 +14,7 @@ describe("FileSystem API", function () {
                 fileWriter.onwriteend = function (e) {
                     fileWritten = true;
                 };
-                bb.append('this is text data');
-                fileWriter.write(bb.getBlob('text/plain'));
+                fileWriter.write(blob);
             }
 
             function gotFile(fileEntry) {
@@ -91,7 +90,7 @@ describe("FileSystem API", function () {
             fileWritten = false,
             dir = blackberry.io.sharedFolder + "/documents/",
             fileName = "textData.txt",
-            bb = new window.WebKitBlobBuilder();
+            blob = new Blob(['this is text data'], {type: 'text/plain'});
 
         runs(function () {
             blackberry.io.sandbox = false;
@@ -100,8 +99,7 @@ describe("FileSystem API", function () {
                 fileWriter.onwriteend = function (e) {
                     fileWritten = true;
                 };
-                bb.append('this is text data');
-                fileWriter.write(bb.getBlob('text/plain'));
+                fileWriter.write(blob);
             }
 
             function gotFile(fileEntry) {

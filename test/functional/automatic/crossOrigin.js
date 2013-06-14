@@ -361,7 +361,7 @@ describe("White listing", function () {
                 console.log('File write failure', JSON.stringify(e));
             }),
             fileWritten = false,
-            bb = new window.WebKitBlobBuilder();
+            blob = new Blob(['this is text data'], {type: 'text/plain'});
 
         runs(function () {
             blackberry.io.sandbox = false;
@@ -370,8 +370,7 @@ describe("White listing", function () {
                 fileWriter.onwriteend = function (e) {
                     fileWritten = true;
                 };
-                bb.append('this is text data');
-                fileWriter.write(bb.getBlob('text/plain'));
+                fileWriter.write(blob);
             }
 
             function gotFile(fileEntry) {
