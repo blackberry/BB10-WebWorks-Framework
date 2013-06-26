@@ -119,6 +119,18 @@ contextmenu.defineCustomContext = function (customContext, options) {
     window.webworks.execAsync(_ID, 'defineCustomContext', {context: customContext, options: options});
 };
 
+contextmenu.disablePlatformItem = function (context, actionId) {
+    return window.webworks.execSync(_ID, 'disablePlatformItem', {context: context, actionId: actionId});
+};
+
+contextmenu.enablePlatformItem = function (context, actionId) {
+    return window.webworks.execSync(_ID, 'enablePlatformItem', {context: context, actionId: actionId});
+};
+
+contextmenu.listDisabledPlatformItems = function () {
+    return window.webworks.execSync(_ID, 'listDisabledPlatformItems');
+};
+
 defineReadOnlyContext("ALL");
 defineReadOnlyContext("LINK");
 defineReadOnlyContext("IMAGE_LINK");
@@ -138,5 +150,6 @@ defineReadOnlyActions("SAVE_IMAGE", "SaveImage");
 defineReadOnlyActions("COPY_IMAGE_LINK", "CopyImageLink");
 defineReadOnlyActions("VIEW_IMAGE", "ViewImage");
 defineReadOnlyActions("INSPECT_ELEMENT", "InspectElement");
+defineReadOnlyActions("MENU_SERVICE", "MenuService");
 
 module.exports = contextmenu;

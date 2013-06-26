@@ -30,6 +30,9 @@ var _extDir = __dirname + "./../../../../ext/",
         overrideItem: jasmine.createSpy(),
         clearOverride: jasmine.createSpy(),
         defineCustomContext: jasmine.createSpy(),
+        disablePlatformItem: jasmine.createSpy(),
+        enablePlatformItem: jasmine.createSpy(),
+        listDisabledPlatformItems: jasmine.createSpy(),
         enabled : true
     },
     mockedQnx = {
@@ -214,4 +217,26 @@ describe("blackberry.ui.contextmenu index", function () {
         expect(mockedContextMenu.clearOverride).toHaveBeenCalledWith('MenuService-Share');
     });
 
+    it("can disable a platform menu item", function () {
+        var args = {
+                actionId: encodeURIComponent(JSON.stringify('Paste')),
+                context: encodeURIComponent(JSON.stringify('INPUT'))
+            };
+        contextmenu.disablePlatformItem(success, fail, args);
+        expect(mockedContextMenu.disablePlatformItem).toHaveBeenCalledWith(args.context, args.actionId);
+    });
+
+    it("can enable a disabled platform menu item", function () {
+        var args = {
+                actionId: encodeURIComponent(JSON.stringify('Paste')),
+                context: encodeURIComponent(JSON.stringify('INPUT'))
+            };
+        contextmenu.enablePlatformItem(success, fail, args);
+        expect(mockedContextMenu.enablePlatformItem).toHaveBeenCalledWith(args.context, args.actionId);
+    });
+
+    it("can list all disabled platform menu items", function () {
+        contextmenu.listDisabledPlatformItems(success);
+        expect(mockedContextMenu.listDisabledPlatformItems).toHaveBeenCalled();
+    });
 });
