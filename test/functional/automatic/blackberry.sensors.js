@@ -18,14 +18,14 @@ describe("blackberry.sensors", function () {
     describe("sensors", function () {
         var onSensor = jasmine.createSpy(),
             waitForTimeout = 5000;
-        
+
         beforeEach(function () {
             waits(1000);
         });
 
         it('should be able to get a list of supported sensors', function () {
             runs(function () {
-                expect(blackberry.sensors.supportedSensors).toContain("devicecompass");
+                expect(blackberry.sensors.supportedSensors).toEqual(jasmine.any(String));
             });
         });
 
@@ -73,7 +73,7 @@ describe("blackberry.sensors", function () {
                 blackberry.event.removeEventListener("devicegyroscope", onSensor);
             });
         });
-        
+
         it('should be able to activate the devicecompass sensor and get valid data', function () {
             runs(function () {
                 blackberry.event.addEventListener("devicecompass", onSensor);
@@ -207,7 +207,7 @@ describe("blackberry.sensors", function () {
                 expect(onSensor).toHaveBeenCalledWith(jasmine.any(Object));
                 blackberry.event.removeEventListener("deviceholster", onSensor);
             });
-        }); 
+        });
     });
 });
 
