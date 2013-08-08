@@ -19,7 +19,8 @@ describe("blackberry.invoked", function () {
     });
 
     it("should sucessfully send and receive invocations", function () {
-        var onSuccess = jasmine.createSpy(),
+        var successHandled = true,
+            onSuccess = jasmine.createSpy().andCallFake(function () { successHandled = true;}),
             onError = jasmine.createSpy(),
             invocationHandled = false,
             invokedTarget, invokedType, invokedAction, invokedData;
@@ -50,7 +51,7 @@ describe("blackberry.invoked", function () {
         });
 
         waitsFor(function () {
-            return invocationHandled;
+            return invocationHandled && successHandled;
         }, "invocation handler did not finish", 1000);
 
         runs(function () {
