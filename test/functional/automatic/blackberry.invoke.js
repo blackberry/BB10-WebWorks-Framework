@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 describe("blackberry.invoke", function () {
-    var delay = 1500, onSuccessSpy, onErrorSpy, onChildCardClosedHandler, testInvoke;
+    var delay = 1500, onSuccessSpy, onErrorSpy, onChildCardClosedHandlerSpy, testInvoke;
 
     testInvoke = function (invokeArgs) {
-        onChildCardClosedHandler = jasmine.createSpy(),
-        onSuccessSpy = jasmine.createSpy(),
-        onErrorSpy = jasmine.createSpy();
+        onChildCardClosedHandlerSpy = jasmine.createSpy('onChildCardClosedHandlerSpy'),
+        onSuccessSpy = jasmine.createSpy('onSuccessSpy'),
+        onErrorSpy = jasmine.createSpy('onErrorSpy');
 
         blackberry.invoke.invoke(
             invokeArgs,
@@ -33,21 +33,21 @@ describe("blackberry.invoke", function () {
 
         runs(function () {
             expect(onErrorSpy).not.toHaveBeenCalled();
-            blackberry.event.addEventListener("onChildCardClosed", onChildCardClosedHandler);
+            blackberry.event.addEventListener("onChildCardClosed", onChildCardClosedHandlerSpy);
             blackberry.invoke.closeChildCard();
         });
 
         waitsFor(function () {
-            return onChildCardClosedHandler.callCount;
+            return onChildCardClosedHandlerSpy.callCount;
         }, "onChildCardClosed event to be received", delay);
 
         runs(function () {
-            expect(onChildCardClosedHandler).toHaveBeenCalledWith({ reason: "closed"});
+            expect(onChildCardClosedHandlerSpy).toHaveBeenCalledWith({ reason: "closed"});
         });
     }
 
     afterEach(function() {
-        blackberry.event.removeEventListener("onChildCardClosed", onChildCardClosedHandler);
+        blackberry.event.removeEventListener("onChildCardClosed", onChildCardClosedHandlerSpy);
     });
 
     it('blackberry.invoke should exist', function () {
@@ -166,23 +166,32 @@ describe("blackberry.invoke", function () {
     });
 
     it('open an audio card with a mal formed invoke and expect it to this.fail', function () {
+        onSuccessSpy = jasmine.createSpy('onSuccessSpy');
+        onErrorSpy = jasmine.createSpy('onErrorSpy');
+
         blackberry.invoke.invoke(
             {
                 action: "bb.action",
                 uri : "local:///audio/test.mp3",
                 file_transfer_mode : blackberry.invoke.FILE_TRANSFER_PRESERVE
             },
-            function (reason) {},
-            function (error) {
-                expect(error).toBe("INVOKE_NO_TARGET_ERROR");
-            }
+            onSuccessSpy,
+            onErrorSpy
         );
 
         blackberry.invoke.closeChildCard();
+
+        waitsFor(function () {
+            return onErrorSpy.callCount;
+        }, "onErrorSpy to have been called", delay);
+
+        runs(function () {
+            expect(onErrorSpy).toHaveBeenCalledWith('INVOKE_NO_TARGET_ERROR');
+        });
     });
 
     it('Register an invoke interrupter and expect the handler to NOT be triggered on invoke since it is not interruptable', function () {
-        var handler = jasmine.createSpy();
+        var handler = jasmine.createSpy('handler');
             // Register the handler function
             blackberry.invoke.interrupter = handler;
 
