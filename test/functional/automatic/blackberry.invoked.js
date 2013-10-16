@@ -19,10 +19,10 @@ describe("blackberry.invoked", function () {
     });
 
     it("should sucessfully send and receive invocations", function () {
-        var successHandled = true,
-            onSuccess = jasmine.createSpy().andCallFake(function () { successHandled = true;}),
-            onError = jasmine.createSpy(),
+        var successHandled = false,
             invocationHandled = false,
+            onSuccess = jasmine.createSpy('onSuccess').andCallFake(function () {successHandled = true;}),
+            onError = jasmine.createSpy('onError'),
             invokedTarget, invokedType, invokedAction, invokedData;
 
         blackberry.event.addEventListener("invoked", function (invocationInfo) {
@@ -52,7 +52,7 @@ describe("blackberry.invoked", function () {
 
         waitsFor(function () {
             return invocationHandled && successHandled;
-        }, "invocation handler did not finish", 1000);
+        }, "invocation handler did not finish or onSuccess callback was not called", 1000);
 
         runs(function () {
             expect(onSuccess).toHaveBeenCalled();
