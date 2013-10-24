@@ -31,6 +31,8 @@ describe("blackberry.invoke", function () {
             return onSuccessSpy.callCount;
         }, "invoke success to have been called", delay);
 
+        waits(5000);
+
         runs(function () {
             expect(onErrorSpy).not.toHaveBeenCalled();
             blackberry.event.addEventListener("onChildCardClosed", onChildCardClosedHandlerSpy);
