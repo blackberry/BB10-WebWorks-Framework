@@ -104,11 +104,9 @@ Extensions are all under the ext/ folder. An extension must at least contain the
 
 If your extension requires native C/C++ code, a native JNEXT extension is needed.
 
-There is sample:  https://github.com/blackberry/WebWorks-Community-APIs/tree/master/BB10/TEMPLATE.
+There is sample:  [BlackBerry 10 WebWorks Plugin Template].
 
-For detailed docs please visit
-https://developer.blackberry.com/html5/documentation/creating_extensions_for_bb10_apps.html
-
+For detailed docs please read [creating extensions for BlackBerry 10 apps].
 
 ## Contributing
 **To contribute code to this repository you must be [signed up as an official contributor](http://blackberry.github.com/howToContribute.html).**
@@ -129,3 +127,6 @@ To add new Samples or make modifications to existing Samples:
  * [BlackBerry 10 WebWorks Frameowork](https://github.com/blackberry/BB10-WebWorks-Framework)
  * [BlackBerry 10 WebWorks Samples](https://github.com/blackberry/BB10-WebWorks-Samples)
  * [BlackBerry 10 WebWorks Community APIs](https://github.com/blackberry/WebWorks-Community-APIs/tree/master/BB10)
+
+[BlackBerry 10 WebWorks Plugin Template]: https://github.com/blackberry/WebWorks-Community-APIs/tree/master/BB10-Cordova/Template
+[creating extensions for BlackBerry 10 apps]: https://developer.blackberry.com/html5/documentation/creating_extensions_for_bb10_apps.html
