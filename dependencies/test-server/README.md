@@ -1,4 +1,4 @@
-#BB10 WebWorks Jasmine Functional Tests
+# BB10 WebWorks Jasmine Functional Tests
 #### Automated Testing on a Blackberry Tablet
 
 ### Requirements

@@ -1,13 +1,13 @@
-#BlackBerry 10 WebWorks Framework
+# BlackBerry 10 WebWorks Framework
 WebWorks is an application framework and packaging tool that allows a developer to create a standalone BlackBerry application using HTML5/CSS/JavaScript.  Web developers can create a device application experience, including AppWorld distribution and monetization to system security policy enforcement, to deep device system and service integration. All using the technologies they are familiar with, leveraging the power of the industry leading web platform being built for BlackBerry 10.
 This repo contains the code for the BlackBerry 10 WebWorks Framework.
 
-##Prerequisites
+## Prerequisites
 1. Install [node[v0.6.10] and npm](http://nodejs.org/dist/v0.6.10/) and add to path.
 2. Install [BlackBerry Native SDK](https://bdsc.webapps.blackberry.com/native/).
 3. [*Windows*] Add Git bin to PATH. i.e. `*Installation Directory*\bin`
 
-##Setup and Build
+## Setup and Build
 1. `git clone https://github.com/blackberry-webworks/BB10-WebWorks-Framework.git`
 2. `cd BB10-WebWorks-Framework`
 3. `git checkout master`
@@ -20,7 +20,7 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
 6. Run `jake` or `jake build` and check that the output folder is created under the "target/zip" subfolder. If on windows, run jake from command prompt.
 8. Run `jake test` and check that jake runs and completes
 
-##Running Tests
+## Running Tests
 1. `jake test`  - to run js tests using nodejs
 2. `jake native-test` - to run native unit tests
     1. To setup run jake upload-ssh-key[<IP>,<ssh public key location>] eg. `jake upload-ssh-key[169.254.0.1,~/.ssh/id_rsa.pub]`
@@ -30,7 +30,7 @@ This repo contains the code for the BlackBerry 10 WebWorks Framework.
        eg: `jake deploy-tests[/Users/jheifetz/Downloads/BB10webworks-next-42/,-d,device,169.254.0.1,qaqa]`<br /><br />
 *Note: To see a full list of commands available with jake, use `jake -T`.*
 
-##Common issues
+## Common issues
  ```
 Cloning into dependencies/webplatform... error: Couldn't resolve host 'github.rim.net' while accessing
 http://github.rim.net/webworks/webplatform.git/info/refs
