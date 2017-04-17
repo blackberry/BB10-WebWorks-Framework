@@ -1,15 +1,15 @@
-#Functional Tests Application
+# Functional Tests Application
 
 run 'jake -T' to see how to use the jake functional test commands
 
 'jake test-app', all tests and dependencies are copied into this application, packagable zip file is produced
 'jake deploy-tests' builds test application with packager specified and deploys appliation to the device specified
 
-##Adding new tests
+## Adding new tests
  - Automatic functional tests should have their own file in /test/functional/automatic/
  - Manual functional tests should have their own file in /test/functional/manual/
 
-##Updating the test application (from root folder of application)
+## Updating the test application (from root folder of application)
  - in config.xml, whitelist the extension you are testing
  
 To have jasmine tests (automatic or manual) run in this application you must update the corresponding SpecRunner.htm file
